@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: riva-server
+  namespace: ml-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: riva-server
+  template:
+    metadata:
+      labels:
+        app: riva-server
+    spec:
+      containers:
+      - name: riva-server
+        image: nvcr.io/nvidia/riva/riva-speech:2.10.0
+        ports:
+        - containerPort: 50051
+        resources:
+          limits:
+            nvidia.com/gpu: 1
+        volumeMounts:
+        - name: riva-config
+          mountPath: /opt/riva/config
+      volumes:
+      - name: riva-config
+        configMap:
+          name: riva-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: riva-server
+  namespace: ml-service
+spec:
+  ports:
+  - port: 50051
+    targetPort: 50051
+  selector:
+    app: riva-server 

@@ -1,0 +1,35 @@
+nvidia:
+  ngc_api_key: ${NGC_API_KEY}
+  ngc_org: ${NGC_ORG}
+  ngc_team: ${NGC_TEAM}
+  riva_uri: ${NVIDIA_RIVA_URI:-localhost:50051}
+  riva_auth_key: ${NVIDIA_RIVA_AUTH_KEY}
+  nemo_model_path: ${NEMO_MODEL_PATH}
+
+cloud:
+  gcp_credentials_path: ${GOOGLE_APPLICATION_CREDENTIALS}
+  gcp_project_id: ${GOOGLE_CLOUD_PROJECT}
+  aws_access_key: ${AWS_ACCESS_KEY_ID}
+  aws_secret_key: ${AWS_SECRET_ACCESS_KEY}
+  azure_connection_string: ${AZURE_STORAGE_CONNECTION_STRING}
+
+model:
+  huggingface_token: ${HUGGINGFACE_API_TOKEN}
+  openai_api_key: ${OPENAI_API_KEY}
+  anthropic_api_key: ${ANTHROPIC_API_KEY}
+  model_registry_url: ${MODEL_REGISTRY_URL}
+
+kubernetes:
+  config_path: ${KUBE_CONFIG_PATH}
+  namespace: ${KUBE_NAMESPACE:-default}
+  service_account: ${KUBE_SERVICE_ACCOUNT:-default}
+
+monitoring:
+  datadog_api_key: ${DATADOG_API_KEY}
+  datadog_app_key: ${DATADOG_APP_KEY}
+  sentry_dsn: ${SENTRY_DSN}
+
+security:
+  jwt_secret: ${JWT_SECRET_KEY}
+  jwt_algorithm: ${JWT_ALGORITHM:-HS256}
+  api_key: ${API_KEY} 

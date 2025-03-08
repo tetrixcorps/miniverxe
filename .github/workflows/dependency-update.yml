@@ -1,0 +1,80 @@
+name: Update Dependencies
+
+on:
+  schedule:
+    - cron: '0 0 * * 1'  # Run weekly on Monday at midnight
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  update-dependencies:
+    name: Update Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install pip-tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install pip-tools
+
+      - name: Update Python dependencies
+        id: update-python
+        run: |
+          # Update main requirements
+          pip-compile --upgrade requirements.in -o requirements.txt
+          
+          # Update TaxStreamAI requirements
+          pip-compile --upgrade solutions/taxstream/requirements.in -o solutions/taxstream/requirements.txt
+          
+          # Update SolarConnectAI requirements
+          pip-compile --upgrade solutions/solarconnect/requirements.in -o solutions/solarconnect/requirements.txt
+          
+          # Check if there are changes
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Update Node.js dependencies
+        if: steps.update-python.outputs.changes == 'true'
+        run: |
+          # Update main frontend dependencies
+          cd frontend
+          npm update
+          
+          # Update TaxStreamAI frontend dependencies
+          cd ../solutions/taxstream/frontend
+          npm update
+          
+          # Update SolarConnectAI frontend dependencies
+          cd ../../solarconnect/frontend
+          npm update
+
+      - name: Create Pull Request
+        if: steps.update-python.outputs.changes == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: Update dependencies"
+          title: "chore: Update dependencies"
+          body: |
+            This PR updates dependencies to their latest versions.
+            
+            - Updated Python dependencies
+            - Updated Node.js dependencies
+            
+            Please review and test before merging.
+          branch: "chore/update-dependencies"
+          base: "develop" 

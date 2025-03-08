@@ -11,6 +11,14 @@ setup(
         'sacrebleu>=2.3.1',
         'nltk>=3.8.1',
         'numpy>=1.24.0',
-        'pandas>=2.0.0'
-    ]
+        'pandas>=2.0.0',
+        'nemo_toolkit>=1.0.0',
+        'nvidia-riva-client>=1.0.0'
+    ],
+    extras_require={
+        'nvidia': [
+            'nemo_toolkit>=1.0.0',
+            'nvidia-riva-client>=1.0.0'
+        ]
+    }
 ) 

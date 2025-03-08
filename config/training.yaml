@@ -1,0 +1,48 @@
+# Training configuration
+
+# Basic training parameters
+training:
+  batch_size: 16
+  gradient_accumulation_steps: 2
+  learning_rate: 2e-5
+  weight_decay: 0.01
+  epochs: 5
+  warmup_steps: 500
+  max_grad_norm: 1.0
+  seed: 42
+
+# Model configuration
+model:
+  base_model: "facebook/m2m100_418M"
+  tokenizer: "facebook/m2m100_418M"
+  max_length: 128
+
+# Data configuration
+data:
+  train_file: "data/train.jsonl"
+  validation_file: "data/validation.jsonl"
+  test_file: "data/test.jsonl"
+  source_lang: "en"
+  target_langs: ["swa", "hau", "yor", "amh", "ibo"]
+
+# Synthetic data generation
+synthetic_data:
+  enabled: false
+  generator: "nvidia"  # or "standard"
+  quantity: 1000
+  quality_threshold: 0.8
+  augmentation_methods: ["back_translation", "substitution"]
+  save_path: "data/synthetic"
+
+# Nvidia specific
+nvidia:
+  asr:
+    model: "stt_en_conformer_ctc_large"
+    language: "en-US"
+  tts:
+    model: "tts_en_fastpitch"
+    vocoder: "tts_en_hifigan"
+  optimization:
+    amp: true
+    gpu_batch_size: 32
+    mixed_precision: true 

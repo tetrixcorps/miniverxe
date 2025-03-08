@@ -1,8 +1,11 @@
 import librosa
 import numpy as np
 import torch
-from typing import Optional
+from typing import Optional, List, Tuple
 import logging
+import nvidia.dali as dali
+import nvidia.dali.plugin.pytorch as dali_pytorch
+from nvidia.dali.pipeline import Pipeline
 
 logger = logging.getLogger(__name__)
 
@@ -102,4 +105,57 @@ class AudioCompressor:
         """Apply noise gate to reduce background noise"""
         threshold = 0.01
         mask = torch.abs(audio_tensor) > threshold
-        return audio_tensor * mask.float() 
+        return audio_tensor * mask.float()
+
+class GPUAudioProcessor:
+    def __init__(self, batch_size=16, device_id=0):
+        self.batch_size = batch_size
+        self.device_id = device_id
+        self._create_pipeline()
+        
+    def _create_pipeline(self):
+        """Create DALI pipeline for audio processing"""
+        self.pipeline = Pipeline(
+            batch_size=self.batch_size, 
+            num_threads=4, 
+            device_id=self.device_id
+        )
+        
+        with self.pipeline:
+            # Define audio inputs
+            self.audio_input = dali.fn.external_source(device="cpu", name="audio_input")
+            self.sample_rate_input = dali.fn.external_source(device="cpu", name="sample_rate")
+            
+            # Audio processing operations (GPU-accelerated)
+            audio = self.audio_input.gpu()
+            sample_rate = self.sample_rate_input.gpu()
+            
+            # Normalize
+            normalized = dali.fn.audio_normalize(audio)
+            
+            # Noise reduction
+            denoised = dali.fn.noise_reduction(normalized)
+            
+            # Voice activity detection
+            voice_activity = dali.fn.nonsilent_region(denoised, threshold=0.01)
+            
+            # Set pipeline outputs
+            self.pipeline.set_outputs(denoised, voice_activity)
+            
+        # Build the pipeline
+        self.pipeline.build()
+        
+    def process_batch(self, audio_samples: List[np.ndarray], sample_rates: List[int]) -> Tuple[np.ndarray, np.ndarray]:
+        """Process a batch of audio samples using GPU acceleration"""
+        # Prepare input data for DALI
+        self.pipeline.feed_input("audio_input", audio_samples)
+        self.pipeline.feed_input("sample_rate", np.array(sample_rates))
+        
+        # Run the pipeline
+        outputs = self.pipeline.run()
+        
+        # Get results
+        denoised_audio = outputs[0].as_cpu().as_array()
+        voice_activity = outputs[1].as_cpu().as_array()
+        
+        return denoised_audio, voice_activity 

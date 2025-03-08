@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app
+    depends_on:
+      - triton
+      - riva
+    environment:
+      - TRITON_SERVER_URL=triton:8000
+      - RIVA_SERVER_URL=riva:50051
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  triton:
+    image: nvcr.io/nvidia/tritonserver:23.04-py3
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+      - "8002:8002"
+    volumes:
+      - ./models:/models
+    command: tritonserver --model-repository=/models --http-port=8000 --grpc-port=8001 --metrics-port=8002
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  riva:
+    image: nvcr.io/nvidia/riva/riva-speech:2.10.0
+    ports:
+      - "50051:50051"
+    volumes:
+      - ./riva-config:/opt/riva/config
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  model-downloader:
+    image: nvcr.io/nvidia/tao/tao-toolkit:5.0.0-tf2.11.0
+    volumes:
+      - ./models:/models
+      - ./scripts:/scripts
+    command: python /scripts/download_ngc_models.py 

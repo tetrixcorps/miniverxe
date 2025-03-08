@@ -1,0 +1,39 @@
+offline:
+  # Enable offline mode features
+  enabled: true
+  
+  # Background processing settings
+  background_processing:
+    enabled: true
+    max_workers: 4
+    poll_interval: 0.5  # seconds
+    
+  # Caching settings
+  caching:
+    model_results:
+      enabled: true
+      max_size_mb: 512
+      ttl_seconds: 604800  # 1 week
+      min_confidence: 0.8
+    
+    api_responses:
+      enabled: true
+      max_size_mb: 100
+      ttl_seconds: 86400  # 1 day
+  
+  # Synchronization settings
+  sync:
+    retry_interval: 30.0  # seconds
+    max_retries: 10
+    batch_size: 50
+    
+  # Recovery settings  
+  recovery:
+    check_interval: 300  # seconds
+    stall_threshold: 3600  # seconds
+    
+  # Cleanup settings
+  cleanup:
+    enabled: true
+    interval: 86400  # daily
+    max_age_days: 7 

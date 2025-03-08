@@ -26,33 +26,21 @@ services:
       restart_policy:
         condition: on-failure
 
-  gateway:
-    build:
+  api_gateway:
+    build: 
       context: .
-      dockerfile: Dockerfile.gateway
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
     environment:
-      - CONSUL_HOST=consul
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - LOG_LEVEL=INFO
-      - PROMETHEUS_MULTIPROC_DIR=/tmp
+      - CUDA_VISIBLE_DEVICES=0
+      - MODEL_CACHE_DIR=/app/model_cache
+      - REDIS_URL=redis://redis:6379
+      - PROMETHEUS_URL=http://prometheus:9090
     volumes:
-      - ./logs:/app/logs
-    deploy:
-      mode: replicated
-      replicas: 2
-      resources:
-        limits:
-          cpus: '1'
-          memory: 2G
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
+      - model_cache:/app/model_cache
+    command: uvicorn app.services.api_gateway.app:app --host 0.0.0.0 --port 8000 --reload
     depends_on:
-      - consul
       - redis
       - prometheus
 
@@ -141,12 +129,12 @@ services:
               capabilities: [gpu]
 
   prometheus:
-    image: prom/prometheus
+    image: prom/prometheus:latest
     ports:
       - "9090:9090"
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus-data:/prometheus
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
     deploy:
       resources:
         limits:
@@ -173,21 +161,89 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "8501:8501"
-    environment:
-      - GATEWAY_URL=http://gateway:8000
+      - "80:80"
     depends_on:
-      - gateway
+      - backend
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/holoscan
+      - REDIS_URL=redis://redis:6379/0
+      - JWT_SECRET=${JWT_SECRET}
+      - ENVIRONMENT=production
+      - LOG_LEVEL=info
+    depends_on:
+      - db
+      - redis
+    networks:
+      - app-network
+    restart: unless-stopped
     volumes:
-      - ./frontend:/app
+      - media-storage:/app/media
+      - ./config:/app/config
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/holoscan
+      - REDIS_URL=redis://redis:6379/0
+      - ENVIRONMENT=production
+      - LOG_LEVEL=info
+    depends_on:
+      - db
+      - redis
+    networks:
+      - app-network
+    restart: unless-stopped
+    volumes:
+      - media-storage:/app/media
+      - ./config:/app/config
     deploy:
       resources:
-        limits:
-          cpus: '0.5'
-          memory: 1G
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  db:
+    image: postgres:14-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=holoscan
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  redis:
+    image: redis:alpine
+    volumes:
+      - redis-data:/data
+    networks:
+      - app-network
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
   model-cache:
   redis-data:
-  prometheus-data:
-  grafana-data: 
+  prometheus_data:
+  grafana-data:
+  postgres-data:
+  media-storage: 

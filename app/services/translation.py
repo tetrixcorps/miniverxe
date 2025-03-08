@@ -9,6 +9,7 @@ from app.monitoring.model_monitor import ModelMonitor
 import time
 from app.observability.inference_tracer import InferenceTracer, TraceContext
 from app.services.model_optimizer import ModelOptimizer, OptimizationConfig
+import nemo.collections.nlp as nemo_nlp
 
 logger = logging.getLogger(__name__)
 
@@ -340,3 +341,29 @@ class TranslationService:
                 
         except Exception as e:
             logger.error(f"Model optimization failed: {e}") 
+
+class NeMoTranslationService:
+    def __init__(self):
+        # Load the NeMo translation model from NGC
+        self.model = nemo_nlp.models.machine_translation.MTEncDecModel.from_pretrained(
+            model_name="nmt_en_de_transformer24x6"
+        )
+        self.supported_language_pairs = {
+            ("eng", "deu"), ("deu", "eng"),
+            # Add other supported pairs here
+        }
+        
+        # Optional: Move model to GPU for acceleration
+        if torch.cuda.is_available():
+            self.model = self.model.to("cuda")
+            self.model.eval()
+    
+    async def translate(self, text: str, source_lang: str = "eng", target_lang: str = "deu") -> str:
+        """Translate text using NeMo's neural machine translation models"""
+        if (source_lang, target_lang) not in self.supported_language_pairs:
+            raise ValueError(f"Unsupported language pair: {source_lang} to {target_lang}")
+        
+        # Translate
+        with torch.no_grad():
+            translations = self.model.translate([text], source_lang=source_lang, target_lang=target_lang)
+            return translations[0] 

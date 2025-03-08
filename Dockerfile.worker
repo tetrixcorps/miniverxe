@@ -1,0 +1,52 @@
+# Update worker Dockerfile to support Holoscan
+FROM nvidia/cuda:11.8.0-devel-ubuntu22.04 as base
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=off \
+    PIP_DISABLE_PIP_VERSION_CHECK=on \
+    DEBIAN_FRONTEND=noninteractive
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    ffmpeg \
+    python3.9 \
+    python3.9-dev \
+    python3-pip \
+    wget \
+    git \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Holoscan SDK
+RUN wget https://developer.download.nvidia.com/holoscan/1.0.3/holoscan-sdk_1.0.3_amd64.deb && \
+    apt-get update && \
+    apt-get install -y ./holoscan-sdk_1.0.3_amd64.deb && \
+    rm holoscan-sdk_1.0.3_amd64.deb && \
+    rm -rf /var/lib/apt/lists/*
+
+# Create Python virtual environment and install dependencies
+RUN python3.9 -m pip install --upgrade pip
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install Holoscan Python package
+RUN pip install nvidia-holoscan==1.0.3
+
+# Copy application code
+COPY ./app ./app
+COPY ./config ./config
+
+# Run as non-root user
+RUN adduser --disabled-password --gecos "" appuser
+USER appuser
+
+# Command to run the worker
+CMD ["celery", "-A", "app.worker.celery", "worker", "--loglevel=info", "--concurrency=2", "-Q", "media_processing"] 

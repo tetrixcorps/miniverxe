@@ -1,0 +1,24 @@
+name: "tao_classification"
+platform: "tensorrt_plan"
+max_batch_size: 16
+input [
+  {
+    name: "input_image"
+    data_type: TYPE_FP32
+    format: FORMAT_NCHW
+    dims: [ 3, 224, 224 ]
+  }
+]
+output [
+  {
+    name: "predictions"
+    data_type: TYPE_FP32
+    dims: [ 1000 ]
+  }
+]
+instance_group [
+  {
+    count: 1
+    kind: KIND_GPU
+  }
+] 
