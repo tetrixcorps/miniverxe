@@ -113,3 +113,4 @@ grafana_data/
 # Environment variables
 .env
 .env.* 
+miniverxe/
