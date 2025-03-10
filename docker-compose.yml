@@ -228,7 +228,7 @@ services:
       - app-network
     restart: unless-stopped
 
-  redis:
+  redis-cache:
     image: redis:alpine
     volumes:
       - redis-data:/data

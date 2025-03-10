@@ -12,6 +12,7 @@ import ChatPage from '../pages/ChatPage';
 import TranslationPage from '../pages/TranslationPage';
 import CreatorStudioPage from '../pages/CreatorStudioPage';
 import NotFoundPage from '../pages/NotFoundPage';
+import ConversationPage from '../pages/ConversationPage';
 
 // TikTok Translation Pages
 import TikTokTranslatorPage from '../pages/TikTokTranslatorPage';
@@ -89,6 +90,15 @@ const AppRoutes = () => {
             <Route path="translations/:translationId" element={
               <ProtectedRoute>
                 <TranslatedVideoPlayerPage />
+              </ProtectedRoute>
+            } />
+            
+            {/* Conversation Route */}
+            <Route path="conversation" element={
+              <ProtectedRoute>
+                <Layout>
+                  <ConversationPage />
+                </Layout>
               </ProtectedRoute>
             } />
             

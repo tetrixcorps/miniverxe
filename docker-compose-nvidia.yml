@@ -6,13 +6,11 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./app:/app
-    depends_on:
-      - triton
-      - riva
+      - ./app:/app/app
+      - ./config:/config
     environment:
-      - TRITON_SERVER_URL=triton:8000
-      - RIVA_SERVER_URL=riva:50051
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
     deploy:
       resources:
         reservations:
@@ -21,40 +19,44 @@ services:
               count: 1
               capabilities: [gpu]
 
-  triton:
-    image: nvcr.io/nvidia/tritonserver:23.04-py3
+  frontend:
+    build: ./frontend
     ports:
-      - "8000:8000"
-      - "8001:8001"
-      - "8002:8002"
+      - "3000:3000"
     volumes:
-      - ./models:/models
-    command: tritonserver --model-repository=/models --http-port=8000 --grpc-port=8001 --metrics-port=8002
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+      - ./frontend/src:/app/src
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+    depends_on:
+      - api
 
-  riva:
-    image: nvcr.io/nvidia/riva/riva-speech:2.10.0
+  redis:
+    image: redis:latest
     ports:
-      - "50051:50051"
+      - "6379:6379"
     volumes:
-      - ./riva-config:/opt/riva/config
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+      - redis-data:/data
 
-  model-downloader:
-    image: nvcr.io/nvidia/tao/tao-toolkit:5.0.0-tf2.11.0
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
     volumes:
-      - ./models:/models
-      - ./scripts:/scripts
-    command: python /scripts/download_ngc_models.py 
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+volumes:
+  redis-data:
+  prometheus_data:
+  grafana-data: 

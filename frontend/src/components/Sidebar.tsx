@@ -116,6 +116,21 @@ export const Sidebar: React.FC = () => {
             <NavItem to="/settings" icon={FiSettings} label="Settings" />
           </VStack>
         </Box>
+        
+        <Divider />
+        
+        <Box>
+          <Heading size="xs" textTransform="uppercase" color="gray.500" mb={3} px={4}>
+            AI Conversation
+          </Heading>
+          <NavItem 
+            to="/conversation" 
+            icon={FiMessageCircle} 
+            label="AI Conversation" 
+            badge="New" 
+            badgeColorScheme="green" 
+          />
+        </Box>
       </VStack>
     </Box>
   );

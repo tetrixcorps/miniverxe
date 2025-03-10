@@ -192,7 +192,7 @@ mkl-service==2.4.0
 mkl_fft @ file:///io/mkl313/mkl_fft_1730824109137/work
 mkl_random @ file:///io/mkl313/mkl_random_1730823916628/work
 -e git+https://github.com/tetrixcorps/ml-project.git@cebee9117e5804e18e19cdaeeb69f409b62077f6#egg=ml_project
--e git+https://github.com/tetrixcorps/joromi.git@dcb2248e982b0b2cf5b5d4ba014489512c708048#egg=ml_services_api&subdirectory=services/api_gateway
+-e git+https://github.com/tetrixcorps/joromi.git@c251678a55765b1ba39b0b9b33ff290f64e8972e#egg=ml_services_api&subdirectory=services/api_gateway
 mlflow==2.14.3
 mlflow-skinny==2.20.3
 moviepy==2.1.2
