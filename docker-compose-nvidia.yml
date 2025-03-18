@@ -8,9 +8,14 @@ services:
     volumes:
       - ./app:/app/app
       - ./config:/config
+      - ./models:/models
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=all
+      - NGC_API_KEY=${NGC_API_KEY}
+      - NGC_ORG=${NGC_ORG}
+      - NGC_TEAM=${NGC_TEAM}
+      - TOKENIZER_CACHE_DIR=/models/tokenizers
     deploy:
       resources:
         reservations:
@@ -57,6 +62,7 @@ services:
       - prometheus
 
 volumes:
+  models:
   redis-data:
   prometheus_data:
   grafana-data: 

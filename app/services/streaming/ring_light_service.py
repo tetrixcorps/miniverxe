@@ -378,7 +378,7 @@ class RingLightService:
             # Start application in a separate task
             asyncio.create_task(self._run_holoscan_app(stream_id, app))
             
-            # Update stream status
+        # Update stream status
             stream.status = "live"
             stream.start_time = time.time()
             
@@ -387,7 +387,7 @@ class RingLightService:
             # Broadcast stream start to all participants
             await self._broadcast_to_room(room_id, {
                 "type": "stream_started",
-                "stream_id": stream_id,
+            "stream_id": stream_id,
                 "streamer_id": user_id,
                 "timestamp": time.time()
             })
@@ -642,7 +642,7 @@ class RingLightService:
             return {"status": "success", "action": "pause_stream"}
             
         else:
-            raise ValueError(f"Unknown moderation action: {action}")
+            raise ValueError(f"Unknown moderation action: {action}") 
         
     async def _broadcast_to_room(self, room_id: str, message: Dict[str, Any]):
         """Broadcast a message to all websockets in a room."""

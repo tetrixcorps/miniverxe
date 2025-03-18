@@ -1,40 +1,37 @@
 # Use NVIDIA base image with CUDA support
-FROM nvidia/cuda:12.1.0-runtime-ubuntu22.04
+FROM nvidia/cuda:11.8.0-runtime-ubuntu22.04
 
 # Set working directory
 WORKDIR /app
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3.10 \
+RUN apt-get update && apt-get install -y \
+    python3.9 \
     python3-pip \
-    python3-dev \
-    git \
-    libsndfile1 \
-    ffmpeg \
-    build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install Python dependencies
+# Install Python dependencies
 COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-# For RIVA and other NVIDIA components
-RUN pip3 install --no-cache-dir nvidia-riva-client nvidia-nemo
+# Install NVIDIA Cosmos specific requirements
+RUN pip3 install --no-cache-dir \
+    transformers \
+    torch \
+    nvidia-pyindex \
+    nvidia-cuda-runtime-cu11
 
 # Copy application code
-COPY app/ /app/
-COPY config/ /config/
+COPY . .
+
+# Create model cache directory
+RUN mkdir -p /models/tokenizers
 
 # Set environment variables
 ENV PYTHONPATH=/app
-ENV PYTHONUNBUFFERED=1
-ENV CONFIG_PATH=/config
+ENV TOKENIZER_CACHE_DIR=/models/tokenizers
 
-# Expose the API port
-EXPOSE 8000
-
-# Start the application
+# Run the application
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
 
 FROM python:3.10-slim as test
