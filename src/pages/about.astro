@@ -1,0 +1,126 @@
+---
+import MainLayout from '../components/layout/MainLayout.astro';
+import DynamicTetrix from '../components/shared/DynamicTetrix.astro';
+---
+<MainLayout>
+  <section class="py-16 bg-brand-light text-center">
+    <h1 class="text-4xl font-heading font-bold mb-6 text-brand-red">About <DynamicTetrix size="4xl" variant="hero" /></h1>
+    <p class="max-w-3xl mx-auto text-lg text-brand-dark mb-10">TETRIX is on a mission to democratize AI integration for businesses of all sizes. We believe that artificial intelligence should be accessible, practical, and transformative for every organization.</p>
+    <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+      <div class="bg-white rounded-lg p-8 shadow-lg border border-gray-100">
+        <h2 class="text-xl font-bold mb-4 text-brand-orange">Our Mission</h2>
+        <p class="text-brand-dark">To simplify AI integration and make artificial intelligence accessible to businesses worldwide, enabling them to automate workflows, gain insights, and drive growth through intelligent automation.</p>
+      </div>
+      <div class="bg-white rounded-lg p-8 shadow-lg border border-gray-100">
+        <h2 class="text-xl font-bold mb-4 text-brand-orange">Our Values</h2>
+        <ul class="text-brand-dark list-disc list-inside space-y-2">
+          <li>Innovation in AI Accessibility</li>
+          <li>Customer Success & ROI</li>
+          <li>Security & Trust</li>
+          <li>Continuous Learning</li>
+          <li>Ethical AI Practices</li>
+        </ul>
+      </div>
+      <div class="bg-white rounded-lg p-8 shadow-lg border border-gray-100">
+        <h2 class="text-xl font-bold mb-4 text-brand-orange">Our Team</h2>
+        <p class="text-brand-dark">A diverse group of AI engineers, data scientists, and business experts dedicated to making AI integration simple, secure, and successful for your organization.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Story Section -->
+  <section class="py-16 bg-white">
+    <div class="max-w-4xl mx-auto px-4">
+      <h2 class="text-3xl font-heading font-bold text-center mb-12 text-brand-dark">Our Story</h2>
+      <div class="prose prose-lg mx-auto">
+        <p class="text-lg text-gray-700 mb-6">
+          Founded in 2023, TETRIX was born from a simple observation: while AI technology was advancing rapidly, most businesses struggled to integrate it into their daily operations. The gap between AI capabilities and practical business applications was widening.
+        </p>
+        <p class="text-lg text-gray-700 mb-6">
+          Our founders, veterans in both AI development and enterprise software, recognized that the problem wasn't the technology itself, but the complexity of integration. They set out to create a platform that would bridge this gap.
+        </p>
+        <p class="text-lg text-gray-700">
+          Today, TETRIX has helped hundreds of companies across industries successfully integrate AI into their workflows, from small startups to Fortune 500 enterprises. We've proven that AI integration doesn't have to be complex, expensive, or time-consuming.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="py-16 bg-brand-dark text-white">
+    <div class="max-w-6xl mx-auto px-4">
+      <h2 class="text-3xl font-heading font-bold text-center mb-12">TETRIX by the Numbers</h2>
+      <div class="grid md:grid-cols-4 gap-8">
+        <div class="text-center">
+          <div class="text-4xl font-bold text-brand-yellow mb-2">500+</div>
+          <p class="text-gray-300">Tool Integrations</p>
+        </div>
+        <div class="text-center">
+          <div class="text-4xl font-bold text-brand-yellow mb-2">1000+</div>
+          <p class="text-gray-300">AI Workflows Deployed</p>
+        </div>
+        <div class="text-center">
+          <div class="text-4xl font-bold text-brand-yellow mb-2">50M+</div>
+          <p class="text-gray-300">Automated Actions</p>
+        </div>
+        <div class="text-center">
+          <div class="text-4xl font-bold text-brand-yellow mb-2">99.9%</div>
+          <p class="text-gray-300">Uptime Reliability</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Team Section -->
+  <section class="py-16 bg-brand-light">
+    <div class="max-w-6xl mx-auto px-4">
+      <h2 class="text-3xl font-heading font-bold text-center mb-12 text-brand-dark">Leadership Team</h2>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="bg-white rounded-lg p-6 shadow-lg text-center">
+          <div class="w-24 h-24 bg-gradient-to-br from-brand-red to-brand-orange rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4">
+            SC
+          </div>
+          <h3 class="text-xl font-bold text-brand-dark mb-2">Sarah Chen</h3>
+          <p class="text-brand-orange mb-3">CEO & Co-Founder</p>
+          <p class="text-gray-600 text-sm">Former AI Research Lead at Google, PhD in Machine Learning from Stanford</p>
+        </div>
+        <div class="bg-white rounded-lg p-6 shadow-lg text-center">
+          <div class="w-24 h-24 bg-gradient-to-br from-brand-orange to-brand-yellow rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4">
+            MR
+          </div>
+          <h3 class="text-xl font-bold text-brand-dark mb-2">Marcus Rodriguez</h3>
+          <p class="text-brand-orange mb-3">CTO & Co-Founder</p>
+          <p class="text-gray-600 text-sm">Former Engineering Director at Microsoft, 15+ years in enterprise software</p>
+        </div>
+        <div class="bg-white rounded-lg p-6 shadow-lg text-center">
+          <div class="w-24 h-24 bg-gradient-to-br from-brand-yellow to-brand-red rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4">
+            LP
+          </div>
+          <h3 class="text-xl font-bold text-brand-dark mb-2">Lisa Park</h3>
+          <p class="text-brand-orange mb-3">Head of Customer Success</p>
+          <p class="text-gray-600 text-sm">Former VP of Customer Experience at Salesforce, expert in AI implementation</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-16 bg-white">
+    <div class="max-w-4xl mx-auto text-center px-4">
+      <h2 class="text-3xl font-heading font-bold mb-6 text-brand-dark">
+        Ready to Join the AI Revolution?
+      </h2>
+      <p class="text-xl mb-8 text-gray-600">
+        Let's work together to transform your business with intelligent automation.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="/contact" class="bg-brand-red text-white px-8 py-3 rounded-lg font-semibold hover:bg-brand-dark transition-colors">
+          Get Started Today
+        </a>
+        <a href="/docs" class="border-2 border-brand-orange text-brand-orange px-8 py-3 rounded-lg font-semibold hover:bg-brand-orange hover:text-white transition-colors">
+          View Documentation
+        </a>
+      </div>
+    </div>
+  </section>
+</MainLayout>

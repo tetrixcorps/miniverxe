@@ -1,0 +1,246 @@
+---
+import MainLayout from '../../components/layout/MainLayout.astro';
+import DocSearch from '../../components/features/DocSearch.astro';
+import DocSidebar from '../../components/features/DocSidebar.astro';
+import Button from '../../components/shared/Button.astro';
+import DynamicTetrix from '../../components/shared/DynamicTetrix.astro';
+
+// Sample documentation data
+const docSections = [
+  {
+    title: "Getting Started",
+    url: "/docs/getting-started",
+    children: [
+      { title: "Quick Start Guide", url: "/docs/getting-started/quick-start" },
+      { title: "Installation", url: "/docs/getting-started/installation" },
+      { title: "First Project", url: "/docs/getting-started/first-project" }
+    ]
+  },
+  {
+    title: "Core Concepts",
+    url: "/docs/concepts",
+    children: [
+      { title: "Architecture Overview", url: "/docs/concepts/architecture" },
+      { title: "Data Models", url: "/docs/concepts/data-models" },
+      { title: "Authentication", url: "/docs/concepts/authentication" }
+    ]
+  },
+  {
+    title: "API Reference",
+    url: "/docs/api",
+    children: [
+      { title: "REST API", url: "/docs/api/rest" },
+      { title: "Webhooks", url: "/docs/api/webhooks" },
+      { title: "SDKs", url: "/docs/api/sdks" }
+    ]
+  },
+  {
+    title: "Guides",
+    url: "/docs/guides",
+    children: [
+      { title: "Client Management", url: "/docs/guides/client-management" },
+      { title: "Project Setup", url: "/docs/guides/project-setup" },
+      { title: "Team Collaboration", url: "/docs/guides/team-collaboration" }
+    ]
+  },
+  {
+    title: "Troubleshooting",
+    url: "/docs/troubleshooting",
+    children: [
+      { title: "Common Issues", url: "/docs/troubleshooting/common-issues" },
+      { title: "Error Codes", url: "/docs/troubleshooting/error-codes" },
+      { title: "Performance", url: "/docs/troubleshooting/performance" }
+    ]
+  }
+];
+
+const docItems = [
+  {
+    title: "Quick Start Guide",
+    description: "Get up and running with TETRIX in under 5 minutes",
+    url: "/docs/getting-started/quick-start",
+    category: "Getting Started",
+    tags: ["beginner", "setup", "tutorial"]
+  },
+  {
+    title: "API Authentication",
+    description: "Learn how to authenticate your API requests",
+    url: "/docs/concepts/authentication",
+    category: "Core Concepts",
+    tags: ["api", "security", "authentication"]
+  },
+  {
+    title: "Client Management Guide",
+    description: "Complete guide to managing clients and projects",
+    url: "/docs/guides/client-management",
+    category: "Guides",
+    tags: ["clients", "projects", "management"]
+  },
+  {
+    title: "REST API Reference",
+    description: "Complete API reference with examples",
+    url: "/docs/api/rest",
+    category: "API Reference",
+    tags: ["api", "reference", "endpoints"]
+  },
+  {
+    title: "Common Issues",
+    description: "Solutions to frequently encountered problems",
+    url: "/docs/troubleshooting/common-issues",
+    category: "Troubleshooting",
+    tags: ["troubleshooting", "support", "issues"]
+  }
+];
+
+const quickStartSteps = [
+  {
+    step: 1,
+    title: "Create Your Account",
+    description: "Sign up for a free TETRIX account and verify your email",
+    time: "2 minutes",
+    icon: "👤"
+  },
+  {
+    step: 2,
+    title: "Set Up Your Workspace",
+    description: "Configure your company profile and team settings",
+    time: "3 minutes",
+    icon: "⚙️"
+  },
+  {
+    step: 3,
+    title: "Add Your First Client",
+    description: "Create a client profile and set up your first project",
+    time: "5 minutes",
+    icon: "👥"
+  },
+  {
+    step: 4,
+    title: "Start Collaborating",
+    description: "Invite team members and begin managing projects",
+    time: "2 minutes",
+    icon: "🤝"
+  }
+];
+---
+
+<MainLayout>
+  <div class="flex min-h-screen bg-gray-50">
+    <!-- Sidebar -->
+    <DocSidebar sections={docSections} currentPath={Astro.url.pathname} />
+    
+    <!-- Main Content -->
+    <main class="flex-1">
+      <!-- Header -->
+      <header class="bg-white border-b border-gray-200 px-8 py-6">
+        <div class="max-w-4xl mx-auto">
+          <h1 class="text-3xl font-heading font-bold text-brand-dark mb-4">
+            <DynamicTetrix size="3xl" variant="hero" /> Documentation
+          </h1>
+          <p class="text-lg text-gray-600 mb-6">
+            Everything you need to build, deploy, and scale with TETRIX
+          </p>
+          
+          <!-- Search -->
+          <div class="max-w-2xl">
+            <DocSearch docs={docItems} />
+          </div>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <div class="px-8 py-12">
+        <div class="max-w-4xl mx-auto">
+          <!-- Quick Start Section -->
+          <section class="mb-16">
+            <div class="text-center mb-12">
+              <h2 class="text-2xl font-heading font-bold text-brand-dark mb-4">
+                Get Started in Minutes
+              </h2>
+              <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                Follow these simple steps to set up your first TETRIX workspace and start managing clients like a pro.
+              </p>
+            </div>
+
+            <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              {quickStartSteps.map(step => (
+                <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+                  <div class="flex items-center gap-3 mb-4">
+                    <div class="w-8 h-8 bg-brand-orange text-white rounded-full flex items-center justify-center text-sm font-bold">
+                      {step.step}
+                    </div>
+                    <span class="text-2xl">{step.icon}</span>
+                  </div>
+                  <h3 class="font-semibold text-brand-dark mb-2">{step.title}</h3>
+                  <p class="text-sm text-gray-600 mb-3">{step.description}</p>
+                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-brand-light text-brand-dark">
+                    {step.time}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <div class="text-center mt-8">
+              <Button href="/docs/getting-started/quick-start" variant="primary">
+                Start Your Journey
+              </Button>
+            </div>
+          </section>
+
+          <!-- Popular Topics -->
+          <section class="mb-16">
+            <h2 class="text-2xl font-heading font-bold text-brand-dark mb-8">
+              Popular Topics
+            </h2>
+            
+            <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {docItems.map(doc => (
+                <a href={doc.url} class="group block bg-white rounded-lg p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                  <div class="flex items-start justify-between mb-3">
+                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-brand-light text-brand-dark">
+                      {doc.category}
+                    </span>
+                    <svg class="w-4 h-4 text-gray-400 group-hover:text-brand-orange transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                  </div>
+                  <h3 class="font-semibold text-brand-dark mb-2 group-hover:text-brand-orange transition-colors">
+                    {doc.title}
+                  </h3>
+                  <p class="text-sm text-gray-600 mb-3">{doc.description}</p>
+                  <div class="flex flex-wrap gap-1">
+                    {doc.tags.slice(0, 2).map(tag => (
+                      <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </a>
+              ))}
+            </div>
+          </section>
+
+          <!-- Support Section -->
+          <section class="bg-white rounded-lg p-8 shadow-sm border border-gray-200">
+            <div class="text-center">
+              <h2 class="text-2xl font-heading font-bold text-brand-dark mb-4">
+                Need Help?
+              </h2>
+              <p class="text-lg text-gray-600 mb-6">
+                Can't find what you're looking for? Our support team is here to help.
+              </p>
+              <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button href="/contact" variant="primary">
+                  Contact Support
+                </Button>
+                <Button href="/blog" variant="secondary">
+                  Browse Blog
+                </Button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+</MainLayout> 

@@ -1,0 +1,33 @@
+{
+  "mcpServers": {
+    "context7-mcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@smithery/cli@latest",
+        "run",
+        "@upstash/context7-mcp",
+        "--key",
+        "216a3369-524c-402e-990a-b391914c7578"
+      ]
+    },
+    "puppeteer": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@smithery/cli@latest",
+        "run",
+        "@smithery-ai/puppeteer",
+        "--key",
+        "216a3369-524c-402e-990a-b391914c7578"
+      ]
+    },
+    "digitalocean": {
+      "command": "npx",
+      "args": ["@digitalocean/mcp"],
+      "env": {
+        "DIGITALOCEAN_API_TOKEN": "dop_v1_959c69e49e737c7b89055263668465a316843d8401f688869e3b51dd205cd2bb"
+      }
+    }
+  }
+} 

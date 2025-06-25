@@ -1,11 +1,159 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import MainLayout from '../components/layout/MainLayout.astro';
+import Button from '../components/shared/Button.astro';
+import FeatureCard from '../components/shared/FeatureCard.astro';
+import TestimonialCard from '../components/shared/TestimonialCard.astro';
+import LogoGrid from '../components/shared/LogoGrid.astro';
+import BlogCarousel from '../components/features/BlogCarousel.astro';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const partnerLogos = [
+  { 
+    src: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE5LjU5IDcuMjVIMTcuNTVWMTQuMDFDMTcuNTUgMTUuNzEgMTYuMTYgMTcuMSAxNC40NiAxNy4xQzEyLjc2IDE3LjEgMTEuMzcgMTUuNzEgMTEuMzcgMTQuMDFDMTEuMzcgMTIuMzEgMTIuNzYgMTAuOTIgMTQuNDYgMTAuOTJDMTQuNzkgMTAuOTIgMTUuMTEgMTAuOTggMTUuNDEgMTEuMDlWMTMuODNDMTUuMTEgMTMuNzIgMTQuNzkgMTMuNjYgMTQuNDYgMTMuNjZDMTMuNjYgMTMuNjYgMTMuMDIgMTQuMyAxMy4wMiAxNS4xQzEzLjAyIDE1LjkgMTMuNjYgMTYuNTQgMTQuNDYgMTYuNTRDMTUuMjYgMTYuNTQgMTUuOSAxNS45IDE1LjkgMTUuMVY3LjI1SDExLjM3VjQuNzVIMTkuNTlWNy4yNVoiIGZpbGw9IiMwMDAwMDAiLz4KPC9zdmc+', 
+    alt: 'TikTok' 
+  },
+  { 
+    src: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE4LjQ0IDYuMzRMMTIuNzQgMTIuMDRMMTguNDQgMTcuNzRMMTcuNzQgMTguNDRMMTEuMzQgMTIuMDRMMTcuNzQgNS42NEwxOC40NCA2LjM0WiIgZmlsbD0iIjc2QjkwMCIvPgo8cGF0aCBkPSJNMTIuNzQgMTIuMDRMMTguNDQgNi4zNEwxNy43NCA1LjY0TDEyLjA0IDExLjM0TDEyLjc0IDEyLjA0WiIgZmlsbD0iI0ZGRkZGRiIvPgo8cGF0aCBkPSJNMTIuNzQgMTIuMDRMMTguNDQgMTcuNzRMMTcuNzQgMTguNDRMMTIuMDQgMTIuNzRMMTIuNzQgMTIuMDRaIiBmaWxsPSIjRkZGRkZGIi8+Cjwvc3ZnPg==', 
+    alt: 'NVIDIA' 
+  },
+  { 
+    src: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE2LjUgMTIuNUwxMi41IDE2LjVMMTguNSAxNi41TDE2LjUgMTIuNVoiIGZpbGw9IiM5NUYzQjQiLz4KPHBhdGggZD0iTTEyLjUgMTYuNUwxNi41IDEyLjVMMTIuNSAxMi41TDEyLjUgMTYuNVoiIGZpbGw9IiM5NUYzQjQiLz4KPHBhdGggZD0iTTE2LjUgMTIuNUwxMi41IDEyLjVMMTIuNSAxNi41TDE2LjUgMTIuNVoiIGZpbGw9IiM5NUYzQjQiLz4KPC9zdmc+', 
+    alt: 'Shopify' 
+  },
+];
+const features = [
+  { icon: '🤖', title: 'AI-Powered Automation', description: 'Seamlessly integrate AI into your existing workflows with our no-code platform.' },
+  { icon: '🔗', title: 'Universal Integrations', description: 'Connect with 500+ tools and APIs to create intelligent, automated workflows.' },
+  { icon: '🛡️', title: 'Enterprise Security', description: 'Bank-grade security with SOC 2 compliance and end-to-end encryption.' },
+];
+const testimonials = [
+  { quote: 'TETRIX helped us automate 80% of our manual processes with AI, saving us 20 hours per week.', author: 'Sarah Chen', role: 'CTO, TechFlow Solutions' },
+  { quote: 'The AI integration was seamless. We went from concept to production in just 2 weeks.', author: 'Marcus Rodriguez', role: 'Head of Operations, DataCorp' },
+];
+
+// Sample blog posts for the carousel
+const blogPosts = [
+  {
+    title: "How to Integrate AI into Your Business Workflow: A Complete Guide",
+    excerpt: "Learn the step-by-step process of successfully integrating AI into your existing business processes and workflows.",
+    author: "Dr. Emily Watson",
+    publishDate: "2024-01-15",
+    lastUpdated: "2024-01-20",
+    readTime: 12,
+    category: "AI Integration",
+    slug: "ai-business-workflow-integration",
+    featured: true,
+    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=400&fit=crop",
+    funnelStage: "awareness"
+  },
+  {
+    title: "5 AI Automation Use Cases That Will Transform Your Business",
+    excerpt: "Discover the most impactful AI automation scenarios that leading companies are implementing today.",
+    author: "Alex Thompson",
+    publishDate: "2024-01-10",
+    readTime: 8,
+    category: "AI Use Cases",
+    slug: "ai-automation-use-cases",
+    featured: true,
+    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop",
+    funnelStage: "awareness"
+  },
+  {
+    title: "ROI of AI Integration: Real Numbers from Real Companies",
+    excerpt: "See how companies achieved 300% ROI within 6 months by integrating AI into their workflows.",
+    author: "Michael Chang",
+    publishDate: "2024-01-08",
+    readTime: 10,
+    category: "ROI Analysis",
+    slug: "ai-integration-roi",
+    featured: true,
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop",
+    funnelStage: "consideration"
+  },
+  {
+    title: "Building Your First AI Workflow: A Step-by-Step Tutorial",
+    excerpt: "Follow this comprehensive tutorial to create your first AI-powered workflow with TETRIX.",
+    author: "David Kim",
+    publishDate: "2024-01-05",
+    readTime: 15,
+    category: "Tutorials",
+    slug: "first-ai-workflow-tutorial",
+    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop",
+    funnelStage: "consideration"
+  },
+  {
+    title: "AI Integration Best Practices: Lessons from 100+ Implementations",
+    excerpt: "Key insights and best practices from successful AI integration projects across various industries.",
+    author: "Lisa Park",
+    publishDate: "2024-01-03",
+    readTime: 11,
+    category: "Best Practices",
+    slug: "ai-integration-best-practices",
+    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop",
+    funnelStage: "decision"
+  },
+  {
+    title: "The Future of Work: How AI is Reshaping Business Operations",
+    excerpt: "Explore how AI integration is transforming business operations and what it means for your company.",
+    author: "Dr. Robert Chen",
+    publishDate: "2023-12-28",
+    readTime: 9,
+    category: "Industry Trends",
+    slug: "future-of-work-ai",
+    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop",
+    funnelStage: "decision"
+  }
+];
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<MainLayout>
+  <section class="min-h-[60vh] flex flex-col items-center justify-center text-center bg-gradient-to-br from-brand-red via-brand-orange to-brand-yellow text-white py-20 px-4">
+    <h1 class="text-4xl md:text-6xl font-heading font-extrabold mb-4 drop-shadow-lg">AI Integration, <span class="text-brand-yellow">Simplified</span></h1>
+    <p class="text-lg md:text-2xl max-w-3xl mx-auto mb-8 font-sans">TETRIX helps businesses seamlessly integrate AI into their workflows. Connect 500+ tools, automate processes, and unlock the power of artificial intelligence with our no-code platform.</p>
+    <div class="flex flex-col sm:flex-row gap-4">
+      <Button href="/contact" variant="primary">Start Free Trial</Button>
+      <Button href="#product-demo" variant="secondary">Watch Demo (90s)</Button>
+    </div>
+  </section>
+
+  <section aria-label="Our Partners" class="bg-brand-light py-8">
+    <h2 class="text-center text-xl font-bold mb-4 text-brand-dark">Trusted by leading companies</h2>
+    <LogoGrid logos={partnerLogos} />
+  </section>
+
+  <section aria-label="Features" class="py-16 bg-white">
+    <h2 class="text-center text-3xl font-heading font-bold mb-10 text-brand-dark">Why Choose TETRIX for AI Integration?</h2>
+    <div class="grid gap-8 md:grid-cols-3 max-w-5xl mx-auto">
+      {features.map(f => <FeatureCard icon={f.icon} title={f.title} description={f.description} />)}
+    </div>
+  </section>
+
+  <!-- Blog Carousel Section -->
+  <BlogCarousel posts={blogPosts} />
+
+  <section aria-label="Testimonials" class="py-16 bg-brand-light">
+    <h2 class="text-center text-3xl font-heading font-bold mb-10 text-brand-dark">What Our Clients Say</h2>
+    <div class="grid gap-8 md:grid-cols-2 max-w-4xl mx-auto">
+      {testimonials.map(t => <TestimonialCard quote={t.quote} author={t.author} role={t.role} />)}
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-16 bg-brand-dark text-white">
+    <div class="max-w-4xl mx-auto text-center px-4">
+      <h2 class="text-3xl font-heading font-bold mb-6">
+        Ready to Transform Your Business with AI?
+      </h2>
+      <p class="text-xl mb-8">
+        Join thousands of companies already using TETRIX to integrate AI into their workflows and automate their operations.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <Button href="/contact" variant="primary" size="lg">
+          Start Free Trial
+        </Button>
+        <Button href="/docs" variant="secondary" size="lg">
+          View Documentation
+        </Button>
+      </div>
+    </div>
+  </section>
+</MainLayout> 

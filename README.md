@@ -1,4 +1,78 @@
-# Astro Starter Kit: Basics
+# TETRIX SaaS Website
+
+A modern, professional SaaS marketing site for TETRIX, built with Astro and Tailwind CSS.
+
+## 🚀 Project Overview
+TETRIX is a professional services SaaS platform. This site is designed to:
+- Showcase solutions, services, and company info
+- Provide a bold, modern, and accessible user experience
+- Feature a dynamic, animated logo and a fiery red/burnt orange color scheme
+
+## 🛠️ Tech Stack
+- [Astro](https://astro.build/) (v5+)
+- [Tailwind CSS](https://tailwindcss.com/) (v3)
+- Custom SVG logo with animation
+- Modular, accessible components
+
+## 📁 Project Structure
+```
+tetrix/
+  src/
+    components/
+      layout/      # Layout, Header, Footer, Logo
+      shared/      # Reusable UI components (Button, FeatureCard, etc.)
+    pages/         # All main site pages (index, about, solutions, services, contact)
+    styles/        # Tailwind CSS entry
+  public/          # Static assets (favicon, etc.)
+  tailwind.config.js
+  astro.config.mjs
+  README.md
+```
+
+## 🎨 Color Scheme & Theme
+- **Primary:** Fiery Red (`#FF3B30`)
+- **Accent:** Burnt Orange (`#FF9500`), Yellow (`#FFB300`)
+- **Dark:** Deep Maroon (`#B71C1C`)
+- **Light:** Off-white (`#FFF8E1`)
+- All gradients, buttons, and highlights use this palette for a bold, energetic look.
+
+## ✨ Features
+- **Dynamic SVG Logo:** Animated, geometric, and brand-aligned
+- **Responsive Navigation:** Desktop and mobile menus, with Home button on every page
+- **Componentized UI:** Button, FeatureCard, TestimonialCard, LogoGrid, etc.
+- **Modern Layout:** Hero, partner logos, features, testimonials, and more
+- **Accessible:** Semantic HTML, focus states, color contrast
+- **Customizable:** Easily update theme, content, or add new pages/components
+
+## 🖥️ Local Development
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+2. **Start the dev server:**
+   ```bash
+   npm run dev
+   ```
+3. **Visit:** [http://localhost:4326](http://localhost:4326) (or the port shown in your terminal)
+
+## 🐳 Docker Support
+- A `Dockerfile` is included for containerized builds and deployment.
+
+## 🧩 Customization
+- **Colors:** Edit `tailwind.config.js` under `theme.extend.colors.brand`
+- **Logo:** Update `src/components/layout/Logo.astro` for animation or style tweaks
+- **Navigation:** Edit `src/components/layout/Header.astro`
+- **Content:** All main pages are in `src/pages/`
+
+## 📝 Further Improvements
+- Add dark mode or seasonal logo variants
+- Integrate a CMS or Firestore backend
+- Add more advanced SaaS features (blog, dashboard, etc.)
+- Polish accessibility and SEO further
+
+---
+
+**Built with ❤️ for modern SaaS.**
 
 ```sh
 npm create astro@latest -- --template basics

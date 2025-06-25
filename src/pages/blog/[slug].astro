@@ -1,0 +1,320 @@
+---
+import MainLayout from '../../components/layout/MainLayout.astro';
+import TableOfContents from '../../components/features/TableOfContents.astro';
+import SocialShare from '../../components/features/SocialShare.astro';
+import Button from '../../components/shared/Button.astro';
+
+export async function getStaticPaths() {
+  // In a real app, this would fetch from a CMS or markdown files
+  const posts = [
+    {
+      slug: 'tetrix-transformed-client-management',
+      title: 'How TETRIX Transformed Client Management for Consulting Firms',
+      excerpt: 'Discover how leading consulting firms are using TETRIX to streamline their client management processes and boost productivity by 300%.',
+      author: 'Sarah Johnson',
+      publishDate: '2024-01-15',
+      lastUpdated: '2024-01-20',
+      readTime: 8,
+      category: 'Case Studies',
+      image: 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=1200&h=600&fit=crop',
+      content: `
+        <h1 id="introduction">Introduction</h1>
+        <p>In today's fast-paced business environment, consulting firms face unprecedented challenges in managing client relationships, project delivery, and team collaboration. Traditional tools and processes often fall short, leading to inefficiencies, missed deadlines, and dissatisfied clients.</p>
+        
+        <p>This comprehensive case study explores how three leading consulting firms transformed their operations using TETRIX, achieving remarkable improvements in productivity, client satisfaction, and revenue growth.</p>
+
+        <h2 id="the-challenge">The Challenge</h2>
+        <p>Before implementing TETRIX, our case study participants faced several critical challenges:</p>
+        <ul>
+          <li>Fragmented communication across multiple platforms</li>
+          <li>Manual project tracking and reporting</li>
+          <li>Inconsistent client onboarding processes</li>
+          <li>Limited visibility into project profitability</li>
+          <li>Time-consuming administrative tasks</li>
+        </ul>
+
+        <h2 id="the-solution">The TETRIX Solution</h2>
+        <p>TETRIX provided a unified platform that addressed all these challenges through:</p>
+        
+        <h3 id="unified-communication">Unified Communication Hub</h3>
+        <p>All client communications, project updates, and team collaboration now happen in one centralized location. This eliminates the confusion of managing multiple channels and ensures nothing falls through the cracks.</p>
+
+        <h3 id="automated-workflows">Automated Workflows</h3>
+        <p>From client onboarding to project delivery, TETRIX automates repetitive tasks and ensures consistent processes across all projects and team members.</p>
+
+        <h3 id="real-time-analytics">Real-Time Analytics</h3>
+        <p>Comprehensive dashboards provide instant visibility into project status, team performance, and financial metrics, enabling data-driven decision making.</p>
+
+        <h2 id="results">Measurable Results</h2>
+        <p>The implementation of TETRIX delivered impressive results across all three firms:</p>
+        
+        <h3 id="productivity-gains">Productivity Gains</h3>
+        <ul>
+          <li><strong>300% increase</strong> in project delivery speed</li>
+          <li><strong>50% reduction</strong> in administrative overhead</li>
+          <li><strong>75% faster</strong> client onboarding process</li>
+        </ul>
+
+        <h3 id="client-satisfaction">Client Satisfaction</h3>
+        <p>Client satisfaction scores improved dramatically:</p>
+        <ul>
+          <li>Average client satisfaction: <strong>4.8/5</strong> (up from 3.2/5)</li>
+          <li>Client retention rate: <strong>95%</strong> (up from 78%)</li>
+          <li>Referral rate: <strong>40%</strong> (up from 15%)</li>
+        </ul>
+
+        <h3 id="financial-impact">Financial Impact</h3>
+        <p>The financial benefits were equally impressive:</p>
+        <ul>
+          <li><strong>45% increase</strong> in project profitability</li>
+          <li><strong>60% reduction</strong> in project overruns</li>
+          <li><strong>35% growth</strong> in annual revenue</li>
+        </ul>
+
+        <h2 id="implementation-process">Implementation Process</h2>
+        <p>The successful implementation followed a structured approach:</p>
+
+        <h3 id="phase-1-discovery">Phase 1: Discovery & Planning</h3>
+        <p>Each firm underwent a comprehensive assessment of their current processes, pain points, and goals. This informed the development of a customized implementation plan.</p>
+
+        <h3 id="phase-2-setup">Phase 2: Platform Setup</h3>
+        <p>TETRIX was configured to match each firm's specific workflows, branding, and requirements. Data migration was completed seamlessly with zero downtime.</p>
+
+        <h3 id="phase-3-training">Phase 3: Team Training</h3>
+        <p>Comprehensive training programs ensured all team members were comfortable with the new platform and could maximize its benefits.</p>
+
+        <h3 id="phase-4-optimization">Phase 4: Optimization</h3>
+        <p>Continuous monitoring and feedback led to ongoing refinements and optimizations, ensuring maximum value realization.</p>
+
+        <h2 id="lessons-learned">Key Lessons Learned</h2>
+        <p>Several important lessons emerged from these implementations:</p>
+        <ul>
+          <li><strong>Change management is crucial:</strong> Success depends on buy-in from all team members</li>
+          <li><strong>Customization matters:</strong> One-size-fits-all approaches don't work for complex consulting operations</li>
+          <li><strong>Training is an investment:</strong> Proper training accelerates adoption and ROI</li>
+          <li><strong>Continuous improvement:</strong> Regular reviews and updates ensure ongoing success</li>
+        </ul>
+
+        <h2 id="conclusion">Conclusion</h2>
+        <p>The transformation achieved by these consulting firms demonstrates the power of modern SaaS solutions in addressing real business challenges. TETRIX not only improved operational efficiency but also enhanced client relationships and drove significant financial growth.</p>
+
+        <p>For consulting firms looking to modernize their operations and stay competitive in an evolving market, TETRIX provides a proven path to success.</p>
+      `
+    }
+  ];
+
+  return posts.map(post => ({
+    params: { slug: post.slug },
+    props: { post }
+  }));
+}
+
+const { post } = Astro.props;
+
+// Extract headings for table of contents
+const headingRegex = /<h([1-6]) id="([^"]+)">([^<]+)<\/h[1-6]>/g;
+const headings: Array<{ id: string; text: string; level: number }> = [];
+let match;
+
+while ((match = headingRegex.exec(post.content)) !== null) {
+  headings.push({
+    id: match[2],
+    text: match[3],
+    level: parseInt(match[1])
+  });
+}
+
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+};
+---
+
+<MainLayout>
+  <article class="min-h-screen bg-white">
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-br from-brand-red via-brand-orange to-brand-yellow text-white py-16">
+      <div class="max-w-4xl mx-auto px-4">
+        <div class="flex items-center gap-2 mb-4">
+          <a href="/blog" class="text-brand-yellow hover:text-white transition-colors">← Back to Blog</a>
+        </div>
+        <h1 class="text-3xl md:text-5xl font-heading font-bold mb-6">
+          {post.title}
+        </h1>
+        <div class="flex flex-wrap items-center gap-6 text-sm">
+          <span>By {post.author}</span>
+          <span>•</span>
+          <span>{formatDate(post.publishDate)}</span>
+          {post.lastUpdated && (
+            <>
+              <span>•</span>
+              <span class="bg-brand-yellow text-brand-dark px-2 py-1 rounded">Updated {formatDate(post.lastUpdated)}</span>
+            </>
+          )}
+          <span>•</span>
+          <span class="flex items-center gap-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            {post.readTime} min read
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Social Share Top -->
+    <SocialShare title={post.title} url={Astro.url.href} position="top" />
+
+    <!-- Main Content -->
+    <section class="py-12">
+      <div class="max-w-4xl mx-auto px-4">
+        <div class="flex gap-8">
+          <!-- Table of Contents -->
+          <TableOfContents headings={headings} />
+          
+          <!-- Article Content -->
+          <div class="flex-1 prose prose-lg max-w-none">
+            {post.image && (
+              <img 
+                src={post.image} 
+                alt={post.title}
+                class="w-full h-64 md:h-96 object-cover rounded-lg mb-8"
+              />
+            )}
+            
+            <div set:html={post.content} />
+            
+            <!-- Strategic CTAs Throughout Content -->
+            <div class="my-12 p-6 bg-brand-light rounded-lg border-l-4 border-brand-orange">
+              <h3 class="text-xl font-bold text-brand-dark mb-3">
+                Ready to Transform Your Business?
+              </h3>
+              <p class="text-gray-600 mb-4">
+                See how TETRIX can help your consulting firm achieve similar results.
+              </p>
+              <div class="flex flex-col sm:flex-row gap-3">
+                <Button href="#product-demo" variant="primary" size="sm">
+                  Watch Demo Video
+                </Button>
+                <Button href="/contact" variant="secondary" size="sm">
+                  Schedule Consultation
+                </Button>
+              </div>
+            </div>
+
+            <!-- Related Resources -->
+            <div class="my-12 p-6 bg-gray-50 rounded-lg">
+              <h3 class="text-xl font-bold text-brand-dark mb-4">
+                Related Resources
+              </h3>
+              <ul class="space-y-2">
+                <li>
+                  <a href="/blog/implementing-tetrix-agencies" class="text-brand-orange hover:underline">
+                    Implementing TETRIX: A Step-by-Step Guide for Agencies
+                  </a>
+                </li>
+                <li>
+                  <a href="/blog/tetrix-vs-traditional-tools" class="text-brand-orange hover:underline">
+                    Comparing TETRIX vs. Traditional Project Management Tools
+                  </a>
+                </li>
+                <li>
+                  <a href="/docs/getting-started" class="text-brand-orange hover:underline">
+                    Getting Started with TETRIX Documentation
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Social Share Bottom -->
+    <SocialShare title={post.title} url={Astro.url.href} position="bottom" />
+
+    <!-- Author Bio -->
+    <section class="py-12 bg-gray-50">
+      <div class="max-w-4xl mx-auto px-4">
+        <div class="bg-white rounded-lg p-6 shadow-sm">
+          <div class="flex items-center gap-4">
+            <div class="w-16 h-16 bg-brand-orange rounded-full flex items-center justify-center text-white font-bold text-xl">
+              {post.author.split(' ').map(n => n[0]).join('')}
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-brand-dark">{post.author}</h3>
+              <p class="text-gray-600">Senior Content Strategist at TETRIX</p>
+              <p class="text-sm text-gray-500 mt-1">
+                Expert in SaaS implementation and business transformation strategies.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- High-Intent CTA -->
+    <section class="py-16 bg-brand-dark text-white">
+      <div class="max-w-4xl mx-auto text-center px-4">
+        <h2 class="text-3xl font-heading font-bold mb-6">
+          Ready to See TETRIX in Action?
+        </h2>
+        <p class="text-xl mb-8">
+          Book a personalized demo and discover how TETRIX can transform your consulting business.
+        </p>
+        <Button href="/contact" variant="primary" size="lg">
+          Book Your Demo Today
+        </Button>
+      </div>
+    </section>
+  </article>
+</MainLayout>
+
+<style>
+  .prose h1 {
+    color: #1f2937;
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .prose h2 {
+    color: #1f2937;
+    font-size: 1.875rem;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .prose h3 {
+    color: #374151;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .prose p {
+    color: #4b5563;
+    line-height: 1.75;
+    margin-bottom: 1.25rem;
+  }
+  
+  .prose ul {
+    color: #4b5563;
+    margin-bottom: 1.25rem;
+  }
+  
+  .prose li {
+    margin-bottom: 0.5rem;
+  }
+  
+  .prose strong {
+    color: #1f2937;
+    font-weight: 600;
+  }
+</style> 

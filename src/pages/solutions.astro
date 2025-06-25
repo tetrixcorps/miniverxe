@@ -1,0 +1,114 @@
+---
+import MainLayout from '../components/layout/MainLayout.astro';
+import Button from '../components/shared/Button.astro';
+import DynamicTetrix from '../components/shared/DynamicTetrix.astro';
+---
+<MainLayout>
+  <section class="py-16 bg-brand-light text-center">
+    <h1 class="text-4xl font-heading font-bold mb-6 text-brand-red"><DynamicTetrix size="4xl" variant="hero" /> AI Integration Solutions</h1>
+    <p class="max-w-3xl mx-auto text-lg text-brand-dark mb-10">Transform your business with our comprehensive AI integration platform. Connect, automate, and scale with intelligent workflows.</p>
+    <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+      <div class="bg-white rounded-lg p-8 shadow-lg border border-gray-100">
+        <div class="w-16 h-16 bg-gradient-to-br from-brand-red to-brand-orange rounded-lg flex items-center justify-center mb-6 mx-auto">
+          <span class="text-2xl">🤖</span>
+        </div>
+        <h2 class="text-2xl font-bold mb-4 text-brand-dark">AI Workflow Automation</h2>
+        <p class="text-brand-dark mb-6">Build intelligent workflows that automatically process data, make decisions, and execute actions using AI models and machine learning.</p>
+        <ul class="text-sm text-gray-600 mb-6 space-y-2">
+          <li>• Natural Language Processing</li>
+          <li>• Predictive Analytics</li>
+          <li>• Computer Vision Integration</li>
+          <li>• Custom AI Model Deployment</li>
+        </ul>
+        <Button href="/contact" variant="primary" class="w-full">Get Started</Button>
+      </div>
+      <div class="bg-white rounded-lg p-8 shadow-lg border border-gray-100">
+        <div class="w-16 h-16 bg-gradient-to-br from-brand-orange to-brand-yellow rounded-lg flex items-center justify-center mb-6 mx-auto">
+          <span class="text-2xl">🔗</span>
+        </div>
+        <h2 class="text-2xl font-bold mb-4 text-brand-dark">Universal Integrations</h2>
+        <p class="text-brand-dark mb-6">Connect with 500+ tools and APIs to create seamless data flows between your existing systems and AI-powered workflows.</p>
+        <ul class="text-sm text-gray-600 mb-6 space-y-2">
+          <li>• CRM & Marketing Tools</li>
+          <li>• Cloud Services (AWS, Azure, GCP)</li>
+          <li>• Business Intelligence Platforms</li>
+          <li>• Custom API Development</li>
+        </ul>
+        <Button href="/contact" variant="primary" class="w-full">Explore Integrations</Button>
+      </div>
+      <div class="bg-white rounded-lg p-8 shadow-lg border border-gray-100">
+        <div class="w-16 h-16 bg-gradient-to-br from-brand-yellow to-brand-red rounded-lg flex items-center justify-center mb-6 mx-auto">
+          <span class="text-2xl">📊</span>
+        </div>
+        <h2 class="text-2xl font-bold mb-4 text-brand-dark">AI Analytics & Insights</h2>
+        <p class="text-brand-dark mb-6">Transform your data into actionable insights with AI-powered analytics, real-time monitoring, and predictive reporting.</p>
+        <ul class="text-sm text-gray-600 mb-6 space-y-2">
+          <li>• Real-time Data Processing</li>
+          <li>• Predictive Analytics</li>
+          <li>• Automated Reporting</li>
+          <li>• Custom Dashboards</li>
+        </ul>
+        <Button href="/contact" variant="primary" class="w-full">View Demo</Button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Use Cases Section -->
+  <section class="py-16 bg-white">
+    <div class="max-w-6xl mx-auto px-4">
+      <h2 class="text-3xl font-heading font-bold text-center mb-12 text-brand-dark">Popular AI Integration Use Cases</h2>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-100">
+          <h3 class="text-xl font-bold mb-3 text-brand-dark">Customer Service Automation</h3>
+          <p class="text-gray-600 mb-4">Automate customer inquiries with AI chatbots, sentiment analysis, and intelligent routing.</p>
+          <span class="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Customer Support</span>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-6 border border-green-100">
+          <h3 class="text-xl font-bold mb-3 text-brand-dark">Data Processing & Analysis</h3>
+          <p class="text-gray-600 mb-4">Automate data extraction, cleaning, and analysis with AI-powered tools.</p>
+          <span class="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">Data Science</span>
+        </div>
+        <div class="bg-gradient-to-br from-purple-50 to-violet-50 rounded-lg p-6 border border-purple-100">
+          <h3 class="text-xl font-bold mb-3 text-brand-dark">Marketing Automation</h3>
+          <p class="text-gray-600 mb-4">Personalize campaigns, optimize content, and predict customer behavior with AI.</p>
+          <span class="inline-block bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">Marketing</span>
+        </div>
+        <div class="bg-gradient-to-br from-orange-50 to-red-50 rounded-lg p-6 border border-orange-100">
+          <h3 class="text-xl font-bold mb-3 text-brand-dark">Financial Operations</h3>
+          <p class="text-gray-600 mb-4">Automate invoice processing, fraud detection, and financial reporting.</p>
+          <span class="inline-block bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm">Finance</span>
+        </div>
+        <div class="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-lg p-6 border border-teal-100">
+          <h3 class="text-xl font-bold mb-3 text-brand-dark">HR & Recruitment</h3>
+          <p class="text-gray-600 mb-4">Streamline hiring with AI-powered resume screening and candidate matching.</p>
+          <span class="inline-block bg-teal-100 text-teal-800 px-3 py-1 rounded-full text-sm">Human Resources</span>
+        </div>
+        <div class="bg-gradient-to-br from-pink-50 to-rose-50 rounded-lg p-6 border border-pink-100">
+          <h3 class="text-xl font-bold mb-3 text-brand-dark">Supply Chain Optimization</h3>
+          <p class="text-gray-600 mb-4">Predict demand, optimize inventory, and automate procurement processes.</p>
+          <span class="inline-block bg-pink-100 text-pink-800 px-3 py-1 rounded-full text-sm">Operations</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-16 bg-brand-dark text-white">
+    <div class="max-w-4xl mx-auto text-center px-4">
+      <h2 class="text-3xl font-heading font-bold mb-6">
+        Ready to Integrate AI into Your Workflow?
+      </h2>
+      <p class="text-xl mb-8">
+        Join thousands of companies already using TETRIX to automate their operations with AI.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <Button href="/contact" variant="primary" size="lg">
+          Start Free Trial
+        </Button>
+        <Button href="/docs" variant="secondary" size="lg">
+          View Documentation
+        </Button>
+      </div>
+    </div>
+  </section>
+</MainLayout>
