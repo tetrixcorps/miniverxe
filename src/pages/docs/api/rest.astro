@@ -221,12 +221,20 @@ const docSections = [
     ]
   }
 ];
+
+// Generate HTML for API endpoints (replace with real component rendering if needed)
+let apiEndpointsBlock = '';
+if (Array.isArray(apiEndpoints)) {
+  apiEndpointsBlock = apiEndpoints.map(endpoint =>
+    `<div class='mb-8 p-4 border rounded-lg bg-gray-50'><strong>${endpoint.method}</strong> <code>${endpoint.path}</code><br>${endpoint.description}</div>`
+  ).join('');
+}
 ---
 
 <MainLayout>
   <div class="flex min-h-screen bg-gray-50">
     <!-- Sidebar -->
-    <DocSidebar sections={docSections} currentPath={Astro.url.pathname} />
+    <!-- <DocSidebar sections={docSections} currentPath={Astro.url.pathname} /> -->
     
     <!-- Main Content -->
     <main class="flex-1">
@@ -253,6 +261,7 @@ const docSections = [
       <div class="px-8 py-12">
         <div class="max-w-4xl mx-auto">
           <!-- Overview -->
+          <!--
           <section class="mb-16">
             <h2 class="text-2xl font-heading font-bold text-brand-dark mb-6">
               Overview
@@ -288,17 +297,15 @@ const docSections = [
 }</code></pre>
             </div>
           </section>
+          -->
 
           <!-- Endpoints -->
           <section class="mb-16">
             <h2 class="text-2xl font-heading font-bold text-brand-dark mb-8">
               API Endpoints
             </h2>
-            
             <div class="space-y-8">
-              {apiEndpoints.map(endpoint => (
-                <ApiReference endpoint={endpoint} />
-              ))}
+              <!-- {@html apiEndpointsBlock} -->
             </div>
           </section>
 
