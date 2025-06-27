@@ -33,13 +33,6 @@ function renderSection(section: DocSection, level: number = 0): string {
         href="${section.url}" 
         class="doc-section-link ${isActive ? 'active' : ''} ${level > 0 ? 'pl-' + (level * 4 + 4) : ''}"
       >
-        ${hasChildren ? `
-          <button class="expand-btn ${isExpanded ? 'expanded' : ''}" data-section="${section.url}">
-            <svg class="w-3 h-3 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-          </button>
-        ` : ''}
         <span class="section-title">${section.title}</span>
       </a>
   `;
@@ -61,14 +54,58 @@ function renderSection(section: DocSection, level: number = 0): string {
   <div class="p-4">
     <div class="mb-6">
       <h2 class="text-lg font-semibold text-brand-dark mb-2">Documentation</h2>
-      <p class="text-sm text-gray-600">Find guides, API references, and tutorials</p>
+      <p class="text-sm text-gray-600">Guides, API references, and tutorials</p>
     </div>
-    
     <nav class="doc-navigation">
-      <ul class="doc-section-list space-y-1">
-        {sections.map(section => (
-          <Fragment set:html={renderSection(section)} />
-        ))}
+      <ul class="doc-section-list space-y-6">
+        <!-- Getting Started -->
+        <li>
+          <div class="uppercase text-xs font-bold text-gray-400 mb-2 tracking-wider">Getting Started</div>
+          <ul class="space-y-1">
+            <li><a href="/docs/getting-started" class="doc-section-link">Overview</a></li>
+          </ul>
+        </li>
+        <!-- GenAI Platform -->
+        <li>
+          <div class="uppercase text-xs font-bold text-gray-400 mb-2 tracking-wider">GenAI Platform</div>
+          <ul class="space-y-1">
+            <li><a href="/docs/genai-platform" class="doc-section-link">Overview</a></li>
+          </ul>
+        </li>
+        <!-- GenAI Data Engine -->
+        <li>
+          <div class="uppercase text-xs font-bold text-gray-400 mb-2 tracking-wider">GenAI Data Engine</div>
+          <ul class="space-y-1">
+            <li><a href="/docs/genai-data-engine" class="doc-section-link">Overview</a></li>
+          </ul>
+        </li>
+        <!-- Automotive Data Engine -->
+        <li>
+          <div class="uppercase text-xs font-bold text-gray-400 mb-2 tracking-wider">Automotive Data Engine</div>
+          <ul class="space-y-1">
+            <li><a href="/docs/automotive-data-engine" class="doc-section-link">Overview</a></li>
+          </ul>
+        </li>
+        <!-- API Reference -->
+        <li>
+          <div class="uppercase text-xs font-bold text-gray-400 mb-2 tracking-wider">API Reference</div>
+          <ul class="space-y-1">
+            <li><a href="/docs/api/genai" class="doc-section-link">GenAI API</a></li>
+            <li><a href="/docs/api/automotive" class="doc-section-link">Automotive API</a></li>
+          </ul>
+        </li>
+        <!-- Guides -->
+        <li>
+          <div class="uppercase text-xs font-bold text-gray-400 mb-2 tracking-wider">Guides</div>
+          <ul class="space-y-1">
+            <li><a href="/docs/guides/data-labeling" class="doc-section-link">Data Labeling</a></li>
+            <li><a href="/docs/guides/ml-model-training" class="doc-section-link">ML Model Training</a></li>
+            <li><a href="/docs/guides/diffusion-models" class="doc-section-link">Diffusion Models</a></li>
+            <li><a href="/docs/guides/ai-ecommerce" class="doc-section-link">AI for eCommerce</a></li>
+            <li><a href="/docs/guides/computer-vision" class="doc-section-link">Computer Vision</a></li>
+            <li><a href="/docs/guides/llms" class="doc-section-link">Large Language Models</a></li>
+          </ul>
+        </li>
       </ul>
     </nav>
   </div>
@@ -79,20 +116,16 @@ function renderSection(section: DocSection, level: number = 0): string {
     scrollbar-width: thin;
     scrollbar-color: #cbd5e1 #f1f5f9;
   }
-  
   .doc-sidebar::-webkit-scrollbar {
     width: 4px;
   }
-  
   .doc-sidebar::-webkit-scrollbar-track {
     background: #f1f5f9;
   }
-  
   .doc-sidebar::-webkit-scrollbar-thumb {
     background: #cbd5e1;
     border-radius: 2px;
   }
-  
   .doc-section-link {
     display: flex;
     align-items: center;
@@ -104,48 +137,15 @@ function renderSection(section: DocSection, level: number = 0): string {
     font-size: 0.875rem;
     transition: all 0.2s;
   }
-  
   .doc-section-link:hover {
     background-color: #f3f4f6;
     color: #374151;
   }
-  
   .doc-section-link.active {
     background-color: #fef3c7;
     color: #92400e;
     font-weight: 500;
   }
-  
-  .expand-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 1rem;
-    height: 1rem;
-    border: none;
-    background: none;
-    cursor: pointer;
-    color: inherit;
-    transition: transform 0.2s;
-  }
-  
-  .expand-btn.expanded {
-    transform: rotate(90deg);
-  }
-  
-  .doc-subsection-list {
-    overflow: hidden;
-    transition: max-height 0.3s ease-in-out;
-  }
-  
-  .doc-subsection-list.collapsed {
-    max-height: 0;
-  }
-  
-  .doc-subsection-list.expanded {
-    max-height: 1000px;
-  }
-  
   .section-title {
     flex: 1;
   }
