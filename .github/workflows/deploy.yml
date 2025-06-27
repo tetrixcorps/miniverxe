@@ -1,0 +1,36 @@
+name: Build and Deploy Astro Docs
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Astro site
+        run: npx astro build
+
+      # Optional: Upload build artifact for later deployment or preview
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: astro-dist
+          path: dist
+
+      # Deployment step can be added here for DigitalOcean, Vercel, etc.
+      # - name: Deploy to ...
+      #   run: ... 
