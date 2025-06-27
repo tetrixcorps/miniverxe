@@ -3,34 +3,35 @@ import MainLayout from '../components/layout/MainLayout.astro';
 import Button from '../components/shared/Button.astro';
 import FeatureCard from '../components/shared/FeatureCard.astro';
 import TestimonialCard from '../components/shared/TestimonialCard.astro';
-import LogoGrid from '../components/shared/LogoGrid.astro';
 import BlogCarousel from '../components/features/BlogCarousel.astro';
+import HowItWorks from '../components/shared/HowItWorks.astro';
+import ServicesOverview from '../components/shared/ServicesOverview.astro';
+import ContactForm from '../components/shared/ContactForm.astro';
 
-const partnerLogos = [
-  { 
-    src: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE5LjU5IDcuMjVIMTcuNTVWMTQuMDFDMTcuNTUgMTUuNzEgMTYuMTYgMTcuMSAxNC40NiAxNy4xQzEyLjc2IDE3LjEgMTEuMzcgMTUuNzEgMTEuMzcgMTQuMDFDMTEuMzcgMTIuMzEgMTIuNzYgMTAuOTIgMTQuNDYgMTAuOTJDMTQuNzkgMTAuOTIgMTUuMTEgMTAuOTggMTUuNDEgMTEuMDlWMTMuODNDMTUuMTEgMTMuNzIgMTQuNzkgMTMuNjYgMTQuNDYgMTMuNjZDMTMuNjYgMTMuNjYgMTMuMDIgMTQuMyAxMy4wMiAxNS4xQzEzLjAyIDE1LjkgMTMuNjYgMTYuNTQgMTQuNDYgMTYuNTRDMTUuMjYgMTYuNTQgMTUuOSAxNS45IDE1LjkgMTUuMVY3LjI1SDExLjM3VjQuNzVIMTkuNTlWNy4yNVoiIGZpbGw9IiMwMDAwMDAiLz4KPC9zdmc+', 
-    alt: 'TikTok' 
-  },
-  { 
-    src: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE4LjQ0IDYuMzRMMTIuNzQgMTIuMDRMMTguNDQgMTcuNzRMMTcuNzQgMTguNDRMMTEuMzQgMTIuMDRMMTcuNzQgNS42NEwxOC40NCA2LjM0WiIgZmlsbD0iIjc2QjkwMCIvPgo8cGF0aCBkPSJNMTIuNzQgMTIuMDRMMTguNDQgNi4zNEwxNy43NCA1LjY0TDEyLjA0IDExLjM0TDEyLjc0IDEyLjA0WiIgZmlsbD0iI0ZGRkZGRiIvPgo8cGF0aCBkPSJNMTIuNzQgMTIuMDRMMTguNDQgMTcuNzRMMTcuNzQgMTguNDRMMTIuMDQgMTIuNzRMMTIuNzQgMTIuMDRaIiBmaWxsPSIjRkZGRkZGIi8+Cjwvc3ZnPg==', 
-    alt: 'NVIDIA' 
-  },
-  { 
-    src: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE2LjUgMTIuNUwxMi41IDE2LjVMMTguNSAxNi41TDE2LjUgMTIuNVoiIGZpbGw9IiM5NUYzQjQiLz4KPHBhdGggZD0iTTEyLjUgMTYuNUwxNi41IDEyLjVMMTIuNSAxMi41TDEyLjUgMTYuNVoiIGZpbGw9IiM5NUYzQjQiLz4KPHBhdGggZD0iTTE2LjUgMTIuNUwxMi41IDEyLjVMMTIuNSAxNi41TDE2LjUgMTIuNVoiIGZpbGw9IiM5NUYzQjQiLz4KPC9zdmc+', 
-    alt: 'Shopify' 
-  },
-];
 const features = [
-  { icon: '🤖', title: 'AI-Powered Automation', description: 'Seamlessly integrate AI into your existing workflows with our no-code platform.' },
-  { icon: '🔗', title: 'Universal Integrations', description: 'Connect with 500+ tools and APIs to create intelligent, automated workflows.' },
-  { icon: '🛡️', title: 'Enterprise Security', description: 'Bank-grade security with SOC 2 compliance and end-to-end encryption.' },
+  {
+    icon: 'automation',
+    title: 'AI-Powered Automation',
+    description: 'Seamlessly integrate AI into your existing workflows with our no-code platform.',
+    color: 'brand-red',
+  },
+  {
+    icon: 'integrations',
+    title: 'Universal Integrations',
+    description: 'Connect with 500+ tools and APIs to create intelligent, automated workflows.',
+    color: 'brand-orange',
+  },
+  {
+    icon: 'security',
+    title: 'Enterprise Security',
+    description: 'Bank-grade security with SOC 2 compliance and end-to-end encryption.',
+    color: 'brand-yellow',
+  },
 ];
 const testimonials = [
   { quote: 'TETRIX helped us automate 80% of our manual processes with AI, saving us 20 hours per week.', author: 'Sarah Chen', role: 'CTO, TechFlow Solutions' },
   { quote: 'The AI integration was seamless. We went from concept to production in just 2 weeks.', author: 'Marcus Rodriguez', role: 'Head of Operations, DataCorp' },
 ];
-
-// Sample blog posts for the carousel
 const blogPosts = [
   {
     title: "How to Integrate AI into Your Business Workflow: A Complete Guide",
@@ -107,33 +108,55 @@ const blogPosts = [
 
 <MainLayout>
   <section class="min-h-[60vh] flex flex-col items-center justify-center text-center bg-gradient-to-br from-brand-red via-brand-orange to-brand-yellow text-white py-20 px-4">
-    <h1 class="text-4xl md:text-6xl font-heading font-extrabold mb-4 drop-shadow-lg">AI Integration, <span class="text-brand-yellow">Simplified</span></h1>
-    <p class="text-lg md:text-2xl max-w-3xl mx-auto mb-8 font-sans">TETRIX helps businesses seamlessly integrate AI into their workflows. Connect 500+ tools, automate processes, and unlock the power of artificial intelligence with our no-code platform.</p>
+    <h1 class="text-4xl md:text-6xl font-heading font-extrabold mb-4 drop-shadow-lg">Enterprise AI Workflow Integration & <span class="text-brand-yellow">Data Labeling</span></h1>
+    <p class="text-lg md:text-2xl max-w-3xl mx-auto mb-8 font-sans">TETRIX empowers enterprises to accelerate AI adoption with secure, scalable workflow integration and expert data annotation services.</p>
     <div class="flex flex-col sm:flex-row gap-4">
-      <Button href="/contact" variant="primary">Start Free Trial</Button>
-      <Button href="#product-demo" variant="secondary">Watch Demo (90s)</Button>
+      <Button href="/contact" variant="primary">Request a Demo</Button>
+      <Button href="#contact-form" variant="secondary">Talk to an Expert</Button>
     </div>
-  </section>
-
-  <section aria-label="Our Partners" class="bg-brand-light py-8">
-    <h2 class="text-center text-xl font-bold mb-4 text-brand-dark">Trusted by leading companies</h2>
-    <LogoGrid logos={partnerLogos} />
   </section>
 
   <section aria-label="Features" class="py-16 bg-white">
-    <h2 class="text-center text-3xl font-heading font-bold mb-10 text-brand-dark">Why Choose TETRIX for AI Integration?</h2>
+    <h2 class="text-center text-3xl font-heading font-bold mb-10 text-brand-dark">Why Choose TETRIX?</h2>
     <div class="grid gap-8 md:grid-cols-3 max-w-5xl mx-auto">
-      {features.map(f => <FeatureCard icon={f.icon} title={f.title} description={f.description} />)}
+      {features.map(f => (
+        <div class={`flex flex-col items-center text-center p-8 bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-2xl transition group`}>
+          <div class={`mb-4 flex items-center justify-center w-16 h-16 rounded-full bg-${f.color}/10 group-hover:bg-${f.color}/20`}>
+            {f.icon === 'automation' && (
+              <svg class="w-8 h-8 text-brand-red" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            )}
+            {f.icon === 'integrations' && (
+              <svg class="w-8 h-8 text-brand-orange" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06A1.65 1.65 0 0015 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 008.6 15a1.65 1.65 0 00-1.82-.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0015 8.6a1.65 1.65 0 001.82.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 15z"/></svg>
+            )}
+            {f.icon === 'security' && (
+              <svg class="w-8 h-8 text-brand-yellow" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            )}
+          </div>
+          <h3 class="text-xl font-heading font-bold mb-2">{f.title}</h3>
+          <p class="text-gray-600">{f.description}</p>
+        </div>
+      ))}
     </div>
   </section>
+
+  <HowItWorks />
+  <ServicesOverview />
 
   <!-- Blog Carousel Section -->
   <BlogCarousel posts={blogPosts} />
 
-  <section aria-label="Testimonials" class="py-16 bg-brand-light">
-    <h2 class="text-center text-3xl font-heading font-bold mb-10 text-brand-dark">What Our Clients Say</h2>
-    <div class="grid gap-8 md:grid-cols-2 max-w-4xl mx-auto">
-      {testimonials.map(t => <TestimonialCard quote={t.quote} author={t.author} role={t.role} />)}
+  <section aria-label="Testimonials" class="py-20 bg-gradient-to-br from-brand-light to-white">
+    <h2 class="text-center text-3xl font-heading font-bold mb-12 text-brand-dark">What Our Clients Say</h2>
+    <div class="grid gap-12 md:grid-cols-2 max-w-4xl mx-auto">
+      <div class="relative bg-white rounded-3xl shadow-xl border border-gray-100 p-10 flex flex-col items-center text-center">
+        <svg class="w-12 h-12 text-brand-orange mb-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17a4 4 0 01-4-4V7a4 4 0 014-4h6a4 4 0 014 4v6a4 4 0 01-4 4H9zm0 0v2a2 2 0 002 2h2a2 2 0 002-2v-2"/></svg>
+        <blockquote class="italic text-xl text-gray-800 mb-6 font-serif">TETRIX helped us automate 80% of our manual processes with AI, saving us 20 hours per week.</blockquote>
+        <div class="hidden md:block absolute right-0 top-1/2 h-2/3 w-px bg-gray-200" style="transform: translateY(-50%);"></div>
+      </div>
+      <div class="relative bg-white rounded-3xl shadow-xl border border-gray-100 p-10 flex flex-col items-center text-center">
+        <svg class="w-12 h-12 text-brand-orange mb-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17a4 4 0 01-4-4V7a4 4 0 014-4h6a4 4 0 014 4v6a4 4 0 01-4 4H9zm0 0v2a2 2 0 002 2h2a2 2 0 002-2v-2"/></svg>
+        <blockquote class="italic text-xl text-gray-800 mb-6 font-serif">The AI integration was seamless. We went from concept to production in just 2 weeks.</blockquote>
+      </div>
     </div>
   </section>
 
@@ -144,7 +167,7 @@ const blogPosts = [
         Ready to Transform Your Business with AI?
       </h2>
       <p class="text-xl mb-8">
-        Join thousands of companies already using TETRIX to integrate AI into their workflows and automate their operations.
+        Join leading companies using TETRIX to integrate AI into their workflows and automate their operations.
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
         <Button href="/contact" variant="primary" size="lg">
@@ -155,5 +178,9 @@ const blogPosts = [
         </Button>
       </div>
     </div>
+  </section>
+
+  <section id="contact-form" class="py-16 bg-white">
+    <ContactForm />
   </section>
 </MainLayout> 
