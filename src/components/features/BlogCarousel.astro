@@ -40,20 +40,32 @@ const decisionPosts = posts.filter(post => post.funnelStage === 'decision');
 
     <!-- Funnel Stage Navigation -->
     <div class="flex justify-center mb-8">
-      <div class="flex space-x-1 bg-white rounded-lg p-1 shadow-md">
-        <button 
+      <div role="tablist" aria-label="Blog post categories" class="flex space-x-1 bg-white rounded-lg p-1 shadow-md">
+        <button
+          role="tab"
+          aria-selected="true"
+          aria-controls="awareness-panel"
+          id="awareness-tab"
           class="funnel-tab px-4 py-2 rounded-md font-medium transition-colors active" 
           data-stage="awareness"
         >
           Awareness
         </button>
-        <button 
+        <button
+          role="tab"
+          aria-selected="false"
+          aria-controls="consideration-panel"
+          id="consideration-tab"
           class="funnel-tab px-4 py-2 rounded-md font-medium transition-colors" 
           data-stage="consideration"
         >
           Consideration
         </button>
-        <button 
+        <button
+          role="tab"
+          aria-selected="false"
+          aria-controls="decision-panel"
+          id="decision-tab"
           class="funnel-tab px-4 py-2 rounded-md font-medium transition-colors" 
           data-stage="decision"
         >
@@ -65,7 +77,7 @@ const decisionPosts = posts.filter(post => post.funnelStage === 'decision');
     <!-- Carousel Container -->
     <div class="relative">
       <!-- Awareness Posts -->
-      <div class="funnel-content active" data-stage="awareness">
+      <div role="tabpanel" id="awareness-panel" aria-labelledby="awareness-tab" class="funnel-content active" data-stage="awareness">
         <div class="grid gap-8 md:grid-cols-3">
           {awarenessPosts.slice(0, 3).map(post => (
             <BlogCard {...post} />
@@ -74,7 +86,7 @@ const decisionPosts = posts.filter(post => post.funnelStage === 'decision');
       </div>
 
       <!-- Consideration Posts -->
-      <div class="funnel-content hidden" data-stage="consideration">
+      <div role="tabpanel" id="consideration-panel" aria-labelledby="consideration-tab" class="funnel-content hidden" data-stage="consideration">
         <div class="grid gap-8 md:grid-cols-3">
           {considerationPosts.slice(0, 3).map(post => (
             <BlogCard {...post} />
@@ -83,7 +95,7 @@ const decisionPosts = posts.filter(post => post.funnelStage === 'decision');
       </div>
 
       <!-- Decision Posts -->
-      <div class="funnel-content hidden" data-stage="decision">
+      <div role="tabpanel" id="decision-panel" aria-labelledby="decision-tab" class="funnel-content hidden" data-stage="decision">
         <div class="grid gap-8 md:grid-cols-3">
           {decisionPosts.slice(0, 3).map(post => (
             <BlogCard {...post} />
@@ -140,8 +152,12 @@ const decisionPosts = posts.filter(post => post.funnelStage === 'decision');
         const stage = tab.getAttribute('data-stage');
         
         // Update active tab
-        tabs.forEach(t => t.classList.remove('active'));
+        tabs.forEach(t => {
+          t.classList.remove('active');
+          t.setAttribute('aria-selected', 'false');
+        });
         tab.classList.add('active');
+        tab.setAttribute('aria-selected', 'true');
         
         // Update active content
         contents.forEach(content => {
@@ -153,6 +169,28 @@ const decisionPosts = posts.filter(post => post.funnelStage === 'decision');
             content.classList.remove('active');
           }
         });
+      });
+    });
+
+    // Optional: Add keyboard navigation for tabs
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('keydown', (e) => {
+        let newIndex = index;
+        if (e.key === 'ArrowRight') {
+          newIndex = (index + 1) % tabs.length;
+        } else if (e.key === 'ArrowLeft') {
+          newIndex = (index - 1 + tabs.length) % tabs.length;
+        } else if (e.key === 'Home') {
+          newIndex = 0;
+        } else if (e.key === 'End') {
+          newIndex = tabs.length - 1;
+        }
+
+        if (newIndex !== index) {
+          tabs[newIndex].focus();
+          // Optional: Automatically activate on arrow key navigation
+          // tabs[newIndex].click();
+        }
       });
     });
   });

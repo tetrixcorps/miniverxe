@@ -156,9 +156,30 @@ const categories = [...new Set(blogPosts.map(post => post.category))];
 
 <style>
   .category-filter.active {
-    background-color: #f97316;
+    background-color: #f97316; /* brand-orange */
     color: white;
   }
+
+  .blog-post-item {
+    /* Styles for when item is visible and animating */
+    /* display: block; by default for div, but grid handles it */
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  .blog-post-item.hidden-item {
+    display: none;
+    /* No animation needed when hidden, or a fadeOut animation could be added */
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  /* Optional: fadeOut animation if desired when hiding */
+  /* @keyframes fadeOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(20px); }
+  } */
 </style>
 
 <script>
@@ -179,20 +200,17 @@ const categories = [...new Set(blogPosts.map(post => post.category))];
           const itemCategory = item.getAttribute('data-category');
           
           if (selectedCategory === 'all' || itemCategory === selectedCategory) {
-            item.style.display = 'block';
-            item.style.animation = 'fadeIn 0.5s ease-in-out';
+            item.classList.remove('hidden-item');
+            // Ensure animation restarts if it was previously hidden and now shown
+            // Cloning and replacing the node is a robust way to restart animation
+            // item.style.animation = 'none'; // Reset animation
+            // item.offsetHeight; // Trigger reflow
+            // item.style.animation = ''; // Re-apply animation from CSS
           } else {
-            item.style.display = 'none';
+            item.classList.add('hidden-item');
           }
         });
       });
     });
   });
 </script>
-
-<style>
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-</style> 

@@ -17,7 +17,7 @@ const { docs } = Astro.props;
 <div class="doc-search-container">
   <div class="relative">
     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-      <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg aria-hidden="true" class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
       </svg>
     </div>
@@ -27,34 +27,45 @@ const { docs } = Astro.props;
       class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-brand-orange focus:border-brand-orange"
       placeholder="Search documentation..."
       autocomplete="off"
+      role="combobox"
+      aria-expanded="false"
+      aria-controls="search-results-list"
+      aria-haspopup="listbox"
     />
   </div>
   
   <!-- Search Results -->
   <div id="search-results" class="hidden mt-4 bg-white rounded-lg shadow-lg border border-gray-200 max-h-96 overflow-y-auto">
-    <div id="search-results-content" class="p-4">
+    <ul id="search-results-list" role="listbox" class="p-4">
       <!-- Results will be populated by JavaScript -->
-    </div>
+    </ul>
   </div>
 </div>
 
 <script define:vars={{ docs }}>
   document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('doc-search');
-    const searchResults = document.getElementById('search-results');
-    const searchResultsContent = document.getElementById('search-results-content');
+    const searchResultsContainer = document.getElementById('search-results');
+    const searchResultsList = document.getElementById('search-results-list'); // Changed from searchResultsContent
     
-    if (!searchInput || !searchResults || !searchResultsContent) return;
+    if (!searchInput || !searchResultsContainer || !searchResultsList) return;
+
+    // Add ARIA live region attributes
+    searchResultsContainer.setAttribute('aria-live', 'polite');
+    // searchResultsList.setAttribute('aria-atomic', 'true'); // Potentially noisy, test
     
     let searchTimeout;
+    let activeResultIndex = -1;
     
     searchInput.addEventListener('input', (e) => {
       const query = e.target.value.trim().toLowerCase();
       
       clearTimeout(searchTimeout);
       
+      activeResultIndex = -1; // Reset active result index
       if (query.length < 2) {
-        searchResults.classList.add('hidden');
+        searchResultsContainer.classList.add('hidden');
+        searchInput.setAttribute('aria-expanded', 'false');
         return;
       }
       
@@ -67,67 +78,198 @@ const { docs } = Astro.props;
         displaySearchResults(results, query);
       }, 300);
     });
-    
-    function displaySearchResults(results, query) {
-      if (results.length === 0) {
-        searchResultsContent.innerHTML = `
-          <div class="text-center py-8 text-gray-500">
-            <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47-.881-6.08-2.33"></path>
-            </svg>
-            <p>No results found for "${query}"</p>
-            <p class="text-sm mt-2">Try different keywords or browse the documentation</p>
-          </div>
-        `;
-      } else {
-        const resultsHtml = results.map(doc => `
-          <a href="${doc.url}" class="block p-3 hover:bg-gray-50 rounded-lg transition-colors">
-            <div class="flex items-start justify-between">
-              <div class="flex-1">
-                <h4 class="text-sm font-medium text-brand-dark mb-1">${highlightText(doc.title, query)}</h4>
-                <p class="text-xs text-gray-600 mb-2">${highlightText(doc.description, query)}</p>
-                <div class="flex items-center gap-2">
-                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-brand-light text-brand-dark">
-                    ${doc.category}
-                  </span>
-                  ${doc.tags.slice(0, 2).map(tag => `
-                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
-                      ${tag}
-                    </span>
-                  `).join('')}
-                </div>
-              </div>
-              <svg class="w-4 h-4 text-gray-400 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            </div>
-          </a>
-        `).join('');
-        
-        searchResultsContent.innerHTML = resultsHtml;
-      }
-      
-      searchResults.classList.remove('hidden');
-    }
-    
+
     function highlightText(text, query) {
-      if (!query) return text;
-      const regex = new RegExp(`(${query})`, 'gi');
-      return text.replace(regex, '<mark class="bg-brand-yellow px-1 rounded">$1</mark>');
+      if (!query || !text) return [document.createTextNode(text || '')];
+      const parts = text.split(new RegExp(`(${query})`, 'gi'));
+      return parts.map((part, index) => {
+        if (part.toLowerCase() === query.toLowerCase()) {
+          const mark = document.createElement('mark');
+          mark.className = 'bg-brand-yellow px-1 rounded';
+          mark.textContent = part;
+          return mark;
+        }
+        return document.createTextNode(part);
+      });
+    }
+
+    function displaySearchResults(results, query) {
+      searchResultsList.innerHTML = ''; // Clear previous results
+      activeResultIndex = -1; // Reset active index
+
+      if (results.length === 0) {
+        const noResultsLi = document.createElement('li');
+        noResultsLi.className = 'text-center py-8 text-gray-500';
+        
+        const svgIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svgIcon.setAttribute('class', 'mx-auto h-12 w-12 text-gray-400 mb-4');
+        svgIcon.setAttribute('fill', 'none');
+        svgIcon.setAttribute('stroke', 'currentColor');
+        svgIcon.setAttribute('viewBox', '0 0 24 24');
+        svgIcon.setAttribute('aria-hidden', 'true');
+        svgIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47-.881-6.08-2.33"></path>`;
+        noResultsLi.appendChild(svgIcon);
+
+        const p1 = document.createElement('p');
+        p1.textContent = `No results found for "${query}"`;
+        noResultsLi.appendChild(p1);
+
+        const p2 = document.createElement('p');
+        p2.className = 'text-sm mt-2';
+        p2.textContent = 'Try different keywords or browse the documentation';
+        noResultsLi.appendChild(p2);
+
+        searchResultsList.appendChild(noResultsLi);
+        searchInput.removeAttribute('aria-activedescendant');
+      } else {
+        results.forEach((doc, index) => {
+          const listItem = document.createElement('li');
+          listItem.setAttribute('role', 'option');
+          listItem.id = `search-result-${index}`;
+          listItem.className = 'search-result-item'; // For styling active state
+
+          const link = document.createElement('a');
+          link.href = doc.url;
+          link.className = 'block p-3 hover:bg-gray-50 rounded-lg transition-colors';
+
+          const containerDiv = document.createElement('div');
+          containerDiv.className = 'flex items-start justify-between';
+
+          const flexDiv = document.createElement('div');
+          flexDiv.className = 'flex-1';
+
+          const titleH4 = document.createElement('h4');
+          titleH4.className = 'text-sm font-medium text-brand-dark mb-1';
+          highlightText(doc.title, query).forEach(node => titleH4.appendChild(node));
+          flexDiv.appendChild(titleH4);
+
+          const descriptionP = document.createElement('p');
+          descriptionP.className = 'text-xs text-gray-600 mb-2';
+          highlightText(doc.description, query).forEach(node => descriptionP.appendChild(node));
+          flexDiv.appendChild(descriptionP);
+
+          const tagsDiv = document.createElement('div');
+          tagsDiv.className = 'flex items-center gap-2';
+
+          const categorySpan = document.createElement('span');
+          categorySpan.className = 'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-brand-light text-brand-dark';
+          categorySpan.textContent = doc.category;
+          tagsDiv.appendChild(categorySpan);
+
+          doc.tags.slice(0, 2).forEach(tagText => {
+            const tagSpan = document.createElement('span');
+            tagSpan.className = 'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700';
+            tagSpan.textContent = tagText;
+            tagsDiv.appendChild(tagSpan);
+          });
+          flexDiv.appendChild(tagsDiv);
+          containerDiv.appendChild(flexDiv);
+
+          const arrowSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+          arrowSvg.setAttribute('class', 'w-4 h-4 text-gray-400 ml-2');
+          arrowSvg.setAttribute('fill', 'none');
+          arrowSvg.setAttribute('stroke', 'currentColor');
+          arrowSvg.setAttribute('viewBox', '0 0 24 24');
+          arrowSvg.setAttribute('aria-hidden', 'true');
+          arrowSvg.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>`;
+          containerDiv.appendChild(arrowSvg);
+
+          link.appendChild(containerDiv);
+          listItem.appendChild(link)
+          searchResultsList.appendChild(listItem);
+        });
+      }
+      if (results.length > 0) {
+        searchResultsContainer.classList.remove('hidden');
+        searchInput.setAttribute('aria-expanded', 'true');
+      } else {
+         searchResultsContainer.classList.remove('hidden'); // Keep visible for "no results"
+         searchInput.setAttribute('aria-expanded', 'true'); // Still expanded to show "no results"
+      }
     }
     
+    function updateActiveResult(newIndex) {
+      const items = searchResultsList.querySelectorAll('li[role="option"]');
+      if (activeResultIndex >= 0 && items[activeResultIndex]) {
+        items[activeResultIndex].classList.remove('bg-gray-100'); // Style for active
+        items[activeResultIndex].setAttribute('aria-selected', 'false');
+      }
+
+      activeResultIndex = newIndex;
+
+      if (activeResultIndex >= 0 && items[activeResultIndex]) {
+        items[activeResultIndex].classList.add('bg-gray-100');
+        items[activeResultIndex].setAttribute('aria-selected', 'true');
+        searchInput.setAttribute('aria-activedescendant', items[activeResultIndex].id);
+        items[activeResultIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } else {
+        searchInput.removeAttribute('aria-activedescendant');
+      }
+    }
+
     // Close search results when clicking outside
     document.addEventListener('click', (e) => {
-      if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-        searchResults.classList.add('hidden');
+      if (!searchInput.contains(e.target) && !searchResultsContainer.contains(e.target)) {
+        searchResultsContainer.classList.add('hidden');
+        searchInput.setAttribute('aria-expanded', 'false');
+        searchInput.removeAttribute('aria-activedescendant');
+        activeResultIndex = -1;
       }
     });
     
     // Keyboard navigation
     searchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        searchResults.classList.add('hidden');
-        searchInput.blur();
+      const items = searchResultsList.querySelectorAll('li[role="option"]');
+      if (searchResultsContainer.classList.contains('hidden') && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+        // If results are hidden and user presses arrow down/up, show them if there's query
+        if (searchInput.value.trim().length >= 2) {
+             searchInput.dispatchEvent(new Event('input', { bubbles:true })); // Re-trigger search
+        }
+        return;
+      }
+
+
+      switch (e.key) {
+        case 'Escape':
+          searchResultsContainer.classList.add('hidden');
+          searchInput.setAttribute('aria-expanded', 'false');
+          searchInput.removeAttribute('aria-activedescendant');
+          activeResultIndex = -1;
+          // searchInput.blur(); // Optional: blur input on escape
+          break;
+        case 'ArrowDown':
+          e.preventDefault(); // Prevent cursor from moving in input
+          if (items.length > 0) {
+            updateActiveResult((activeResultIndex + 1) % items.length);
+          }
+          break;
+        case 'ArrowUp':
+          e.preventDefault(); // Prevent cursor from moving in input
+          if (items.length > 0) {
+            updateActiveResult((activeResultIndex - 1 + items.length) % items.length);
+          }
+          break;
+        case 'Enter':
+          if (activeResultIndex >= 0 && items[activeResultIndex]) {
+            e.preventDefault(); // Prevent form submission if it's in a form
+            const link = items[activeResultIndex].querySelector('a');
+            if (link) {
+              link.click();
+            }
+          }
+          break;
+        case 'Home':
+           if (items.length > 0) {
+            e.preventDefault();
+            updateActiveResult(0);
+           }
+          break;
+        case 'End':
+          if (items.length > 0) {
+            e.preventDefault();
+            updateActiveResult(items.length - 1);
+          }
+          break;
       }
     });
   });

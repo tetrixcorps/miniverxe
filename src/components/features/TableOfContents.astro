@@ -10,18 +10,18 @@ export interface Props {
 const { headings } = Astro.props;
 ---
 
-<nav class="toc-container hidden lg:block sticky top-24 max-w-xs">
+<nav class="toc-container hidden lg:block sticky top-24 max-w-xs" aria-label="Table of Contents">
   <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-brand-orange">
-    <h3 class="text-lg font-semibold text-brand-dark mb-4">Table of Contents</h3>
-    <ul class="space-y-2">
+    <h3 class="text-lg font-semibold text-brand-dark mb-4" id="toc-heading">Table of Contents</h3>
+    <ul class="space-y-2" aria-labelledby="toc-heading">
       {headings.map(heading => (
         <li>
           <a 
             href={`#${heading.id}`}
-            class={`block py-1 px-2 rounded text-sm transition-colors hover:bg-brand-light hover:text-brand-dark ${
+            class={`toc-link block py-1 px-2 rounded text-sm transition-colors hover:bg-brand-light hover:text-brand-dark ${
               heading.level === 1 ? 'font-semibold text-brand-dark' : 
               heading.level === 2 ? 'font-medium text-gray-700 ml-2' : 
-              'text-gray-600 ml-4'
+              'text-gray-600 ml-4' // Base styling, active state will override
             }`}
             data-heading-id={heading.id}
           >
@@ -34,6 +34,15 @@ const { headings } = Astro.props;
 </nav>
 
 <style>
+  .toc-link.active {
+    background-color: #f97316; /* brand-orange */
+    color: white;
+    /* Ensure active styles override hover styles if necessary */
+  }
+  .toc-link.active:hover {
+    background-color: #ea580c; /* slightly darker orange for hover on active */
+    color: white;
+  }
   .toc-container {
     max-height: calc(100vh - 8rem);
     overflow-y: auto;
@@ -72,14 +81,14 @@ const { headings } = Astro.props;
         if (entry.isIntersecting) {
           // Remove active class from all links
           tocLinks.forEach(link => {
-            link.classList.remove('bg-brand-orange', 'text-white');
-            link.classList.add('text-gray-600');
+            link.classList.remove('active');
+            // Base styling is now primarily handled by Tailwind classes in the template
+            // Ensure specificity or remove conflicting base styles if .active doesn't override sufficiently
           });
           
           // Add active class to current link
           if (tocLink) {
-            tocLink.classList.add('bg-brand-orange', 'text-white');
-            tocLink.classList.remove('text-gray-600');
+            tocLink.classList.add('active');
           }
         }
       });

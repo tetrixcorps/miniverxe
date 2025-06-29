@@ -22,25 +22,46 @@ function isActiveSection(section: DocSection, currentPath: string): boolean {
   return false;
 }
 
-function renderSection(section: DocSection, level: number = 0): string {
+function renderSection(section: DocSection, level: number = 0, parentId: string = 'doc'): string {
   const isActive = isActiveSection(section, currentPath);
   const hasChildren = section.children && section.children.length > 0;
-  const isExpanded = isActive || section.isExpanded;
+  const isInitiallyExpanded = isActive || section.isExpanded;
+  const sectionId = `${parentId}-${section.title.toLowerCase().replace(/\s+/g, '-')}`;
+  const subsectionListId = `${sectionId}-children`;
+
+  let linkClass = `doc-section-link flex items-center justify-between ${isActive ? 'active' : ''} ${level > 0 ? 'pl-' + (level * 4 + 4) : 'pl-4'}`;
   
   let html = `
-    <li class="doc-section-item" data-url="${section.url}">
+    <li class="doc-section-item" data-url="${section.url}">`;
+
+  if (hasChildren) {
+    html += `
+      <button
+        type="button"
+        aria-expanded="${isInitiallyExpanded ? 'true' : 'false'}"
+        aria-controls="${subsectionListId}"
+        class="expand-btn ${linkClass} w-full pr-2"
+        data-section-id="${sectionId}"
+      >
+        <span class="section-title">${section.title}</span>
+        <svg class="w-4 h-4 transform transition-transform duration-200 ${isInitiallyExpanded ? 'rotate-90' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      </button>
+    `;
+  } else {
+    html += `
       <a 
         href="${section.url}" 
-        class="doc-section-link ${isActive ? 'active' : ''} ${level > 0 ? 'pl-' + (level * 4 + 4) : ''}"
+        class="${linkClass} pr-2"
       >
         <span class="section-title">${section.title}</span>
       </a>
-  `;
+    `;
+  }
   
   if (hasChildren) {
     html += `
-      <ul class="doc-subsection-list ${isExpanded ? 'expanded' : 'collapsed'}">
-        ${section.children.map(child => renderSection(child, level + 1)).join('')}
+      <ul id="${subsectionListId}" class="doc-subsection-list ${isInitiallyExpanded ? 'expanded' : 'collapsed'}">
+        ${section.children.map(child => renderSection(child, level + 1, sectionId)).join('')}
       </ul>
     `;
   }
@@ -48,6 +69,64 @@ function renderSection(section: DocSection, level: number = 0): string {
   html += '</li>';
   return html;
 }
+
+const staticSections = [
+  { title: "Getting Started", baseHref: "/docs/getting-started", children: [{ title: "Overview", url: "/docs/getting-started" }] },
+  { title: "GenAI Platform", baseHref: "/docs/genai-platform", children: [{ title: "Overview", url: "/docs/genai-platform" }] },
+  { title: "GenAI Data Engine", baseHref: "/docs/genai-data-engine", children: [{ title: "Overview", url: "/docs/genai-data-engine" }] },
+  { title: "Automotive Data Engine", baseHref: "/docs/automotive-data-engine", children: [{ title: "Overview", url: "/docs/automotive-data-engine" }] },
+  {
+    title: "API Reference",
+    baseHref: "/docs/api",
+    children: [
+      { title: "GenAI API", url: "/docs/api/genai" },
+      { title: "Automotive API", url: "/docs/api/automotive" },
+      // This is where the dynamic sections from `Astro.props.sections` would ideally be merged or displayed
+      // For now, if `Astro.props.sections` has an "API Reference" parent, it will be used.
+    ]
+  },
+  {
+    title: "Guides",
+    baseHref: "/docs/guides",
+    children: [
+      { title: "Data Labeling", url: "/docs/guides/data-labeling" },
+      { title: "ML Model Training", url: "/docs/guides/ml-model-training" },
+      { title: "Diffusion Models", url: "/docs/guides/diffusion-models" },
+      { title: "AI for eCommerce", url: "/docs/guides/ai-ecommerce" },
+      { title: "Computer Vision", url: "/docs/guides/computer-vision" },
+      { title: "Large Language Models", url: "/docs/guides/llms" },
+    ]
+  },
+];
+
+// Merge sections prop with static sections if titles match, or append
+// This is a simplified merge strategy. A more robust one might be needed.
+let combinedSections = [...staticSections];
+if (sections && sections.length > 0) {
+  sections.forEach(dynamicSection => {
+    const existingStaticSectionIndex = combinedSections.findIndex(ss => ss.title === dynamicSection.title);
+    if (existingStaticSectionIndex !== -1) {
+      // If a static section with the same title exists, merge children (simple concat for now)
+      // This assumes dynamicSection.children are compatible with renderSection
+      // and that the dynamicSection itself doesn't need to be rendered as a top-level item
+      // but its children are part of the existing static section.
+      // This part might need more sophisticated logic based on actual use case.
+      if (dynamicSection.children) {
+         // A more robust merge would avoid duplicates and respect `isActive` or `isExpanded` from dynamic data
+        combinedSections[existingStaticSectionIndex].children = [
+          ...(combinedSections[existingStaticSectionIndex].children || []),
+          ...dynamicSection.children
+        ];
+        // Ensure the parent URL is set correctly if it wasn't, or if the dynamic section provides a better one
+        combinedSections[existingStaticSectionIndex].url = dynamicSection.url || combinedSections[existingStaticSectionIndex].baseHref;
+      }
+    } else {
+      // If no static section matches, add the dynamic section as a new top-level item
+      // combinedSections.push(dynamicSection); // This line was problematic, use renderSection directly for Astro.props.sections
+    }
+  });
+}
+
 ---
 
 <aside class="doc-sidebar w-64 bg-white border-r border-gray-200 h-screen overflow-y-auto sticky top-0">
@@ -56,62 +135,68 @@ function renderSection(section: DocSection, level: number = 0): string {
       <h2 class="text-lg font-semibold text-brand-dark mb-2">Documentation</h2>
       <p class="text-sm text-gray-600">Guides, API references, and tutorials</p>
     </div>
-    <nav class="doc-navigation">
-      <ul class="doc-section-list space-y-6">
-        <!-- Getting Started -->
-        <li>
-          <div class="uppercase text-xs font-bold text-gray-400 mb-2 tracking-wider">Getting Started</div>
-          <ul class="space-y-1">
-            <li><a href="/docs/getting-started" class="doc-section-link">Overview</a></li>
-          </ul>
-        </li>
-        <!-- GenAI Platform -->
-        <li>
-          <div class="uppercase text-xs font-bold text-gray-400 mb-2 tracking-wider">GenAI Platform</div>
-          <ul class="space-y-1">
-            <li><a href="/docs/genai-platform" class="doc-section-link">Overview</a></li>
-          </ul>
-        </li>
-        <!-- GenAI Data Engine -->
-        <li>
-          <div class="uppercase text-xs font-bold text-gray-400 mb-2 tracking-wider">GenAI Data Engine</div>
-          <ul class="space-y-1">
-            <li><a href="/docs/genai-data-engine" class="doc-section-link">Overview</a></li>
-          </ul>
-        </li>
-        <!-- Automotive Data Engine -->
-        <li>
-          <div class="uppercase text-xs font-bold text-gray-400 mb-2 tracking-wider">Automotive Data Engine</div>
-          <ul class="space-y-1">
-            <li><a href="/docs/automotive-data-engine" class="doc-section-link">Overview</a></li>
-          </ul>
-        </li>
-        <!-- API Reference -->
-        <li>
-          <div class="uppercase text-xs font-bold text-gray-400 mb-2 tracking-wider">API Reference</div>
-          <ul class="space-y-1">
-            <li><a href="/docs/api/genai" class="doc-section-link">GenAI API</a></li>
-            <li><a href="/docs/api/automotive" class="doc-section-link">Automotive API</a></li>
-          </ul>
-        </li>
-        <!-- Guides -->
-        <li>
-          <div class="uppercase text-xs font-bold text-gray-400 mb-2 tracking-wider">Guides</div>
-          <ul class="space-y-1">
-            <li><a href="/docs/guides/data-labeling" class="doc-section-link">Data Labeling</a></li>
-            <li><a href="/docs/guides/ml-model-training" class="doc-section-link">ML Model Training</a></li>
-            <li><a href="/docs/guides/diffusion-models" class="doc-section-link">Diffusion Models</a></li>
-            <li><a href="/docs/guides/ai-ecommerce" class="doc-section-link">AI for eCommerce</a></li>
-            <li><a href="/docs/guides/computer-vision" class="doc-section-link">Computer Vision</a></li>
-            <li><a href="/docs/guides/llms" class="doc-section-link">Large Language Models</a></li>
-          </ul>
-        </li>
+    <nav class="doc-navigation" aria-label="Documentation Sections">
+      <ul class="doc-section-list space-y-1"> {/* Reduced space-y from 6 to 1 for denser dynamic list */}
+        {staticSections.map(staticSection => {
+          // Check if this static section corresponds to a dynamic section passed in props
+          const dynamicEquivalent = sections?.find(ds => ds.title === staticSection.title);
+          if (dynamicEquivalent && dynamicEquivalent.children && dynamicEquivalent.children.length > 0) {
+            // If there's a dynamic equivalent with children, render it using renderSection
+            // This allows the dynamic section (e.g. API Reference from rest.astro) to be fully interactive
+            return <Fragment set:html={renderSection(dynamicEquivalent, 0)} />;
+          } else {
+            // Otherwise, render the static section as before, but make it expandable if it has children
+            const hasChildren = staticSection.children && staticSection.children.length > 0;
+            const sectionId = `static-${staticSection.title.toLowerCase().replace(/\s+/g, '-')}`;
+            const subsectionListId = `${sectionId}-children`;
+            const isPathActive = staticSection.children?.some(child => child.url === currentPath) || staticSection.baseHref === currentPath;
+            let isExpanded = isPathActive; // Expand if current path is within this section
+
+            // If any child of this static section is active, this section should be expanded
+            if (staticSection.children?.some(child => isActiveSection(child, currentPath))) {
+                isExpanded = true;
+            }
+
+            return (
+              <li class="doc-section-item">
+                <div class="uppercase text-xs font-bold text-gray-400 mb-1 mt-3 tracking-wider px-4">{staticSection.title}</div>
+                {hasChildren ? (
+                  <ul id={subsectionListId} class={`doc-subsection-list ${isExpanded ? 'expanded' : 'collapsed'}`}>
+                    {staticSection.children.map(child => (
+                      <li class="doc-section-item" data-url={child.url}>
+                        <a
+                          href={child.url}
+                          class={`doc-section-link pl-8 ${isActiveSection(child, currentPath) ? 'active' : ''}`}
+                        >
+                          <span class="section-title">{child.title}</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <ul class="space-y-1"><li><a href={staticSection.baseHref || '#'} class={`doc-section-link pl-4 ${currentPath === (staticSection.baseHref || '#') ? 'active' : ''}`}>{staticSection.title}</a></li></ul>
+                )}
+              </li>
+            );
+          }
+        })}
+
+        <!-- Render any top-level dynamic sections from props that weren't merged with static ones -->
+        {sections?.filter(ds => !staticSections.some(ss => ss.title === ds.title && ss.children && ds.children)).map(dynamicSection => (
+          <Fragment set:html={renderSection(dynamicSection, 0)} />
+        ))}
       </ul>
     </nav>
   </div>
 </aside>
 
 <style>
+  .doc-subsection-list.collapsed {
+    display: none;
+  }
+  .doc-subsection-list.expanded {
+    display: block;
+  }
   .doc-sidebar {
     scrollbar-width: thin;
     scrollbar-color: #cbd5e1 #f1f5f9;
@@ -153,47 +238,54 @@ function renderSection(section: DocSection, level: number = 0): string {
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const expandBtns = document.querySelectorAll('.expand-btn');
+    // Script now targets buttons with class 'expand-btn' generated by renderSection
+    const expandBtns = document.querySelectorAll('button.expand-btn');
     
     expandBtns.forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
         
-        const sectionUrl = btn.getAttribute('data-section');
-        const sectionItem = btn.closest('.doc-section-item');
-        const subsectionList = sectionItem?.querySelector('.doc-subsection-list');
-        const isExpanded = btn.classList.contains('expanded');
-        
+        const isCurrentlyExpanded = btn.getAttribute('aria-expanded') === 'true';
+        const controlledListId = btn.getAttribute('aria-controls');
+        const subsectionList = document.getElementById(controlledListId);
+        const arrowIcon = btn.querySelector('svg');
+
         if (subsectionList) {
-          if (isExpanded) {
-            btn.classList.remove('expanded');
+          if (isCurrentlyExpanded) {
+            btn.setAttribute('aria-expanded', 'false');
             subsectionList.classList.remove('expanded');
             subsectionList.classList.add('collapsed');
+            arrowIcon?.classList.remove('rotate-90');
           } else {
-            btn.classList.add('expanded');
+            btn.setAttribute('aria-expanded', 'true');
             subsectionList.classList.remove('collapsed');
             subsectionList.classList.add('expanded');
+            arrowIcon?.classList.add('rotate-90');
           }
         }
       });
     });
     
-    // Auto-expand sections containing active items
-    const activeLinks = document.querySelectorAll('.doc-section-link.active');
-    activeLinks.forEach(link => {
-      const sectionItem = link.closest('.doc-section-item');
-      const parentSection = sectionItem?.parentElement?.closest('.doc-section-item');
-      
-      if (parentSection) {
-        const expandBtn = parentSection.querySelector('.expand-btn');
-        const subsectionList = parentSection.querySelector('.doc-subsection-list');
-        
-        if (expandBtn && subsectionList) {
-          expandBtn.classList.add('expanded');
-          subsectionList.classList.remove('collapsed');
-          subsectionList.classList.add('expanded');
+    // Auto-expand sections containing active links (applies to dynamically rendered sections)
+    // For statically rendered sections, expansion is handled by Astro template logic based on currentPath
+    const activeDynamicLinks = document.querySelectorAll('.doc-section-list .doc-section-link.active');
+    activeDynamicLinks.forEach(link => {
+      // Find parent list items that might have an expand button
+      let currentElement = link.parentElement;
+      while (currentElement && currentElement.classList.contains('doc-section-item')) {
+        const parentList = currentElement.parentElement; // This would be a ul.doc-subsection-list
+        if (parentList && parentList.id && parentList.classList.contains('doc-subsection-list')) {
+          const controllingButton = document.querySelector(`button.expand-btn[aria-controls="${parentList.id}"]`);
+          if (controllingButton && controllingButton.getAttribute('aria-expanded') === 'false') {
+            // controllingButton.click(); // Simulate click to expand and update ARIA
+             controllingButton.setAttribute('aria-expanded', 'true');
+             parentList.classList.remove('collapsed');
+             parentList.classList.add('expanded');
+             controllingButton.querySelector('svg')?.classList.add('rotate-90');
+          }
         }
+        currentElement = parentList?.parentElement; // Move up to the li that contains this ul
       }
     });
   });

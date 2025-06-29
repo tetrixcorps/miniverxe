@@ -234,7 +234,7 @@ if (Array.isArray(apiEndpoints)) {
 <MainLayout>
   <div class="flex min-h-screen bg-gray-50">
     <!-- Sidebar -->
-    <!-- <DocSidebar sections={docSections} currentPath={Astro.url.pathname} /> -->
+    <DocSidebar sections={docSections} currentPath={Astro.url.pathname} />
     
     <!-- Main Content -->
     <main class="flex-1">
@@ -305,7 +305,9 @@ if (Array.isArray(apiEndpoints)) {
               API Endpoints
             </h2>
             <div class="space-y-8">
-              <!-- {@html apiEndpointsBlock} -->
+              {apiEndpoints.map(endpoint => (
+                <ApiReference endpoint={endpoint} />
+              ))}
             </div>
           </section>
 
