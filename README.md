@@ -1,78 +1,265 @@
-# TETRIX SaaS Website
+# Tetrix - Enterprise AI Workflow Integration & Data Labeling Platform
 
-A modern, professional SaaS marketing site for TETRIX, built with Astro and Tailwind CSS.
+A modern, full-stack platform for collaborative labeling, learning, and workflow management with role-based access control (RBAC).
 
-## 🚀 Project Overview
-TETRIX is a professional services SaaS platform. This site is designed to:
-- Showcase solutions, services, and company info
-- Provide a bold, modern, and accessible user experience
-- Feature a dynamic, animated logo and a fiery red/burnt orange color scheme
+## 🚀 Today's Implementation Summary
 
-## 🛠️ Tech Stack
-- [Astro](https://astro.build/) (v5+)
-- [Tailwind CSS](https://tailwindcss.com/) (v3)
-- Custom SVG logo with animation
-- Modular, accessible components
+### What We Built
+- **Complete React Web Application** with Vite build system
+- **Firebase Authentication** with Google Sign-In
+- **Tailwind CSS v3** for modern, responsive styling
+- **Role-Based Access Control (RBAC)** system
+- **Comprehensive Landing Page** with multiple sections
+- **Monorepo Architecture** using pnpm workspaces
 
-## 📁 Project Structure
+### Key Features Implemented
+- ✅ Firebase Authentication (Google Sign-In)
+- ✅ Responsive landing page with modern UI
+- ✅ Role-based access control system
+- ✅ Modal-based signup flow
+- ✅ Tailwind CSS styling with custom brand colors
+- ✅ React Router for navigation
+- ✅ TypeScript support throughout
+- ✅ Error boundaries and loading states
+
+## 🏗️ Project Structure
+
 ```
 tetrix/
-  src/
-    components/
-      layout/      # Layout, Header, Footer, Logo
-      shared/      # Reusable UI components (Button, FeatureCard, etc.)
-    pages/         # All main site pages (index, about, solutions, services, contact)
-    styles/        # Tailwind CSS entry
-  public/          # Static assets (favicon, etc.)
-  tailwind.config.js
-  astro.config.mjs
-  README.md
+├── apps/
+│   └── web/                    # React web application
+│       ├── src/
+│       │   ├── components/     # Reusable UI components
+│       │   ├── pages/          # Page components
+│       │   ├── providers/      # Context providers
+│       │   ├── hooks/          # Custom React hooks
+│       │   ├── lib/            # Utilities and configurations
+│       │   ├── modals/         # Modal components
+│       │   └── styles/         # CSS and Tailwind config
+│       ├── package.json
+│       ├── vite.config.ts
+│       ├── tailwind.config.js
+│       └── postcss.config.cjs
+├── packages/
+│   └── rbac/                   # Role-based access control package
+├── services/
+│   └── api/                    # Backend API services
+└── pnpm-workspace.yaml         # Monorepo configuration
 ```
 
-## 🎨 Color Scheme & Theme
-- **Primary:** Fiery Red (`#FF3B30`)
-- **Accent:** Burnt Orange (`#FF9500`), Yellow (`#FFB300`)
-- **Dark:** Deep Maroon (`#B71C1C`)
-- **Light:** Off-white (`#FFF8E1`)
-- All gradients, buttons, and highlights use this palette for a bold, energetic look.
+## 🛠️ Technology Stack
 
-## ✨ Features
-- **Dynamic SVG Logo:** Animated, geometric, and brand-aligned
-- **Responsive Navigation:** Desktop and mobile menus, with Home button on every page
-- **Componentized UI:** Button, FeatureCard, TestimonialCard, LogoGrid, etc.
-- **Modern Layout:** Hero, partner logos, features, testimonials, and more
-- **Accessible:** Semantic HTML, focus states, color contrast
-- **Customizable:** Easily update theme, content, or add new pages/components
+### Frontend
+- **React 19.1.0** - UI framework
+- **Vite 7.0.0** - Build tool and dev server
+- **TypeScript 5.8.3** - Type safety
+- **Tailwind CSS 3.4.17** - Utility-first CSS framework
+- **React Router DOM 7.6.3** - Client-side routing
+- **React Query 5.81.5** - Data fetching and caching
 
-## 🖥️ Local Development
-1. **Install dependencies:**
+### Authentication & Backend
+- **Firebase 11.10.0** - Authentication and database
+- **Firebase Auth** - Google Sign-In integration
+- **Firebase Firestore** - NoSQL database
+
+### UI Components
+- **Lucide React** - Icon library
+- **React Hot Toast** - Toast notifications
+- **Nice Modal React** - Modal management
+- **Class Variance Authority** - Component variants
+- **Tailwind Merge** - Class merging utilities
+
+### Development Tools
+- **ESLint** - Code linting
+- **PostCSS** - CSS processing
+- **Autoprefixer** - CSS vendor prefixes
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js v23.11.0 or higher
+- pnpm package manager
+- Firebase project with authentication enabled
+
+### Installation
+
+1. **Clone the repository**
    ```bash
-   npm install
+   git clone <repository-url>
+   cd tetrix
    ```
-2. **Start the dev server:**
+
+2. **Install dependencies**
    ```bash
-   npm run dev
+   pnpm install
    ```
-3. **Visit:** [http://localhost:4326](http://localhost:4326) (or the port shown in your terminal)
 
-## 🐳 Docker Support
-- A `Dockerfile` is included for containerized builds and deployment.
+3. **Set up environment variables**
+   Create a `.env` file in `apps/web/`:
+   ```env
+   VITE_FIREBASE_API_KEY=your_api_key
+   VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+   VITE_FIREBASE_PROJECT_ID=your_project_id
+   VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+   VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+   VITE_FIREBASE_APP_ID=your_app_id
+   ```
 
-## 🧩 Customization
-- **Colors:** Edit `tailwind.config.js` under `theme.extend.colors.brand`
-- **Logo:** Update `src/components/layout/Logo.astro` for animation or style tweaks
-- **Navigation:** Edit `src/components/layout/Header.astro`
-- **Content:** All main pages are in `src/pages/`
+4. **Start the development server**
+   ```bash
+   cd apps/web
+   pnpm run dev
+   ```
 
-## 📝 Further Improvements
-- Add dark mode or seasonal logo variants
-- Integrate a CMS or Firestore backend
-- Add more advanced SaaS features (blog, dashboard, etc.)
-- Polish accessibility and SEO further
+5. **Open your browser**
+   Navigate to `http://localhost:5173/` (or the port shown in terminal)
+
+## 📱 Available Routes
+
+- **`/`** - Home page with feature overview
+- **`/preview-landing/`** - Full landing page with all sections
+- **`/dashboard`** - Main dashboard (requires authentication)
+- **`/login`** - Login page
+- **`/unauthorized`** - Access denied page
+
+## 🎨 Styling & Design
+
+### Brand Colors
+- **Red**: `#FF3B30` - Primary brand color
+- **Orange**: `#FF9500` - Secondary brand color
+- **Yellow**: `#FFB300` - Accent color
+- **Dark**: `#B71C1C` - Dark variant
+- **Light**: `#FFF8E1` - Light variant
+
+### Typography
+- **Sans**: Inter font family
+- **Heading**: Montserrat font family
+
+### Custom Animations
+- Gradient shift animations
+- Glow pulse effects
+- Letter float animations
+- Sparkle effects
+- Fade-in transitions
+
+## 🔐 Authentication Flow
+
+1. **User clicks "Sign Up"** on landing page
+2. **Modal opens** with signup form
+3. **Google Sign-In** integration via Firebase
+4. **User authenticated** and redirected to dashboard
+5. **Role-based permissions** applied based on user claims
+
+## 🏛️ Architecture Decisions
+
+### Why Tailwind CSS v3?
+- **Stability**: v4 is still in alpha with breaking changes
+- **Compatibility**: Better support for existing patterns
+- **Documentation**: Comprehensive documentation and community support
+
+### Why Firebase?
+- **Rapid Development**: Quick authentication setup
+- **Scalability**: Handles user growth automatically
+- **Security**: Built-in security features
+- **Real-time**: Live data synchronization
+
+### Why Monorepo?
+- **Code Sharing**: Shared packages between apps
+- **Consistency**: Unified tooling and dependencies
+- **Efficiency**: Single repository management
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**Firebase "projectId" not provided error**
+- Ensure `.env` file is in `apps/web/` directory
+- Verify all Firebase environment variables are set
+- Restart the dev server after adding environment variables
+
+**Tailwind CSS not working**
+- Ensure you're using Tailwind v3 (not v4)
+- Check that `postcss.config.cjs` uses `tailwindcss` plugin
+- Verify `tailwind.config.js` is properly configured
+
+**Authentication errors**
+- Check Firebase project configuration
+- Ensure Google Sign-In is enabled in Firebase Console
+- Verify AuthProvider is wrapping the app in `main.tsx`
+
+### Development Commands
+
+```bash
+# Start development server
+pnpm run dev
+
+# Build for production
+pnpm run build
+
+# Preview production build
+pnpm run preview
+
+# Lint code
+pnpm run lint
+```
+
+## 📦 Key Components
+
+### Authentication
+- `AuthProvider.tsx` - Global authentication state
+- `useAuth.ts` - Authentication hook
+- `SignupModal.tsx` - Signup modal component
+
+### Landing Page
+- `HeroSection.tsx` - Main hero section
+- `FeaturesSection.tsx` - Feature highlights
+- `TestimonialsSection.tsx` - Customer testimonials
+- `CTASection.tsx` - Call-to-action section
+
+### UI Components
+- `Button.tsx` - Reusable button component
+- `Card.tsx` - Card layout component
+- `Navbar.tsx` - Navigation component
+- `Footer.tsx` - Footer component
+
+## 🔄 State Management
+
+- **React Context** for authentication state
+- **React Query** for server state management
+- **Local state** for component-specific data
+
+## 🚀 Deployment
+
+The application is ready for deployment to:
+- **Vercel** (recommended for React apps)
+- **Netlify**
+- **Firebase Hosting**
+- **AWS Amplify**
+
+## 📈 Next Steps
+
+1. **Add more authentication providers** (GitHub, Microsoft)
+2. **Implement user profile management**
+3. **Add data labeling workflows**
+4. **Integrate with external APIs**
+5. **Add analytics and monitoring**
+6. **Implement real-time collaboration features**
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License.
 
 ---
 
-**Built with ❤️ for modern SaaS.**
+**Built with ❤️ using React, Firebase, and Tailwind CSS**
 
 ```sh
 npm create astro@latest -- --template basics
