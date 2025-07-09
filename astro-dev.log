@@ -1,0 +1,29 @@
+
+> tetrix@0.0.1 dev
+> astro dev
+
+▶ Astro collects anonymous usage data.
+  This information helps us improve Astro.
+  Run "astro telemetry disable" to opt-out.
+  https://astro.build/telemetry
+
+16:52:30 [WARN] Unsupported file type /workspace/src/pages/requirements.txt found. Prefix filename with an underscore (`_`) to ignore.
+16:52:30 [types] Generated 0ms
+16:52:30 [content] Syncing content
+16:52:30 [WARN] Unsupported file type /workspace/src/pages/requirements.txt found. Prefix filename with an underscore (`_`) to ignore.
+16:52:30 [WARN] Unsupported file type /workspace/src/pages/requirements.txt found. Prefix filename with an underscore (`_`) to ignore.
+16:52:30 [WARN] Unsupported file type /workspace/src/pages/requirements.txt found. Prefix filename with an underscore (`_`) to ignore.
+16:52:30 [content] Synced content
+16:52:30 [WARN] Unsupported file type /workspace/src/pages/requirements.txt found. Prefix filename with an underscore (`_`) to ignore.
+
+ astro  v5.9.3 ready in 599 ms
+
+┃ Local    http://localhost:4321/
+┃ Network  use --host to expose
+
+16:52:30 watching for file changes...
+16:52:31 [WARN] Unsupported file type /workspace/src/pages/requirements.txt found. Prefix filename with an underscore (`_`) to ignore.
+
+ update  ▶ New version of Astro available: 5.11.0
+  Run pnpm dlx @astrojs/upgrade to update
+
