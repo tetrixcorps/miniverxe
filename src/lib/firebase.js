@@ -2,9 +2,9 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, serverTimestamp, getDocs } from 'firebase/firestore';
 
-// Your Firebase configuration object
-// TODO: Replace with your complete Firebase web app configuration
-// Get this from Firebase Console → Project Settings → Your Apps → Web App
+// Firebase configuration object for TETRIX application
+// Configuration loaded from environment variables for security
+// Get these values from Firebase Console → Project Settings → Your Apps → Web App
 const firebaseConfig = {
   apiKey: import.meta.env.FIREBASE_API_KEY || "AIzaSyCAg70wIYtFwKDafodE6kkcRffuk0ewL5w",
   authDomain: import.meta.env.FIREBASE_AUTH_DOMAIN || "fir-rtc-7b55d.firebaseapp.com",

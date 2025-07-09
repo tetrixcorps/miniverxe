@@ -31,7 +31,7 @@ export default function AnalyticsDashboard() {
           </ResponsiveContainer>
         </div>
       )}
-      {/* Placeholder for more charts/metrics */}
+              {/* Additional analytics charts: accuracy trends, time-to-completion, annotator performance */}
       <div className="mt-8 text-gray-400">[More analytics coming soon]</div>
     </div>
   );

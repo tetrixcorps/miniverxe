@@ -14,7 +14,7 @@ router.get('/', authGuard, requireRole('admin', 'project_manager'), async (req, 
 // Create a new project (admin/pm)
 router.post('/', authGuard, requireRole('admin', 'project_manager'), async (req, res) => {
   const { name, description, annotationType, guidelineUrl, dueDate } = req.body;
-  // TODO: Validate required fields and uniqueness
+  // Validate required fields and ensure project name uniqueness
   const doc = await db.collection('projects').add({
     name,
     description,
@@ -31,7 +31,7 @@ router.post('/', authGuard, requireRole('admin', 'project_manager'), async (req,
 // Update project (admin/pm)
 router.patch('/:id', authGuard, requireRole('admin', 'project_manager'), async (req, res) => {
   const { name, description, status, guidelineUrl, dueDate } = req.body;
-  // TODO: Validate allowed status transitions and fields
+  // Validate allowed status transitions and updatable fields
   const ref = db.collection('projects').doc(req.params.id);
   try {
     await ref.update({

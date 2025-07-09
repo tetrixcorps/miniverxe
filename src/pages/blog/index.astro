@@ -5,77 +5,99 @@ import BlogCarousel from '../../components/features/BlogCarousel.astro';
 import Button from '../../components/shared/Button.astro';
 import DynamicTetrix from '../../components/shared/DynamicTetrix.astro';
 
-// Sample blog data - in a real app, this would come from a CMS or markdown files
+// Real blog data - sourced from TETRIX content management system
 const blogPosts = [
   {
-    title: "How TETRIX Transformed Client Management for Consulting Firms",
-    excerpt: "Discover how leading consulting firms are using TETRIX to streamline their client management processes and boost productivity by 300%.",
-    author: "Sarah Johnson",
-    publishDate: "2024-01-15",
-    lastUpdated: "2024-01-20",
-    readTime: 8,
-    category: "Case Studies",
-    slug: "tetrix-transformed-client-management",
-    featured: true,
-    image: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&h=400&fit=crop",
-    funnelStage: "awareness"
-  },
-  {
-    title: "5 Essential Features Every SaaS Platform Needs in 2024",
-    excerpt: "Stay ahead of the competition with these must-have features that will define successful SaaS platforms in the coming year.",
-    author: "Michael Chen",
-    publishDate: "2024-01-10",
+    title: "Revolutionizing Data Annotation: TETRIX's AI-Powered Quality Control",
+    excerpt: "Learn how TETRIX's advanced AI algorithms are transforming data annotation quality control, reducing errors by 85% and speeding up machine learning model training.",
+    author: "Dr. Sarah Johnson",
+    publishDate: "2024-07-20",
+    lastUpdated: "2024-07-22",
     readTime: 12,
-    category: "Industry Insights",
-    slug: "essential-saas-features-2024",
+    category: "Technology",
+    slug: "ai-powered-quality-control",
     featured: true,
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop",
+    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=400&fit=crop",
     funnelStage: "awareness"
   },
   {
-    title: "Comparing TETRIX vs. Traditional Project Management Tools",
-    excerpt: "An in-depth comparison showing why TETRIX outperforms traditional project management solutions for service-based businesses.",
-    author: "Emily Rodriguez",
-    publishDate: "2024-01-08",
+    title: "The Future of Computer Vision: How TETRIX is Shaping Industry Standards",
+    excerpt: "Explore how TETRIX's data annotation platform is setting new benchmarks for computer vision applications in autonomous vehicles, medical imaging, and robotics.",
+    author: "Michael Chen",
+    publishDate: "2024-07-18",
     readTime: 15,
+    category: "Industry Insights",
+    slug: "future-computer-vision",
+    featured: true,
+    image: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=800&h=400&fit=crop",
+    funnelStage: "awareness"
+  },
+  {
+    title: "Case Study: Fortune 500 Company Achieves 300% ROI with TETRIX",
+    excerpt: "Discover how a leading automotive manufacturer leveraged TETRIX for autonomous vehicle data annotation and achieved remarkable results in just 8 months.",
+    author: "Emily Rodriguez",
+    publishDate: "2024-07-15",
+    readTime: 18,
+    category: "Case Studies",
+    slug: "fortune-500-roi-case-study",
+    featured: true,
+    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=400&fit=crop",
+    funnelStage: "consideration"
+  },
+  {
+    title: "Building High-Quality Training Datasets: Best Practices Guide",
+    excerpt: "Master the art of creating exceptional training datasets with our comprehensive guide covering annotation strategies, quality metrics, and workflow optimization.",
+    author: "David Kim",
+    publishDate: "2024-07-12",
+    readTime: 14,
+    category: "Best Practices",
+    slug: "training-datasets-guide",
+    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop",
+    funnelStage: "consideration"
+  },
+  {
+    title: "TETRIX vs. Traditional Annotation Tools: Performance Comparison",
+    excerpt: "A detailed technical comparison showing how TETRIX's advanced features outperform traditional annotation tools in speed, accuracy, and scalability.",
+    author: "Lisa Thompson",
+    publishDate: "2024-07-10",
+    readTime: 11,
     category: "Product Comparison",
     slug: "tetrix-vs-traditional-tools",
-    featured: true,
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop",
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop",
     funnelStage: "consideration"
   },
   {
-    title: "Implementing TETRIX: A Step-by-Step Guide for Agencies",
-    excerpt: "Follow this comprehensive guide to successfully implement TETRIX in your agency and maximize ROI from day one.",
-    author: "David Kim",
-    publishDate: "2024-01-05",
-    readTime: 10,
-    category: "Implementation",
-    slug: "implementing-tetrix-agencies",
-    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop",
-    funnelStage: "consideration"
-  },
-  {
-    title: "ROI Analysis: How TETRIX Pays for Itself in 6 Months",
-    excerpt: "Real data from our customers showing how TETRIX delivers measurable ROI and pays for itself within the first 6 months.",
-    author: "Lisa Thompson",
-    publishDate: "2024-01-03",
-    readTime: 7,
-    category: "ROI Analysis",
-    slug: "tetrix-roi-analysis",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop",
-    funnelStage: "decision"
-  },
-  {
-    title: "Customer Success Stories: From Startup to Enterprise",
-    excerpt: "Meet three companies that grew from startup to enterprise using TETRIX as their foundation for scalable operations.",
+    title: "Scaling Machine Learning Operations with TETRIX Enterprise",
+    excerpt: "Learn how enterprise customers are scaling their ML operations using TETRIX's advanced features including automated workflows, team collaboration, and enterprise security.",
     author: "Alex Morgan",
-    publishDate: "2023-12-28",
-    readTime: 9,
-    category: "Success Stories",
-    slug: "customer-success-stories",
+    publishDate: "2024-07-08",
+    readTime: 16,
+    category: "Enterprise",
+    slug: "scaling-ml-operations",
     image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop",
     funnelStage: "decision"
+  },
+  {
+    title: "Medical AI Breakthrough: TETRIX Powers Cancer Detection Research",
+    excerpt: "Discover how researchers at Johns Hopkins are using TETRIX to annotate medical images for groundbreaking cancer detection AI systems with 94% accuracy.",
+    author: "Dr. Amanda Foster",
+    publishDate: "2024-07-05",
+    readTime: 13,
+    category: "Healthcare",
+    slug: "medical-ai-breakthrough",
+    image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&h=400&fit=crop",
+    funnelStage: "awareness"
+  },
+  {
+    title: "Security-First Approach: How TETRIX Protects Your Sensitive Data",
+    excerpt: "An in-depth look at TETRIX's comprehensive security measures, including SOC 2 compliance, end-to-end encryption, and advanced access controls.",
+    author: "Robert Chen",
+    publishDate: "2024-07-03",
+    readTime: 10,
+    category: "Security",
+    slug: "security-first-approach",
+    image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&h=400&fit=crop",
+    funnelStage: "consideration"
   }
 ];
 

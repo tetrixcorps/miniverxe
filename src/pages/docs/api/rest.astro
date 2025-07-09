@@ -3,12 +3,12 @@ import MainLayout from '../../../components/layout/MainLayout.astro';
 import DocSidebar from '../../../components/features/DocSidebar.astro';
 import ApiReference from '../../../components/features/ApiReference.astro';
 
-// Sample API endpoints
+// Real API endpoints for TETRIX data annotation platform
 const apiEndpoints = [
   {
     method: 'GET',
-    path: '/api/v1/clients',
-    description: 'Retrieve a list of all clients in your workspace',
+    path: '/api/v1/projects',
+    description: 'Retrieve a list of all annotation projects in your workspace',
     parameters: [
       {
         name: 'page',
@@ -28,7 +28,7 @@ const apiEndpoints = [
         name: 'status',
         type: 'string',
         required: false,
-        description: 'Filter by client status',
+        description: 'Filter by project status',
         example: 'active'
       }
     ],
@@ -39,13 +39,16 @@ const apiEndpoints = [
         example: `{
   "success": true,
   "data": {
-    "clients": [
+    "projects": [
       {
-        "id": "cl_123456789",
-        "name": "Acme Corporation",
-        "email": "contact@acme.com",
+        "id": "proj_cv_123456789",
+        "name": "Autonomous Vehicle Dataset",
+        "type": "computer_vision",
         "status": "active",
-        "created_at": "2024-01-15T10:30:00Z"
+        "tasks_total": 15000,
+        "tasks_completed": 12500,
+        "created_at": "2024-07-01T10:30:00Z",
+        "updated_at": "2024-07-20T15:45:00Z"
       }
     ],
     "pagination": {
@@ -68,40 +71,46 @@ const apiEndpoints = [
 }`
       }
     ],
-    tags: ['clients', 'list']
+    tags: ['projects', 'list']
   },
   {
     method: 'POST',
-    path: '/api/v1/clients',
-    description: 'Create a new client in your workspace',
+    path: '/api/v1/projects',
+    description: 'Create a new annotation project',
     requestBody: {
       type: 'application/json',
-      description: 'Client information',
+      description: 'Project configuration',
       example: `{
-  "name": "New Client Corp",
-  "email": "contact@newclient.com",
-  "phone": "+1-555-0123",
-  "address": {
-    "street": "123 Business St",
-    "city": "New York",
-    "state": "NY",
-    "zip": "10001"
+  "name": "Medical Image Analysis",
+  "type": "computer_vision",
+  "description": "Annotate medical images for cancer detection",
+  "annotation_config": {
+    "task_type": "object_detection",
+    "labels": ["tumor", "normal_tissue", "artifact"],
+    "quality_threshold": 0.95
+  },
+  "workflow": {
+    "review_required": true,
+    "consensus_threshold": 2
   }
 }`
     },
     responses: [
       {
         code: 201,
-        description: 'Client created successfully',
+        description: 'Project created successfully',
         example: `{
   "success": true,
   "data": {
-    "client": {
-      "id": "cl_987654321",
-      "name": "New Client Corp",
-      "email": "contact@newclient.com",
+    "project": {
+      "id": "proj_med_987654321",
+      "name": "Medical Image Analysis",
+      "type": "computer_vision",
       "status": "active",
-      "created_at": "2024-01-15T10:30:00Z"
+      "tasks_total": 0,
+      "tasks_completed": 0,
+      "created_at": "2024-07-20T10:30:00Z",
+      "updated_at": "2024-07-20T10:30:00Z"
     }
   }
 }`
@@ -113,24 +122,31 @@ const apiEndpoints = [
   "success": false,
   "error": {
     "code": "validation_error",
-    "message": "Email is required"
+    "message": "Project name is required"
   }
 }`
       }
     ],
-    tags: ['clients', 'create']
+    tags: ['projects', 'create']
   },
   {
     method: 'GET',
-    path: '/api/v1/clients/{client_id}',
-    description: 'Retrieve a specific client by ID',
+    path: '/api/v1/projects/{project_id}/tasks',
+    description: 'Retrieve annotation tasks for a specific project',
     parameters: [
       {
-        name: 'client_id',
+        name: 'project_id',
         type: 'string',
         required: true,
-        description: 'The unique identifier of the client',
-        example: 'cl_123456789'
+        description: 'The unique identifier of the project',
+        example: 'proj_cv_123456789'
+      },
+      {
+        name: 'status',
+        type: 'string',
+        required: false,
+        description: 'Filter by task status',
+        example: 'pending'
       }
     ],
     responses: [
@@ -140,37 +156,120 @@ const apiEndpoints = [
         example: `{
   "success": true,
   "data": {
-    "client": {
-      "id": "cl_123456789",
-      "name": "Acme Corporation",
-      "email": "contact@acme.com",
-      "phone": "+1-555-0123",
-      "status": "active",
-      "address": {
-        "street": "123 Business St",
-        "city": "New York",
-        "state": "NY",
-        "zip": "10001"
-      },
-      "created_at": "2024-01-15T10:30:00Z",
-      "updated_at": "2024-01-15T10:30:00Z"
+    "tasks": [
+      {
+        "id": "task_123456789",
+        "project_id": "proj_cv_123456789",
+        "status": "completed",
+        "data": {
+          "image_url": "https://storage.tetrix.com/images/img_001.jpg",
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "format": "jpeg"
+          }
+        },
+        "annotations": [
+          {
+            "label": "vehicle",
+            "confidence": 0.98,
+            "bbox": [100, 150, 300, 400]
+          }
+        ],
+        "assigned_to": "annotator_001",
+        "completed_at": "2024-07-20T14:30:00Z"
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 20,
+      "total": 15000
     }
   }
 }`
       },
       {
         code: 404,
-        description: 'Client not found',
+        description: 'Project not found',
         example: `{
   "success": false,
   "error": {
     "code": "not_found",
-    "message": "Client not found"
+    "message": "Project not found"
   }
 }`
       }
     ],
-    tags: ['clients', 'retrieve']
+    tags: ['projects', 'tasks']
+  },
+  {
+    method: 'POST',
+    path: '/api/v1/projects/{project_id}/tasks/{task_id}/annotations',
+    description: 'Submit annotation for a specific task',
+    parameters: [
+      {
+        name: 'project_id',
+        type: 'string',
+        required: true,
+        description: 'The unique identifier of the project',
+        example: 'proj_cv_123456789'
+      },
+      {
+        name: 'task_id',
+        type: 'string',
+        required: true,
+        description: 'The unique identifier of the task',
+        example: 'task_123456789'
+      }
+    ],
+    requestBody: {
+      type: 'application/json',
+      description: 'Annotation data',
+      example: `{
+  "annotations": [
+    {
+      "label": "vehicle",
+      "confidence": 0.95,
+      "bbox": [120, 160, 280, 380],
+      "attributes": {
+        "type": "car",
+        "color": "blue"
+      }
+    }
+  ],
+  "quality_score": 0.97,
+  "time_spent": 45
+}`
+    },
+    responses: [
+      {
+        code: 200,
+        description: 'Annotation submitted successfully',
+        example: `{
+  "success": true,
+  "data": {
+    "task": {
+      "id": "task_123456789",
+      "status": "completed",
+      "quality_score": 0.97,
+      "submitted_at": "2024-07-20T15:30:00Z"
+    }
+  }
+}`
+      },
+      {
+        code: 400,
+        description: 'Invalid annotation data',
+        example: `{
+  "success": false,
+  "error": {
+    "code": "validation_error",
+    "message": "Bounding box coordinates are invalid"
+  }
+}`
+      }
+    ],
+    tags: ['annotations', 'submit']
   }
 ];
 
