@@ -6,7 +6,17 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "db:migrate": "node scripts/migrate.js",
+    "db:migrate:create": "node scripts/migrate.js create",
+    "db:migrate:status": "node scripts/migrate.js status",
+    "db:migrate:rollback": "node scripts/migrate.js rollback",
+    "db:backup": "node scripts/backup.js backup",
+    "db:backup:restore": "node scripts/backup.js restore",
+    "db:backup:list": "node scripts/backup.js list",
+    "db:seed": "node scripts/seed.js run",
+    "db:seed:create": "node scripts/seed.js create",
+    "db:seed:list": "node scripts/seed.js list"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.81.2",
