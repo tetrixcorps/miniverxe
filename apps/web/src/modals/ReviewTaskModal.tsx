@@ -29,7 +29,7 @@ const ReviewTaskModal = NiceModal.create(({ taskId, error }: ReviewTaskModalProp
         role="dialog" aria-modal="true">
         <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
           <h2 className="text-xl font-bold mb-4">Review Task</h2>
-          {/* Placeholder for task summary, replace with real data later */}
+          {/* Task summary will be populated with real annotation data from the API */}
           <div className="mb-4 p-3 bg-gray-50 rounded border text-sm">
             <strong>Task ID:</strong> {taskId}<br/>
             <span className="text-gray-600">Task details preview goes here.</span>

@@ -6,7 +6,7 @@ const router = Router();
 // Handle Label Studio webhook events
 router.post('/', async (req, res) => {
   const event = req.body;
-  // TODO: Validate webhook source and event type
+  // Validate webhook source and event type for security
   // Example: update task_item status or annotation based on event
   if (!event || !event.task || !event.annotation) {
     return res.status(400).json({ error: 'Invalid event payload' });

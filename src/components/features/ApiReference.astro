@@ -174,8 +174,10 @@ const methodColors = {
             status: 200,
             data: {
               success: true,
-              message: 'Request processed successfully',
+              message: 'API request completed successfully',
               timestamp: new Date().toISOString(),
+              requestId: `req_${Math.random().toString(36).substr(2, 9)}`,
+              version: '1.0.0',
               ...params
             }
           };

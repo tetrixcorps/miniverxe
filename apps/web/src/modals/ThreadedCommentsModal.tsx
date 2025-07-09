@@ -7,8 +7,9 @@ interface ThreadedCommentsModalProps {
 }
 
 const mockComments = [
-  { id: '1', author: 'alice@example.com', content: 'Great work on this task!', createdAt: '2024-07-01' },
-  { id: '2', author: 'bob@example.com', content: 'Consider improving the label quality.', createdAt: '2024-07-02' },
+  { id: '1', author: 'sarah.johnson@tetrixcorp.com', content: 'Excellent progress on the data annotation task. The quality metrics are looking great!', createdAt: '2024-07-15' },
+  { id: '2', author: 'mike.chen@tetrixcorp.com', content: 'Please ensure consistency in the labeling criteria. I noticed some variations in the edge cases.', createdAt: '2024-07-16' },
+  { id: '3', author: 'anna.williams@tetrixcorp.com', content: 'The automated quality checks are flagging some potential issues. Let me review and provide feedback.', createdAt: '2024-07-17' },
 ];
 
 const ThreadedCommentsModal = NiceModal.create(({ threadId, context }: ThreadedCommentsModalProps) => {
@@ -66,7 +67,7 @@ const ThreadedCommentsModal = NiceModal.create(({ threadId, context }: ThreadedC
     }
     setComments([
       ...comments,
-      { id: String(comments.length + 1), author: 'you@example.com', content: newComment, createdAt: new Date().toISOString().slice(0, 10) },
+      { id: String(comments.length + 1), author: 'current.user@tetrixcorp.com', content: newComment, createdAt: new Date().toISOString().slice(0, 10) },
     ]);
     setNewComment('');
     setTouched(false);
