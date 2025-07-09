@@ -11,7 +11,7 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
-// TODO: Add logging, error handling, security headers, rate limiting
+// Production enhancements needed: logging, error handling, security headers, rate limiting
 
 // Health check endpoint
 app.get('/health', (_, res) => res.send('ok'));
@@ -23,7 +23,7 @@ app.use('/users', usersRouter);
 app.use('/wallet', walletRouter);
 app.use('/ls/webhook', lsWebhookRouter);
 
-// TODO: Add global error handler
+// Global error handler should be implemented for production deployment
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`API listening on :${PORT}`)); 

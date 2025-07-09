@@ -82,12 +82,12 @@ export default function PrimitivesShowcase() {
         </TableHeader>
         <TableBody>
           <TableRow>
-            <TableCell>Alice</TableCell>
-            <TableCell>alice@example.com</TableCell>
+            <TableCell>Alice Johnson</TableCell>
+            <TableCell>alice.johnson@tetrixcorp.com</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Bob</TableCell>
-            <TableCell>bob@example.com</TableCell>
+            <TableCell>Bob Smith</TableCell>
+            <TableCell>bob.smith@tetrixcorp.com</TableCell>
           </TableRow>
         </TableBody>
       </Table>

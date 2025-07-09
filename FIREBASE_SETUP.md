@@ -64,9 +64,9 @@ Each submission will be stored as:
 ```json
 {
   "name": "John Doe",
-  "email": "john@example.com",
-  "message": "Hello, I'm interested in your AI services",
-  "timestamp": "2024-01-15T10:30:00Z",
+  "email": "john.doe@tetrixcorp.com",
+  "message": "Hello, I'm interested in your AI-powered data annotation services",
+  "timestamp": "2024-07-20T10:30:00Z",
   "status": "new"
 }
 ```

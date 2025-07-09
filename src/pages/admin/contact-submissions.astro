@@ -216,16 +216,18 @@ if (!hasError && hasSubmissions) {
 
   // Functions for submission actions
   function markAsContacted(submissionId) {
-    // TODO: Implement API call to update status
+    // Update submission status to 'contacted' in Firestore
+    // This would call an API endpoint to update the document
     console.log('Mark as contacted:', submissionId);
-    alert('Feature coming soon!');
+    alert('This feature requires backend implementation to update Firestore documents');
   }
 
   function deleteSubmission(submissionId) {
     if (confirm('Are you sure you want to delete this submission?')) {
-      // TODO: Implement API call to delete submission
+      // Delete submission from Firestore database
+      // This would call an API endpoint to delete the document
       console.log('Delete submission:', submissionId);
-      alert('Feature coming soon!');
+      alert('This feature requires backend implementation to delete Firestore documents');
     }
   }
 </script> 

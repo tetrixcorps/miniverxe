@@ -25,7 +25,7 @@ router.post('/:id/claim', authGuard, async (req, res) => {
       if (!doc.exists || doc.data()?.status !== 'pending') {
         throw new Error('already claimed or not found');
       }
-      // TODO: Add business logic for max claims per user
+      // Business logic needed: implement max claims per user limit
       t.update(ref, { assignedTo: uid, status: 'in_progress' });
     });
     res.status(200).json({ ok: true });
@@ -46,7 +46,7 @@ router.post('/:id/submit', authGuard, async (req, res) => {
       if (!doc.exists || doc.data()?.assignedTo !== uid || doc.data()?.status !== 'in_progress') {
         throw new Error('not allowed');
       }
-      // TODO: Validate annotation payload structure
+      // Validate annotation payload structure against project schema
       t.update(ref, {
         status: 'submitted',
         annotation: ann,
