@@ -4,6 +4,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "../lib/firebase";
 import { Button } from "../components/ui/button";
+import apiService from "../lib/api";
 
 const ROLES = [
   { label: "Data Annotator", value: "Labeler" },
@@ -36,11 +37,14 @@ export default NiceModal.create(() => {
         createdAt: new Date(),
       });
       // 3. Call backend to set custom claim
-      await fetch("/api/set-role", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ uid: userCredential.user.uid, role: form.role }),
+      const result = await apiService.setUserRole({ 
+        uid: userCredential.user.uid, 
+        role: form.role 
       });
+      
+      if (result.error) {
+        throw new Error(result.error);
+      }
       // 4. Redirect to dashboard
       window.location.href =
         form.role === "Labeler" ? "/data-labeling/dashboard" : "/academy/dashboard";

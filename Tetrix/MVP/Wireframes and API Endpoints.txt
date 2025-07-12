@@ -1,0 +1,183 @@
+Ran tool
+Here is a wireframe flow diagram of the authentication and onboarding screens for your application:
+
+```mermaid
+flowchart TD
+  A[Landing Page Header]
+  B[Sign In Modal/Page]
+  C[Sign Up Modal/Page]
+  D[User Dashboard]
+  E[Admin Login Page]
+  F[Admin Dashboard]
+  G[Sign Out]
+
+  A -- "Sign In" --> B
+  A -- "Sign Up" --> C
+  B -- "Forgot Password" --> B
+  B -- "Submit (Success)" --> D
+  C -- "Submit (Success)" --> D
+  D -- "If Admin" --> F
+  D -- "Sign Out" --> G
+  F -- "Sign Out" --> G
+  E -- "Submit (Success)" --> F
+  A -- "Admin Login" --> E
+  G -- "Redirect to Landing" --> A
+```
+
+---
+
+## **Wireframe Screens Overview**
+
+1. **Landing Page Header**
+   - Contains "Sign In", "Sign Up", and "Admin Login" buttons (top right).
+
+2. **Sign In Modal/Page**
+   - Email, password fields
+   - "Forgot password?" link
+   - "Submit" button
+
+3. **Sign Up Modal/Page**
+   - Name, email, password fields
+   - "Submit" button
+
+4. **User Dashboard**
+   - Personalized content
+   - If user is admin, shows link to Admin Dashboard
+   - "Sign Out" option
+
+5. **Admin Login Page**
+   - Password field
+   - "Submit" button
+
+6. **Admin Dashboard**
+   - Admin features (contact submissions, etc.)
+   - "Sign Out" option
+
+7. **Sign Out**
+   - Logs out user/admin and redirects to landing page
+
+
+
+
+
+
+
+
+Certainly! Here’s a comprehensive mapping of the **API routes and endpoints** for your Astro + Firebase (Firestore) authentication and user management system, including admin and RBAC support. This mapping assumes you are using Firebase Auth for authentication and Firestore for user profiles/roles, and that some endpoints may be implemented as serverless functions or via a lightweight Node/Express backend if needed for custom logic.
+
+---
+
+## 1. **Authentication Endpoints (Firebase Auth)**
+
+| Endpoint                | Method | Purpose                                 | Auth Required | Notes                                 |
+|-------------------------|--------|-----------------------------------------|--------------|---------------------------------------|
+| `/api/auth/signup`      | POST   | Register new user                       | No           | Uses Firebase Auth + Firestore        |
+| `/api/auth/signin`      | POST   | User login                              | No           | Returns JWT/session                   |
+| `/api/auth/signout`     | POST   | User logout                             | Yes          | Invalidates session                   |
+| `/api/auth/forgot`      | POST   | Send password reset email               | No           | Uses Firebase Auth                    |
+| `/api/auth/me`          | GET    | Get current user profile & role         | Yes          | Reads from Firestore                  |
+| `/api/auth/refresh`     | POST   | Refresh JWT/session token               | Yes          | Optional, for session management      |
+
+---
+
+## 2. **User & Role Management (Firestore)**
+
+| Endpoint                | Method | Purpose                                 | Auth Required | Notes                                 |
+|-------------------------|--------|-----------------------------------------|--------------|---------------------------------------|
+| `/api/users/:id`        | GET    | Get user profile by ID                  | Yes (RBAC)   | Admins only or self                   |
+| `/api/users/:id`        | PATCH  | Update user profile (name, etc.)        | Yes (RBAC)   | Admins or self                        |
+| `/api/users/:id/role`   | PATCH  | Update user role                        | Yes (Admin)  | Only admins                           |
+| `/api/users`            | GET    | List all users (for admin dashboard)    | Yes (Admin)  | Paginated                             |
+
+---
+
+## 3. **Admin Dashboard**
+
+| Endpoint                        | Method | Purpose                                 | Auth Required | Notes                                 |
+|----------------------------------|--------|-----------------------------------------|--------------|---------------------------------------|
+| `/api/admin/login`               | POST   | Admin login (password)                  | No           | Custom logic, not Firebase Auth       |
+| `/api/admin/contact-submissions` | GET    | List contact form submissions           | Yes (Admin)  | For admin dashboard                   |
+| `/api/admin/contact-submissions` | PATCH  | Update submission status                | Yes (Admin)  | Mark as “contacted”                   |
+| `/api/admin/logout`              | POST   | Admin logout                            | Yes (Admin)  | Ends admin session                    |
+
+---
+
+## 4. **Contact Form (Public → Admin)**
+
+| Endpoint                | Method | Purpose                                 | Auth Required | Notes                                 |
+|-------------------------|--------|-----------------------------------------|--------------|---------------------------------------|
+| `/api/contact`          | POST   | Submit contact form                     | No           | Triggers email to admin, stores in DB |
+
+---
+
+## 5. **RBAC & Permissions**
+
+| Endpoint                | Method | Purpose                                 | Auth Required | Notes                                 |
+|-------------------------|--------|-----------------------------------------|--------------|---------------------------------------|
+| `/api/permissions`      | GET    | List permissions for current user       | Yes          | Used for RBAC in frontend             |
+
+---
+
+## 6. **Session & Security**
+
+| Endpoint                | Method | Purpose                                 | Auth Required | Notes                                 |
+|-------------------------|--------|-----------------------------------------|--------------|---------------------------------------|
+| `/api/session/validate` | POST   | Validate current session/JWT            | Yes          | For frontend session checks           |
+
+---
+
+## 7. **Example API Route Map (RESTful)**
+
+```plaintext
+POST   /api/auth/signup                # Register new user
+POST   /api/auth/signin                # Login
+POST   /api/auth/signout               # Logout
+POST   /api/auth/forgot                # Password reset
+GET    /api/auth/me                    # Get current user info
+
+GET    /api/users/:id                  # Get user profile
+PATCH  /api/users/:id                  # Update user profile
+PATCH  /api/users/:id/role             # Update user role (admin only)
+GET    /api/users                      # List users (admin only)
+
+POST   /api/admin/login                # Admin login
+GET    /api/admin/contact-submissions  # List contact form submissions
+PATCH  /api/admin/contact-submissions  # Update submission status
+POST   /api/admin/logout               # Admin logout
+
+POST   /api/contact                    # Public contact form submission
+
+GET    /api/permissions                # Get current user permissions
+
+POST   /api/session/validate           # Validate session/JWT
+```
+
+---
+
+## 8. **How These Map to Firebase**
+
+- **Auth endpoints** use Firebase Auth SDK directly from the frontend, but you may wrap them in API routes for custom logic or SSR.
+- **User/role endpoints** interact with Firestore (`users` collection, with a `role` field).
+- **Admin endpoints** may use a custom password-based system (as per your admin login flow) and/or check for `role: 'admin'` in Firestore.
+- **Contact form** writes to Firestore and triggers a Cloud Function for email notification.
+- **RBAC** is enforced by checking the user’s role in Firestore and/or using Firestore Security Rules.
+
+---
+
+## 9. **Security Considerations**
+
+- All sensitive endpoints require authentication and RBAC checks.
+- Admin endpoints are protected by both session and role.
+- Use HTTPS for all API calls.
+- Use Firestore Security Rules to prevent privilege escalation.
+
+---
+
+## 10. **Extensibility**
+
+- You can add endpoints for project/task management, analytics, billing, etc., following the same RESTful pattern.
+- For more complex workflows, consider using Cloud Functions for backend logic.
+
+---
+
+**Would you like a visual diagram of these routes, or code samples for any specific endpoint?**

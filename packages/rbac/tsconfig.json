@@ -3,10 +3,12 @@
     "outDir": "dist",
     "declaration": true,
     "emitDeclarationOnly": false,
-    "composite": true,
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "target": "ESNext"
+    "composite": false,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "target": "ESNext",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
   },
   "include": ["./**/*.ts"]
 } 

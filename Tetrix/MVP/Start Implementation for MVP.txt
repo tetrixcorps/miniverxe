@@ -1,0 +1,826 @@
+
+
+## High-Level Build Plan
+
+_TETRIX “Annotators-at-Scale” – MVP sprint 0_
+
+The section below converts your clarified constraints into a concrete, junior-friendly implementation blueprint:
+
+- Firestore (GCP) for prod data
+- Firestore + Auth emulators in Docker-Compose for local dev[^1][^2]
+- Single-VM droplet on DigitalOcean for the first live demo; later a Helm chart for DOKS / GKE
+- Label Studio embedded via its React SDK/iframe[^3][^4]
+- Each “ticket” = one `TaskItem` document
+- Annotator payout handled through a Coinbase MPC Wallet micro-service[^5]
+
+---
+
+## 1. Component Diagram (MVP)
+
+```
+Browser ───►  nginx (static SPA)
+                │
+                ▼
+        +── Express API (Node18)  ◄─────────►  Firestore
+        │        │                             (Firebase Auth for prod)
+        │        │
+        │        ├── Label-Studio iframe (port 8080)[^4]
+        │        │        ▲
+        │        │        │ Webhook
+        │        │        ▼
+        │        └─►  label-studio-sync svc
+        │
+        └── wallet-svc (Coinbase MPC SDK)[^24]
+```
+
+Local dev adds the **Firestore emulator** and **Auth emulator** containers, wired through `docker-compose`.
+
+---
+
+## 2. Firestore Data Model (collections \& docs)
+
+| Collection | DocID / Subcollection | Fields |
+| :-- | :-- | :-- |
+| `users` | `<uid>` | role (`admin|annotator`), email, displayName, walletId, stats (tasksCompleted, earningsUSD) |
+| `projects` | `<projectId>` | name, description, status, guidelineUrl, createdBy |
+| `tasks` | `<taskId>` | projectId, name, priority, status (`active|done`), createdAt |
+| `task_items` | `<taskItemId>` | taskId, dataUrl, dataType, assignedTo (`uid`), status (`pending|in_progress|submitted|approved|rejected`), priceUSD |
+| `payments` | `<paymentId>` | uid, amountUSD, txHash, createdAt |
+
+All writes from code MUST use batched-writes / transactions for status changes to guarantee atomicity[^6][^7].
+
+---
+
+## 3. Docker-Compose (local dev)
+
+```yaml
+version: '3.9'
+services:
+
+  api:
+    build: ./services/api
+    env_file: .env
+    ports: [ "4000:4000" ]
+    depends_on: [ firestore, labelstudio ]
+
+  web:
+    build: ./apps/web        # Vite + Tailwind + shadcn
+    environment:
+      - VITE_API_URL=http://localhost:4000
+    ports: [ "5173:4173" ]   # dev / prod preview
+
+  firestore:
+    image: mtlynch/firestore-emulator:latest   # tiny wrapper[^19]
+    ports:
+      - "8080:8080"          # data
+      - "4000:4000"          # emulator UI
+
+  labelstudio:
+    image: heartexlabs/label-studio:latest
+    ports: [ "8081:8080" ]   # 8081 externally
+    volumes:
+      - ./data/ls:/label-studio/data            # persistence[^25]
+
+  wallet-svc:
+    build: ./services/wallet
+    env_file: .env
+    ports: [ "4100:4100" ]
+```
+
+**First run**: `docker compose up --build`.
+
+---
+
+## 4. Express API (services/api)
+
+### 4.1  End-point snapshot
+
+| Verb | Route | Purpose |
+| :-- | :-- | :-- |
+| GET | `/me` | return current user profile (Auth middleware) |
+| GET | `/tickets` | list tickets assigned to annotator (`status=in_progress|pending`) |
+| POST | `/tickets/:id/claim` | atomically assign a `task_item` to `req.user.uid` (transaction)[^6] |
+| POST | `/tickets/:id/submit` | save annotation JSON, mark status `submitted`, push to review |
+| PATCH | `/tickets/:id/review` | **admin** only – approve/reject |
+| POST | `/projects` | create project (admin) |
+| POST | `/wallet/payout` | triggers Coinbase payout to annotator |
+
+### 4.2  Key middleware
+
+```ts
+import { getAuth } from 'firebase-admin/auth';
+
+export async function authGuard(req,res,next){
+  const token = req.headers.authorization?.split(' ')[^1];
+  try{
+    const decoded = await getAuth().verifyIdToken(token);
+    req.user = decoded;
+    return next();
+  }catch(e){ return res.status(401).json({error:'unauth'}); }
+}
+```
+
+
+---
+
+## 5. Embedding Label Studio
+
+Frontend page `/annotate/:ticketId`:
+
+```tsx
+import LabelStudio from '@heartexlabs/label-studio';
+import '@heartexlabs/label-studio/build/static/css/main.css';
+
+useEffect(() => {
+  const ls = new LabelStudio('label-root',{
+    config: lsXmlConfig,          // generated per project
+    interfaces: ["update","submit","undo"],
+    user: { pk: uid, firstName, lastName },
+    task: { id: ticketId, data: { image: dataUrl } },
+    onSubmitAnnotation: async (_, ann) => {
+       await api.post(`/tickets/${ticketId}/submit`, {ann: ann.serializeAnnotation()});
+       router.push('/dashboard');
+    }
+  });
+},[]);
+```
+
+Admins open `/review/:ticketId` which shows LS in **readonly** mode plus Approve / Reject buttons.
+
+Webhook: Label Studio can `POST` to `/ls/webhook` on every annotation save, letting the backend sync status[^3].
+
+---
+
+## 6. Coinbase MPC Wallet micro-service (services/wallet)
+
+1. `POST /wallet/create` – called when a new annotator signs up; stores `walletId` in user doc.
+2. `POST /wallet/payout` – takes `uid` \& `amountUSD`, creates on-chain transfer via Coinbase Wallet SDK; returns `txHash` stored in `payments` collection.
+_NOTE: for the MVP we can simulate payouts in sandbox mode._
+
+---
+
+## 7. Front-End Routes (Tailwind + shadcn)
+
+| Path | Annotator View | Admin View |
+| :-- | :-- | :-- |
+| `/login` | email / OIDC | same |
+| `/dashboard` | Ticket list, stats, balance | global stats, project list |
+| `/annotate/:id` | LS embed | – |
+| `/review/:id` | – | LS readonly + Approve/Reject |
+| `/projects` | – | CRUD wizard |
+
+Component library: run `npx shadcn-ui@latest init` then `shadcn-ui add button card table`.
+
+---
+
+## 8. CI/CD outline
+
+1. **Push to `develop`** → GitHub Action runs ESLint, Vitest, builds Docker images.
+2. **Push tag `v*`** → Action pushes images to GitHub CR, triggers DigitalOcean App Platform deploy.
+3. Values passed via `DOCKER_ENV` secrets (`FIREBASE_PROJECT`, `COINBASE_API_KEY`, etc.).
+
+---
+
+## 9. Next Milestones
+
+| \# | Goal | Acceptance |
+| :-- | :-- | :-- |
+| 1 | `users`, `tasks`, `task_items` collections + REST API | Postman tests green |
+| 2 | Annotator dashboard lists and claims tickets | UI shows live data |
+| 3 | LS embed page saves annotation JSON to Firestore | Document written |
+| 4 | Admin review + payout flow | Payment doc created, mock tx hash |
+| 5 | Helm chart for DOKS with external Firestore | `helm install TETRIX .` succeeds |
+
+
+
+If the Firestore schema and flow above meet expectations, generate:
+
+- `docker-compose.yml` full file
+- Firestore security rules (annotators can only read/write their docs)
+- Initial React pages with shadcn components scaffolded.
+
+
+
+
+
+
+
+
+## Database Schema Design
+
+The application will use Google's Firestore, a NoSQL document database, for its production data store. The data model is structured around collections of documents, and all write operations should use transactions to ensure data consistency[^1][^2].
+
+The schema is organized into the following collections:
+
+
+| Collection | Document ID / Subcollection | Fields |
+| :-- | :-- | :-- |
+| `users` | `<uid>` | `role` ('admin' or 'annotator'), `email`, `displayName`, `walletId`, `stats` (object with `tasksCompleted`, `earningsUSD`) |
+| `projects` | `<projectId>` | `name`, `description`, `status`, `guidelineUrl`, `createdBy` (user ID) |
+| `tasks` | `<taskId>` | `projectId`, `name`, `priority`, `status` ('active' or 'done'), `createdAt` |
+| `task_items` | `<taskItemId>` | `taskId`, `dataUrl`, `dataType`, `assignedTo` (user ID), `status` ('pending', 'in_progress', 'submitted', 'approved', 'rejected'), `priceUSD`, `annotation` (JSON object), `submittedAt` (timestamp) |
+| `payments` | `<paymentId>` | `uid` (user ID), `amountUSD`, `txHash`, `createdAt` |
+
+**Firestore Security Rules**
+To protect the data, access will be governed by security rules. These rules ensure that authenticated users can only read and write their own data, while administrators have broader permissions[^2].
+
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+    match /task_items/{id} {
+      allow read, write: if
+        request.auth != null &&
+        (resource.data.assignedTo == request.auth.uid ||
+         request.auth.token.role in ['admin']);
+    }
+  }
+}
+```
+
+
+## Technology Stack
+
+The platform will be built using a modern technology stack designed for scalability and a rich user experience[^3][^4][^1].
+
+
+| Component | Technology | Description |
+| :-- | :-- | :-- |
+| **Frontend** | React.js with TypeScript, Vite, Tailwind CSS, shadcn/ui | For a type-safe, component-based, and responsively designed user interface[^3][^4][^2]. |
+| **Backend** | Node.js with Express.js | For building RESTful API endpoints[^3][^1]. |
+| **Database** | PostgreSQL or Firestore | PostgreSQL for relational data or Firestore (as detailed above) for a NoSQL approach. The local dev setup uses Firestore emulators[^3][^1]. |
+| **Data Annotation** | Label Studio | Embedded via its React SDK or an iframe for the core annotation interface[^1]. |
+| **Authentication** | Firebase Auth | For managing user identities and securing endpoints with JWTs[^3][^1]. |
+| **File Storage** | AWS S3 or Google Cloud Storage | For storing raw data files like images, videos, and text that need to be annotated[^3][^4]. |
+| **Real-time Updates** | Socket.io | For providing real-time notifications to users[^3][^4]. |
+
+## Local Development Setup with Docker
+
+A Docker-based environment ensures consistency across developer machines. The setup uses `docker-compose` to manage all necessary services for local development[^1][^2].
+
+**Docker Compose Configuration (`docker-compose.yml`)**
+This file orchestrates the containers for the API, web app, database emulators, and Label Studio[^2].
+
+```yaml
+version: "3.9"
+
+services:
+  api:
+    build: ./services/api
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/secrets/fb-admin.json
+      - FIRESTORE_EMULATOR_HOST=firestore:8080
+      - AUTH_EMULATOR_HOST=auth:9099
+    ports: [ "4000:4000" ]
+    depends_on: [firestore, auth, labelstudio]
+
+  web:
+    build: ./apps/web
+    environment:
+      - VITE_API_URL=http://localhost:4000
+    ports: ["5173:4173"]
+
+  firestore:
+    image: mtlynch/firestore-emulator
+    ports:
+      - "8080:8080" # gRPC / REST
+      - "4000:4000" # Emulator UI
+
+  auth:
+    image: mtlynch/firebase-auth-emulator
+    ports:
+      - "9099:9099"
+
+  labelstudio:
+    image: heartexlabs/label-studio:latest
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./data/ls:/label-studio/data
+
+  wallet-svc:
+    build: ./services/wallet
+    ports: ["4100:4100"]
+```
+
+To start the development environment, developers can run `docker compose up --build`[^1][^2].
+
+## Backend API Implementation
+
+The backend is an Express.js application responsible for business logic, data management, and authentication[^1][^2].
+
+**API Endpoint Overview**
+The API exposes endpoints for managing user profiles, tasks (tickets), and projects[^1].
+
+
+| Verb | Route | Purpose |
+| :-- | :-- | :-- |
+| `GET` | `/me` | Returns the current authenticated user's profile. |
+| `GET` | `/tickets` | Lists tickets assigned to the current annotator. |
+| `POST` | `/tickets/:id/claim` | Assigns a specific task item to the authenticated user. |
+| `POST` | `/tickets/:id/submit` | Submits a completed annotation for review. |
+| `PATCH` | `/tickets/:id/review` | Allows an admin to approve or reject a submission. |
+| `POST` | `/projects` | Allows an admin to create a new project. |
+
+**Authentication Middleware (`authGuard`)**
+All protected routes use middleware to verify a Firebase JWT, ensuring that only authenticated users can access them[^1][^2].
+
+```typescript
+import { Request,Response,NextFunction } from 'express';
+import admin from 'firebase-admin';
+
+export async function authGuard(req:Request, res:Response, next:NextFunction) {
+  const token = req.headers.authorization?.split(' ')[^1];
+  if (!token) return res.status(401).json({error: 'missing token'});
+  try {
+    const decoded = await admin.auth().verifyIdToken(token, true);
+    (req as any).user = decoded;
+    next();
+  } catch(e) {
+    res.status(401).json({error: 'bad token'});
+  }
+}
+```
+
+
+## Frontend Application Implementation
+
+The frontend is a single-page application (SPA) built with React, Vite, and shadcn/ui for a modern user interface[^1][^2].
+
+**Key Pages and Components**
+
+* **/dashboard**: This page displays a list of available or assigned tickets for the annotator. For admins, it shows project lists and global statistics[^1][^2].
+* **/annotate/:id**: This page embeds the Label Studio interface, loading the specific task data for annotation[^1][^2].
+* **/review/:id**: An admin-only view that shows the Label Studio interface in read-only mode, with buttons to approve or reject the annotation[^1].
+
+**Embedding Label Studio**
+The annotation interface is integrated directly into the React application using the `@heartexlabs/label-studio` package. The component is configured with the specific task data and a callback function to handle submissions[^1][^2].
+
+```tsx
+import { useParams, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import '@heartexlabs/label-studio/build/static/css/main.css';
+import LabelStudio from '@heartexlabs/label-studio';
+
+export default function Annotate() {
+  const { id } = useParams();
+  const nav = useNavigate();
+
+  useEffect(() => {
+    // Fetch task data
+    const ls = new LabelStudio('ls', {
+      config: `<View><Image name="img" value="$image"/></View>`,
+      interfaces: ["submit"],
+      user: { pk: 1, firstName: 'Annotator', lastName: '' },
+      task: { id, data: { image: dataUrl } },
+      onSubmitAnnotation: (_, ann) => {
+        // API call to submit annotation
+        fetch(`/tickets/${id}/submit`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.jwt}` },
+          body: JSON.stringify({ ann: ann.serializeAnnotation() })
+        }).then(() => nav('/dashboard'))
+      }
+    });
+  }, [id]);
+
+  return <div id="ls" className="h-screen" />;
+}
+```
+
+
+## Core Workflows and Implementation Timeline
+
+The development process is broken down into phases to deliver a minimum viable product (MVP) efficiently[^3][^1].
+
+**Key Workflows**
+
+1. **Project Creation**: An admin or Project Manager creates a project, defines guidelines, uploads data, and configures tasks[^3][^4].
+2. **Task Assignment**: The system assigns tasks to annotators based on availability and expertise[^3][^4].
+3. **Annotation**: An annotator logs in, claims a task from their dashboard, uses the embedded Label Studio to complete it, and submits it for review[^3][^1][^2].
+4. **Review and Approval**: A reviewer or admin checks the submitted annotation, provides feedback, and either approves or rejects it. Approved data is added to the final dataset[^3][^4].
+5. **Payout**: A microservice handles payouts to annotators, for instance, through the Coinbase MPC Wallet SDK for crypto payments[^1].
+
+**Phased Implementation Timeline**
+
+* **Phase 1: Foundation (Weeks 1-4)**: Set up the development environment, implement the core database schema, and build the authentication system[^3][^1].
+* **Phase 2: Core Features (Weeks 5-8)**: Develop the admin and annotator dashboards and implement data import/export functionality[^3].
+* **Phase 3: Annotation Tools (Weeks 9-12)**: Integrate the Label Studio interface and build the review and approval workflow[^3][^1].
+* **Phase 4: Quality \& Optimization (Weeks 13-16)**: Implement quality control mechanisms like consensus validation and analytics dashboards[^3].
+* **Phase 5: Testing \& Deployment (Weeks 17-20)**: Conduct comprehensive testing and deploy the application to a production environment[^3][^1].
+
+
+## CI/CD Pipeline Outline
+
+A continuous integration and deployment pipeline will automate testing and deployment[^1].
+
+1. **On Push to `develop`**: A GitHub Action will run linters and tests and build Docker images.
+2. **On Tag Push `v*`**: A second action will push the built images to a container registry and trigger a deployment to a cloud provider like DigitalOcean's App Platform[^1].
+
+
+
+
+
+
+
+TETRIX/
+├─ docker-compose.yml
+├─ .env.example
+├─ apps/
+│   └─ web/                 # Vite + Tailwind + shadcn
+├─ services/
+│   ├─ api/                 # Express + Firebase Admin
+│   └─ wallet/              # Coinbase MPC stub
+├─ firestore/
+│   ├─ indexes.json
+│   └─ firestore.rules
+├─ helm/                    # empty now – filled in sprint 3
+└─ docs/
+    └─ openapi.yaml
+```
+
+Clone once, then `docker compose up --build`.
+
+---
+
+## 1.  Docker Compose (drop in root)
+
+```yaml
+version: "3.9"
+
+services:
+  api:
+    build: ./services/api
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/secrets/fb-admin.json
+      - FIRESTORE_EMULATOR_HOST=firestore:8080
+      - AUTH_EMULATOR_HOST=auth:9099
+      - COINBASE_API_KEY=${COINBASE_API_KEY}
+    volumes:
+      - ./secrets/fb-admin.json:/secrets/fb-admin.json:ro
+    ports: [ "4000:4000" ]
+    depends_on: [firestore, auth, labelstudio]
+
+  web:
+    build: ./apps/web
+    environment:
+      - VITE_API_URL=http://localhost:4000
+    ports: ["5173:4173"]
+
+  firestore:
+    image: mtlynch/firestore-emulator
+    ports:
+      - "8080:8080"   # gRPC / REST
+      - "4000:4000"   # emulator UI
+
+  auth:
+    image: mtlynch/firebase-auth-emulator
+    ports:
+      - "9099:9099"
+
+  labelstudio:
+    image: heartexlabs/label-studio:latest
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./data/ls:/label-studio/data
+
+  wallet-svc:
+    build: ./services/wallet
+    environment:
+      - COINBASE_API_KEY=${COINBASE_API_KEY}
+    ports: ["4100:4100"]
+```
+
+> **Tip for juniors:** add real Firebase service-account JSON under `secrets/` only in CI; use emulators locally.
+
+---
+
+## 2.  Firestore bootstrap scripts
+
+`firestore/indexes.json`
+
+```json
+[
+  {
+    "collectionGroup": "task_items",
+    "queryScope": "COLLECTION",
+    "fields": [
+      { "fieldPath": "assignedTo", "order": "ASCENDING" },
+      { "fieldPath": "status",     "order": "ASCENDING" }
+    ]
+  }
+]
+```
+
+`firestore/firestore.rules`
+
+```
+// Only admins can write anything, annotators only their docs
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+    match /task_items/{id} {
+      allow read, write: if
+        request.auth != null &&
+        (resource.data.assignedTo == request.auth.uid ||
+         request.auth.token.role in ['admin']);
+    }
+  }
+}
+```
+
+
+---
+
+## 3.  Express API minimal skeleton
+
+`services/api/src/index.ts`
+
+```ts
+import express from 'express';
+import cors from 'cors';
+import admin from 'firebase-admin';
+import { authGuard, role } from './middleware/auth';
+import ticketRoutes from './routes/tickets';
+
+admin.initializeApp({ projectId: 'TETRIX-dev' });
+
+const app = express();
+app.use(cors()).use(express.json());
+
+// tiny health check
+app.get('/health', (_,res)=>res.send('ok'));
+
+// protected routes
+app.use('/tickets', authGuard, ticketRoutes);
+
+app.listen(4000, () => console.log('API ⇢ :4000'));
+```
+
+`services/api/src/middleware/auth.ts`
+
+```ts
+import { Request,Response,NextFunction } from 'express';
+import admin from 'firebase-admin';
+
+export async function authGuard(req:Request,res:Response,next:NextFunction){
+  const token = req.headers.authorization?.split(' ')[^1];
+  if(!token) return res.status(401).json({error:'missing token'});
+  try{
+    const decoded = await admin.auth().verifyIdToken(token,true);
+    (req as any).user = decoded;
+    next();
+  }catch(e){
+    res.status(401).json({error:'bad token'});
+  }
+}
+
+export function role(required:'admin'){
+  return (req:Request,res:Response,next:NextFunction)=>{
+    const r = (req as any).user?.role;
+    return (r===required)? next(): res.status(403).end();
+  };
+}
+```
+
+`services/api/src/routes/tickets.ts`
+
+```ts
+import { Router } from 'express';
+import admin from 'firebase-admin';
+const db = admin.firestore();
+const router = Router();
+
+// 1. list my tickets
+router.get('/', async (req,res)=>{
+  const uid = (req as any).user.uid;
+  const snap = await db.collection('task_items')
+      .where('assignedTo','==',uid)
+      .where('status','in',['pending','in_progress'])
+      .get();
+  res.json(snap.docs.map(d=>({id:d.id,...d.data()})));
+});
+
+// 2. claim new ticket
+router.post('/:id/claim', async (req,res)=>{
+  const uid = (req as any).user.uid;
+  const ref = db.collection('task_items').doc(req.params.id);
+  await db.runTransaction(async t=>{
+    const doc = await t.get(ref);
+    if(doc.data()?.status!=='pending')
+      throw new Error('already claimed');
+    t.update(ref,{ assignedTo:uid, status:'in_progress' });
+  });
+  res.status(200).json({ok:true});
+});
+
+// 3. submit annotation
+router.post('/:id/submit', async (req,res)=>{
+  const uid = (req as any).user.uid;
+  const { ann } = req.body;
+  const ref = db.collection('task_items').doc(req.params.id);
+  await ref.update({
+    status:'submitted',
+    annotation: ann,
+    submittedAt: admin.firestore.FieldValue.serverTimestamp()
+  });
+  res.json({ok:true});
+});
+
+export default router;
+```
+
+Compile \& run with **ts-node** via `npm start`.
+(Add nodemon + tsconfig later.)
+
+---
+
+## 4.  React app quick scaffold
+
+### 4.1  Install \& init
+
+```bash
+cd apps
+npm create vite@latest web -- --template react-ts
+cd web
+npm i -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+```
+
+Add shadcn:
+
+```bash
+npx shadcn-ui@latest init
+# choose tailwind config path
+```
+
+
+### 4.2  Basic pages
+
+`src/pages/Dashboard.tsx`
+
+```tsx
+import { Button, Card } from "@/components/ui";   // shadcn imports
+import useSWR from "swr";
+import { api } from "@/lib/api";
+
+export default function Dash(){
+  const {data:tickets} = useSWR('/tickets', api.get);
+  return (
+   <div className="p-6 space-y-3">
+     <h1 className="text-2xl font-bold">My Tickets</h1>
+     {tickets?.map((t:any)=>(
+       <Card key={t.id} className="p-4 flex justify-between">
+         <div>{t.id}</div>
+         <Button onClick={()=>window.location.href=`/annotate/${t.id}`}>
+            Open
+         </Button>
+       </Card>
+     ))}
+   </div>);
+}
+```
+
+`src/pages/Annotate.tsx`
+
+```tsx
+import { useParams,useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import '@heartexlabs/label-studio/build/static/css/main.css';
+import LabelStudio from '@heartexlabs/label-studio';
+
+export default function Annotate(){
+  const {id} = useParams();
+  const nav = useNavigate();
+
+  useEffect(()=>{
+    fetch(`/tickets/${id}`,{headers:{Authorization:`Bearer ${localStorage.jwt}`}})
+     .then(r=>r.json())
+     .then(({dataUrl})=>{
+        new LabelStudio('ls', {
+          config:`<View><Image name="img" value="$image"/></View>`,
+          interfaces:["submit"],
+          user:{ pk:1, firstName:'Annotator', lastName:''},
+          task:{ id, data:{ image: dataUrl } },
+          onSubmitAnnotation: (_,ann)=>{
+            fetch(`/tickets/${id}/submit`,{
+              method:'POST',
+              headers:{'Content-Type':'application/json',
+                       Authorization:`Bearer ${localStorage.jwt}` },
+              body:JSON.stringify({ann:ann.serializeAnnotation()})
+            }).then(()=> nav('/dashboard'))
+          }
+        });
+     });
+  },[id]);
+  return <div id="ls" className="h-screen" />;
+}
+```
+
+
+---
+
+## 5.  Coinbase MPC Wallet stub (services/wallet)
+
+`index.ts`
+
+```ts
+import express from 'express';
+const app = express().use(express.json());
+
+// placeholder – log payout
+app.post('/payout', (req,res)=>{
+  const {uid, amountUSD}=req.body;
+  console.log(`Would pay ${uid} $${amountUSD}`);
+  res.json({txHash:'0xSIMULATED'});
+});
+app.listen(4100,()=>console.log('wallet-svc :4100'));
+```
+
+
+---
+
+## 6.  Environment files
+
+`.env.example`
+
+```
+# API
+COINBASE_API_KEY=changeme
+
+# Firebase local
+FIRESTORE_EMULATOR_HOST=firestore:8080
+AUTH_EMULATOR_HOST=auth:9099
+```
+
+Developers copy to `.env` and fill.
+
+---
+
+## 7.  OpenAPI stub (`docs/openapi.yaml`)
+
+```yaml
+openapi: "3.0.3"
+info:
+  title: TETRIX API
+  version: 0.1.0
+paths:
+  /tickets:
+    get:
+      summary: List my tickets
+      security: [ bearerAuth: [] ]
+      responses:
+        "200":
+          description: OK
+  /tickets/{id}/claim:
+    post:
+      summary: Claim a ticket
+      parameters: [ { in: path, name: id, required: true, schema: {type:string} } ]
+      security: [ bearerAuth: [] ]
+      responses: { "200": {description: OK} }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+```
+
+
+---
+
+## 8.  First-Run Checklist for Juniors
+
+```bash
+git clone <repo> && cd TETRIX
+cp .env.example .env         # fill any keys if needed
+docker compose up --build
+# open http://localhost:5173  (frontend) 
+# use Firebase Auth emulator UI at :4000 to create user & copy JWT with admin script
+```
+
+_Milestone success = annotate one image via Label Studio and see Firestore doc update._
+
+---
+
+## 9.  Next Sprint (after bootstrap)
+
+1. **Admin interface** – CRUD Projects, assign tasks.
+2. **Reviewer flow** – Approve/Reject endpoints + UI.
+3. **Payment batch job** – daily cron, computes totals → wallet-svc payout.
+4. **Helm chart** – param-file for DigitalOcean DOKS.
+5. **Production Firebase** – switch env vars, deploy Cloud Functions for heavy ops.
+
+
+
+
+
+
+

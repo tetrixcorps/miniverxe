@@ -86,11 +86,12 @@ const categories = [...new Set(blogPosts.map(post => post.category))];
   <!-- Hero Section -->
   <section class="bg-gradient-to-br from-brand-red via-brand-orange to-brand-yellow text-white py-20">
     <div class="max-w-4xl mx-auto text-center px-4">
-      <h1 class="text-4xl md:text-6xl font-heading font-extrabold mb-6">
-        <DynamicTetrix size="6xl" variant="hero" /> Blog
+      <h1 class="flex flex-col items-center justify-center text-4xl md:text-6xl font-heading font-extrabold mb-6">
+        <span class="mb-2"><DynamicTetrix size="6xl" variant="hero" aria-hidden="true" /></span>
+        <span>Blog</span>
       </h1>
       <p class="text-xl md:text-2xl mb-8 max-w-2xl mx-auto">
-        Insights, strategies, and stories to help you transform your business with modern SaaS solutions
+        Insights and strategies to accelerate your enterprise with modern AI-powered SaaS solutions
       </p>
       <div class="flex flex-wrap justify-center gap-4">
         <Button href="#featured" variant="secondary">Featured Posts</Button>

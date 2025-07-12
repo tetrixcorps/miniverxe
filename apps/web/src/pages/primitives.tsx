@@ -44,7 +44,7 @@ export default function PrimitivesShowcase() {
         <CardContent>Card content goes here.</CardContent>
       </Card>
       <Dialog>
-        <DialogTrigger asChild>
+        <DialogTrigger>
           <Button>Open Dialog</Button>
         </DialogTrigger>
         <DialogContent>
@@ -57,7 +57,7 @@ export default function PrimitivesShowcase() {
         <AlertDescription>This is an alert description.</AlertDescription>
       </Alert>
       <Tooltip>
-        <TooltipTrigger asChild>
+        <TooltipTrigger>
           <Button>Hover me</Button>
         </TooltipTrigger>
         <TooltipContent>Tooltip content</TooltipContent>

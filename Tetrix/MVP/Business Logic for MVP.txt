@@ -1,0 +1,275 @@
+
+
+## **Service Responsibilities**
+
+### 1. **Frontend (React SPA)**
+- **Responsibilities:**
+  - User authentication (login, registration, JWT handling)
+  - Dashboard for annotators (task list, stats, balance)
+  - Dashboard for admins (project/task management, user management, analytics)
+  - Annotation interface (Label Studio embed)
+  - Review interface (readonly annotation, approve/reject)
+  - Project CRUD and guidelines management
+  - Responsive, accessible UI with Tailwind + shadcn
+
+### 2. **nginx**
+- **Responsibilities:**
+  - Serve static SPA assets
+  - Proxy API requests to Express backend
+
+### 3. **Express API (Node.js)**
+- **Responsibilities:**
+  - RESTful API for all business logic
+  - Authentication and role-based access control (JWT, Firebase Auth)
+  - CRUD for users, projects, tasks, task_items, payments
+  - Task assignment and status transitions (atomic, transactional)
+  - Annotation submission and review endpoints
+  - Webhook endpoint for Label Studio
+  - Payout endpoint (calls wallet-svc)
+  - Real-time updates (Socket.io, optional)
+
+### 4. **Firestore (Firebase Auth)**
+- **Responsibilities:**
+  - Store all persistent data (users, projects, tasks, task_items, payments)
+  - Enforce security rules for data access
+  - Provide authentication and user management
+
+### 5. **Label Studio**
+- **Responsibilities:**
+  - Provide annotation UI for various data types
+  - Communicate annotation results to backend via webhooks
+
+### 6. **wallet-svc (Coinbase MPC)**
+- **Responsibilities:**
+  - Create wallets for new annotators
+  - Process payout requests (simulate or use Coinbase MPC API)
+  - Record transaction hashes in Firestore
+
+---
+
+## **API Route Mapping (MVP)**
+
+| Verb | Route | Purpose | Auth | Role |
+|------|-------|---------|------|------|
+| GET  | `/me` | Get current user profile | JWT | all |
+| POST | `/login` | Authenticate user | - | - |
+| POST | `/register` | Register new user | - | - |
+| GET  | `/tickets` | List tickets assigned to annotator | JWT | annotator |
+| POST | `/tickets/:id/claim` | Claim a task item | JWT | annotator |
+| POST | `/tickets/:id/submit` | Submit annotation | JWT | annotator |
+| PATCH| `/tickets/:id/review` | Approve/reject annotation | JWT | admin/reviewer |
+| GET  | `/projects` | List projects | JWT | admin/pm |
+| POST | `/projects` | Create project | JWT | admin/pm |
+| PATCH| `/projects/:id` | Update project | JWT | admin/pm |
+| GET  | `/users` | List users | JWT | admin |
+| POST | `/wallet/create` | Create wallet for user | JWT | annotator |
+| POST | `/wallet/payout` | Payout to annotator | JWT | admin |
+| POST | `/ls/webhook` | Receive annotation webhook | - | - |
+
+---
+
+## **Wireframe Screens (MVP)**
+
+### **Annotator**
+- **Login/Register**
+- **Dashboard**
+  - List of assigned tickets (task_items)
+  - Stats: tasks completed, earnings
+  - Button to open annotation interface
+- **Annotation**
+  - Label Studio embed
+  - Submit annotation button
+- **Profile**
+  - Wallet info, payout history
+
+### **Admin/Project Manager**
+- **Login**
+- **Dashboard**
+  - Project list, global stats
+  - Quick links to create/edit projects
+- **Project Management**
+  - Create/edit project
+  - Assign tasks, upload data, set guidelines
+- **Task Review**
+  - List of submitted annotations
+  - Review interface (readonly Label Studio, approve/reject buttons)
+- **User Management**
+  - List users, assign roles, deactivate/reactivate
+
+### **Reviewer**
+- **Dashboard**
+  - List of annotations to review
+  - Review interface
+
+---
+
+**Next Steps:**
+- I will proceed to document the Firestore data model and security rules.
+- Once web access is available, I will review the Coinbase MPC wallet documentation and ensure the wallet-svc is designed for compatibility and security.
+
+Would you like a visual wireframe (Mermaid or text-based) for the main screens, or should I proceed directly to the Firestore schema and security rules?
+
+## **Docker Compose Plan**
+
+**Goal:**  
+Orchestrate all required services for local development:
+- Express API (Node.js)
+- React SPA (Vite)
+- Firestore emulator
+- Firebase Auth emulator
+- Label Studio (annotation tool)
+- wallet-svc (Coinbase MPC stub)
+
+---
+
+### **Service Overview**
+
+| Service         | Purpose                                      | Ports         | Build/Source         |
+|-----------------|----------------------------------------------|--------------|----------------------|
+| api             | Express backend (business logic, REST API)   | 4000:4000    | ./services/api       |
+| web             | React SPA (frontend)                         | 5173:4173    | ./apps/web           |
+| firestore       | Firestore emulator (local DB)                | 8080:8080    | mtlynch/firestore-emulator |
+| auth            | Firebase Auth emulator                       | 9099:9099    | mtlynch/firebase-auth-emulator |
+| labelstudio     | Label Studio annotation tool                 | 8081:8080    | heartexlabs/label-studio:latest |
+| wallet-svc      | Coinbase MPC wallet microservice (stub/MVP)  | 4100:4100    | ./services/wallet    |
+
+---
+
+### **Key Environment Variables**
+
+- `GOOGLE_APPLICATION_CREDENTIALS` (for API)
+- `FIRESTORE_EMULATOR_HOST`, `AUTH_EMULATOR_HOST` (for API and web)
+- `COINBASE_API_KEY` (for wallet-svc)
+
+---
+
+### **Example `docker-compose.yml`**
+
+```yaml
+version: "3.9"
+
+services:
+  api:
+    build: ./services/api
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/secrets/fb-admin.json
+      - FIRESTORE_EMULATOR_HOST=firestore:8080
+      - AUTH_EMULATOR_HOST=auth:9099
+      - COINBASE_API_KEY=${COINBASE_API_KEY}
+    volumes:
+      - ./secrets/fb-admin.json:/secrets/fb-admin.json:ro
+    ports: [ "4000:4000" ]
+    depends_on: [firestore, auth, labelstudio]
+
+  web:
+    build: ./apps/web
+    environment:
+      - VITE_API_URL=http://localhost:4000
+    ports: ["5173:4173"]
+
+  firestore:
+    image: mtlynch/firestore-emulator
+    ports:
+      - "8080:8080"   # gRPC / REST
+      - "4000:4000"   # emulator UI
+
+  auth:
+    image: mtlynch/firebase-auth-emulator
+    ports:
+      - "9099:9099"
+
+  labelstudio:
+    image: heartexlabs/label-studio:latest
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./data/ls:/label-studio/data
+
+  wallet-svc:
+    build: ./services/wallet
+    environment:
+      - COINBASE_API_KEY=${COINBASE_API_KEY}
+    ports: ["4100:4100"]
+```
+
+---
+
+### **Next Steps**
+
+- I will generate this `docker-compose.yml` in your project root.
+- I’ll also provide a `.env.example` file for required environment variables.
+- After this, we’ll proceed to scaffolding the Express API service.
+
+Would you like any customizations (e.g., additional services, port changes), or should I proceed with this standard setup?
+
+
+
+
+Here’s the plan for scaffolding the Express API service (`services/api`) with a complete structure, endpoints, and middleware as previously outlined.
+
+---
+
+## **Express API Scaffold Plan**
+
+### **Directory Structure**
+```
+services/
+  api/
+    src/
+      middleware/
+        auth.ts
+        roles.ts
+      routes/
+        tickets.ts
+        projects.ts
+        users.ts
+        wallet.ts
+        lsWebhook.ts
+      index.ts
+      firebase.ts
+    package.json
+    tsconfig.json
+```
+
+---
+
+### **Key Features to Scaffold**
+
+- **Express app with CORS and JSON body parsing**
+- **Firebase Admin SDK initialization (Firestore, Auth)**
+- **Authentication middleware (JWT/Firebase Auth)**
+- **Role-based access middleware**
+- **REST endpoints:**
+  - `/me` (GET)
+  - `/login` (POST)
+  - `/register` (POST)
+  - `/tickets` (GET, POST, PATCH)
+  - `/projects` (GET, POST, PATCH)
+  - `/users` (GET)
+  - `/wallet/create` (POST)
+  - `/wallet/payout` (POST)
+  - `/ls/webhook` (POST)
+- **Atomic Firestore transactions for task assignment and status changes**
+- **Error handling and input validation**
+
+---
+
+### **Next Steps**
+
+1. Create the directory and file structure for `services/api`.
+2. Scaffold `package.json` and `tsconfig.json` for a TypeScript Express project.
+3. Implement:
+   - Firebase Admin SDK setup (`firebase.ts`)
+   - Auth middleware (`middleware/auth.ts`)
+   - Role middleware (`middleware/roles.ts`)
+   - Route handlers for each resource (`routes/`)
+   - Main app entry (`index.ts`)
+
+---
+
+**I will begin by creating the directory and file structure, then populate each file with the appropriate code.**  
+Let me know if you want to see the file-by-file breakdown as I go, or just the final scaffolded code!
+
+
+
+

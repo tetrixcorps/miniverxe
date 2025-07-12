@@ -1,0 +1,164 @@
+Here are recommendations for business logic and validation requirements to make your data annotation platform’s API endpoints more robust, secure, and production-ready:
+
+---
+
+## **General Recommendations**
+
+- **Input Validation:**  
+  - Use a schema validation library (e.g., Joi, Zod) to validate all incoming request bodies and parameters.
+  - Enforce required fields, correct data types, and value constraints (e.g., status enums, email format).
+
+- **Error Handling:**  
+  - Standardize error responses (status code, error message, error code).
+  - Log errors for monitoring and debugging.
+
+- **Authentication & Authorization:**  
+  - Require JWT for all protected endpoints.
+  - Enforce role-based access for sensitive actions (e.g., only admins can create projects, only assigned annotators can submit annotations).
+
+- **Rate Limiting & Abuse Prevention:**  
+  - Implement rate limiting on sensitive endpoints (e.g., login, claim ticket) to prevent brute force and abuse.
+
+---
+
+## **Endpoint-Specific Recommendations**
+
+### **Tickets**
+- **GET `/tickets`**
+  - Only return tickets assigned to the authenticated user.
+  - Support filtering by status, pagination for large lists.
+
+- **POST `/tickets/:id/claim`**
+  - Use Firestore transactions to ensure atomic claim (no double-claiming).
+  - Only allow claim if ticket is in `pending` status.
+  - Prevent users from claiming more than a set number of tickets at once (configurable).
+
+- **POST `/tickets/:id/submit`**
+  - Validate annotation payload structure.
+  - Only allow submission if user is assigned and ticket is `in_progress`.
+  - Prevent resubmission if already submitted.
+
+- **PATCH `/tickets/:id/review`**
+  - Only allow admins/reviewers.
+  - Validate status transition (e.g., only `submitted` tickets can be approved/rejected).
+  - Optionally require a review comment on rejection.
+
+### **Projects**
+- **POST `/projects`**
+  - Validate project name uniqueness.
+  - Enforce required fields (name, annotationType, etc.).
+
+- **PATCH `/projects/:id`**
+  - Only allow updates to editable fields.
+  - Prevent status changes that violate business rules (e.g., can’t mark as completed if tasks are still pending).
+
+### **Users**
+- **GET `/users`**
+  - Only allow admin access.
+  - Support filtering/searching by role, email, etc.
+
+- **GET `/me`**
+  - Return only the authenticated user’s profile.
+
+### **Wallet**
+- **POST `/wallet/create`**
+  - Only allow creation if user doesn’t already have a wallet.
+  - Validate user identity.
+
+- **POST `/wallet/payout`**
+  - Only allow admin to trigger payouts.
+  - Validate payout amount, user eligibility, and prevent duplicate payouts for the same work.
+
+### **Label Studio Webhook**
+- **POST `/ls/webhook`**
+  - Validate event type and payload.
+  - Authenticate webhook source (e.g., secret token).
+  - Idempotency: handle duplicate webhook events gracefully.
+
+---
+
+## **Other Robustness Enhancements**
+
+- **Audit Logging:**  
+  - Log all critical actions (claim, submit, review, payout) for traceability.
+
+- **Concurrency Control:**  
+  - Use Firestore transactions for all status changes to prevent race conditions.
+
+- **Data Consistency:**  
+  - Enforce referential integrity (e.g., task_items must reference valid tasks/projects).
+
+- **Security:**  
+  - Sanitize all user input to prevent injection attacks.
+  - Use HTTPS for all API traffic.
+
+---
+
+These recommendations will help ensure your platform is secure, reliable, and maintainable as it scales.  
+Let me know if you want to prioritize or implement any of these in the initial scaffold!
+
+
+
+
+
+Great! Here’s the file-by-file breakdown for the Express API scaffold. I’ll outline the purpose and planned content for each file, then proceed to implement them in order.
+
+---
+
+## **services/api File-by-File Breakdown**
+
+### 1. **package.json**
+- Declares dependencies: express, cors, firebase-admin, typescript, ts-node, etc.
+- Scripts for dev/start.
+
+### 2. **tsconfig.json**
+- TypeScript config for Node/Express.
+
+### 3. **src/firebase.ts**
+- Initializes Firebase Admin SDK (Firestore, Auth).
+- Exports initialized instances.
+
+### 4. **src/middleware/auth.ts**
+- Auth middleware: verifies JWT (Firebase ID token), attaches user to request.
+- Handles missing/invalid tokens.
+
+### 5. **src/middleware/roles.ts**
+- Role-based access middleware.
+- Checks if user has required role(s) for a route.
+
+### 6. **src/routes/tickets.ts**
+- Endpoints for:
+  - GET `/tickets` (list assigned tickets)
+  - POST `/tickets/:id/claim` (claim a task item)
+  - POST `/tickets/:id/submit` (submit annotation)
+  - PATCH `/tickets/:id/review` (approve/reject, admin/reviewer only)
+
+### 7. **src/routes/projects.ts**
+- Endpoints for:
+  - GET `/projects` (list projects)
+  - POST `/projects` (create project)
+  - PATCH `/projects/:id` (update project)
+
+### 8. **src/routes/users.ts**
+- Endpoints for:
+  - GET `/users` (list users, admin only)
+  - GET `/me` (current user profile)
+
+### 9. **src/routes/wallet.ts**
+- Endpoints for:
+  - POST `/wallet/create` (create wallet for user)
+  - POST `/wallet/payout` (admin triggers payout)
+
+### 10. **src/routes/lsWebhook.ts**
+- Endpoint for:
+  - POST `/ls/webhook` (Label Studio webhook handler)
+
+### 11. **src/index.ts**
+- Main Express app setup.
+- Registers middleware and routes.
+- Starts server.
+
+---
+
+**I will now begin implementing these files, starting with `package.json` and `tsconfig.json`.**  
+Let me know if you want to review each file as it’s created, or if you’d like a summary after each logical group (e.g., middleware, routes, main app).

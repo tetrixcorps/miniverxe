@@ -1,0 +1,212 @@
+Great! Here’s a step-by-step plan and code for each requested part, designed for your distributed, containerized system. This will enable seamless end-to-end streaming from frontend to backend to agentic layer, with n8n workflow integration and Docker orchestration.
+
+---
+
+# 1. **Implementing Backend Proxy Endpoints (FastAPI Example)**
+
+Assume your backend is in `/home/diegomartinez/Desktop/tetrix/backend/`.
+
+**Install dependencies:**
+```bash
+pip install fastapi httpx uvicorn
+```
+
+**`main.py` (Backend Proxy Example):**
+```python
+from fastapi import FastAPI, Request, WebSocket
+from fastapi.responses import StreamingResponse, JSONResponse
+import httpx
+import os
+
+app = FastAPI()
+AGENTIC_LAYER_URL = os.getenv("AGENTIC_LAYER_URL", "http://agentic-layer:8000")
+N8N_URL = os.getenv("N8N_URL", "http://n8n:5678")
+
+@app.post("/api/chat")
+async def chat(request: Request):
+    async with httpx.AsyncClient() as client:
+        response = await client.post(f"{AGENTIC_LAYER_URL}/runs", json=await request.json())
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+
+@app.post("/api/chat/stream")
+async def chat_stream(request: Request):
+    async with httpx.AsyncClient() as client:
+        async with client.stream("POST", f"{AGENTIC_LAYER_URL}/runs/stream", json=await request.json()) as r:
+            return StreamingResponse(r.aiter_text(), media_type="text/event-stream")
+
+@app.get("/api/tools")
+async def tools():
+    async with httpx.AsyncClient() as client:
+        response = await client.get(f"{AGENTIC_LAYER_URL}/tools")
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+
+@app.post("/api/automation")
+async def trigger_automation(request: Request):
+    async with httpx.AsyncClient() as client:
+        response = await client.post(f"{N8N_URL}/webhook/agent", json=await request.json())
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+```
+
+---
+
+# 2. **Frontend Integration (OpenWeb-UI or Custom React/Vue)**
+
+**A. Standard Chat (Non-Streaming):**
+```js
+async function sendChat(message) {
+  const res = await fetch('/api/chat', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({message}),
+  });
+  const data = await res.json();
+  // Display data.response in chat window
+}
+```
+
+**B. Streaming Chat (SSE):**
+```js
+function streamChat(message, onData) {
+  const eventSource = new EventSource('/api/chat/stream');
+  eventSource.onmessage = (event) => {
+    onData(event.data); // Append to chat window
+  };
+  eventSource.onerror = () => eventSource.close();
+  // To send the message, you may need to POST first, or use a custom SSE setup
+}
+```
+*If your backend expects a POST to start the stream, use fetch to initiate, then connect to SSE endpoint.*
+
+---
+
+# 3. **n8n Workflow Integration**
+
+**A. Backend triggers n8n:**
+- The `/api/automation` endpoint in the backend (see above) POSTs to n8n’s webhook.
+
+**B. n8n Workflow Example:**
+- In n8n, create a workflow with a Webhook node (POST `/webhook/agent`).
+- Add nodes for processing, notifications, or calling back to the backend or agentic layer.
+
+**C. Example n8n Webhook Node:**
+- Method: POST
+- Path: `/webhook/agent`
+- Respond with: JSON or custom logic
+
+---
+
+# 4. **Dockerization via Docker Compose**
+
+**Directory structure:**
+```
+/Desktop/
+  tetrix/
+    backend/
+      main.py
+      Dockerfile
+    frontend/
+      # OpenWeb-UI or your custom UI
+    n8n/
+      # (optional, for custom config)
+  ollama/
+    # Agentic layer
+  docker-compose.yml
+```
+
+**Sample `Dockerfile` for Backend:**
+```dockerfile
+FROM python:3.12-slim
+WORKDIR /app
+COPY . .
+RUN pip install fastapi httpx uvicorn
+EXPOSE 8001
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001"]
+```
+
+**Sample `docker-compose.yml`:**
+```yaml
+version: '3.8'
+services:
+  frontend:
+    build: ./tetrix/frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  backend:
+    build: ./tetrix/backend
+    environment:
+      - AGENTIC_LAYER_URL=http://agentic-layer:8000
+      - N8N_URL=http://n8n:5678
+    ports:
+      - "8001:8001"
+    depends_on:
+      - agentic-layer
+      - n8n
+
+  agentic-layer:
+    build: ./ollama
+    environment:
+      - AGENT_API_KEY=testkey
+    ports:
+      - "8000:8000"
+
+  n8n:
+    image: n8nio/n8n
+    ports:
+      - "5678:5678"
+    environment:
+      - GENERIC_TIMEZONE=Europe/Berlin
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+volumes:
+  n8n_data:
+```
+
+---
+
+# 5. **Test End-to-End Streaming**
+
+**A. Start all services:**
+```bash
+docker-compose up --build
+```
+
+**B. Test flow:**
+1. Open the frontend (http://localhost:3000).
+2. Send a chat message.
+3. The frontend calls `/api/chat/stream` on the backend.
+4. The backend proxies to `/runs/stream` on the agentic layer.
+5. The agentic layer streams the response back through the backend to the frontend.
+6. The frontend displays the streaming response in real time.
+
+**C. Test n8n:**
+- Trigger an automation from the frontend or backend and verify n8n receives and processes the webhook.
+
+---
+
+# 6. **Summary Table: End-to-End Flow**
+
+| Step | Component      | Endpoint Called         | Protocol | Purpose                        |
+|------|---------------|------------------------|----------|--------------------------------|
+| 1    | Frontend      | /api/chat/stream       | HTTP/SSE | User sends chat                |
+| 2    | Backend       | /runs/stream           | HTTP/SSE | Proxies to agentic layer       |
+| 3    | Agentic Layer | (processes request)    | -        | LLM/agent response             |
+| 4    | Backend       | (streams response)     | HTTP/SSE | Relays to frontend             |
+| 5    | Frontend      | (renders response)     | -        | Shows to user                  |
+| 6    | Backend       | /api/automation        | HTTP     | Triggers n8n workflow          |
+| 7    | n8n           | /webhook/agent         | HTTP     | Runs automation                |
+
+---
+
+# 7. **Next Steps**
+
+- Implement and test each component as above.
+- Add authentication, error handling, and logging as needed.
+- Scale services or add more tools/workflows as your system grows.
+
+---
+
+**Let me know which part you want to see in more detail (e.g., full backend code, frontend streaming code, n8n workflow setup, or Dockerfile examples for other services)!**

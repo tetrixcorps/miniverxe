@@ -1,0 +1,203 @@
+
+
+```mermaid
+flowchart TD
+  subgraph Annotator
+    ALogin["Login/Register"]
+    ADash["Dashboard: My Tickets, Stats, Balance"]
+    AAnn["Annotate Task (Label Studio)"]
+    AProfile["Profile: Wallet, Payout History"]
+    ADash -->|Open Task| AAnn
+    ADash -->|Profile| AProfile
+    ALogin --> ADash
+  end
+
+  subgraph Admin
+    AdminLogin["Login"]
+    AdminDash["Dashboard: Projects, Stats"]
+    ProjMgmt["Project Management"]
+    TaskReview["Task Review"]
+    UserMgmt["User Management"]
+    AdminDash -->|Manage Projects| ProjMgmt
+    AdminDash -->|Review Tasks| TaskReview
+    AdminDash -->|Users| UserMgmt
+    AdminLogin --> AdminDash
+  end
+
+  subgraph Reviewer
+    RevLogin["Login"]
+    RevDash["Dashboard: Review Queue"]
+    RevReview["Review Annotation"]
+    RevDash --> RevReview
+    RevLogin --> RevDash
+  end
+```
+
+---
+
+**Screen Flow Summary:**
+
+- **Annotator:**  
+  - Login/Register → Dashboard (tickets, stats, balance) → Annotate Task (Label Studio)  
+  - Dashboard → Profile (wallet, payout history)
+
+- **Admin:**  
+  - Login → Dashboard (projects, stats) → Project Management / Task Review / User Management
+
+- **Reviewer:**  
+  - Login → Dashboard (review queue) → Review Annotation
+
+---
+
+Let me know if you want to expand any section with more detail, or if you’d like to proceed to the Docker Compose setup and service orchestration!
+
+
+
+
+flowchart TD
+  Browser["Browser (React SPA)"]
+  Nginx["nginx (static SPA)"]
+  API["Express API (Node18)"]
+  Firestore["Firestore (Firebase Auth)"]
+  LabelStudio["Label Studio (iframe/SDK)"]
+  LabelSync["label-studio-sync svc"]
+  WalletSvc["wallet-svc (Coinbase MPC)"]
+
+  Browser -->|HTTP| Nginx
+  Nginx -->|HTTP| API
+  API <--> |gRPC/REST| Firestore
+  API --> |iframe/SDK| LabelStudio
+  LabelStudio --> |Webhook| API
+  API --> LabelSync
+  API --> WalletSvc
+  WalletSvc --> Firestore
+
+  subgraph Local Dev
+    Firestore
+    LabelStudio
+    WalletSvc
+  end
+
+
+
+
+
+flowchart TD
+  Browser["Browser (React SPA)"]
+  Nginx["nginx (static SPA)"]
+  API["Express API (Node18)"]
+  Firestore["Firestore (Firebase Auth)"]
+  LabelStudio["Label Studio (iframe/SDK)"]
+  LabelSync["label-studio-sync svc"]
+  WalletSvc["wallet-svc (Coinbase MPC)"]
+
+  Browser -->|HTTP| Nginx
+  Nginx -->|HTTP| API
+  API <--> |gRPC/REST| Firestore
+  API --> |iframe/SDK| LabelStudio
+  LabelStudio --> |Webhook| API
+  API --> LabelSync
+  API --> WalletSvc
+  WalletSvc --> Firestore
+
+  subgraph Local Dev
+    Firestore
+    LabelStudio
+    WalletSvc
+  end
+
+
+
+like a visual wireframe (Mermaid or text-based) for the main screens
+
+
+
+
+Ran tool
+Here’s the high-level architecture for the new data annotation platform (TETRIXTalk):
+
+---
+
+### **Component Diagram (MVP)**
+
+```mermaid
+flowchart TD
+  Browser["Browser (React SPA)"]
+  Nginx["nginx (static SPA)"]
+  API["Express API (Node18)"]
+  Firestore["Firestore (Firebase Auth)"]
+  LabelStudio["Label Studio (iframe/SDK)"]
+  LabelSync["label-studio-sync svc"]
+  WalletSvc["wallet-svc (Coinbase MPC)"]
+
+  Browser -->|HTTP| Nginx
+  Nginx -->|HTTP| API
+  API <--> |gRPC/REST| Firestore
+  API --> |iframe/SDK| LabelStudio
+  LabelStudio --> |Webhook| API
+  API --> LabelSync
+  API --> WalletSvc
+  WalletSvc --> Firestore
+
+  subgraph Local Dev
+    Firestore
+    LabelStudio
+    WalletSvc
+  end
+```
+
+---
+
+### **Service Boundaries & Data Flow**
+
+- **Browser (React SPA):**  
+  - User/annotator/admin interacts with the app.
+  - Communicates with the backend via REST API and receives real-time updates.
+
+- **nginx:**  
+  - Serves the static SPA and proxies API requests.
+
+- **Express API:**  
+  - Handles all business logic, authentication, and data access.
+  - Connects to Firestore for data storage and user management.
+  - Integrates with Label Studio for annotation tasks (via iframe/SDK and webhooks).
+  - Communicates with the wallet service for payouts.
+
+- **Firestore (Firebase Auth):**  
+  - Stores all core data: users, projects, tasks, task_items, payments.
+  - Handles authentication and authorization.
+
+- **Label Studio:**  
+  - Embedded in the frontend for annotation.
+  - Sends annotation events to the backend via webhooks.
+
+- **label-studio-sync svc:**  
+  - (Optional) Service to keep Label Studio and Firestore in sync for advanced workflows.
+
+- **wallet-svc (Coinbase MPC):**  
+  - Handles annotator payouts.
+  - Communicates with Firestore to record payment transactions.
+
+---
+
+### **Technology Stack**
+
+- **Frontend:** React.js (Vite, TypeScript), Tailwind CSS, shadcn UI, Redux, Axios, JWT Auth
+- **Backend:** Node.js (Express), Firebase Admin SDK, Passport.js, Multer (file uploads), Socket.io (real-time)
+- **Database:** Firestore (with emulator for local dev), Firebase Auth, Redis (optional for caching)
+- **Annotation:** Label Studio (iframe/SDK)
+- **Payouts:** wallet-svc (Coinbase MPC, stub for MVP)
+- **DevOps:** Docker Compose, .env management, GitHub Actions for CI/CD
+
+---
+
+### **Key Flows**
+
+- **User Auth:** JWT-based, role-aware (admin, annotator, reviewer, etc.)
+- **Task Assignment:** Atomic Firestore transactions for status changes
+- **Annotation:** Label Studio embedded, submits results via API/webhook
+- **Review & Payout:** Admin reviews, triggers payout via wallet-svc
+
+---
+
+Would you like a written breakdown of each service’s responsibilities and main API routes, or should I proceed to documenting the Firestore data model and security rules next?

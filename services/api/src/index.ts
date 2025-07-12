@@ -5,6 +5,7 @@ import projectsRouter from './routes/projects';
 import usersRouter from './routes/users';
 import walletRouter from './routes/wallet';
 import lsWebhookRouter from './routes/lsWebhook';
+import llmRouter from './routes/llm';
 
 const app = express();
 
@@ -22,8 +23,10 @@ app.use('/projects', projectsRouter);
 app.use('/users', usersRouter);
 app.use('/wallet', walletRouter);
 app.use('/ls/webhook', lsWebhookRouter);
+app.use('/llm', llmRouter);
 
 // TODO: Add global error handler
 
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`API listening on :${PORT}`)); 
+app.listen(PORT, () => console.log(`API listening on :${PORT}`));
+export { app }; 

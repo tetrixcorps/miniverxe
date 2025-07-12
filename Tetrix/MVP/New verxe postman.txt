@@ -1,0 +1,164 @@
+Okay, due to limitations in modifying the Postman collection file directly, I will provide the test scripts that you can manually add to your Postman requests.
+
+Instructions for Manual Addition:
+
+    Open Postman and your verxe_postman_collection.json.
+    For each request listed below:
+        Find the request in your collection.
+        Go to the "Tests" tab for that request.
+        Paste the entire JavaScript code block provided into the "Tests" editor.
+
+1. For "Register" Request (POST {{base_url}}/api/auth/register)
+
+Expected Response Model: UserResponse
+
+Postman Test Script:
+
+// Schema for UserResponse
+const userResponseSchema = {
+  "type": "object",
+  "properties": {
+    "email": {"type": "string", "format": "email"},
+    "username": {"type": "string"},
+    "id": {"type": "string", "format": "uuid"},
+    "is_active": {"type": "boolean"},
+    "is_verified": {"type": "boolean"},
+    "badge": {"type": "string"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "follower_count": {"type": "integer"},
+    "tier": {"type": "integer"}
+  },
+  "required": ["email", "username", "id", "is_active", "is_verified", "badge", "created_at", "follower_count", "tier"]
+};
+
+pm.test("Status code is 201 (Created)", function () {
+    pm.response.to.have.status(201);
+});
+
+pm.test("Response schema is valid (UserResponse)", function() {
+    var responseData = pm.response.json();
+    var validationResult = tv4.validate(responseData, userResponseSchema);
+    if (!validationResult) {
+        console.log("Schema validation errors for UserResponse:", tv4.error);
+    }
+    pm.expect(validationResult).to.be.true;
+});
+
+// Example: Check for specific data types (optional, as schema does this)
+pm.test("ID is a string", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.id).to.be.a('string');
+});
+
+pm.test("Email is a string", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.email).to.be.a('string');
+});
+
+2. For "Get Room Details" Request (GET {{base_url}}/api/rooms/{{room_id}})
+
+Expected Response Model: RoomWithDetails
+
+Postman Test Script:
+
+// Schema for RoomWithDetails
+const roomWithDetailsSchema = {
+  "type": "object",
+  "properties": {
+    "name": {"type": "string"},
+    "description": {"type": ["string", "null"]},
+    "is_private": {"type": "boolean"},
+    "id": {"type": "string", "format": "uuid"},
+    "owner_id": {"type": "string", "format": "uuid"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "updated_at": {"type": "string", "format": "date-time"},
+    "participant_count": {"type": "integer"}
+  },
+  "required": ["name", "is_private", "id", "owner_id", "created_at", "updated_at", "participant_count"]
+};
+
+pm.test("Status code is 200 (OK)", function () {
+    pm.response.to.have.status(200);
+});
+
+pm.test("Response schema is valid (RoomWithDetails)", function() {
+    var responseData = pm.response.json();
+    var validationResult = tv4.validate(responseData, roomWithDetailsSchema);
+    if (!validationResult) {
+        console.log("Schema validation errors for RoomWithDetails:", tv4.error);
+    }
+    pm.expect(validationResult).to.be.true;
+});
+
+// Example: Check for specific data presence (optional, as schema required does this)
+pm.test("Response has an ID and name", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.id).to.not.be.empty;
+    pm.expect(jsonData.name).to.not.be.empty;
+});
+
+3. For "Create Stream" Request (POST {{base_url}}/api/streams)
+
+Since this request was missing from your collection, you'll need to add it first.
+
+    Method: POST
+    URL: {{base_url}}/api/streams
+    Headers:
+        Content-Type: application/json
+        Authorization: Bearer {{access_token}} (ensure access_token is set in your Postman environment)
+    Body (raw, JSON):
+
+    {
+        "title": "My API Test Stream",
+        "description": "This is a test stream created via Postman.",
+        "room_id": "{{your_room_id_variable}}", // Replace with a valid room ID or Postman variable
+        "is_recorded": false
+    }
+
+    (You'll need to replace {{your_room_id_variable}} with a valid UUID for a room, or set up a Postman variable that gets populated from another request, e.g., after creating or getting a room).
+
+Expected Response Model: Stream (from backend/app/schemas/stream.py)
+
+Postman Test Script (for the new "Create Stream" request):
+
+// Schema for Stream
+const streamSchema = {
+  "type": "object",
+  "properties": {
+    "title": {"type": "string"},
+    "description": {"type": ["string", "null"]},
+    "room_id": {"type": "string", "format": "uuid"},
+    "is_recorded": {"type": "boolean"},
+    "id": {"type": "string", "format": "uuid"},
+    "owner_id": {"type": "string", "format": "uuid"},
+    "stream_key": {"type": "string"},
+    "rtmp_url": {"type": ["string", "null"]},
+    "playlist_url": {"type": ["string", "null"]},
+    "status": {"type": "string"}, // Should typically be "offline" on creation
+    "recording_url": {"type": ["string", "null"]},
+    "created_at": {"type": "string", "format": "date-time"},
+    "updated_at": {"type": "string", "format": "date-time"}
+  },
+  "required": ["title", "room_id", "is_recorded", "id", "owner_id", "stream_key", "status", "created_at", "updated_at"]
+};
+
+pm.test("Status code is 201 (Created)", function () {
+    pm.response.to.have.status(201);
+});
+
+pm.test("Response schema is valid (Stream)", function() {
+    var responseData = pm.response.json();
+    var validationResult = tv4.validate(responseData, streamSchema);
+    if (!validationResult) {
+        console.log("Schema validation errors for Stream:", tv4.error);
+    }
+    pm.expect(validationResult).to.be.true;
+});
+
+// Example: Check initial status
+pm.test("Stream status is 'offline' on creation", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.status).to.eql("offline");
+});
+
+Please let me know if these scripts work for you or if you need any adjustments! Once you've added these, the schema validation for these key endpoints will be in place.

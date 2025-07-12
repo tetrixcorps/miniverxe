@@ -1,0 +1,486 @@
+Here’s a high-level framework and orchestration plan for integrating your agentic layer (in `/home/diegomartinez/Desktop/ollama/`) with your broader web application (in `/home/diegomartinez/Desktop/tetrix/`), including API route design, Docker orchestration, and distributed system architecture. This will ensure seamless interaction between your frontend, backend, agentic layer, and other services (like n8n and OpenWeb-UI).
+
+---
+
+## 1. **Directory Structure and System Components**
+
+```
+/home/diegomartinez/Desktop/
+│
+├── tetrix/           # Main web application (frontend UI, backend, etc.)
+│   ├── frontend/     # OpenWeb-UI or custom UI
+│   ├── backend/      # App backend (FastAPI, Node, etc.)
+│   ├── n8n/          # n8n automation (optional)
+│   └── ...           # Other services, configs, etc.
+│
+└── ollama/           # Agentic layer (Qwen3 + Agno + FastAPI)
+```
+
+---
+
+## 2. **High-Level API Route & Endpoint Design**
+
+### **A. Agentic Layer (`/ollama/`)**
+- **Purpose:** Exposes LLM/agent endpoints, tool APIs, and streaming.
+- **Key Endpoints:**
+  - `POST /runs` — Synchronous LLM response
+  - `POST /runs/stream` — Streaming LLM response (SSE)
+  - `GET /tools` — List available tools
+  - `GET /health` — Health check
+
+### **B. Application Layer (`/tetrix/backend/`)**
+- **Purpose:** Orchestrates user sessions, business logic, and proxies LLM requests to the agentic layer.
+- **Key Endpoints:**
+  - `POST /api/chat` — Proxy to `/ollama/runs`
+  - `POST /api/chat/stream` — Proxy to `/ollama/runs/stream`
+  - `GET /api/tools` — Proxy to `/ollama/tools`
+  - `GET /api/health` — Aggregated health check
+  - `WS /api/chat/ws` — WebSocket proxy for real-time chat (optional)
+  - `POST /api/automation` — Trigger n8n workflows (optional)
+
+### **C. Frontend Layer (`/tetrix/frontend/`)**
+- **Purpose:** User interface, calls backend endpoints for chat, streaming, tools, etc.
+- **Key Interactions:**
+  - Calls `/api/chat` or `/api/chat/stream` for LLM chat
+  - Calls `/api/tools` for tool listing
+  - Calls `/api/automation` for workflow triggers
+
+### **D. n8n and Other Services**
+- **Purpose:** Automation, integrations, and workflow orchestration.
+- **Key Endpoints:**
+  - `POST /webhook/agent` — Receives triggers from backend or agentic layer
+
+---
+
+## 3. **API Route Map (Summary Table)**
+
+| Layer         | Endpoint                | Method | Description                        | Calls/Proxies To         |
+|---------------|-------------------------|--------|------------------------------------|--------------------------|
+| Frontend      | /api/chat               | POST   | User chat request                  | Backend                  |
+| Frontend      | /api/chat/stream        | POST   | User chat (streaming)              | Backend                  |
+| Frontend      | /api/tools              | GET    | List tools                         | Backend                  |
+| Frontend      | /api/automation         | POST   | Trigger automation                 | Backend                  |
+| Backend       | /api/chat               | POST   | Proxy to agentic `/runs`           | Agentic Layer            |
+| Backend       | /api/chat/stream        | POST   | Proxy to agentic `/runs/stream`    | Agentic Layer            |
+| Backend       | /api/tools              | GET    | Proxy to agentic `/tools`          | Agentic Layer            |
+| Backend       | /api/automation         | POST   | Proxy to n8n webhook               | n8n                      |
+| Agentic Layer | /runs                   | POST   | LLM/agent response                 | -                        |
+| Agentic Layer | /runs/stream            | POST   | LLM/agent streaming response       | -                        |
+| Agentic Layer | /tools                  | GET    | List available tools               | -                        |
+| Agentic Layer | /health                 | GET    | Health check                       | -                        |
+| n8n           | /webhook/agent          | POST   | Receives triggers                  | -                        |
+
+---
+
+## 4. **Docker Compose Orchestration**
+
+### **Sample `docker-compose.yml` (at `/home/diegomartinez/Desktop/`)**
+
+```yaml
+version: '3.8'
+services:
+  frontend:
+    build: ./tetrix/frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  backend:
+    build: ./tetrix/backend
+    environment:
+      - AGENTIC_LAYER_URL=http://agentic-layer:8000
+      - N8N_URL=http://n8n:5678
+    ports:
+      - "8001:8001"
+    depends_on:
+      - agentic-layer
+      - n8n
+
+  agentic-layer:
+    build: ./ollama
+    environment:
+      - AGENT_API_KEY=testkey
+    ports:
+      - "8000:8000"
+
+  n8n:
+    image: n8nio/n8n
+    ports:
+      - "5678:5678"
+    environment:
+      - GENERIC_TIMEZONE=Europe/Berlin
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+volumes:
+  n8n_data:
+```
+
+---
+
+## 5. **Distributed System Orchestration**
+
+- **Service Discovery:** All services communicate via Docker Compose service names (e.g., `agentic-layer`, `backend`, `n8n`).
+- **Networking:** Docker Compose creates a shared network; services can call each other by name.
+- **Scaling:** You can scale any service (e.g., multiple agentic-layer containers) using `docker-compose up --scale agentic-layer=3`.
+- **Health Checks:** Each service exposes `/health` endpoints for orchestration and monitoring.
+- **Secrets:** Use Docker secrets or environment variables for API keys and sensitive config.
+
+---
+
+## 6. **High-Level Request Flow (Streaming Example)**
+
+1. **User** sends a chat message in OpenWeb-UI (frontend).
+2. **Frontend** calls `POST /api/chat/stream` on the backend (SSE or WebSocket).
+3. **Backend** proxies the request to `POST /runs/stream` on the agentic layer.
+4. **Agentic Layer** processes the request, streams LLM/agent responses back to the backend.
+5. **Backend** relays the stream to the frontend UI.
+6. **Frontend** displays the streaming response to the user.
+
+---
+
+## 7. **Example: Backend Proxy Endpoint (FastAPI)**
+
+```python
+from fastapi import FastAPI, Request
+from fastapi.responses import StreamingResponse
+import httpx
+import os
+
+app = FastAPI()
+AGENTIC_LAYER_URL = os.getenv("AGENTIC_LAYER_URL", "http://agentic-layer:8000")
+
+@app.post("/api/chat/stream")
+async def chat_stream(request: Request):
+    async with httpx.AsyncClient() as client:
+        async with client.stream("POST", f"{AGENTIC_LAYER_URL}/runs/stream", json=await request.json()) as r:
+            return StreamingResponse(r.aiter_text(), media_type="text/event-stream")
+```
+
+---
+
+## 8. **Example: Frontend (OpenWeb-UI) Streaming**
+
+```js
+const eventSource = new EventSource('/api/chat/stream');
+eventSource.onmessage = (event) => {
+  // Display event.data in chat window
+};
+```
+
+---
+
+## 9. **n8n Integration Example**
+
+- Backend triggers n8n workflow via HTTP:
+```python
+@app.post("/api/automation")
+async def trigger_automation(request: Request):
+    async with httpx.AsyncClient() as client:
+        response = await client.post("http://n8n:5678/webhook/agent", json=await request.json())
+        return response.json()
+```
+
+---
+
+## 10. **Comprehensive Documentation Outline**
+
+### **A. System Overview**
+- Diagram of all services and their interactions
+- Description of each service’s responsibility
+
+### **B. API Route Reference**
+- Table of all endpoints, methods, and descriptions for frontend, backend, agentic layer, and n8n
+
+### **C. Docker Orchestration**
+- How to build and run the system
+- Environment variable and secret management
+- Scaling and health checks
+
+### **D. Request/Response Flow**
+- Sequence diagrams for chat, streaming, and automation requests
+
+### **E. Security**
+- API key management
+- CORS and network security
+- User authentication/authorization
+
+### **F. Extensibility**
+- How to add new tools, models, or workflows
+- Plugin and integration points
+
+### **G. Monitoring & Troubleshooting**
+- Health endpoints
+- Logs and metrics
+- Debugging failed requests
+
+---
+
+## 11. **Summary Table: Service Interactions**
+
+| Source    | Target         | Protocol   | Purpose                        |
+|-----------|---------------|------------|--------------------------------|
+| Frontend  | Backend       | HTTP/SSE   | User chat, tool list, triggers |
+| Backend   | Agentic Layer | HTTP/SSE   | LLM/agent requests             |
+| Backend   | n8n           | HTTP       | Automation/workflow triggers   |
+| Agentic   | Tools/MCP     | Internal   | Tool execution                 |
+
+---
+
+## 12. **Next Steps**
+
+- Implement the proxy endpoints in your backend.
+- Ensure all services are containerized and networked via Docker Compose.
+- Test end-to-end streaming from frontend to agentic layer.
+- Add health checks and monitoring for all services.
+
+---
+
+**Let me know which part you want to implement or see code for next (e.g., backend proxy, frontend integration, n8n workflow, health checks, etc.)!**
+
+
+
+
+
+
+Here’s a high-level framework and orchestration plan for integrating your agentic layer (in `/home/diegomartinez/Desktop/ollama/`) with your broader web application (in `/home/diegomartinez/Desktop/tetrix/`), including API route design, Docker orchestration, and distributed system architecture. This will ensure seamless interaction between your frontend, backend, agentic layer, and other services (like n8n and OpenWeb-UI).
+
+---
+
+## 1. **Directory Structure and System Components**
+
+```
+/home/diegomartinez/Desktop/
+│
+├── tetrix/           # Main web application (frontend UI, backend, etc.)
+│   ├── frontend/     # OpenWeb-UI or custom UI
+│   ├── backend/      # App backend (FastAPI, Node, etc.)
+│   ├── n8n/          # n8n automation (optional)
+│   └── ...           # Other services, configs, etc.
+│
+└── ollama/           # Agentic layer (Qwen3 + Agno + FastAPI)
+```
+
+---
+
+## 2. **High-Level API Route & Endpoint Design**
+
+### **A. Agentic Layer (`/ollama/`)**
+- **Purpose:** Exposes LLM/agent endpoints, tool APIs, and streaming.
+- **Key Endpoints:**
+  - `POST /runs` — Synchronous LLM response
+  - `POST /runs/stream` — Streaming LLM response (SSE)
+  - `GET /tools` — List available tools
+  - `GET /health` — Health check
+
+### **B. Application Layer (`/tetrix/backend/`)**
+- **Purpose:** Orchestrates user sessions, business logic, and proxies LLM requests to the agentic layer.
+- **Key Endpoints:**
+  - `POST /api/chat` — Proxy to `/ollama/runs`
+  - `POST /api/chat/stream` — Proxy to `/ollama/runs/stream`
+  - `GET /api/tools` — Proxy to `/ollama/tools`
+  - `GET /api/health` — Aggregated health check
+  - `WS /api/chat/ws` — WebSocket proxy for real-time chat (optional)
+  - `POST /api/automation` — Trigger n8n workflows (optional)
+
+### **C. Frontend Layer (`/tetrix/frontend/`)**
+- **Purpose:** User interface, calls backend endpoints for chat, streaming, tools, etc.
+- **Key Interactions:**
+  - Calls `/api/chat` or `/api/chat/stream` for LLM chat
+  - Calls `/api/tools` for tool listing
+  - Calls `/api/automation` for workflow triggers
+
+### **D. n8n and Other Services**
+- **Purpose:** Automation, integrations, and workflow orchestration.
+- **Key Endpoints:**
+  - `POST /webhook/agent` — Receives triggers from backend or agentic layer
+
+---
+
+## 3. **API Route Map (Summary Table)**
+
+| Layer         | Endpoint                | Method | Description                        | Calls/Proxies To         |
+|---------------|-------------------------|--------|------------------------------------|--------------------------|
+| Frontend      | /api/chat               | POST   | User chat request                  | Backend                  |
+| Frontend      | /api/chat/stream        | POST   | User chat (streaming)              | Backend                  |
+| Frontend      | /api/tools              | GET    | List tools                         | Backend                  |
+| Frontend      | /api/automation         | POST   | Trigger automation                 | Backend                  |
+| Backend       | /api/chat               | POST   | Proxy to agentic `/runs`           | Agentic Layer            |
+| Backend       | /api/chat/stream        | POST   | Proxy to agentic `/runs/stream`    | Agentic Layer            |
+| Backend       | /api/tools              | GET    | Proxy to agentic `/tools`          | Agentic Layer            |
+| Backend       | /api/automation         | POST   | Proxy to n8n webhook               | n8n                      |
+| Agentic Layer | /runs                   | POST   | LLM/agent response                 | -                        |
+| Agentic Layer | /runs/stream            | POST   | LLM/agent streaming response       | -                        |
+| Agentic Layer | /tools                  | GET    | List available tools               | -                        |
+| Agentic Layer | /health                 | GET    | Health check                       | -                        |
+| n8n           | /webhook/agent          | POST   | Receives triggers                  | -                        |
+
+---
+
+## 4. **Docker Compose Orchestration**
+
+### **Sample `docker-compose.yml` (at `/home/diegomartinez/Desktop/`)**
+
+```yaml
+version: '3.8'
+services:
+  frontend:
+    build: ./tetrix/frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  backend:
+    build: ./tetrix/backend
+    environment:
+      - AGENTIC_LAYER_URL=http://agentic-layer:8000
+      - N8N_URL=http://n8n:5678
+    ports:
+      - "8001:8001"
+    depends_on:
+      - agentic-layer
+      - n8n
+
+  agentic-layer:
+    build: ./ollama
+    environment:
+      - AGENT_API_KEY=testkey
+    ports:
+      - "8000:8000"
+
+  n8n:
+    image: n8nio/n8n
+    ports:
+      - "5678:5678"
+    environment:
+      - GENERIC_TIMEZONE=Europe/Berlin
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+volumes:
+  n8n_data:
+```
+
+---
+
+## 5. **Distributed System Orchestration**
+
+- **Service Discovery:** All services communicate via Docker Compose service names (e.g., `agentic-layer`, `backend`, `n8n`).
+- **Networking:** Docker Compose creates a shared network; services can call each other by name.
+- **Scaling:** You can scale any service (e.g., multiple agentic-layer containers) using `docker-compose up --scale agentic-layer=3`.
+- **Health Checks:** Each service exposes `/health` endpoints for orchestration and monitoring.
+- **Secrets:** Use Docker secrets or environment variables for API keys and sensitive config.
+
+---
+
+## 6. **High-Level Request Flow (Streaming Example)**
+
+1. **User** sends a chat message in OpenWeb-UI (frontend).
+2. **Frontend** calls `POST /api/chat/stream` on the backend (SSE or WebSocket).
+3. **Backend** proxies the request to `POST /runs/stream` on the agentic layer.
+4. **Agentic Layer** processes the request, streams LLM/agent responses back to the backend.
+5. **Backend** relays the stream to the frontend UI.
+6. **Frontend** displays the streaming response to the user.
+
+---
+
+## 7. **Example: Backend Proxy Endpoint (FastAPI)**
+
+```python
+from fastapi import FastAPI, Request
+from fastapi.responses import StreamingResponse
+import httpx
+import os
+
+app = FastAPI()
+AGENTIC_LAYER_URL = os.getenv("AGENTIC_LAYER_URL", "http://agentic-layer:8000")
+
+@app.post("/api/chat/stream")
+async def chat_stream(request: Request):
+    async with httpx.AsyncClient() as client:
+        async with client.stream("POST", f"{AGENTIC_LAYER_URL}/runs/stream", json=await request.json()) as r:
+            return StreamingResponse(r.aiter_text(), media_type="text/event-stream")
+```
+
+---
+
+## 8. **Example: Frontend (OpenWeb-UI) Streaming**
+
+```js
+const eventSource = new EventSource('/api/chat/stream');
+eventSource.onmessage = (event) => {
+  // Display event.data in chat window
+};
+```
+
+---
+
+## 9. **n8n Integration Example**
+
+- Backend triggers n8n workflow via HTTP:
+```python
+@app.post("/api/automation")
+async def trigger_automation(request: Request):
+    async with httpx.AsyncClient() as client:
+        response = await client.post("http://n8n:5678/webhook/agent", json=await request.json())
+        return response.json()
+```
+
+---
+
+## 10. **Comprehensive Documentation Outline**
+
+### **A. System Overview**
+- Diagram of all services and their interactions
+- Description of each service’s responsibility
+
+### **B. API Route Reference**
+- Table of all endpoints, methods, and descriptions for frontend, backend, agentic layer, and n8n
+
+### **C. Docker Orchestration**
+- How to build and run the system
+- Environment variable and secret management
+- Scaling and health checks
+
+### **D. Request/Response Flow**
+- Sequence diagrams for chat, streaming, and automation requests
+
+### **E. Security**
+- API key management
+- CORS and network security
+- User authentication/authorization
+
+### **F. Extensibility**
+- How to add new tools, models, or workflows
+- Plugin and integration points
+
+### **G. Monitoring & Troubleshooting**
+- Health endpoints
+- Logs and metrics
+- Debugging failed requests
+
+---
+
+## 11. **Summary Table: Service Interactions**
+
+| Source    | Target         | Protocol   | Purpose                        |
+|-----------|---------------|------------|--------------------------------|
+| Frontend  | Backend       | HTTP/SSE   | User chat, tool list, triggers |
+| Backend   | Agentic Layer | HTTP/SSE   | LLM/agent requests             |
+| Backend   | n8n           | HTTP       | Automation/workflow triggers   |
+| Agentic   | Tools/MCP     | Internal   | Tool execution                 |
+
+---
+
+## 12. **Next Steps**
+
+- Implement the proxy endpoints in your backend.
+- Ensure all services are containerized and networked via Docker Compose.
+- Test end-to-end streaming from frontend to agentic layer.
+- Add health checks and monitoring for all services.
+
+---
+
+**Let me know which part you want to implement or see code for next (e.g., backend proxy, frontend integration, n8n workflow, health checks, etc.)!**

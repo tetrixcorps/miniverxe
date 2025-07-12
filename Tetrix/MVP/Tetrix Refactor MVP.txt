@@ -1,0 +1,191 @@
+
+
+### **Current Task: Review and Analyze Current Codebase**
+
+**Goal:**  
+Explore the existing codebase structure, identify reusable components, and document areas requiring major refactoring or replacement to align with the new SaaS data annotation platform requirements.
+
+---
+
+#### **Planned Approach**
+
+1. **Codebase Structure Analysis**
+   - Map out the current directory and file structure.
+   - Identify which parts are Astro/SSR, which are React, and which are backend (Node/Express, etc.).
+
+2. **Component & Logic Inventory**
+   - List reusable UI components, utility functions, and backend logic.
+   - Note any code that can be migrated to the new stack (React, Express, Firestore).
+
+3. **Gap & Refactor Assessment**
+   - Highlight areas that must be replaced (e.g., Astro pages, non-React components).
+   - Identify business logic that needs to be rewritten for the new workflow (task assignment, annotation, payout).
+
+4. **Documentation**
+   - Summarize findings in a clear, actionable format for the next steps.
+
+---
+
+#### **Assumptions & Clarifications**
+
+- The current codebase is primarily Astro-based with some React components.
+- The backend is not yet Express/Firestore-based and will need a full rewrite.
+- You want to maximize reuse where possible, but are open to replacing large sections for the new architecture.
+
+**If any of these assumptions are incorrect, please clarify.**
+
+---
+
+#### **Next Steps**
+
+- I will now analyze the codebase structure and key files.
+- After the review, I’ll provide a detailed report on what can be reused, what must be replaced, and recommendations for the refactor.
+
+---
+
+**Would you like a summary of the current codebase structure and initial findings before I proceed to the detailed inventory and gap analysis?**  
+
+
+
+
+
+
+
+## **Gap Analysis**
+
+### **1. Frontend**
+
+**Current State:**
+- Astro-based pages and components (`.astro` files)
+- Tailwind CSS for styling
+- No React SPA structure, no Redux, no shadcn UI
+
+**Target State:**
+- React.js SPA (Vite + TypeScript)
+- Tailwind CSS + shadcn UI components
+- Redux for state management
+- Label Studio integration (React SDK/iframe)
+- Route structure for dashboard, annotation, review, admin, etc.
+
+**Gaps:**
+- All UI must be rewritten in React.
+- Routing, state management, and component structure must be rebuilt.
+- No current Label Studio integration.
+- No JWT-based authentication or role-based access control in the frontend.
+
+---
+
+### **2. Backend/API**
+
+**Current State:**
+- API endpoints as serverless functions (Astro/Next.js style)
+- Firebase integration via `firebase.js`
+- No Express.js REST API, no Firestore schema enforcement
+
+**Target State:**
+- Express.js REST API (Node 18+)
+- Firestore as the primary database (with emulator for local dev)
+- JWT authentication (Firebase Auth, Passport.js for extensibility)
+- Endpoints for tickets, projects, wallet, etc.
+- Middleware for authentication, role checks, and task assignment
+- Webhook endpoint for Label Studio
+
+**Gaps:**
+- Need to build a new Express.js API from scratch.
+- Migrate or rewrite all business logic for task assignment, annotation, and review.
+- Implement Firestore transaction logic for atomic updates.
+- No current wallet microservice or payout logic.
+
+---
+
+### **3. Database & Security**
+
+**Current State:**
+- Firebase integration, but no clear Firestore schema or security rules
+- No relational schema or migrations
+
+**Target State:**
+- Firestore collections: users, projects, tasks, task_items, payments
+- Security rules to enforce access control (annotators only access their docs, admins have full access)
+- Indexes for efficient querying
+
+**Gaps:**
+- Need to define and implement Firestore schema, indexes, and security rules.
+- No current support for atomic/batched writes for status changes.
+
+---
+
+### **4. DevOps & Local Development**
+
+**Current State:**
+- No Docker Compose or service orchestration
+- No clear separation of services (API, frontend, wallet, etc.)
+
+**Target State:**
+- Docker Compose for local dev: API, web, Firestore emulator, Auth emulator, Label Studio, wallet-svc
+- Environment variable management
+- Scripts for onboarding and first-run setup
+
+**Gaps:**
+- Need to create Docker Compose and supporting scripts.
+- No current local emulation of Firestore/Auth.
+
+---
+
+### **5. Testing & Documentation**
+
+**Current State:**
+- Minimal test coverage
+- No OpenAPI spec or onboarding docs
+
+**Target State:**
+- OpenAPI YAML spec for API
+- Developer documentation for setup, first-run, and architecture
+- Expanded test coverage (unit, integration, E2E)
+
+**Gaps:**
+- Need to write new tests and documentation from scratch.
+
+---
+
+## **Recommendations for New Architecture**
+
+1. **Adopt a Monorepo Structure:**
+   - `apps/web` (React SPA)
+   - `services/api` (Express.js)
+   - `services/wallet` (Coinbase MPC stub)
+   - `firestore/` (rules, indexes)
+   - `docs/` (OpenAPI, onboarding)
+
+2. **Frontend:**
+   - Scaffold with Vite + React + TypeScript
+   - Use Tailwind and shadcn for UI
+   - Integrate Redux for state management
+   - Implement JWT auth and role-based routing
+   - Embed Label Studio for annotation
+
+3. **Backend/API:**
+   - Scaffold Express.js with TypeScript
+   - Integrate Firebase Admin SDK for Firestore and Auth
+   - Implement REST endpoints for all business logic
+   - Use middleware for authentication and role checks
+   - Add webhook endpoint for Label Studio
+
+4. **Database:**
+   - Define Firestore collections, indexes, and security rules
+   - Use batched writes/transactions for all status changes
+
+5. **DevOps:**
+   - Create Docker Compose for all services
+   - Provide `.env.example` and onboarding scripts
+
+6. **Testing & Docs:**
+   - Write OpenAPI spec
+   - Add onboarding and architecture docs
+   - Expand test coverage as new code is written
+
+---
+
+**Ready to proceed to the next step: designing and documenting the new architecture?**  
+Or do you want to discuss any specific gap or recommendation in more detail first?
+Or should I proceed directly to the full review and report?

@@ -1,0 +1,26 @@
+export declare const RolePermissionMap: {
+    readonly TaskAdmin: readonly ["task.assign", "task.review", "project:create", "project:update", "project:delete", "task:assign", "task:review", "quality:review", "billing:view", "analytics:view"];
+    readonly Reviewer: readonly ["task.review", "task:review", "task:approve", "task:reject", "quality:review", "quality:metrics"];
+    readonly Labeler: readonly ["task:submit", "dataset:annotate", "progress:view"];
+    readonly BillingAdmin: readonly ["billing:view", "billing:manage", "analytics:view", "analytics:export"];
+    readonly ProjectManager: readonly ["project:create", "project:update", "project:assign", "task:create", "task:assign", "dataset:upload", "dataset:download", "analytics:view"];
+    readonly SeniorLabeler: readonly ["task:submit", "dataset:annotate", "quality:review", "quality:approve"];
+    readonly JuniorLabeler: readonly ["task:submit", "dataset:annotate"];
+    readonly QualityAssurance: readonly ["quality:review", "quality:approve", "quality:metrics", "task:approve", "task:reject"];
+    readonly DataScientist: readonly ["dataset:download", "analytics:view", "analytics:export", "quality:metrics"];
+    readonly CodingStudent: readonly ["course:enroll", "course:view", "assignment:submit", "resource:access", "progress:view"];
+    readonly AcademyReviewer: readonly ["assignment:review", "assignment:grade", "course:grade", "certificate:generate"];
+    readonly Student: readonly ["course:enroll", "course:view", "assignment:submit", "resource:access", "progress:view"];
+    readonly AdvancedStudent: readonly ["course:enroll", "course:view", "assignment:submit", "resource:access", "progress:view", "resource:share"];
+    readonly TeachingAssistant: readonly ["assignment:review", "assignment:grade", "resource:create", "resource:share", "progress:view"];
+    readonly Instructor: readonly ["course:submit", "course:grade", "assignment:review", "assignment:grade", "resource:create", "resource:share", "certificate:generate"];
+    readonly CurriculumManager: readonly ["course:submit", "course:grade", "resource:create", "resource:share", "certificate:generate"];
+    readonly ClientAdmin: readonly ["org:view", "org:update", "user:invite", "user:remove", "user:role:assign", "api:access", "api:key:manage", "report:generate", "report:export"];
+    readonly ClientUser: readonly ["org:view", "api:access", "report:generate"];
+    readonly ClientViewer: readonly ["org:view", "report:generate"];
+    readonly IntegrationManager: readonly ["api:access", "api:key:manage", "api:rate:limit", "integration:create", "integration:update", "integration:delete"];
+    readonly SuperAdmin: readonly ("task.assign" | "task.review" | "admin:contact:read" | "admin:contact:update" | "admin:logout" | "user:list" | "user:read" | "user:update" | "user:role:update" | "project:read" | "project:create" | "project:update" | "project:delete" | "project:assign" | "task:create" | "task:assign" | "task:submit" | "task:review" | "task:approve" | "task:reject" | "dataset:upload" | "dataset:download" | "dataset:annotate" | "quality:review" | "quality:approve" | "quality:metrics" | "billing:view" | "billing:manage" | "analytics:view" | "analytics:export" | "course:enroll" | "course:view" | "course:submit" | "course:grade" | "assignment:submit" | "assignment:review" | "assignment:grade" | "resource:access" | "resource:create" | "resource:share" | "progress:view" | "progress:update" | "certificate:generate" | "org:create" | "org:update" | "org:delete" | "org:view" | "user:invite" | "user:remove" | "user:role:assign" | "api:access" | "api:key:manage" | "api:rate:limit" | "integration:create" | "integration:update" | "integration:delete" | "report:generate" | "report:schedule" | "report:export")[];
+};
+export declare function getPermissionsForRole(role: string): readonly string[];
+export declare function roleHasPermission(role: string, permission: string): boolean;
+export declare function getRolesForUserGroup(userGroup: 'data-annotator' | 'academy' | 'enterprise'): readonly string[];

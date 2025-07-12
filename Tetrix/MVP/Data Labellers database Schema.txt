@@ -1,0 +1,238 @@
+Absolutely! Let’s design a robust, scalable, and extensible **database schema** for your data labeling platform, supporting all the features you outlined: RBAC, project/task management, QA workflow, analytics, billing, and client management.
+
+---
+
+# 1. **Core Principles for Schema Design**
+
+- **Normalization:** Avoid data duplication, but denormalize where it improves performance (e.g., analytics).
+- **Extensibility:** Easy to add new roles, permissions, or features.
+- **Security:** Store only necessary PII, use UUIDs for IDs, and support audit logging.
+- **Multi-tenancy:** Support for multiple organizations/clients.
+- **Analytics-ready:** Structure for efficient reporting and metrics.
+
+---
+
+# 2. **Key Entities & Relationships**
+
+## **Main Tables**
+
+| Table                | Purpose                                                      |
+|----------------------|--------------------------------------------------------------|
+| users                | All platform users (admins, reviewers, labelers, clients)    |
+| organizations        | Companies/clients using the platform                         |
+| user_organization    | Many-to-many: users can belong to multiple orgs              |
+| roles                | Canonical roles (admin, reviewer, labeler, billing, owner)   |
+| user_roles           | Assign roles to users (per org or global)                    |
+| permissions          | Fine-grained actions (e.g., "task.assign", "billing.view")   |
+| role_permissions     | Map roles to permissions                                     |
+| projects             | Data labeling projects                                       |
+| datasets             | Uploaded datasets (files, metadata)                          |
+| tasks                | Individual labeling tasks                                    |
+| labels               | Annotation results for tasks                                 |
+| reviews              | QA reviews of labels                                         |
+| comments             | Threaded comments on labels/reviews                          |
+| metrics              | Aggregated analytics (per user/project/task)                 |
+| billing_accounts     | Stripe/Clerk billing info per org                            |
+| invoices             | Billing records                                              |
+| audit_logs           | Security/audit trail                                         |
+
+---
+
+# 3. **Schema Diagram (ERD)**
+
+Here’s a simplified ERD (Entity-Relationship Diagram):
+
+```mermaid
+erDiagram
+    organizations ||--o{ user_organization : ""
+    users ||--o{ user_organization : ""
+    users ||--o{ user_roles : ""
+    roles ||--o{ user_roles : ""
+    roles ||--o{ role_permissions : ""
+    permissions ||--o{ role_permissions : ""
+    organizations ||--o{ projects : ""
+    projects ||--o{ datasets : ""
+    projects ||--o{ tasks : ""
+    datasets ||--o{ tasks : ""
+    tasks ||--o{ labels : ""
+    users ||--o{ labels : ""
+    labels ||--o{ reviews : ""
+    users ||--o{ reviews : ""
+    labels ||--o{ comments : ""
+    users ||--o{ comments : ""
+    organizations ||--o{ billing_accounts : ""
+    billing_accounts ||--o{ invoices : ""
+    users ||--o{ audit_logs : ""
+    projects ||--o{ metrics : ""
+    users ||--o{ metrics : ""
+```
+
+---
+
+# 4. **Table-by-Table Breakdown**
+
+## **users**
+- `id` (UUID, PK)
+- `email` (unique)
+- `name`
+- `password_hash`
+- `created_at`
+- `last_login`
+- `is_active`
+- (other profile fields)
+
+## **organizations**
+- `id` (UUID, PK)
+- `name`
+- `created_at`
+- `billing_account_id` (FK)
+
+## **user_organization**
+- `user_id` (FK)
+- `organization_id` (FK)
+- `joined_at`
+
+## **roles**
+- `id` (PK)
+- `name` (e.g., "TaskAdmin", "Reviewer", "Labeler", "BillingAdmin", "Owner")
+- `description`
+
+## **user_roles**
+- `user_id` (FK)
+- `role_id` (FK)
+- `organization_id` (nullable, FK) // null = global role
+
+## **permissions**
+- `id` (PK)
+- `action` (e.g., "task.assign", "project.create")
+- `description`
+
+## **role_permissions**
+- `role_id` (FK)
+- `permission_id` (FK)
+
+## **projects**
+- `id` (UUID, PK)
+- `organization_id` (FK)
+- `name`
+- `description`
+- `status`
+- `created_by` (FK to users)
+- `created_at`
+- `updated_at`
+
+## **datasets**
+- `id` (UUID, PK)
+- `project_id` (FK)
+- `name`
+- `storage_url`
+- `metadata` (JSONB)
+- `created_at`
+
+## **tasks**
+- `id` (UUID, PK)
+- `project_id` (FK)
+- `dataset_id` (FK)
+- `input_data` (JSONB or TEXT)
+- `assigned_to` (FK to users)
+- `status` (enum: InProgress, Submitted, Approved, Rejected)
+- `created_at`
+- `updated_at`
+
+## **labels**
+- `id` (UUID, PK)
+- `task_id` (FK)
+- `user_id` (FK, labeler)
+- `data` (JSONB)
+- `status` (enum: Draft, Submitted, Approved, Rejected)
+- `submitted_at`
+- `updated_at`
+
+## **reviews**
+- `id` (UUID, PK)
+- `label_id` (FK)
+- `reviewer_id` (FK to users)
+- `status` (Approved, Rejected)
+- `comment`
+- `created_at`
+
+## **comments**
+- `id` (UUID, PK)
+- `label_id` (FK)
+- `user_id` (FK)
+- `content`
+- `created_at`
+- `parent_id` (nullable, FK to comments) // for threads
+
+## **metrics**
+- `id` (UUID, PK)
+- `project_id` (FK)
+- `user_id` (FK)
+- `date`
+- `approved_rate`
+- `avg_rework_count`
+- `tasks_completed`
+- (other analytics fields)
+
+## **billing_accounts**
+- `id` (UUID, PK)
+- `organization_id` (FK)
+- `stripe_customer_id`
+- `plan`
+- `seat_count`
+- `billing_status`
+- `created_at`
+
+## **invoices**
+- `id` (UUID, PK)
+- `billing_account_id` (FK)
+- `amount`
+- `period_start`
+- `period_end`
+- `status`
+- `stripe_invoice_id`
+- `created_at`
+
+## **audit_logs**
+- `id` (UUID, PK)
+- `user_id` (FK)
+- `action`
+- `target_type`
+- `target_id`
+- `timestamp`
+- `details` (JSONB)
+
+---
+
+# 5. **Implementation Recommendations**
+
+- **Use PostgreSQL** for strong relational integrity, JSONB support, and analytics.
+- **Use UUIDs** for all primary keys for security and scalability.
+- **Leverage Prisma ORM** (or similar) for migrations, type safety, and easy querying.
+- **Enforce foreign keys** and use ON DELETE CASCADE where appropriate.
+- **Index** frequently queried fields (e.g., `user_id`, `project_id`, `status`).
+- **Store sensitive data** (passwords, billing info) securely and never in plaintext.
+- **Use JSONB** for flexible fields (e.g., label data, input data, metadata).
+- **Support audit logging** for compliance and debugging.
+
+---
+
+# 6. **Extensibility & Future-Proofing**
+
+- **Add new roles/permissions** by inserting into `roles` and `permissions` tables.
+- **Support multi-tenancy** via `organizations` and `user_organization`.
+- **Easily add new analytics** by extending the `metrics` table.
+- **Integrate new billing providers** by adding fields to `billing_accounts`.
+
+---
+
+# 7. **Next Steps**
+
+1. **Review and confirm** the schema and any custom requirements.
+2. **Generate Prisma (or SQL) migration files** for the schema.
+3. **Set up seed data** for roles, permissions, and test users.
+4. **Implement backend logic** for RBAC, project/task management, QA, analytics, and billing.
+
+---
+
+**Would you like to see the actual Prisma schema code, or do you want to discuss any customizations before we proceed?**

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '../ui/button';
+import apiService from '../../lib/api';
 
 export default function ContactFormSection() {
   const [form, setForm] = useState({ name: '', email: '', company: '', message: '' });
@@ -15,18 +16,12 @@ export default function ContactFormSection() {
     setStatus('submitting');
     setError(null);
     try {
-      // Replace with your backend endpoint
-      const res = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      });
-      if (res.ok) {
-        setStatus('success');
-        setForm({ name: '', email: '', company: '', message: '' });
-      } else {
-        throw new Error('Failed to send message.');
+      const result = await apiService.submitContactForm(form);
+      if (result.error) {
+        throw new Error(result.error);
       }
+      setStatus('success');
+      setForm({ name: '', email: '', company: '', message: '' });
     } catch (err: any) {
       setStatus('error');
       setError(err.message || 'Something went wrong.');

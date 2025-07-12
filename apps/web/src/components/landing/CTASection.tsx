@@ -11,14 +11,6 @@ export default function CTASection() {
         <p className="text-xl mb-8">
           Join leading companies using TETRIX to integrate AI into their workflows and automate their operations.
         </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <a href="/contact" className="inline-block">
-            <Button>Start Free Trial</Button>
-          </a>
-          <a href="/docs" className="inline-block">
-            <Button variant="outline">View Documentation</Button>
-          </a>
-        </div>
       </div>
     </section>
   );

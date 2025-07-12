@@ -1,0 +1,182 @@
+1. Create a New Project
+Open your terminal and run one of these commands to scaffold a new Astro project with the Starlight template:
+
+bash
+# Using npm
+npm create astro@latest -- --template starlight
+
+# Using pnpm
+pnpm create astro --template starlight
+
+# Using yarn
+yarn create astro --template starlight
+Follow the prompts to set up your project directory and install dependencies  .
+
+2. Start the Development Server
+Navigate to your project folder and start the local development server:
+
+bash
+cd your-project-name
+npm run dev
+This will launch a local preview of your site, typically at http://localhost:3000 .
+
+3. Add Content
+Starlight is designed for documentation and static pages. Add your content by creating Markdown, MDX, or Markdoc files in the src/content/docs/directory. For example, src/content/docs/getting-started.mdwill automatically create a page at /getting-started/ .
+
+4. Customize Your Site
+Edit the main configuration file, usually astro.config.mjs, to set your site's title, description, and other metadata:
+
+js
+import { defineConfig } from 'astro/config';
+import starlight from '@astrojs/starlight';
+
+export default defineConfig({
+  integrations: [
+    starlight({
+      title: 'My Documentation',
+      description: 'Welcome to my static documentation site!',
+    }),
+  ],
+});
+You can also add custom CSS to tailor the appearance  .
+
+5. Build and Deploy
+When you're ready, build your static site:
+
+bash
+npm run build
+This generates static files in the distdirectory, which you can deploy to any static hosting service like GitHub Pages, Netlify, or Vercel  .
+
+Summary Table
+Step	Command/Action	Purpose
+Create project	npm create astro@latest -- --template starlight	Scaffold new Starlight site
+Start dev server	npm run dev	Preview site locally
+Add content	Edit files insrc/content/docs/	Add static pages
+Customize	Edit astro.config.mjsand add CSS	Personalize site
+Build & deploy	npm run build	Generate static files
+
+
+
+
+
+
+I will explain how to structure your Next.js application so you can protect your static pages from unauthenticated access.
+I will concentrate on the implementation logic and authentication flow, and not on any particular authentication provider, so we won't be dealing with client-side tokens or cookies (which I will probably do in a separate blog post).
+
+You can interact with the example
+Or you can check out the repository
+
+Authentication Setup
+We will create a couple of pages:
+
+public pages accessible to everyone
+protected pages where the user if not authenticated, will be automatically redirected to a signin page.
+signin page with a simple sign-in form.
+signout the page where the user will be redirected to after successfully sign out.
+src/pages/
+├── _app.tsx
+├── index.tsx
+├── protected.tsx
+├── protected-two.tsx
+├── public.tsx
+├── signin.tsx
+└── signout.tsx
+Sign In Flow
+It goes like this when the user lands on a public page (or index) those pages will immediately render. If the user lands on a protected page while not signed in, she will be redirected to the sign in page, and after the successful authorization, she will be redirected back to the protected page where she started.
+
+There are two authentication components AuthProvider and AuthGuard, they work in tandem to provide all the logic needed for protecting the pages.
+
+AuthProvider Component
+AuthProvider will utilize React context and as I said, we will not concentrate on a particular authentication provider (Firebase, Auth0, AWS Cognito, etc.) rather we will have an abstract demo provider that will expose a hook useAuth that will return a couple of properties, were most important ones are a user object (with all the user data you need) and an initializing property to indicate if the AuthProvider is in the process of initializing i.e. trying to determine if the user is signed in or not ( in case of third party providers it would contact authentication provider service to validate currently present tokens or cookies).
+
+In general you should always abstract any third-party providers that you use in your application so you can always replace them if the need arises with as little refactoring as possible.
+
+So AuthProvider component will be the source of truth for all user authentication data and it will wrap the whole application (it will live in _app.tsx) so we can access user data from anywhere in the application (both on protected and public pages).
+
+AuthGuard Component
+AuthGuard component is the second part of the authentication setup. It wraps every page that needs to be protected, and it holds the logic to determine what to do depending if the user is authenticated or not.
+
+Since it is wrapped by AuthProvider (the whole application is) it has access to the user data and it will not render a protected page if the user does not exist rather, it will remember what page the user tried to access while not being authenticated (so it can redirect the user back to that same page after a successful sign-in) and immediately redirect to the signin page. Then after the user sign in (on the signin page) she will be redirected back to where she started.
+
+It is important to note that AuthGuard in this current implementation is redirecting to the sign-in page, but it is very easy to change the component to do something else, for example, to show a sign in form immediately (on the protected page) I just think the best UX is to redirect to a special page that handles the sign-in process.
+
+// AuthGuard.tsx
+import { useAuth } from "components/AuthProvider"
+import { useRouter } from "next/router"
+import { useEffect } from "react"
+
+export function AuthGuard({ children }: { children: JSX.Element }) {
+  const { user, initializing, setRedirect } = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!initializing) {
+      //auth is initialized and there is no user
+      if (!user) {
+        // remember the page that user tried to access
+        setRedirect(router.route)
+        // redirect
+        router.push("/signin")
+      }
+    }
+  }, [initializing, router, user, setRedirect])
+
+  /* show loading indicator while the auth provider is still initializing */
+  if (initializing) {
+    return <h1>Application Loading</h1>
+  }
+
+  // if auth initialized with a valid user show protected page
+  if (!initializing && user) {
+    return <>{children}</>
+  }
+
+  /* otherwise don't return anything, will do a redirect from useEffect */
+  return null
+}
+
+
+Creating Protected Pages
+It is important to note that protected pages have no logic regarding the protection process. So in our case, it is just a regular Next.js page. If the page component is rendered it means that the user exists and is authorized to access the page. Remember, since that page is wrapped inside the AuthGuard and AuthProvider, all that logic is already resolved by the time the page is rendered.
+So by now, you might be asking "How AuthGuard knows what pages to protect?" Good question. The answer is very simple, every Nextjs component has a special property requireAuth set to true.
+
+import { PageLinks } from "components/PageLinks"
+
+export default function Protected() {
+  return (
+    <div>
+      <h1>Protected Page One</h1>
+      <PageLinks />
+    </div>
+  )
+}
+
+Protected.requireAuth = true
+Then, inside the _app.tsx we check if the component has the requireAuth property and if true we wrap it with the AuthGuard component.
+
+// _app.tsx
+
+export default function MyApp(props: AppProps) {
+  const {
+    Component,
+    pageProps,
+  }: { Component: NextApplicationPage; pageProps: any } = props
+
+  return (
+   <AuthProvider>
+     {/* if requireAuth property is present - protect the page */}
+     {Component.requireAuth ? (
+       <AuthGuard>
+         <Component {...pageProps} />
+       </AuthGuard>
+     ) : (
+       // public page
+       <Component {...pageProps} />
+     )}
+   </AuthProvider>
+  )
+}
+
+And that's all it takes to have protected and public static pages in Next.js.
+
+But remember, the only source of truth for all your application data is the server, so even though the pages will not render for unauthorized users, your backend server should always check for authorization before doing any CRUD.
