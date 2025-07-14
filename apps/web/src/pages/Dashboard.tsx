@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card } from '../components/ui/card';
 import { Alert } from '../components/ui/alert';
@@ -12,9 +12,24 @@ import { withErrorBoundary } from '../components/ui/withErrorBoundary';
 import ErrorDisplay from '../components/ui/ErrorDisplay';
 import LoadingState from '../components/ui/LoadingState';
 import { Link } from 'react-router-dom';
+import { useEnterpriseAuth } from '../hooks/useEnterpriseAuth';
+// Add this at the top of the file for TypeScript module declaration
+// @ts-ignore: JS build output, no types available
+import * as AgUiClient from 'ag-ui-client';
+
+// Add AG-UI protocol import (assume installed via pnpm)
+// import { createAgUiConnector } from 'ag-ui-protocol';
 
 function Dashboard() {
-  const { data: dashboardData, isLoading, error, refetch } = useQuery({
+  const { loading, error } = useEnterpriseAuth();
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center"><Spinner /> Loading...</div>;
+  }
+  if (error) {
+    return <div className="min-h-screen flex items-center justify-center text-red-600">{error}</div>;
+  }
+
+  const { data: dashboardData, isLoading, error: apiError, refetch } = useQuery({
     queryKey: ['dashboard'],
     queryFn: () => apiService.getDashboardData(),
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -27,15 +42,39 @@ function Dashboard() {
     }
   };
 
+  // AG-UI protocol integration
+  useEffect(() => {
+    // Only run in browser
+    if (typeof window === 'undefined') return;
+    // Use the shared AG-UI protocol client
+    const connector = AgUiClient.createAgUiConnector({
+      transport: 'iframe',
+      iframeSelector: '#chatbot',
+      eventTypes: ['message', 'structured_content']
+    });
+    // Example: send user context (customize as needed)
+    connector.emit('ui.setContext', { userId: '1234', role: 'EnterpriseUser' });
+    // Listen for agent responses
+    connector.on('agent.response', (event: any) => {
+      // Handle streaming or structured content
+      console.log('Agent says:', event.payload.content);
+    });
+    connector.on('structured_content', ({ payload }: any) => {
+      // Optionally render structured content in your UI
+      console.log('Structured content:', payload.content);
+    });
+    return () => connector.disconnect();
+  }, []);
+
   if (isLoading) {
     return <LoadingState message="Loading dashboard data..." />;
   }
 
-  if (error) {
+  if (apiError) {
     return (
       <div className="min-h-screen bg-gray-50 p-6">
         <ErrorDisplay
-          error={error}
+          error={apiError}
           title="Dashboard Error"
           description="Unable to load dashboard data. Please try again."
           onRetry={() => refetch()}
@@ -145,6 +184,18 @@ function Dashboard() {
       
       {/* NiceModal Demo */}
       <Button onClick={handleOpenModal}>Open NiceModal Modal</Button>
+
+      {/* AI Agent Chat Section */}
+      <section className="mt-8">
+        <h2 className="text-2xl font-bold mb-4">AI Agent Chat</h2>
+        <iframe
+          id="chatbot"
+          src="http://localhost:3000/?embedded=true"
+          style={{ width: '100%', height: '600px', border: 'none', borderRadius: '8px' }}
+          title="AI Agent Chat"
+          allow="clipboard-write; microphone"
+        />
+      </section>
     </div>
   );
 }

@@ -8,8 +8,17 @@ export default defineConfig({
   plugins: [react(), tsconfigPaths()],
   resolve: {
     alias: {
+      'ag-ui-client': path.resolve(__dirname, '../../libs/ag-ui-client/dist/index.mjs'),
       '@tetrix/rbac': path.resolve(__dirname, '../../packages/rbac/dist/index.js'),
     },
+  },
+  optimizeDeps: {
+    include: ['ag-ui-client']
+  },
+  build: {
+    commonjsOptions: {
+      include: [/ag-ui-client/, /node_modules/]
+    }
   },
   server: {
     port: 5173,

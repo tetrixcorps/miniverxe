@@ -1,3 +1,5 @@
 packages:
   - 'apps/*'
-  - 'packages/*' 
+  - 'apps/libs/*'
+  - 'packages/*'
+  - 'apps/web/ag-ui/typescript-sdk/packages/*' 

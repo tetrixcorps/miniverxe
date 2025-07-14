@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCAg70wIYtFwKDafodE6kkcRffuk0ewL5w",
@@ -13,4 +13,30 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-export const db = getFirestore(app); 
+export const db = getFirestore(app);
+
+export const getContactSubmissions = async () => {
+  try {
+    const submissionsCol = collection(db, 'contact-submissions');
+    const submissionsSnapshot = await getDocs(submissionsCol);
+    return submissionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  } catch (error: any) {
+    console.error('Error fetching contact submissions:', error);
+    throw new Error('Failed to fetch contact submissions');
+  }
+};
+
+export const submitContactForm = async (data: Record<string, any>) => {
+  try {
+    const submissionsCol = collection(db, 'contact-submissions');
+    const docRef = await addDoc(submissionsCol, {
+      ...data,
+      timestamp: new Date(),
+      status: 'new',
+    });
+    return { success: true, id: docRef.id };
+  } catch (error: any) {
+    console.error('Error submitting contact form:', error);
+    return { success: false, error: error.message };
+  }
+}; 

@@ -2,15 +2,36 @@ import React from 'react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 
+const USER_GROUPS = [
+  { label: 'Access Data Labelling', value: 'data-annotator' },
+  { label: 'Access Code Academy', value: 'academy' },
+  { label: 'Customer', value: 'enterprise' },
+];
+
 export default function Landing() {
+  // No need for selectedGroup state
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col items-center justify-center p-6">
       <section className="max-w-2xl text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-extrabold mb-4 text-blue-800">Welcome to Tetrix</h1>
         <p className="text-lg md:text-xl text-gray-700 mb-6">A modern platform for collaborative labeling, learning, and workflow management.</p>
-        <a href="/dashboard" className="inline-block">
-          <Button>Get Started</Button>
-        </a>
+        <div className="flex flex-col items-center space-y-4 mb-6">
+          <div className="flex space-x-4">
+            {USER_GROUPS.map((group) => (
+              <Button
+                key={group.value}
+                variant="default"
+                aria-label={`Sign up as ${group.label}`}
+                onClick={() => {
+                  window.location.href = `/signup?group=${group.value}`;
+                }}
+                className="min-w-[180px]"
+              >
+                {group.label}
+              </Button>
+            ))}
+          </div>
+        </div>
       </section>
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
         <Card className="p-6 flex flex-col items-center">

@@ -1,5 +1,12 @@
 {
   "extends": "astro/tsconfigs/strict",
   "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist"]
+  "exclude": ["dist"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@ag-ui/core": ["apps/web/ag-ui/typescript-sdk/packages/core/dist"],
+      "@ag-ui/proto": ["apps/web/ag-ui/typescript-sdk/packages/proto/dist"]
+    }
+  }
 }

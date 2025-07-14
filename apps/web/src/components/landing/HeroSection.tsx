@@ -96,11 +96,6 @@ export default function HeroSection() {
           Access Code Academy
         </Button>
       </div>
-      {!user && (
-        <Button onClick={handleSignUp} className="font-bold px-8 py-3 text-lg bg-brand-red text-white hover:bg-brand-orange focus:ring-brand-yellow shadow-lg" data-testid="signup-hero-btn">
-          Sign Up
-        </Button>
-      )}
       <div className="flex flex-col sm:flex-row gap-4 mt-8">
         <Button 
           onClick={handleCustomerAccess}

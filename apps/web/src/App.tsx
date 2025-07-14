@@ -14,6 +14,7 @@ import OAuthTest from './components/auth/OAuthTest';
 // Import dashboard pages for each user group
 import DataLabelingDashboard from './pages/data-labeling/Dashboard';
 import AcademyDashboard from './pages/academy/Dashboard';
+import EnterpriseDashboardPage from './pages/customer/Dashboard';
 
 export default function App() {
   return (
@@ -41,7 +42,7 @@ export default function App() {
         <Route path="/academy/*" element={<AcademyDashboard />} />
         
         {/* Protected Routes - Enterprise/Customer */}
-        <Route path="/customer/*" element={<Dashboard />} />
+        <Route path="/customer/*" element={<EnterpriseDashboardPage />} />
         
         {/* Coming Soon Pages */}
         <Route path="/blog" element={<div className="min-h-screen flex items-center justify-center"><h1 className="text-3xl font-bold">Blog - Coming Soon</h1></div>} />

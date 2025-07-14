@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { useAuth } from '../hooks/useAuth';
 import OAuthLogin from '../components/auth/OAuthLogin';
 import type { UserGroup } from '../providers/AuthProvider';
+import { useEnterpriseAuth } from '../hooks/useEnterpriseAuth';
 
 export default function Login() {
   const [selectedUserGroup, setSelectedUserGroup] = useState<UserGroup | null>(null);
@@ -13,8 +14,19 @@ export default function Login() {
   const { signIn } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-
   const from = location.state?.from?.pathname || '/';
+
+  // Pre-select group from query string if present
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const group = params.get('group');
+    if (group === 'enterprise' || group === 'academy' || group === 'data-annotator') {
+      setSelectedUserGroup(group as UserGroup);
+    }
+  }, [location.search]);
+
+  // Enterprise RBAC check
+  const { isEnterpriseUser, error: enterpriseError } = useEnterpriseAuth();
 
   const handleUserGroupSelection = (userGroup: UserGroup) => {
     setSelectedUserGroup(userGroup);
@@ -25,11 +37,9 @@ export default function Login() {
       alert('Please select a user group first.');
       return;
     }
-
     setLoading(true);
     try {
       await signIn(selectedUserGroup);
-      
       // Redirect based on user group
       switch (selectedUserGroup) {
         case 'data-annotator':
@@ -39,7 +49,12 @@ export default function Login() {
           navigate('/academy/dashboard');
           break;
         case 'enterprise':
-          navigate('/customer/dashboard');
+          // Only allow if enterprise RBAC passes
+          if (isEnterpriseUser) {
+            navigate('/customer/dashboard');
+          } else {
+            // Error will be handled by useEnterpriseAuth
+          }
           break;
         default:
           navigate(from);
@@ -86,6 +101,12 @@ export default function Login() {
           <h1 className="text-3xl font-bold text-brand-dark mb-2">Welcome to TETRIX</h1>
           <p className="text-gray-600">Choose your user group to continue</p>
         </div>
+
+        {enterpriseError && (
+          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded text-center">
+            {enterpriseError}
+          </div>
+        )}
 
         {!showOAuth ? (
           <>

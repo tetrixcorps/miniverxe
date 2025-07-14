@@ -206,9 +206,6 @@ export function MobileNavigation() {
               <Button variant="outline" className="w-full border-brand-red text-brand-red hover:bg-brand-red hover:text-white">
                 Sign In
               </Button>
-              <Button className="w-full bg-brand-red text-white hover:bg-brand-orange">
-                Sign Up
-              </Button>
             </div>
           </div>
         </div>

@@ -79,8 +79,12 @@ try {
                 </h3>
                 <div class="mt-2 text-sm text-green-700">
                   <p><strong>Submission Test:</strong> ✅ Success</p>
-                  <p><strong>Retrieval Test:</strong> ✅ Success ({testResult.retrieval.count} submissions found)</p>
-                  <p><strong>Document ID:</strong> {testResult.submission.id}</p>
+                  {testResult && testResult.retrieval ? (
+                    <p><strong>Retrieval Test:</strong> ✅ Success ({testResult.retrieval.count} submissions found)</p>
+                  ) : (
+                    <p><strong>Retrieval Test:</strong> Not run or failed</p>
+                  )}
+                  <p><strong>Document ID:</strong> {testResult && testResult.submission ? testResult.submission.id : 'N/A'}</p>
                 </div>
               </div>
             </div>
