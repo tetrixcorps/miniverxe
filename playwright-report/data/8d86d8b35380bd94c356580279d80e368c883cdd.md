@@ -1,0 +1,41 @@
+# Page snapshot
+
+```yaml
+- banner:
+  - link "TETRIX Logo T E T R I X":
+    - /url: /
+    - img "TETRIX Logo"
+    - text: T E T R I X
+  - navigation "Main navigation":
+    - button "Open menu":
+      - img
+- main:
+  - heading "Contact Us" [level=1]
+  - paragraph: We'd love to hear from you. Fill out the form below and our team will get back to you soon.
+  - form "Contact form":
+    - text: Name
+    - textbox "Name"
+    - text: Email
+    - textbox "Email"
+    - text: Message
+    - textbox "Message"
+    - button "Send Message"
+  - heading "TETRIX Headquarters" [level=3]
+  - paragraph: 2J Daisy Street, Chevron, Lagos Nigeria
+  - heading "Get in Touch" [level=3]
+  - paragraph:
+    - text: "Phone:"
+    - link "+234-915-643-3790":
+      - /url: tel:+2349156433790
+  - paragraph:
+    - text: "Email:"
+    - link "info@tetrixcorp.com":
+      - /url: mailto:info@tetrixcorp.com
+  - iframe
+- contentinfo:
+  - text: © 2024 TETRIX. All rights reserved.
+  - link "About":
+    - /url: /about
+  - link "Contact":
+    - /url: /contact
+```
