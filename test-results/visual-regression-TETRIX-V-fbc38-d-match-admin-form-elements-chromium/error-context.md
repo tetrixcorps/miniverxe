@@ -1,0 +1,44 @@
+# Page snapshot
+
+```yaml
+- banner:
+  - link "TETRIX Logo T E T R I X":
+    - /url: /
+    - img "TETRIX Logo"
+    - text: T E T R I X
+  - navigation "Main navigation":
+    - list:
+      - listitem:
+        - link "Home":
+          - /url: /
+      - listitem:
+        - link "Solutions":
+          - /url: /solutions
+      - listitem:
+        - link "Blog":
+          - /url: /blog
+      - listitem:
+        - link "Documentation":
+          - /url: /docs
+      - listitem:
+        - link "Pricing":
+          - /url: /pricing
+      - listitem:
+        - link "Watch Demo (90s)":
+          - /url: "#product-demo"
+- main:
+  - img
+  - heading "Admin Login" [level=2]
+  - paragraph: Access TETRIX contact submissions
+  - text: Password
+  - textbox "Password"
+  - button "Sign in"
+  - 'link "â† Back to TETRIX"':
+    - /url: /
+- contentinfo:
+  - text: © 2024 TETRIX. All rights reserved.
+  - link "About":
+    - /url: /about
+  - link "Contact":
+    - /url: /contact
+```
