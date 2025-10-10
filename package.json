@@ -1,40 +1,28 @@
 {
-  "name": "tetrix",
+  "name": "tetrix-voice-api",
+  "version": "1.0.0",
+  "description": "TETRIX & JoRoMi Voice API with Telnyx, Deepgram STT, and SHANGO AI Integration",
   "type": "module",
-  "version": "0.0.1",
-  "engines": {
-    "node": ">=20.0.0",
-    "npm": ">=10.0.0"
-  },
-  "packageManager": "pnpm@10.8.0",
   "scripts": {
-    "preinstall": "rm -f package-lock.json yarn.lock npm-shrinkwrap.json .yarnrc .yarnrc.yml",
-    "dev": "astro dev",
+    "dev": "astro dev --host 0.0.0.0 --port 4321",
+    "start": "astro dev --host 0.0.0.0 --port 4321",
     "build": "astro build",
-    "preview": "astro preview",
+    "preview": "astro preview --host 0.0.0.0 --port 4321",
     "astro": "astro",
-    "db:migrate": "node scripts/migrate.js",
-    "db:migrate:create": "node scripts/migrate.js create",
-    "db:migrate:status": "node scripts/migrate.js status",
-    "db:migrate:rollback": "node scripts/migrate.js rollback",
-    "db:backup": "node scripts/backup.js backup",
-    "db:backup:restore": "node scripts/backup.js restore",
-    "db:backup:list": "node scripts/backup.js list",
-    "db:seed": "node scripts/seed.js run",
-    "db:seed:create": "node scripts/seed.js create",
-    "db:seed:list": "node scripts/seed.js list",
     "test": "playwright test",
+    "test:unit": "playwright test tests/unit/",
+    "test:integration": "playwright test tests/integration/",
+    "test:functional": "playwright test tests/functional/",
+    "test:e2e": "playwright test tests/e2e/",
     "test:headed": "playwright test --headed",
     "test:debug": "playwright test --debug",
     "test:ui": "playwright test --ui",
-    "test:main": "playwright test tests/main-site.spec.ts",
-    "test:api": "playwright test tests/api-endpoints.spec.ts",
-    "test:admin": "playwright test tests/admin-functionality.spec.ts",
-    "test:visual": "playwright test tests/visual-regression.spec.ts",
-    "test:web-app": "playwright test tests/web-app.spec.ts",
-    "test:install": "playwright install",
     "test:report": "playwright show-report",
-    "test:update-snapshots": "playwright test --update-snapshots"
+    "test:install": "playwright install",
+    "test:cross-platform": "node scripts/test-cross-platform-integration.js",
+    "test:all": "./scripts/run-voice-api-tests.sh",
+    "demo:voice": "node scripts/demo-voice-api.js",
+    "deploy": "./scripts/deploy-unified-onboarding.sh"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.81.2",
@@ -47,16 +35,31 @@
     "stripe": "^17.4.0"
   },
   "devDependencies": {
-    "@astrojs/tailwind": "^6.0.2",
-    "@playwright/test": "^1.53.0",
-    "@tailwindcss/cli": "^4.1.10",
-    "@tailwindcss/postcss": "^4.1.10",
-    "@tailwindcss/typography": "^0.5.16",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
-    "autoprefixer": "^10.4.21",
-    "lucide-react": "^0.516.0",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^3.4.17"
+    "@astrojs/tailwind": "^5.1.2",
+    "@playwright/test": "^1.56.0",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "newman": "^6.2.1",
+    "playwright": "^1.56.0",
+    "tailwindcss": "^3.4.15",
+    "typescript": "^5.6.3"
+  },
+  "keywords": [
+    "voice-api",
+    "telnyx",
+    "deepgram",
+    "shango-ai",
+    "texml",
+    "transcription",
+    "tetrix",
+    "joromi",
+    "cross-platform",
+    "unified-messaging"
+  ],
+  "author": "TETRIX & JoRoMi Platform",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
   }
 }

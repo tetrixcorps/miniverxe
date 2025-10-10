@@ -13,5 +13,12 @@ export default defineConfig({
       'localhost',
       '127.0.0.1'
     ]
-  }
+  },
+  // Add specific configuration for API routes
+  experimental: {
+    // Enable experimental features that might help with request body parsing
+  },
+  // Ensure API routes are properly handled
+  output: 'server',
+  adapter: undefined // Use default adapter for now
 });
