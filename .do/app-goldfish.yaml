@@ -3,7 +3,6 @@ region: nyc
 
 services:
   - name: tetrix-frontend
-    environment_slug: docker
     github:
       repo: tetrixcorps/miniverxe
       branch: main

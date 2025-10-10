@@ -8,6 +8,7 @@
   },
   "packageManager": "pnpm@10.8.0",
   "scripts": {
+    "preinstall": "rm -f package-lock.json yarn.lock npm-shrinkwrap.json .yarnrc .yarnrc.yml",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",

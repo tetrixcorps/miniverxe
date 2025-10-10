@@ -1,11 +1,12 @@
 ---
 import MainLayout from '../components/layout/MainLayout.astro';
 import Button from '../components/shared/Button.astro';
+import SHANGOChatWidget from '../components/SHANGOChatWidget.tsx';
 ---
 <MainLayout>
   <section class="py-16 bg-brand-light text-center">
     <h1 class="text-4xl font-heading font-bold mb-6 text-brand-red">Contact Us</h1>
-    <p class="max-w-2xl mx-auto text-lg text-brand-dark mb-10">We'd love to hear from you. Fill out the form below and our team will get back to you soon.</p>
+    <p class="max-w-2xl mx-auto text-lg text-brand-dark mb-10">We'd love to hear from you. Chat with SHANGO, our AI Super Agent, or fill out the form below and our team will get back to you soon.</p>
     
     <!-- Success Message -->
     <div id="success-message" class="max-w-xl mx-auto bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6 hidden">
@@ -19,7 +20,13 @@ import Button from '../components/shared/Button.astro';
       <p id="error-text">Please try again or contact us directly.</p>
     </div>
 
-    <form id="contact-form" class="max-w-xl mx-auto bg-white rounded-lg p-8 shadow text-left" aria-label="Contact form">
+    <!-- SHANGO Chat Section -->
+    <div class="max-w-4xl mx-auto mb-12">
+      <div class="grid md:grid-cols-2 gap-8">
+        <!-- Contact Form -->
+        <div class="bg-white rounded-lg p-8 shadow">
+          <h2 class="text-2xl font-bold mb-6 text-brand-red">Send us a Message</h2>
+          <form id="contact-form" class="text-left" aria-label="Contact form">
       <label class="block mb-4">
         <span class="block text-brand-orange font-bold mb-1">Name</span>
         <input type="text" name="name" id="name" required class="w-full px-4 py-2 rounded border border-brand-orange focus:ring-2 focus:ring-brand-orange" />
@@ -32,11 +39,54 @@ import Button from '../components/shared/Button.astro';
         <span class="block text-brand-orange font-bold mb-1">Message</span>
         <textarea name="message" id="message" required rows="4" class="w-full px-4 py-2 rounded border border-brand-orange focus:ring-2 focus:ring-brand-orange"></textarea>
       </label>
-      <button type="submit" id="submit-btn" class="bg-brand-red text-white px-6 py-3 rounded-lg font-semibold hover:bg-brand-dark transition-colors focus:outline-none focus:ring-2 focus:ring-brand-red">
-        <span id="submit-text">Send Message</span>
-        <span id="loading-text" class="hidden">Sending...</span>
-      </button>
-    </form>
+            <button type="submit" id="submit-btn" class="bg-brand-red text-white px-6 py-3 rounded-lg font-semibold hover:bg-brand-dark transition-colors focus:outline-none focus:ring-2 focus:ring-brand-red">
+              <span id="submit-text">Send Message</span>
+              <span id="loading-text" class="hidden">Sending...</span>
+            </button>
+          </form>
+        </div>
+        
+        <!-- SHANGO Live Chat Section -->
+        <div class="bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg p-8 shadow border border-purple-200">
+          <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl">⚡</span>
+            </div>
+            <h2 class="text-2xl font-bold mb-2 text-purple-800">Chat with SHANGO</h2>
+            <p class="text-purple-600 mb-4">Your AI Super Agent for instant help and support</p>
+          </div>
+          
+          <div class="space-y-4">
+            <div class="bg-white rounded-lg p-4 border border-purple-200">
+              <h3 class="font-semibold text-gray-800 mb-2">⚡ SHANGO General</h3>
+              <p class="text-sm text-gray-600">General assistance and support</p>
+            </div>
+            <div class="bg-white rounded-lg p-4 border border-purple-200">
+              <h3 class="font-semibold text-gray-800 mb-2">🔧 SHANGO Tech</h3>
+              <p class="text-sm text-gray-600">Technical issues and troubleshooting</p>
+            </div>
+            <div class="bg-white rounded-lg p-4 border border-purple-200">
+              <h3 class="font-semibold text-gray-800 mb-2">💼 SHANGO Sales</h3>
+              <p class="text-sm text-gray-600">Sales and product information</p>
+            </div>
+            <div class="bg-white rounded-lg p-4 border border-purple-200">
+              <h3 class="font-semibold text-gray-800 mb-2">💳 SHANGO Billing</h3>
+              <p class="text-sm text-gray-600">Billing and account support</p>
+            </div>
+          </div>
+          
+          <div class="mt-6 text-center">
+            <p class="text-sm text-purple-600 mb-4">
+              💬 Live chat • 🤖 AI assistance • 📞 Voice support • 📱 SMS available
+            </p>
+            <div class="text-xs text-gray-500">
+              <p>Available 24/7 for your convenience</p>
+              <p>Click the SHANGO button to start chatting!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     
     <div class="mt-10 text-brand-dark">
       <div class="mb-4">
@@ -64,7 +114,18 @@ import Button from '../components/shared/Button.astro';
       </div>
     </div>
   </section>
+  
+  <!-- SHANGO Chat Widget -->
+  <div id="shango-chat-widget"></div>
 </MainLayout>
+
+<script>
+  // Initialize SHANGO Chat Widget
+  document.addEventListener('DOMContentLoaded', function() {
+    // This will be handled by the React component
+    console.log('SHANGO Chat Widget ready to initialize');
+  });
+</script>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
