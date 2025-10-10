@@ -1,5 +1,5 @@
 // SHANGO AI Super Agent - SinchChatLive Service for TETRIX & JoRoMi Platform
-import { SinchChatLive } from '@sinch/sinch-chat-live';
+// import { SinchChatLive } from '@sinch/sinch-chat-live';
 
 export interface ChatSession {
   id: string;
