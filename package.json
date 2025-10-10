@@ -25,9 +25,10 @@
     "deploy": "./scripts/deploy-unified-onboarding.sh"
   },
   "dependencies": {
+    "@astrojs/node": "^9.4.6",
     "@tanstack/react-query": "^5.81.2",
     "@tanstack/react-query-devtools": "^5.81.2",
-    "astro": "^5.9.3",
+    "astro": "^5.14.4",
     "firebase": "^11.9.1",
     "puppeteer": "^24.10.1",
     "react": "^19.1.0",
