@@ -1,6 +1,22 @@
-node_modules/
+# Dependency lockfiles (keep only pnpm-lock.yaml)
 package-lock.json
-apps/web/package-lock.json
-external/mcp/package-lock.json
-cursor-talk-to-figma-mcp/node_modules/
+npm-shrinkwrap.json
+yarn.lock
+.yarnrc
+.yarnrc.yml
+
+# Node modules
+node_modules/
+.npm/
+.yarn/
+
+# Service-specific node_modules
 services/*/node_modules/
+apps/*/node_modules/
+external/*/node_modules/
+cursor-talk-to-figma-mcp/node_modules/
+
+# Build artifacts
+dist/
+build/
+coverage/
