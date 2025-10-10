@@ -37,13 +37,15 @@
     "test:update-snapshots": "playwright test --update-snapshots"
   },
   "dependencies": {
+    "@sinch/sinch-chat-live": "^1.0.0",
     "@tanstack/react-query": "^5.81.2",
     "@tanstack/react-query-devtools": "^5.81.2",
     "astro": "^5.9.3",
     "firebase": "^11.9.1",
     "puppeteer": "^24.10.1",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "stripe": "^17.4.0"
   },
   "devDependencies": {
     "@astrojs/tailwind": "^6.0.2",
