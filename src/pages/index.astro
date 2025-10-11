@@ -7,127 +7,165 @@ import UnifiedMessagingDashboard from '../components/UnifiedMessagingDashboard.t
 <MainLayout>
   <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
     <!-- Hero Section -->
-    <section class="py-20 px-4">
-      <div class="max-w-7xl mx-auto text-center">
+    <section class="py-20 px-4 relative overflow-hidden">
+      <!-- Background Pattern -->
+      <div class="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50"></div>
+      <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%239C92AC" fill-opacity="0.1"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
+      
+      <div class="max-w-7xl mx-auto text-center relative z-10">
         <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-          Cross-Platform
-          <span class="text-blue-600">Management System</span>
+          AI-Powered Solutions for
+          <span class="text-blue-600">Modern Business</span>
         </h1>
-        <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-          Unified messaging, voice, and AI services across TETRIX and JoRoMi platforms. 
-          Seamlessly manage WhatsApp, SMS, Voice calls, and AI-powered conversations.
+        <p class="text-xl text-gray-600 mb-8 max-w-4xl mx-auto">
+          Transform your business with our comprehensive suite of AI services: workflow integration, 
+          data labeling, creative marketing, smart communication, and strategic consulting. 
+          Join 500+ companies already leveraging AI for competitive advantage.
         </p>
+        
+        <!-- Market Statistics Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 max-w-4xl mx-auto">
+          <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/20">
+            <div class="text-2xl font-bold text-blue-600">$1.8T</div>
+            <div class="text-sm text-gray-600">AI Market by 2030</div>
+          </div>
+          <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/20">
+            <div class="text-2xl font-bold text-green-600">67%</div>
+            <div class="text-sm text-gray-600">Companies Using AI</div>
+          </div>
+          <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/20">
+            <div class="text-2xl font-bold text-purple-600">40%</div>
+            <div class="text-sm text-gray-600">Productivity Boost</div>
+          </div>
+          <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/20">
+            <div class="text-2xl font-bold text-orange-600">85%</div>
+            <div class="text-sm text-gray-600">Customer Satisfaction</div>
+          </div>
+        </div>
+        
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <a href="/onboarding" class="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-            Start Free Trial
+          <a href="/marketing-campaigns" class="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+            Marketing Campaigns
           </a>
-          <a href="#features" class="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold border-2 border-blue-600 hover:bg-blue-50 transition-colors">
-            View Features
+          <a href="/phone-numbers" class="bg-purple-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-purple-700 transition-colors">
+            Phone Numbers & AI Agent
+          </a>
+          <a href="/data-labeling" class="bg-green-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-green-700 transition-colors">
+            Data Labeling
+          </a>
+          <a href="/code-academy" class="bg-orange-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-orange-700 transition-colors">
+            Code Academy
           </a>
         </div>
       </div>
     </section>
 
-    <!-- Features Section -->
+    <!-- Services Overview Section -->
     <section id="features" class="py-20 px-4 bg-white">
       <div class="max-w-7xl mx-auto">
         <h2 class="text-4xl font-bold text-center text-gray-900 mb-16">
-          Unified Platform Features
+          Comprehensive AI Services
         </h2>
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <!-- Voice API -->
-          <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-8 rounded-xl shadow-lg">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- AI Workflow Integration -->
+          <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
             <div class="w-16 h-16 bg-blue-600 rounded-lg flex items-center justify-center mb-6">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
-              </svg>
+              <span class="text-2xl">🤖</span>
             </div>
-            <h3 class="text-2xl font-bold text-gray-900 mb-4">Voice API</h3>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">AI Workflow Integration</h3>
             <p class="text-gray-600 mb-4">
-              Enhanced Telnyx integration with Deepgram STT for intelligent voice processing and AI responses.
+              Automate your business processes with intelligent AI workflows that adapt and learn from your operations.
             </p>
-            <a href="/voice-demo-simple" class="text-blue-600 font-semibold hover:text-blue-700">
-              Try Voice Demo →
-            </a>
-          </div>
-
-          <!-- Smart 2FA -->
-          <div class="bg-gradient-to-br from-green-50 to-green-100 p-8 rounded-xl shadow-lg">
-            <div class="w-16 h-16 bg-green-600 rounded-lg flex items-center justify-center mb-6">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-              </svg>
+            <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold mb-4">
+              40% Cost Reduction
             </div>
-            <h3 class="text-2xl font-bold text-gray-900 mb-4">Smart 2FA</h3>
-            <p class="text-gray-600 mb-4">
-              Enterprise-grade authentication with voice primary, SMS fallback, and fraud detection.
-            </p>
-            <a href="/api/v2/2fa/initiate" class="text-green-600 font-semibold hover:text-green-700">
-              Test 2FA API →
-            </a>
-          </div>
-
-          <!-- Unified Messaging -->
-          <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-8 rounded-xl shadow-lg">
-            <div class="w-16 h-16 bg-purple-600 rounded-lg flex items-center justify-center mb-6">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-              </svg>
-            </div>
-            <h3 class="text-2xl font-bold text-gray-900 mb-4">Unified Messaging</h3>
-            <p class="text-gray-600 mb-4">
-              WhatsApp, SMS, Voice, and Chat integration with cross-platform session management.
-            </p>
-            <a href="/onboarding" class="text-purple-600 font-semibold hover:text-purple-700">
-              Setup Messaging →
-            </a>
-          </div>
-
-          <!-- SHANGO AI Agent -->
-          <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-8 rounded-xl shadow-lg">
-            <div class="w-16 h-16 bg-orange-600 rounded-lg flex items-center justify-center mb-6">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-              </svg>
-            </div>
-            <h3 class="text-2xl font-bold text-gray-900 mb-4">SHANGO AI Agent</h3>
-            <p class="text-gray-600 mb-4">
-              Your AI Super Agent for technical support, sales, billing, and general assistance.
-            </p>
-            <a href="/onboarding" class="text-orange-600 font-semibold hover:text-orange-700">
-              Meet SHANGO →
-            </a>
-          </div>
-
-          <!-- Cross-Platform Sessions -->
-          <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 p-8 rounded-xl shadow-lg">
-            <div class="w-16 h-16 bg-indigo-600 rounded-lg flex items-center justify-center mb-6">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
-              </svg>
-            </div>
-            <h3 class="text-2xl font-bold text-gray-900 mb-4">Cross-Platform Sessions</h3>
-            <p class="text-gray-600 mb-4">
-              Seamless session management between TETRIX and JoRoMi platforms with secure tokens.
-            </p>
-            <a href="/onboarding" class="text-indigo-600 font-semibold hover:text-indigo-700">
+            <a href="/ai-workflow" class="text-blue-600 font-semibold hover:text-blue-700">
               Learn More →
             </a>
           </div>
 
-          <!-- Real-time Webhooks -->
-          <div class="bg-gradient-to-br from-red-50 to-red-100 p-8 rounded-xl shadow-lg">
-            <div class="w-16 h-16 bg-red-600 rounded-lg flex items-center justify-center mb-6">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-              </svg>
+          <!-- Data Labeling & Annotation -->
+          <div class="bg-gradient-to-br from-green-50 to-green-100 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+            <div class="w-16 h-16 bg-green-600 rounded-lg flex items-center justify-center mb-6">
+              <span class="text-2xl">🏷️</span>
             </div>
-            <h3 class="text-2xl font-bold text-gray-900 mb-4">Real-time Webhooks</h3>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Data Labeling & Annotation</h3>
             <p class="text-gray-600 mb-4">
-              Live event processing for 2FA, payments, messaging, and voice call events.
+              High-quality data labeling services with human-in-the-loop validation for machine learning models.
             </p>
-            <a href="/api/webhooks" class="text-red-600 font-semibold hover:text-red-700">
-              View Webhooks →
+            <div class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold mb-4">
+              99.5% Accuracy, Fortune 500 Trusted
+            </div>
+            <a href="/data-labeling" class="text-green-600 font-semibold hover:text-green-700">
+              Get Started →
+            </a>
+          </div>
+
+          <!-- Creative Marketing Agency -->
+          <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+            <div class="w-16 h-16 bg-purple-600 rounded-lg flex items-center justify-center mb-6">
+              <span class="text-2xl">📈</span>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Creative Marketing Agency</h3>
+            <p class="text-gray-600 mb-4">
+              Full-service marketing campaigns with AI-powered creative generation and performance optimization.
+            </p>
+            <div class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-semibold mb-4">
+              3x Higher Engagement, Proven ROI
+            </div>
+            <a href="/marketing-campaigns" class="text-purple-600 font-semibold hover:text-purple-700">
+              View Campaigns →
+            </a>
+          </div>
+
+          <!-- Phone Numbers & AI Agent -->
+          <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+            <div class="w-16 h-16 bg-orange-600 rounded-lg flex items-center justify-center mb-6">
+              <span class="text-2xl">📞</span>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Phone Numbers & AI Agent</h3>
+            <p class="text-gray-600 mb-4">
+              Professional phone numbers with 24/7 AI customer support in multiple languages.
+            </p>
+            <div class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold mb-4">
+              24/7 AI Support, Multilingual
+            </div>
+            <a href="/phone-numbers" class="text-orange-600 font-semibold hover:text-orange-700">
+              Get Numbers →
+            </a>
+          </div>
+
+          <!-- Consulting & Strategy -->
+          <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+            <div class="w-16 h-16 bg-indigo-600 rounded-lg flex items-center justify-center mb-6">
+              <span class="text-2xl">💡</span>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Consulting & Strategy</h3>
+            <p class="text-gray-600 mb-4">
+              Expert guidance on AI implementation, digital transformation, and strategic technology planning.
+            </p>
+            <div class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-semibold mb-4">
+              Expert Guidance, Strategic Planning
+            </div>
+            <a href="/consulting" class="text-indigo-600 font-semibold hover:text-indigo-700">
+              Book Consultation →
+            </a>
+          </div>
+
+          <!-- Ongoing Support -->
+          <div class="bg-gradient-to-br from-red-50 to-red-100 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+            <div class="w-16 h-16 bg-red-600 rounded-lg flex items-center justify-center mb-6">
+              <span class="text-2xl">🛠️</span>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Ongoing Support</h3>
+            <p class="text-gray-600 mb-4">
+              Comprehensive support and maintenance for all your AI implementations and business systems.
+            </p>
+            <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold mb-4">
+              24/7 Support, Enterprise Grade
+            </div>
+            <a href="/support" class="text-red-600 font-semibold hover:text-red-700">
+              Get Support →
             </a>
           </div>
         </div>
@@ -212,30 +250,89 @@ import UnifiedMessagingDashboard from '../components/UnifiedMessagingDashboard.t
       </div>
     </section>
 
-    <!-- Quick Actions Section -->
-    <section class="py-20 px-4 bg-white">
+    <!-- Enhanced CTA Section -->
+    <section class="py-20 px-4 bg-gradient-to-br from-gray-50 to-blue-50">
       <div class="max-w-7xl mx-auto text-center">
         <h2 class="text-4xl font-bold text-gray-900 mb-8">
-          Quick Actions
+          Transform Your Business Today
         </h2>
-        <div class="grid md:grid-cols-3 gap-8">
-          <a href="/onboarding" class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all">
-            <div class="text-4xl mb-4">🚀</div>
-            <h3 class="text-2xl font-bold mb-4">Start Free Trial</h3>
-            <p class="text-blue-100">Begin your 7-day free trial with WhatsApp Business integration</p>
-          </a>
+        <p class="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
+          Join 500+ companies already leveraging AI for competitive advantage. 
+          Choose your transformation path and start your journey to AI-powered success.
+        </p>
+        
+        <!-- Service Category Cards -->
+        <div class="grid md:grid-cols-3 gap-8 mb-12">
+          <!-- AI & Automation -->
+          <div class="bg-white/80 backdrop-blur-sm rounded-xl p-8 shadow-lg border border-white/20 hover:shadow-xl transition-all">
+            <div class="text-4xl mb-4">🤖</div>
+            <h3 class="text-2xl font-bold mb-4 text-gray-900">AI & Automation</h3>
+            <ul class="text-left text-gray-600 space-y-2 mb-6">
+              <li>• Workflow Integration</li>
+              <li>• Data Labeling & Annotation</li>
+              <li>• Process Automation</li>
+            </ul>
+            <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold mb-4">
+              40% Cost Reduction
+            </div>
+            <a href="/ai-automation" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+              Get Started
+            </a>
+          </div>
           
-          <a href="/voice-demo-simple" class="bg-gradient-to-r from-green-600 to-green-700 text-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all">
-            <div class="text-4xl mb-4">🎤</div>
-            <h3 class="text-2xl font-bold mb-4">Test Voice API</h3>
-            <p class="text-green-100">Try our enhanced voice API with Deepgram STT integration</p>
-          </a>
+          <!-- Creative Marketing -->
+          <div class="bg-white/80 backdrop-blur-sm rounded-xl p-8 shadow-lg border border-white/20 hover:shadow-xl transition-all">
+            <div class="text-4xl mb-4">📈</div>
+            <h3 class="text-2xl font-bold mb-4 text-gray-900">Creative Marketing</h3>
+            <ul class="text-left text-gray-600 space-y-2 mb-6">
+              <li>• Campaign Management</li>
+              <li>• Creative Design</li>
+              <li>• Performance Analytics</li>
+            </ul>
+            <div class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-semibold mb-4">
+              3x Higher Engagement
+            </div>
+            <a href="/marketing-campaigns" class="bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors">
+              View Campaigns
+            </a>
+          </div>
           
-          <a href="/api/voice/health" class="bg-gradient-to-r from-purple-600 to-purple-700 text-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all">
-            <div class="text-4xl mb-4">🔧</div>
-            <h3 class="text-2xl font-bold mb-4">API Health</h3>
-            <p class="text-purple-100">Check the status of all our API endpoints and services</p>
-          </a>
+          <!-- Smart Communication -->
+          <div class="bg-white/80 backdrop-blur-sm rounded-xl p-8 shadow-lg border border-white/20 hover:shadow-xl transition-all">
+            <div class="text-4xl mb-4">📞</div>
+            <h3 class="text-2xl font-bold mb-4 text-gray-900">Smart Communication</h3>
+            <ul class="text-left text-gray-600 space-y-2 mb-6">
+              <li>• Toll-Free Numbers</li>
+              <li>• AI Customer Support</li>
+              <li>• Global Coverage</li>
+            </ul>
+            <div class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold mb-4">
+              24/7 AI Support
+            </div>
+            <a href="/phone-numbers" class="bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors">
+              Get Numbers
+            </a>
+          </div>
+        </div>
+        
+        <!-- Industry Statistics -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+          <div class="bg-white/60 backdrop-blur-sm rounded-lg p-4 shadow-md">
+            <div class="text-2xl font-bold text-blue-600">$1.8T</div>
+            <div class="text-sm text-gray-600">AI Market by 2030</div>
+          </div>
+          <div class="bg-white/60 backdrop-blur-sm rounded-lg p-4 shadow-md">
+            <div class="text-2xl font-bold text-green-600">67%</div>
+            <div class="text-sm text-gray-600">Companies Using AI</div>
+          </div>
+          <div class="bg-white/60 backdrop-blur-sm rounded-lg p-4 shadow-md">
+            <div class="text-2xl font-bold text-purple-600">40%</div>
+            <div class="text-sm text-gray-600">Productivity Boost</div>
+          </div>
+          <div class="bg-white/60 backdrop-blur-sm rounded-lg p-4 shadow-md">
+            <div class="text-2xl font-bold text-orange-600">85%</div>
+            <div class="text-sm text-gray-600">Customer Satisfaction</div>
+          </div>
         </div>
       </div>
     </section>

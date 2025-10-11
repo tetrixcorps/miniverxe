@@ -1,0 +1,211 @@
+---
+import MainLayout from '../components/layout/MainLayout.astro';
+---
+
+<MainLayout>
+  <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <!-- Hero Section -->
+    <section class="py-20 px-4">
+      <div class="max-w-7xl mx-auto text-center">
+        <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+          Creative Marketing
+          <span class="text-purple-600">Campaigns</span>
+        </h1>
+        <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+          Full-service marketing campaigns with AI-powered creative generation, 
+          performance optimization, and proven ROI. Transform your marketing with data-driven strategies.
+        </p>
+      </div>
+    </section>
+
+    <!-- Pricing Section with ROI Data -->
+    <section class="py-20 px-4 bg-white">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl font-bold text-center text-gray-900 mb-16">
+          Marketing Campaign Pricing
+        </h2>
+        <div class="grid md:grid-cols-3 gap-8">
+          <!-- Starter Plan -->
+          <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all">
+            <div class="text-center mb-8">
+              <h3 class="text-2xl font-bold text-gray-900 mb-4">Starter Plan</h3>
+              <div class="text-4xl font-bold text-blue-600 mb-2">$2,999</div>
+              <div class="text-gray-600">per month</div>
+            </div>
+            <div class="space-y-4 mb-8">
+              <div class="flex items-center">
+                <span class="text-green-600 mr-2">✓</span>
+                <span>5 Campaigns per month</span>
+              </div>
+              <div class="flex items-center">
+                <span class="text-green-600 mr-2">✓</span>
+                <span>AI Creative Generation</span>
+              </div>
+              <div class="flex items-center">
+                <span class="text-green-600 mr-2">✓</span>
+                <span>Performance Analytics</span>
+              </div>
+              <div class="flex items-center">
+                <span class="text-green-600 mr-2">✓</span>
+                <span>Email Support</span>
+              </div>
+            </div>
+            <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold mb-4 text-center">
+              300% Average ROI
+            </div>
+            <div class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold mb-6 text-center">
+              Save 20% vs DIY
+            </div>
+            <a href="/contact" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors text-center block">
+              Get Started
+            </a>
+          </div>
+
+          <!-- Growth Plan -->
+          <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all border-2 border-purple-200">
+            <div class="text-center mb-8">
+              <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-semibold mb-4 inline-block">
+                Most Popular
+              </div>
+              <h3 class="text-2xl font-bold text-gray-900 mb-4">Growth Plan</h3>
+              <div class="text-4xl font-bold text-purple-600 mb-2">$7,999</div>
+              <div class="text-gray-600">per month</div>
+            </div>
+            <div class="space-y-4 mb-8">
+              <div class="flex items-center">
+                <span class="text-green-600 mr-2">✓</span>
+                <span>15 Campaigns per month</span>
+              </div>
+              <div class="flex items-center">
+                <span class="text-green-600 mr-2">✓</span>
+                <span>Advanced AI Creative</span>
+              </div>
+              <div class="flex items-center">
+                <span class="text-green-600 mr-2">✓</span>
+                <span>Real-time Analytics</span>
+              </div>
+              <div class="flex items-center">
+                <span class="text-green-600 mr-2">✓</span>
+                <span>Priority Support</span>
+              </div>
+              <div class="flex items-center">
+                <span class="text-green-600 mr-2">✓</span>
+                <span>Dedicated Account Manager</span>
+              </div>
+            </div>
+            <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold mb-4 text-center">
+              450% Average ROI
+            </div>
+            <div class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold mb-6 text-center">
+              Save 40% vs Agency
+            </div>
+            <a href="/contact" class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors text-center block">
+              Get Started
+            </a>
+          </div>
+
+          <!-- Enterprise Plan -->
+          <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all">
+            <div class="text-center mb-8">
+              <h3 class="text-2xl font-bold text-gray-900 mb-4">Enterprise Plan</h3>
+              <div class="text-4xl font-bold text-orange-600 mb-2">$19,999</div>
+              <div class="text-gray-600">per month</div>
+            </div>
+            <div class="space-y-4 mb-8">
+              <div class="flex items-center">
+                <span class="text-green-600 mr-2">✓</span>
+                <span>Unlimited Campaigns</span>
+              </div>
+              <div class="flex items-center">
+                <span class="text-green-600 mr-2">✓</span>
+                <span>Custom AI Models</span>
+              </div>
+              <div class="flex items-center">
+                <span class="text-green-600 mr-2">✓</span>
+                <span>Advanced Analytics</span>
+              </div>
+              <div class="flex items-center">
+                <span class="text-green-600 mr-2">✓</span>
+                <span>24/7 Phone Support</span>
+              </div>
+              <div class="flex items-center">
+                <span class="text-green-600 mr-2">✓</span>
+                <span>White-label Solutions</span>
+              </div>
+            </div>
+            <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold mb-4 text-center">
+              600%+ Average ROI
+            </div>
+            <div class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold mb-6 text-center">
+              Save 60% vs In-house
+            </div>
+            <a href="/contact" class="w-full bg-orange-600 text-white py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors text-center block">
+              Contact Sales
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-20 px-4 bg-gray-50">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl font-bold text-center text-gray-900 mb-16">
+          Marketing Campaign Features
+        </h2>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div class="bg-white p-8 rounded-xl shadow-lg">
+            <div class="text-4xl mb-4">🎨</div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">AI Creative Generation</h3>
+            <p class="text-gray-600">Generate compelling ad creatives, copy, and visuals using advanced AI algorithms.</p>
+          </div>
+          <div class="bg-white p-8 rounded-xl shadow-lg">
+            <div class="text-4xl mb-4">📊</div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Performance Analytics</h3>
+            <p class="text-gray-600">Real-time campaign performance tracking with actionable insights and optimization recommendations.</p>
+          </div>
+          <div class="bg-white p-8 rounded-xl shadow-lg">
+            <div class="text-4xl mb-4">🎯</div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Audience Targeting</h3>
+            <p class="text-gray-600">Advanced audience segmentation and targeting using machine learning and behavioral data.</p>
+          </div>
+          <div class="bg-white p-8 rounded-xl shadow-lg">
+            <div class="text-4xl mb-4">📱</div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Multi-Channel Campaigns</h3>
+            <p class="text-gray-600">Run coordinated campaigns across social media, email, search, and display advertising.</p>
+          </div>
+          <div class="bg-white p-8 rounded-xl shadow-lg">
+            <div class="text-4xl mb-4">🔄</div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Automated Optimization</h3>
+            <p class="text-gray-600">AI-powered campaign optimization that adjusts bids, targeting, and creative in real-time.</p>
+          </div>
+          <div class="bg-white p-8 rounded-xl shadow-lg">
+            <div class="text-4xl mb-4">📈</div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">ROI Tracking</h3>
+            <p class="text-gray-600">Comprehensive ROI tracking and attribution modeling to measure true campaign performance.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 px-4 bg-gradient-to-r from-purple-600 to-blue-600">
+      <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-4xl font-bold text-white mb-8">
+          Ready to Transform Your Marketing?
+        </h2>
+        <p class="text-xl text-purple-100 mb-8">
+          Join 200+ companies already seeing 3x higher engagement rates with our AI-powered marketing campaigns.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="/contact" class="bg-white text-purple-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+            Start Your Campaign
+          </a>
+          <a href="/demo" class="bg-transparent text-white px-8 py-4 rounded-lg font-semibold border-2 border-white hover:bg-white hover:text-purple-600 transition-colors">
+            Request Demo
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
+</MainLayout>
