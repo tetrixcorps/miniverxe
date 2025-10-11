@@ -1,0 +1,201 @@
+version: "3.9"
+
+# TETRIX Production Docker Compose
+# This is the production Docker Compose configuration for the TETRIX platform
+
+services:
+  # TETRIX API Service with Security Middleware
+  api:
+    build: 
+      context: ./services/api
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - CORS_ORIGINS=https://tetrixcorp.com,https://joromi.ai,https://iot.tetrixcorp.com,https://api.tetrixcorp.com
+    ports:
+      - "4000:4000"
+    restart: unless-stopped
+    health_check:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - tetrix-network
+    volumes:
+      - ./logs/api:/app/logs
+    depends_on:
+      - postgres
+      - redis
+
+  # eSIM Ordering Service
+  esim-ordering:
+    build:
+      context: ./services/esim-ordering
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+      - PORT=4001
+      - DATABASE_URL=${DATABASE_URL}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - CORS_ORIGINS=https://tetrixcorp.com,https://joromi.ai,https://iot.tetrixcorp.com,https://api.tetrixcorp.com
+    ports:
+      - "4001:4001"
+    restart: unless-stopped
+    health_check:
+      test: ["CMD", "curl", "-f", "http://localhost:4001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - tetrix-network
+    volumes:
+      - ./logs/esim:/app/logs
+    depends_on:
+      - postgres
+      - redis
+
+  # Phone Provisioning Service
+  phone-provisioning:
+    build:
+      context: ./services/phone-provisioning
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+      - PORT=4002
+      - DATABASE_URL=${DATABASE_URL}
+      - TELNYX_API_KEY=${TELNYX_API_KEY}
+      - CORS_ORIGINS=https://tetrixcorp.com,https://joromi.ai,https://iot.tetrixcorp.com,https://api.tetrixcorp.com
+    ports:
+      - "4002:4002"
+    restart: unless-stopped
+    health_check:
+      test: ["CMD", "curl", "-f", "http://localhost:4002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - tetrix-network
+    volumes:
+      - ./logs/phone:/app/logs
+    depends_on:
+      - postgres
+      - redis
+
+  # OAuth Authentication Service
+  oauth-auth:
+    build:
+      context: ./services/oauth-auth-service
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+      - PORT=4003
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - CORS_ORIGINS=https://tetrixcorp.com,https://joromi.ai,https://iot.tetrixcorp.com,https://api.tetrixcorp.com
+    ports:
+      - "4003:4003"
+    restart: unless-stopped
+    health_check:
+      test: ["CMD", "curl", "-f", "http://localhost:4003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - tetrix-network
+    volumes:
+      - ./logs/oauth:/app/logs
+    depends_on:
+      - postgres
+      - redis
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-tetrix_production}
+      - POSTGRES_USER=${POSTGRES_USER:-tetrix}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - tetrix-network
+    health_check:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-tetrix}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    networks:
+      - tetrix-network
+    health_check:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Nginx Reverse Proxy with Security Headers
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./logs/nginx:/var/log/nginx
+    restart: unless-stopped
+    networks:
+      - tetrix-network
+    depends_on:
+      - api
+      - esim-ordering
+      - phone-provisioning
+      - oauth-auth
+
+  # Log Aggregation
+  log-aggregator:
+    image: fluent/fluent-bit:latest
+    volumes:
+      - ./logs:/var/log/tetrix:ro
+      - ./fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
+    networks:
+      - tetrix-network
+    depends_on:
+      - api
+      - esim-ordering
+      - phone-provisioning
+      - oauth-auth
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  tetrix-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

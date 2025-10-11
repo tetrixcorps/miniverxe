@@ -1,0 +1,97 @@
+{
+  "testEnvironment": {
+    "baseUrl": "http://localhost:3000",
+    "timeout": 30000,
+    "retries": 2,
+    "parallel": true,
+    "workers": 4
+  },
+  "components": {
+    "tetrix": {
+      "name": "TETRIX Voice API",
+      "services": [
+        "voice-api",
+        "transcription", 
+        "ai-response",
+        "texml"
+      ],
+      "testDir": "tests/unit",
+      "configFile": "playwright.config.js"
+    },
+    "joromi": {
+      "name": "JoRoMi VoIP Management",
+      "services": [
+        "voip-management",
+        "toll-free",
+        "ivr",
+        "sms"
+      ],
+      "testDir": "../joromi/tests/unit",
+      "configFile": "../joromi/playwright.config.js"
+    },
+    "glo": {
+      "name": "GLO M2M Services",
+      "services": [
+        "m2m-auth",
+        "session-manager",
+        "telemetry",
+        "vpn-gateway"
+      ],
+      "testDir": "../glo/tests/unit",
+      "configFile": "../glo/playwright.config.js"
+    }
+  },
+  "testTypes": {
+    "unit": {
+      "name": "Unit Tests",
+      "description": "Test individual components in isolation",
+      "timeout": 30000,
+      "retries": 2
+    },
+    "integration": {
+      "name": "Integration Tests", 
+      "description": "Test component interactions",
+      "timeout": 60000,
+      "retries": 1
+    },
+    "functional": {
+      "name": "Functional Tests",
+      "description": "Test complete user workflows",
+      "timeout": 120000,
+      "retries": 1
+    },
+    "e2e": {
+      "name": "End-to-End Tests",
+      "description": "Test complete system workflows",
+      "timeout": 300000,
+      "retries": 1
+    }
+  },
+  "reporting": {
+    "formats": ["html", "json", "junit"],
+    "outputDir": "test-results",
+    "coverageDir": "test-results/coverage"
+  },
+  "crossPlatform": {
+    "enabled": true,
+    "platforms": ["tetrix", "joromi", "glo"],
+    "integration": {
+      "cors": true,
+      "sessionSharing": true,
+      "dataSync": true,
+      "messaging": true
+    }
+  },
+  "security": {
+    "authentication": true,
+    "authorization": true,
+    "cors": true,
+    "rateLimiting": true
+  },
+  "monitoring": {
+    "healthChecks": true,
+    "metrics": true,
+    "alerts": true,
+    "logging": true
+  }
+}

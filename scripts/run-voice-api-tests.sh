@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Voice API Test Runner Script
-# Comprehensive test execution for Voice API implementation
+# TETRIX Cross-Platform Unit Testing Script
+# This script runs comprehensive unit tests for the TETRIX cross-platform management system
 
-set -e
+set -e  # Exit on any error
 
 # Colors for output
 RED='\033[0;31m'
@@ -13,425 +13,469 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-BASE_URL=${BASE_URL:-"http://localhost:4321"}
-TEST_ENV=${TEST_ENV:-"development"}
-PARALLEL=${PARALLEL:-"true"}
-HEADED=${HEADED:-"false"}
-DEBUG=${DEBUG:-"false"}
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+TEST_DIR="$PROJECT_ROOT/tests"
+RESULTS_DIR="$PROJECT_ROOT/test-results"
+COVERAGE_DIR="$RESULTS_DIR/coverage"
 
-# Function to print colored output
-print_status() {
-    echo -e "${BLUE}[INFO]${NC} $1"
-}
-
-print_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
-}
-
-print_warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
-}
-
-print_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
-}
-
-# Function to check prerequisites
-check_prerequisites() {
-    print_status "Checking prerequisites..."
-    
-    # Check if Node.js is installed
-    if ! command -v node &> /dev/null; then
-        print_error "Node.js is not installed"
-        exit 1
-    fi
-    
-    # Check if pnpm is installed
-    if ! command -v pnpm &> /dev/null; then
-        print_error "pnpm is not installed"
-        exit 1
-    fi
-    
-    # Check if Playwright is installed
-    if ! command -v npx &> /dev/null; then
-        print_error "npx is not available"
-        exit 1
-    fi
-    
-    print_success "Prerequisites check passed"
-}
-
-# Function to install dependencies
-install_dependencies() {
-    print_status "Installing dependencies..."
-    
-    # Install project dependencies
-    pnpm install
-    
-    # Install Playwright browsers
-    npx playwright install
-    
-    print_success "Dependencies installed successfully"
-}
-
-# Function to start development server
-start_server() {
-    print_status "Starting development server..."
-    
-    # Check if server is already running
-    if curl -s "$BASE_URL" > /dev/null 2>&1; then
-        print_warning "Server is already running at $BASE_URL"
-        return 0
-    fi
-    
-    # Start server in background
-    pnpm run dev &
-    SERVER_PID=$!
-    
-    # Wait for server to start
-    print_status "Waiting for server to start..."
-    for i in {1..30}; do
-        if curl -s "$BASE_URL" > /dev/null 2>&1; then
-            print_success "Server started successfully at $BASE_URL"
-            return 0
-        fi
-        sleep 2
-    done
-    
-    print_error "Server failed to start within 60 seconds"
-    kill $SERVER_PID 2>/dev/null || true
-    exit 1
-}
-
-# Function to stop development server
-stop_server() {
-    if [ ! -z "$SERVER_PID" ]; then
-        print_status "Stopping development server..."
-        kill $SERVER_PID 2>/dev/null || true
-        print_success "Server stopped"
-    fi
-}
-
-# Function to run unit tests
-run_unit_tests() {
-    print_status "Running unit tests..."
-    
-    local cmd="npx playwright test tests/unit/"
-    
-    if [ "$HEADED" = "true" ]; then
-        cmd="$cmd --headed"
-    fi
-    
-    if [ "$DEBUG" = "true" ]; then
-        cmd="$cmd --debug"
-    fi
-    
-    if [ "$PARALLEL" = "false" ]; then
-        cmd="$cmd --workers=1"
-    fi
-    
-    eval $cmd
-    
-    if [ $? -eq 0 ]; then
-        print_success "Unit tests passed"
-    else
-        print_error "Unit tests failed"
-        return 1
-    fi
-}
-
-# Function to run integration tests
-run_integration_tests() {
-    print_status "Running integration tests..."
-    
-    local cmd="npx playwright test tests/integration/"
-    
-    if [ "$HEADED" = "true" ]; then
-        cmd="$cmd --headed"
-    fi
-    
-    if [ "$DEBUG" = "true" ]; then
-        cmd="$cmd --debug"
-    fi
-    
-    if [ "$PARALLEL" = "false" ]; then
-        cmd="$cmd --workers=1"
-    fi
-    
-    eval $cmd
-    
-    if [ $? -eq 0 ]; then
-        print_success "Integration tests passed"
-    else
-        print_error "Integration tests failed"
-        return 1
-    fi
-}
-
-# Function to run functional tests
-run_functional_tests() {
-    print_status "Running functional tests..."
-    
-    local cmd="npx playwright test tests/functional/"
-    
-    if [ "$HEADED" = "true" ]; then
-        cmd="$cmd --headed"
-    fi
-    
-    if [ "$DEBUG" = "true" ]; then
-        cmd="$cmd --debug"
-    fi
-    
-    if [ "$PARALLEL" = "false" ]; then
-        cmd="$cmd --workers=1"
-    fi
-    
-    eval $cmd
-    
-    if [ $? -eq 0 ]; then
-        print_success "Functional tests passed"
-    else
-        print_error "Functional tests failed"
-        return 1
-    fi
-}
-
-# Function to run end-to-end tests
-run_e2e_tests() {
-    print_status "Running end-to-end tests..."
-    
-    local cmd="npx playwright test tests/e2e/"
-    
-    if [ "$HEADED" = "true" ]; then
-        cmd="$cmd --headed"
-    fi
-    
-    if [ "$DEBUG" = "true" ]; then
-        cmd="$cmd --debug"
-    fi
-    
-    if [ "$PARALLEL" = "false" ]; then
-        cmd="$cmd --workers=1"
-    fi
-    
-    eval $cmd
-    
-    if [ $? -eq 0 ]; then
-        print_success "End-to-end tests passed"
-    else
-        print_error "End-to-end tests failed"
-        return 1
-    fi
-}
-
-# Function to run cross-platform integration tests
-run_cross_platform_tests() {
-    print_status "Running cross-platform integration tests..."
-    
-    node scripts/test-cross-platform-integration.js
-    
-    if [ $? -eq 0 ]; then
-        print_success "Cross-platform integration tests passed"
-    else
-        print_error "Cross-platform integration tests failed"
-        return 1
-    fi
-}
-
-# Function to run all tests
-run_all_tests() {
-    print_status "Running all tests..."
-    
-    local cmd="npx playwright test"
-    
-    if [ "$HEADED" = "true" ]; then
-        cmd="$cmd --headed"
-    fi
-    
-    if [ "$DEBUG" = "true" ]; then
-        cmd="$cmd --debug"
-    fi
-    
-    if [ "$PARALLEL" = "false" ]; then
-        cmd="$cmd --workers=1"
-    fi
-    
-    eval $cmd
-    
-    if [ $? -eq 0 ]; then
-        print_success "All tests passed"
-    else
-        print_error "Some tests failed"
-        return 1
-    fi
-}
-
-# Function to generate test report
-generate_report() {
-    print_status "Generating test report..."
-    
-    npx playwright show-report
-    
-    print_success "Test report generated"
-}
-
-# Function to show help
-show_help() {
-    echo "Voice API Test Runner"
-    echo ""
-    echo "Usage: $0 [OPTIONS] [COMMAND]"
-    echo ""
-    echo "Commands:"
-    echo "  unit              Run unit tests only"
-    echo "  integration       Run integration tests only"
-    echo "  functional        Run functional tests only"
-    echo "  e2e               Run end-to-end tests only"
-    echo "  cross-platform    Run cross-platform integration tests only"
-    echo "  all               Run all tests (default)"
-    echo "  report            Generate and show test report"
-    echo "  help              Show this help message"
-    echo ""
-    echo "Options:"
-    echo "  --headed          Run tests in headed mode (show browser)"
-    echo "  --debug           Run tests in debug mode"
-    echo "  --no-parallel     Run tests sequentially"
-    echo "  --no-server       Don't start development server"
-    echo "  --base-url URL    Set base URL for tests (default: $BASE_URL)"
-    echo "  --env ENV         Set test environment (default: $TEST_ENV)"
-    echo ""
-    echo "Environment Variables:"
-    echo "  BASE_URL          Base URL for the application"
-    echo "  TEST_ENV          Test environment (development, staging, production)"
-    echo "  PARALLEL          Run tests in parallel (true/false)"
-    echo "  HEADED            Run tests in headed mode (true/false)"
-    echo "  DEBUG             Run tests in debug mode (true/false)"
-    echo ""
-    echo "Examples:"
-    echo "  $0                                    # Run all tests"
-    echo "  $0 unit                              # Run unit tests only"
-    echo "  $0 --headed --debug                  # Run all tests in headed debug mode"
-    echo "  $0 integration --no-parallel         # Run integration tests sequentially"
-    echo "  $0 --base-url http://localhost:3000  # Run tests against different URL"
-}
-
-# Function to cleanup
-cleanup() {
-    print_status "Cleaning up..."
-    stop_server
-    print_success "Cleanup completed"
-}
-
-# Set up signal handlers
-trap cleanup EXIT INT TERM
+# Default options
+COMPONENT="all"
+COVERAGE=false
+WATCH=false
+VERBOSE=false
+PARALLEL=true
+TIMEOUT=30000
+RETRY=2
+REPORT_FORMAT="html"
 
 # Parse command line arguments
-COMMAND="all"
-START_SERVER="true"
-
 while [[ $# -gt 0 ]]; do
-    case $1 in
-        unit|integration|functional|e2e|cross-platform|all|report|help)
-            COMMAND="$1"
-            shift
-            ;;
-        --headed)
-            HEADED="true"
-            shift
-            ;;
-        --debug)
-            DEBUG="true"
-            shift
-            ;;
-        --no-parallel)
-            PARALLEL="false"
-            shift
-            ;;
-        --no-server)
-            START_SERVER="false"
-            shift
-            ;;
-        --base-url)
-            BASE_URL="$2"
-            shift 2
-            ;;
-        --env)
-            TEST_ENV="$2"
-            shift 2
-            ;;
-        --help|-h)
-            show_help
-            exit 0
-            ;;
-        *)
-            print_error "Unknown option: $1"
-            show_help
-            exit 1
-            ;;
-    esac
+  case $1 in
+    --component=*)
+      COMPONENT="${1#*=}"
+      shift
+      ;;
+    --coverage)
+      COVERAGE=true
+      shift
+      ;;
+    --watch)
+      WATCH=true
+      shift
+      ;;
+    --verbose)
+      VERBOSE=true
+      shift
+      ;;
+    --parallel)
+      PARALLEL=true
+      shift
+      ;;
+    --timeout=*)
+      TIMEOUT="${1#*=}"
+      shift
+      ;;
+    --retry=*)
+      RETRY="${1#*=}"
+      shift
+      ;;
+    --report=*)
+      REPORT_FORMAT="${1#*=}"
+      shift
+      ;;
+    --help)
+      echo "Usage: $0 [options]"
+      echo ""
+      echo "Options:"
+      echo "  --component=<name>    Test specific component (tetrix|joromi|glo|all)"
+      echo "  --coverage           Generate coverage report"
+      echo "  --watch              Watch mode for development"
+      echo "  --verbose             Verbose output"
+      echo "  --parallel           Run tests in parallel"
+      echo "  --timeout=<ms>       Test timeout in milliseconds"
+      echo "  --retry=<count>      Retry failed tests"
+      echo "  --report=<format>    Report format (html|json|junit)"
+      echo "  --help               Show this help message"
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1"
+      echo "Use --help for usage information"
+      exit 1
+      ;;
+  esac
 done
+
+# Logging functions
+log() {
+  echo -e "${BLUE}[$(date '+%Y-%m-%d %H:%M:%S')]${NC} $1"
+}
+
+log_success() {
+  echo -e "${GREEN}[$(date '+%Y-%m-%d %H:%M:%S')] ✅${NC} $1"
+}
+
+log_warning() {
+  echo -e "${YELLOW}[$(date '+%Y-%m-%d %H:%M:%S')] ⚠️${NC} $1"
+}
+
+log_error() {
+  echo -e "${RED}[$(date '+%Y-%m-%d %H:%M:%S')] ❌${NC} $1"
+}
+
+# Check dependencies
+check_dependencies() {
+  log "Checking dependencies..."
+  
+  # Check Node.js
+  if ! command -v node &> /dev/null; then
+    log_error "Node.js is not installed"
+    exit 1
+  fi
+  
+  # Check pnpm
+  if ! command -v pnpm &> /dev/null; then
+    log_error "pnpm is not installed"
+    exit 1
+  fi
+  
+  # Check Playwright
+  if ! command -v npx &> /dev/null; then
+    log_error "npx is not available"
+    exit 1
+  fi
+  
+  log_success "All dependencies found"
+}
+
+# Setup test environment
+setup_environment() {
+  log "Setting up test environment..."
+  
+  # Create test directories
+  mkdir -p "$RESULTS_DIR"
+  mkdir -p "$COVERAGE_DIR"
+  mkdir -p "$TEST_DIR/unit"
+  mkdir -p "$TEST_DIR/integration"
+  mkdir -p "$TEST_DIR/functional"
+  mkdir -p "$TEST_DIR/e2e"
+  
+  # Install Playwright browsers if not already installed
+  if [ ! -d "$PROJECT_ROOT/node_modules/@playwright/test" ]; then
+    log "Installing Playwright..."
+    cd "$PROJECT_ROOT"
+    pnpm install
+    pnpm exec playwright install
+  fi
+  
+  log_success "Test environment setup complete"
+}
+
+# Generate Playwright configuration
+generate_playwright_config() {
+  log "Generating Playwright configuration..."
+  
+  cat > "$PROJECT_ROOT/playwright.config.js" << EOF
+import { defineConfig, devices } from '@playwright/test';
+
+export default defineConfig({
+  testDir: './tests/unit',
+  fullyParallel: $PARALLEL,
+  forbidOnly: !!process.env.CI,
+  retries: $RETRY,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: [
+    ['html'],
+    ['json', { outputFile: 'test-results/results.json' }],
+    ['junit', { outputFile: 'test-results/results.xml' }]
+  ],
+  use: {
+    baseURL: process.env.BASE_URL || 'http://localhost:3000',
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure'
+  },
+  projects: [
+    {
+      name: 'unit-tests',
+      testMatch: '**/unit/**/*.spec.ts',
+      use: { ...devices['Desktop Chrome'] }
+    }
+  ],
+  webServer: {
+    command: 'pnpm run dev',
+    url: 'http://localhost:3000',
+    reuseExistingServer: !process.env.CI,
+    timeout: $TIMEOUT
+  }
+});
+EOF
+  
+  log_success "Playwright configuration generated"
+}
+
+# Run component tests
+run_component_tests() {
+  local component="$1"
+  
+  case "$component" in
+    "tetrix")
+      log "Running TETRIX Voice API tests..."
+      run_tetrix_tests
+      ;;
+    "joromi")
+      log "Running JoRoMi VoIP Management tests..."
+      run_joromi_tests
+      ;;
+    "glo")
+      log "Running GLO M2M Services tests..."
+      run_glo_tests
+      ;;
+    "all")
+      log "Running all component tests..."
+      run_tetrix_tests
+      run_joromi_tests
+      run_glo_tests
+      ;;
+    *)
+      log_error "Unknown component: $component"
+      exit 1
+      ;;
+  esac
+}
+
+# Run TETRIX tests
+run_tetrix_tests() {
+  log "Running TETRIX Voice API unit tests..."
+  
+  cd "$PROJECT_ROOT"
+  
+  local test_command="npx playwright test tests/unit/ --config=playwright.config.js"
+  
+  if [ "$VERBOSE" = true ]; then
+    test_command="$test_command --reporter=list"
+  fi
+  
+  if [ "$WATCH" = true ]; then
+    test_command="$test_command --watch"
+  fi
+  
+  if [ "$PARALLEL" = true ]; then
+    test_command="$test_command --workers=4"
+  else
+    test_command="$test_command --workers=1"
+  fi
+  
+  if eval "$test_command"; then
+    log_success "TETRIX tests completed successfully"
+    return 0
+  else
+    log_error "TETRIX tests failed"
+    return 1
+  fi
+}
+
+# Run JoRoMi tests
+run_joromi_tests() {
+  log "Running JoRoMi VoIP Management tests..."
+  
+  local joromi_dir="$PROJECT_ROOT/../joromi"
+  
+  if [ ! -d "$joromi_dir" ]; then
+    log_warning "JoRoMi directory not found: $joromi_dir"
+    return 0
+  fi
+  
+  cd "$joromi_dir"
+  
+  if [ -f "package.json" ]; then
+    if [ ! -d "node_modules" ]; then
+      log "Installing JoRoMi dependencies..."
+      pnpm install
+    fi
+    
+    if [ -f "playwright.config.js" ]; then
+      local test_command="npx playwright test tests/unit/ --config=playwright.config.js"
+      
+      if [ "$VERBOSE" = true ]; then
+        test_command="$test_command --reporter=list"
+      fi
+      
+      if eval "$test_command"; then
+        log_success "JoRoMi tests completed successfully"
+        return 0
+      else
+        log_error "JoRoMi tests failed"
+        return 1
+      fi
+    else
+      log_warning "JoRoMi Playwright config not found"
+    fi
+  else
+    log_warning "JoRoMi package.json not found"
+  fi
+}
+
+# Run GLO tests
+run_glo_tests() {
+  log "Running GLO M2M Services tests..."
+  
+  local glo_dir="$PROJECT_ROOT/../glo"
+  
+  if [ ! -d "$glo_dir" ]; then
+    log_warning "GLO directory not found: $glo_dir"
+    return 0
+  fi
+  
+  cd "$glo_dir"
+  
+  if [ -f "package.json" ]; then
+    if [ ! -d "node_modules" ]; then
+      log "Installing GLO dependencies..."
+      pnpm install
+    fi
+    
+    if [ -f "playwright.config.js" ]; then
+      local test_command="npx playwright test tests/unit/ --config=playwright.config.js"
+      
+      if [ "$VERBOSE" = true ]; then
+        test_command="$test_command --reporter=list"
+      fi
+      
+      if eval "$test_command"; then
+        log_success "GLO tests completed successfully"
+        return 0
+      else
+        log_error "GLO tests failed"
+        return 1
+      fi
+    else
+      log_warning "GLO Playwright config not found"
+    fi
+  else
+    log_warning "GLO package.json not found"
+  fi
+}
+
+# Generate coverage report
+generate_coverage_report() {
+  if [ "$COVERAGE" = true ]; then
+    log "Generating coverage report..."
+    
+    cd "$PROJECT_ROOT"
+    
+    local coverage_command="npx playwright test --reporter=html --output=test-results/coverage"
+    
+    if eval "$coverage_command"; then
+      log_success "Coverage report generated"
+      log "View coverage report at: $COVERAGE_DIR/index.html"
+    else
+      log_error "Failed to generate coverage report"
+    fi
+  fi
+}
+
+# Generate test report
+generate_test_report() {
+  log "Generating test report..."
+  
+  local report_file="$RESULTS_DIR/report.html"
+  
+  cat > "$report_file" << EOF
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TETRIX Cross-Platform Unit Test Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header { background: #f0f0f0; padding: 20px; border-radius: 5px; }
+        .summary { margin: 20px 0; }
+        .component { margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+        .warning { color: orange; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>TETRIX Cross-Platform Unit Test Report</h1>
+        <p>Generated: $(date)</p>
+        <p>Component: $COMPONENT</p>
+        <p>Coverage: $COVERAGE</p>
+        <p>Parallel: $PARALLEL</p>
+    </div>
+    
+    <div class="summary">
+        <h2>Test Summary</h2>
+        <p>Component: $COMPONENT</p>
+        <p>Coverage: $COVERAGE</p>
+        <p>Parallel: $PARALLEL</p>
+        <p>Timeout: ${TIMEOUT}ms</p>
+        <p>Retry: $RETRY</p>
+    </div>
+    
+    <div class="components">
+        <h2>Component Results</h2>
+        <div class="component">
+            <h3>TETRIX Voice API</h3>
+            <p>Services: voice-api, transcription, ai-response, texml</p>
+        </div>
+        <div class="component">
+            <h3>JoRoMi VoIP Management</h3>
+            <p>Services: voip-management, toll-free, ivr, sms</p>
+        </div>
+        <div class="component">
+            <h3>GLO M2M Services</h3>
+            <p>Services: m2m-auth, session-manager, telemetry, vpn-gateway</p>
+        </div>
+    </div>
+</body>
+</html>
+EOF
+  
+  log_success "Test report generated: $report_file"
+}
+
+# Cleanup function
+cleanup() {
+  log "Cleaning up test environment..."
+  
+  # Remove test artifacts
+  rm -rf "$RESULTS_DIR/screenshots"
+  rm -rf "$RESULTS_DIR/videos"
+  rm -rf "$RESULTS_DIR/traces"
+  
+  log_success "Test environment cleanup complete"
+}
 
 # Main execution
 main() {
-    print_status "Starting Voice API Test Suite"
-    print_status "Base URL: $BASE_URL"
-    print_status "Test Environment: $TEST_ENV"
-    print_status "Parallel: $PARALLEL"
-    print_status "Headed: $HEADED"
-    print_status "Debug: $DEBUG"
-    print_status "Command: $COMMAND"
-    echo ""
-    
-    # Check prerequisites
-    check_prerequisites
-    
-    # Install dependencies
-    install_dependencies
-    
-    # Start server if needed
-    if [ "$START_SERVER" = "true" ] && [ "$COMMAND" != "cross-platform" ]; then
-        start_server
-    fi
-    
-    # Run tests based on command
-    case $COMMAND in
-        unit)
-            run_unit_tests
-            ;;
-        integration)
-            run_integration_tests
-            ;;
-        functional)
-            run_functional_tests
-            ;;
-        e2e)
-            run_e2e_tests
-            ;;
-        cross-platform)
-            run_cross_platform_tests
-            ;;
-        all)
-            run_all_tests
-            ;;
-        report)
-            generate_report
-            ;;
-        help)
-            show_help
-            exit 0
-            ;;
-        *)
-            print_error "Unknown command: $COMMAND"
-            show_help
-            exit 1
-            ;;
-    esac
-    
-    # Generate report if tests were run
-    if [ "$COMMAND" != "report" ] && [ "$COMMAND" != "help" ]; then
-        print_status "Test execution completed"
-        print_status "To view detailed report, run: $0 report"
-    fi
+  log "🚀 Starting TETRIX Cross-Platform Unit Testing"
+  log "Component: $COMPONENT"
+  log "Coverage: $COVERAGE"
+  log "Watch: $WATCH"
+  log "Verbose: $VERBOSE"
+  log "Parallel: $PARALLEL"
+  log "Timeout: ${TIMEOUT}ms"
+  log "Retry: $RETRY"
+  log "Report Format: $REPORT_FORMAT"
+  
+  # Setup
+  check_dependencies
+  setup_environment
+  generate_playwright_config
+  
+  # Run tests
+  local all_passed=true
+  
+  if run_component_tests "$COMPONENT"; then
+    log_success "All tests completed successfully"
+  else
+    log_error "Some tests failed"
+    all_passed=false
+  fi
+  
+  # Generate reports
+  generate_coverage_report
+  generate_test_report
+  
+  # Cleanup
+  cleanup
+  
+  # Final results
+  if [ "$all_passed" = true ]; then
+    log_success "🎉 All unit tests completed successfully!"
+    exit 0
+  else
+    log_error "❌ Some unit tests failed"
+    exit 1
+  fi
 }
+
+# Handle signals
+trap cleanup EXIT
+trap 'log_error "Test execution interrupted"; exit 1' INT TERM
 
 # Run main function
 main "$@"
