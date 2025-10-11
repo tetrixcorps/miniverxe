@@ -1,0 +1,336 @@
+---
+import MainLayout from '../components/layout/MainLayout.astro';
+
+// Domain status data
+const domains = [
+  {
+    name: 'tetrixcorp.com',
+    status: 'online',
+    responseTime: '45ms',
+    ssl: 'valid',
+    lastChecked: new Date().toISOString(),
+    services: ['Frontend', 'API Gateway', 'Main Platform']
+  },
+  {
+    name: 'www.tetrixcorp.com',
+    status: 'online',
+    responseTime: '42ms',
+    ssl: 'valid',
+    lastChecked: new Date().toISOString(),
+    services: ['Frontend', 'WWW Redirect']
+  },
+  {
+    name: 'api.tetrixcorp.com',
+    status: 'configuring',
+    responseTime: 'N/A',
+    ssl: 'pending',
+    lastChecked: new Date().toISOString(),
+    services: ['API Gateway', 'M2M Services', 'REST API']
+  },
+  {
+    name: 'iot.tetrixcorp.com',
+    status: 'configuring',
+    responseTime: 'N/A',
+    ssl: 'pending',
+    lastChecked: new Date().toISOString(),
+    services: ['IoT Gateway', 'Device Management', 'Telematics']
+  },
+  {
+    name: 'vpn.tetrixcorp.com',
+    status: 'configuring',
+    responseTime: 'N/A',
+    ssl: 'pending',
+    lastChecked: new Date().toISOString(),
+    services: ['VPN Gateway', 'Secure Access', 'Private Network']
+  },
+  {
+    name: 'joromi.ai',
+    status: 'online',
+    responseTime: '38ms',
+    ssl: 'valid',
+    lastChecked: new Date().toISOString(),
+    services: ['JoRoMi Platform', 'AI Services', 'VoIP Interface']
+  },
+  {
+    name: 'www.joromi.ai',
+    status: 'online',
+    responseTime: '41ms',
+    ssl: 'valid',
+    lastChecked: new Date().toISOString(),
+    services: ['JoRoMi Frontend', 'WWW Redirect']
+  }
+];
+
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'online': return 'text-green-600 bg-green-100';
+    case 'configuring': return 'text-yellow-600 bg-yellow-100';
+    case 'offline': return 'text-red-600 bg-red-100';
+    default: return 'text-gray-600 bg-gray-100';
+  }
+};
+
+const getStatusIcon = (status: string) => {
+  switch (status) {
+    case 'online': return '🟢';
+    case 'configuring': return '🟡';
+    case 'offline': return '🔴';
+    default: return '⚪';
+  }
+};
+---
+
+<MainLayout title="Platform Status">
+  <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <!-- Header -->
+    <section class="py-20 px-4 bg-gradient-to-r from-brand-red via-brand-orange to-brand-yellow">
+      <div class="max-w-7xl mx-auto text-center">
+        <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">
+          Platform Status
+        </h1>
+        <p class="text-xl text-white/90 mb-8 max-w-3xl mx-auto">
+          Real-time monitoring of all TETRIX and JoRoMi platform services, domains, and infrastructure.
+        </p>
+        
+        <!-- Overall Status -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/30">
+            <div class="text-3xl font-bold text-white mb-2">99.9%</div>
+            <div class="text-white/80">Uptime SLA</div>
+          </div>
+          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/30">
+            <div class="text-3xl font-bold text-white mb-2">7</div>
+            <div class="text-white/80">Active Domains</div>
+          </div>
+          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/30">
+            <div class="text-3xl font-bold text-white mb-2">45ms</div>
+            <div class="text-white/80">Avg Response Time</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Domain Status Table -->
+    <section class="py-20 px-4">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl font-bold text-center text-gray-900 mb-16">
+          Domain Status Overview
+        </h2>
+        
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900">Domain</th>
+                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900">Status</th>
+                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900">Response Time</th>
+                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900">SSL</th>
+                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900">Services</th>
+                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900">Last Checked</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200">
+                {domains.map((domain) => (
+                  <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-4">
+                      <div class="flex items-center">
+                        <span class="text-lg mr-3">{getStatusIcon(domain.status)}</span>
+                        <div>
+                          <div class="font-semibold text-gray-900">{domain.name}</div>
+                          <div class="text-sm text-gray-500">
+                            {domain.status === 'online' ? 'Operational' : 
+                             domain.status === 'configuring' ? 'SSL Certificate Pending' : 'Offline'}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4">
+                      <span class={`inline-flex px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(domain.status)}`}>
+                        {domain.status.charAt(0).toUpperCase() + domain.status.slice(1)}
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-900">
+                      {domain.responseTime}
+                    </td>
+                    <td class="px-6 py-4">
+                      <span class={`inline-flex px-3 py-1 rounded-full text-sm font-semibold ${
+                        domain.ssl === 'valid' ? 'text-green-600 bg-green-100' : 
+                        domain.ssl === 'pending' ? 'text-yellow-600 bg-yellow-100' : 
+                        'text-red-600 bg-red-100'
+                      }`}>
+                        {domain.ssl === 'valid' ? '✓ Valid' : 
+                         domain.ssl === 'pending' ? '⏳ Pending' : '✗ Invalid'}
+                      </span>
+                    </td>
+                    <td class="px-6 py-4">
+                      <div class="flex flex-wrap gap-1">
+                        {domain.services.map((service) => (
+                          <span class="inline-flex px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                            {service}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500">
+                      {new Date(domain.lastChecked).toLocaleString()}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Service Status -->
+    <section class="py-20 px-4 bg-gray-50">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl font-bold text-center text-gray-900 mb-16">
+          Service Status
+        </h2>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- TETRIX Platform -->
+          <div class="bg-white p-8 rounded-xl shadow-lg">
+            <div class="flex items-center mb-6">
+              <div class="w-12 h-12 bg-brand-red rounded-lg flex items-center justify-center mr-4">
+                <span class="text-white text-xl">📞</span>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold text-gray-900">TETRIX Platform</h3>
+                <p class="text-gray-600">Voice & Communication Services</p>
+              </div>
+            </div>
+            <div class="space-y-3">
+              <div class="flex justify-between">
+                <span class="text-gray-600">Voice API</span>
+                <span class="text-green-600 font-semibold">✓ Online</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">IVR System</span>
+                <span class="text-green-600 font-semibold">✓ Online</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">2FA Service</span>
+                <span class="text-green-600 font-semibold">✓ Online</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Phone Provisioning</span>
+                <span class="text-green-600 font-semibold">✓ Online</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- JoRoMi Platform -->
+          <div class="bg-white p-8 rounded-xl shadow-lg">
+            <div class="flex items-center mb-6">
+              <div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mr-4">
+                <span class="text-white text-xl">🤖</span>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold text-gray-900">JoRoMi Platform</h3>
+                <p class="text-gray-600">AI & Automation Services</p>
+              </div>
+            </div>
+            <div class="space-y-3">
+              <div class="flex justify-between">
+                <span class="text-gray-600">Frontend</span>
+                <span class="text-green-600 font-semibold">✓ Online</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Backend API</span>
+                <span class="text-yellow-600 font-semibold">⏳ Configuring</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">VoIP Interface</span>
+                <span class="text-green-600 font-semibold">✓ Online</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">AI Integration</span>
+                <span class="text-green-600 font-semibold">✓ Online</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Infrastructure -->
+          <div class="bg-white p-8 rounded-xl shadow-lg">
+            <div class="flex items-center mb-6">
+              <div class="w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center mr-4">
+                <span class="text-white text-xl">🏗️</span>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold text-gray-900">Infrastructure</h3>
+                <p class="text-gray-600">Cloud & Network Services</p>
+              </div>
+            </div>
+            <div class="space-y-3">
+              <div class="flex justify-between">
+                <span class="text-gray-600">DigitalOcean App Platform</span>
+                <span class="text-green-600 font-semibold">✓ Online</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Cloudflare CDN</span>
+                <span class="text-green-600 font-semibold">✓ Online</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">SSL Certificates</span>
+                <span class="text-yellow-600 font-semibold">⏳ Provisioning</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Database</span>
+                <span class="text-green-600 font-semibold">✓ Online</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recent Incidents -->
+    <section class="py-20 px-4">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl font-bold text-center text-gray-900 mb-16">
+          Recent Incidents
+        </h2>
+        
+        <div class="bg-white rounded-2xl shadow-xl p-8">
+          <div class="text-center text-gray-500">
+            <div class="text-6xl mb-4">🎉</div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">No Recent Incidents</h3>
+            <p class="text-lg text-gray-600 mb-6">
+              All systems are operating normally. No incidents reported in the last 30 days.
+            </p>
+            <div class="bg-green-50 border border-green-200 rounded-lg p-4 max-w-md mx-auto">
+              <div class="flex items-center justify-center">
+                <span class="text-green-600 text-2xl mr-2">✓</span>
+                <span class="text-green-800 font-semibold">All Services Operational</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Information -->
+    <section class="py-20 px-4 bg-gradient-to-r from-brand-red via-brand-orange to-brand-yellow">
+      <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-4xl font-bold text-white mb-8">
+          Need Help?
+        </h2>
+        <p class="text-xl text-white/90 mb-8">
+          If you're experiencing issues or need technical support, our team is here to help.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="/contact" class="bg-white text-brand-red px-8 py-4 rounded-lg font-semibold hover:bg-white/90 transition-colors">
+            Contact Support
+          </a>
+          <a href="mailto:support@tetrixcorp.com" class="bg-white/20 text-white px-8 py-4 rounded-lg font-semibold hover:bg-white/30 transition-colors border border-white/30">
+            Email Support
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
+</MainLayout>

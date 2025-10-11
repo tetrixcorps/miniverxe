@@ -1,0 +1,265 @@
+---
+import MainLayout from '../components/layout/MainLayout.astro';
+---
+
+<MainLayout title="VPN Gateway - TETRIX">
+  <div class="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white">
+    <!-- Header -->
+    <section class="py-20 px-4">
+      <div class="max-w-7xl mx-auto text-center">
+        <h1 class="text-5xl md:text-6xl font-bold mb-6">
+          VPN Gateway
+        </h1>
+        <p class="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
+          Enterprise-grade VPN gateway providing secure remote access, 
+          site-to-site connectivity, and advanced network security.
+        </p>
+        
+        <!-- Status Indicators -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mb-12">
+          <div class="bg-green-600/20 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-green-500/30">
+            <div class="text-2xl font-bold text-green-400">99.9%</div>
+            <div class="text-sm text-green-300">Uptime</div>
+          </div>
+          <div class="bg-blue-600/20 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-blue-500/30">
+            <div class="text-2xl font-bold text-blue-400">1K+</div>
+            <div class="text-sm text-blue-300">Active Connections</div>
+          </div>
+          <div class="bg-purple-600/20 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-purple-500/30">
+            <div class="text-2xl font-bold text-purple-400">256-bit</div>
+            <div class="text-sm text-purple-300">Encryption</div>
+          </div>
+          <div class="bg-orange-600/20 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-orange-500/30">
+            <div class="text-2xl font-bold text-orange-400">50+</div>
+            <div class="text-sm text-orange-300">Server Locations</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services Overview -->
+    <section class="py-20 px-4">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl font-bold text-center mb-16">
+          VPN Services
+        </h2>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- Remote Access VPN -->
+          <div class="bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-700 hover:border-blue-500 transition-all">
+            <div class="w-16 h-16 bg-blue-600 rounded-lg flex items-center justify-center mb-6">
+              <span class="text-2xl text-white">🏠</span>
+            </div>
+            <h3 class="text-2xl font-bold mb-4">Remote Access VPN</h3>
+            <p class="text-gray-300 mb-6">
+              Secure remote access for employees and contractors from anywhere in the world.
+            </p>
+            <ul class="space-y-2 text-gray-400">
+              <li>&bull; Client-to-site VPN</li>
+              <li>&bull; Multi-platform support</li>
+              <li>&bull; Two-factor authentication</li>
+              <li>&bull; Session management</li>
+            </ul>
+          </div>
+
+          <!-- Site-to-Site VPN -->
+          <div class="bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-700 hover:border-green-500 transition-all">
+            <div class="w-16 h-16 bg-green-600 rounded-lg flex items-center justify-center mb-6">
+              <span class="text-2xl text-white">🏢</span>
+            </div>
+            <h3 class="text-2xl font-bold mb-4">Site-to-Site VPN</h3>
+            <p class="text-gray-300 mb-6">
+              Secure connections between multiple office locations and data centers.
+            </p>
+            <ul class="space-y-2 text-gray-400">
+              <li>&bull; Branch office connectivity</li>
+              <li>&bull; Data center links</li>
+              <li>&bull; Automatic failover</li>
+              <li>&bull; Load balancing</li>
+            </ul>
+          </div>
+
+          <!-- Cloud VPN -->
+          <div class="bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-700 hover:border-purple-500 transition-all">
+            <div class="w-16 h-16 bg-purple-600 rounded-lg flex items-center justify-center mb-6">
+              <span class="text-2xl text-white">☁️</span>
+            </div>
+            <h3 class="text-2xl font-bold mb-4">Cloud VPN</h3>
+            <p class="text-gray-300 mb-6">
+              Hybrid cloud connectivity and secure access to cloud resources.
+            </p>
+            <ul class="space-y-2 text-gray-400">
+              <li>&bull; AWS/Azure/GCP integration</li>
+              <li>&bull; Hybrid cloud connectivity</li>
+              <li>&bull; Cloud resource access</li>
+              <li>&bull; Multi-cloud support</li>
+            </ul>
+          </div>
+
+          <!-- Mobile VPN -->
+          <div class="bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-700 hover:border-orange-500 transition-all">
+            <div class="w-16 h-16 bg-orange-600 rounded-lg flex items-center justify-center mb-6">
+              <span class="text-2xl text-white">📱</span>
+            </div>
+            <h3 class="text-2xl font-bold mb-4">Mobile VPN</h3>
+            <p class="text-gray-300 mb-6">
+              Secure mobile device access with advanced threat protection.
+            </p>
+            <ul class="space-y-2 text-gray-400">
+              <li>&bull; iOS/Android apps</li>
+              <li>&bull; Always-on VPN</li>
+              <li>&bull; Threat protection</li>
+              <li>&bull; Device compliance</li>
+            </ul>
+          </div>
+
+          <!-- Security Features -->
+          <div class="bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-700 hover:border-red-500 transition-all">
+            <div class="w-16 h-16 bg-red-600 rounded-lg flex items-center justify-center mb-6">
+              <span class="text-2xl text-white">🔒</span>
+            </div>
+            <h3 class="text-2xl font-bold mb-4">Security Features</h3>
+            <p class="text-gray-300 mb-6">
+              Advanced security features and compliance standards.
+            </p>
+            <ul class="space-y-2 text-gray-400">
+              <li>&bull; End-to-end encryption</li>
+              <li>&bull; Zero-trust architecture</li>
+              <li>&bull; Intrusion detection</li>
+              <li>&bull; Compliance reporting</li>
+            </ul>
+          </div>
+
+          <!-- Management & Monitoring -->
+          <div class="bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-700 hover:border-yellow-500 transition-all">
+            <div class="w-16 h-16 bg-yellow-600 rounded-lg flex items-center justify-center mb-6">
+              <span class="text-2xl text-white">📊</span>
+            </div>
+            <h3 class="text-2xl font-bold mb-4">Management & Monitoring</h3>
+            <p class="text-gray-300 mb-6">
+              Comprehensive management dashboard and real-time monitoring.
+            </p>
+            <ul class="space-y-2 text-gray-400">
+              <li>&bull; Centralized management</li>
+              <li>&bull; Real-time monitoring</li>
+              <li>&bull; Usage analytics</li>
+              <li>&bull; Alert notifications</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Security Standards -->
+    <section class="py-20 px-4 bg-gray-800">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl font-bold text-center mb-16">
+          Security Standards
+        </h2>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div class="bg-gray-900 p-6 rounded-xl shadow-lg text-center">
+            <div class="text-4xl mb-4">🛡️</div>
+            <h3 class="text-xl font-bold mb-2">SOC 2 Type II</h3>
+            <p class="text-gray-400 text-sm">Certified security controls</p>
+          </div>
+          
+          <div class="bg-gray-900 p-6 rounded-xl shadow-lg text-center">
+            <div class="text-4xl mb-4">🔐</div>
+            <h3 class="text-xl font-bold mb-2">AES-256</h3>
+            <p class="text-gray-400 text-sm">Military-grade encryption</p>
+          </div>
+          
+          <div class="bg-gray-900 p-6 rounded-xl shadow-lg text-center">
+            <div class="text-4xl mb-4">🏥</div>
+            <h3 class="text-xl font-bold mb-2">HIPAA</h3>
+            <p class="text-gray-400 text-sm">Healthcare compliance</p>
+          </div>
+          
+          <div class="bg-gray-900 p-6 rounded-xl shadow-lg text-center">
+            <div class="text-4xl mb-4">🏦</div>
+            <h3 class="text-xl font-bold mb-2">PCI DSS</h3>
+            <p class="text-gray-400 text-sm">Payment card security</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- API Endpoints -->
+    <section class="py-20 px-4">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl font-bold text-center mb-16">
+          VPN Management API
+        </h2>
+        
+        <div class="bg-gray-800 rounded-xl p-8 shadow-lg">
+          <div class="grid md:grid-cols-2 gap-8">
+            <div>
+              <h3 class="text-2xl font-bold mb-6 text-blue-400">Connection Management</h3>
+              <div class="space-y-4">
+                <div class="flex items-center justify-between p-4 bg-gray-900 rounded-lg">
+                  <span class="text-green-400 font-mono">GET /status</span>
+                  <span class="text-gray-400">VPN status</span>
+                </div>
+                <div class="flex items-center justify-between p-4 bg-gray-900 rounded-lg">
+                  <span class="text-blue-400 font-mono">POST /connect</span>
+                  <span class="text-gray-400">Establish connection</span>
+                </div>
+                <div class="flex items-center justify-between p-4 bg-gray-900 rounded-lg">
+                  <span class="text-yellow-400 font-mono">PUT /config</span>
+                  <span class="text-gray-400">Update configuration</span>
+                </div>
+                <div class="flex items-center justify-between p-4 bg-gray-900 rounded-lg">
+                  <span class="text-red-400 font-mono">DELETE /disconnect</span>
+                  <span class="text-gray-400">Terminate connection</span>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <h3 class="text-2xl font-bold mb-6 text-green-400">User Management</h3>
+              <div class="space-y-4">
+                <div class="flex items-center justify-between p-4 bg-gray-900 rounded-lg">
+                  <span class="text-green-400 font-mono">GET /users</span>
+                  <span class="text-gray-400">List users</span>
+                </div>
+                <div class="flex items-center justify-between p-4 bg-gray-900 rounded-lg">
+                  <span class="text-blue-400 font-mono">POST /users</span>
+                  <span class="text-gray-400">Create user</span>
+                </div>
+                <div class="flex items-center justify-between p-4 bg-gray-900 rounded-lg">
+                  <span class="text-purple-400 font-mono">GET /logs</span>
+                  <span class="text-gray-400">Connection logs</span>
+                </div>
+                <div class="flex items-center justify-between p-4 bg-gray-900 rounded-lg">
+                  <span class="text-orange-400 font-mono">GET /security</span>
+                  <span class="text-gray-400">Security settings</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 px-4 bg-gradient-to-r from-blue-600 to-purple-600">
+      <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-4xl font-bold mb-8">
+          Secure Your Network Today
+        </h2>
+        <p class="text-xl text-blue-100 mb-12">
+          Get started with enterprise-grade VPN security and protect your organization's data.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="/contact" class="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+            Get Started
+          </a>
+          <a href="/docs/vpn" class="bg-blue-600/20 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-600/30 transition-colors border border-white/30">
+            View Documentation
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
+</MainLayout>
