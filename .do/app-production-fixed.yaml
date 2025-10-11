@@ -74,13 +74,18 @@ services:
         value: "1073036366262"
       - key: FIREBASE_APP_ID
         value: "1:1073036366262:web:a76a0e270753f3e9497117"
+      # Server configuration for DigitalOcean
+      - key: HOSTNAME
+        value: "0.0.0.0"
+      - key: NODE_OPTIONS
+        value: "--max-old-space-size=512"
     health_check:
-      http_path: /health
-      initial_delay_seconds: 30
-      period_seconds: 10
-      timeout_seconds: 5
+      http_path: /api/health
+      initial_delay_seconds: 60
+      period_seconds: 15
+      timeout_seconds: 10
       success_threshold: 1
-      failure_threshold: 3
+      failure_threshold: 5
 
 # Alerts
 alerts:
