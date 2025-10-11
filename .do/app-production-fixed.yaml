@@ -15,9 +15,7 @@ services:
     build_command: |
       # Clean up any conflicting lockfiles
       rm -f package-lock.json yarn.lock npm-shrinkwrap.json .yarnrc .yarnrc.yml
-      # Install pnpm globally
-      npm install -g pnpm@10.8.0
-      # Install dependencies
+      # Install dependencies (pnpm already installed by buildpack)
       pnpm install --frozen-lockfile
       # Build the application
       pnpm run build
