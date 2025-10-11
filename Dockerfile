@@ -29,4 +29,4 @@ RUN pnpm run build
 EXPOSE 4321
 
 # Start the application
-CMD ["pnpm", "run", "dev", "--host", "0.0.0.0"] 
+CMD ["pnpm", "run", "start"] 

@@ -41,6 +41,10 @@ class Smart2FAService {
   constructor(config: TwoFAConfig) {
     this.config = config;
     this.shangoService = getSHANGOAIService();
+    
+    if (!this.shangoService) {
+      console.warn('SHANGO AI Super Agent is not available. 2FA will work without AI features.');
+    }
   }
 
   /**
@@ -308,6 +312,9 @@ class Smart2FAService {
   }
 
   private async verifyOTP(verificationId: string, otpCode: string): Promise<any> {
+    if (!this.shangoService) {
+      throw new Error('SHANGO AI Super Agent is not available for OTP verification');
+    }
     return await this.shangoService.verifyOTP(verificationId, otpCode);
   }
 

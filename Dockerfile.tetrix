@@ -1,32 +1,29 @@
-# TETRIX Frontend Dockerfile - Unified Onboarding System
+# Use a specific Node.js version on Alpine for a small, secure image
 FROM node:20-alpine
 
-# Set working directory
+# Install pnpm globally
+RUN npm install -g pnpm
+
+# Set the working directory
 WORKDIR /app
 
-# Install pnpm globally
-RUN npm install -g pnpm@10.8.0
-
-# Copy package files
+# Copy dependency manifests
 COPY package.json pnpm-lock.yaml ./
 
-# Clean up any conflicting lockfiles (including nested ones)
-RUN find . -name "package-lock.json" -delete && \
-    find . -name "yarn.lock" -delete && \
-    find . -name "npm-shrinkwrap.json" -delete && \
-    find . -name ".yarnrc*" -delete
+# Install dependencies using --prod flag to skip devDependencies
+RUN pnpm install --prod --frozen-lockfile
 
-# Install dependencies
-RUN pnpm install --frozen-lockfile
-
-# Copy source code
+# Copy the rest of the application source code
 COPY . .
 
-# Build the application
+# Build the Astro application
 RUN pnpm run build
 
-# Expose port
-EXPOSE 4321
+# Clear pnpm cache to reduce image size
+RUN pnpm store prune
 
-# Start the application
-CMD ["pnpm", "run", "dev", "--host", "0.0.0.0"]
+# Expose the port the app will run on (should match DigitalOcean's config)
+EXPOSE 8080
+
+# **CRITICAL: Run the production server, not the dev server**
+CMD ["pnpm", "run", "start"]

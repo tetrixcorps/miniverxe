@@ -419,16 +419,22 @@ export class SHANGOAIService {
 // Singleton instance
 let shangoAIService: SHANGOAIService | null = null;
 
-export const getSHANGOAIService = (): SHANGOAIService => {
+export const getSHANGOAIService = (): SHANGOAIService | null => {
   if (!shangoAIService) {
     const apiKey = process.env.NEXT_PUBLIC_SINCH_API_KEY;
     const widgetId = process.env.NEXT_PUBLIC_SINCH_WIDGET_ID;
     
     if (!apiKey || !widgetId) {
-      throw new Error('SinchChatLive API key and widget ID are required for SHANGO AI Super Agent');
+      console.warn('SinchChatLive API key and widget ID are not configured. SHANGO AI Super Agent will be disabled.');
+      return null;
     }
     
-    shangoAIService = new SHANGOAIService(apiKey, widgetId);
+    try {
+      shangoAIService = new SHANGOAIService(apiKey, widgetId);
+    } catch (error) {
+      console.error('Failed to initialize SHANGO AI Super Agent:', error);
+      return null;
+    }
   }
   
   return shangoAIService;

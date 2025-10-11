@@ -1,6 +1,6 @@
-name: tetrix-unified-app
+name: tetrix-minimal
 
-# Minimal TETRIX Frontend with Unified Onboarding
+# Minimal TETRIX deployment configuration
 services:
   - name: tetrix-frontend
     github:
@@ -8,10 +8,15 @@ services:
       branch: main
       deploy_on_push: true
     source_dir: /
-    dockerfile_path: Dockerfile.tetrix
-    http_port: 4321
+    http_port: 8080
     instance_count: 1
     instance_size_slug: basic-xxs
+    build_command: |
+      rm -f package-lock.json yarn.lock npm-shrinkwrap.json .yarnrc .yarnrc.yml
+      npm install -g pnpm@10.8.0
+      pnpm install --frozen-lockfile
+      pnpm run build
+    run_command: pnpm run start
     routes:
       - path: /
     envs:
@@ -20,72 +25,8 @@ services:
       - key: HOST
         value: "0.0.0.0"
       - key: PORT
-        value: "4321"
-      - key: TETRIX_DOMAIN
-        value: "tetrixcorp.com"
-      - key: JOROMI_DOMAIN
-        value: "joromi.ai"
-      - key: CROSS_PLATFORM_SESSION_SECRET
-        value: "tetrix-joromi-session-secret-2024"
-      
-      # Telnyx 2FA Configuration
-      - key: TELNYX_API_KEY
-        value: "KEY1234567890abcdef"
-      - key: TELNYX_WEBHOOK_SECRET
-        value: "whsec_1234567890abcdef"
-      - key: TELNYX_PHONE_NUMBER
-        value: "+1234567890"
-      
-      # Stripe Trial Configuration
-      - key: STRIPE_SECRET_KEY
-        value: "sk_test_1234567890abcdef"
-      - key: STRIPE_WEBHOOK_SECRET
-        value: "whsec_1234567890abcdef"
-      - key: STRIPE_TRIAL_PRICE_ID
-        value: "price_1234567890abcdef"
-      
-      # Sinch WhatsApp Configuration
-      - key: SINCH_API_KEY
-        value: "544cdba462974e05adc5140211c0311c"
-      - key: SINCH_API_SECRET
-        value: "sinch_secret_1234567890abcdef"
-      - key: SINCH_CONVERSATION_PROJECT_ID
-        value: "project_1234567890abcdef"
-      
-      # Webhook Configuration
-      - key: WEBHOOK_BASE_URL
-        value: "https://tetrixcorp.com"
-      
-      # SHANGO AI Super Agent Configuration
-      - key: SHANGO_DEFAULT_AGENT
-        value: "general"
-      - key: SHANGO_MAX_MESSAGES
-        value: "50"
-      - key: SHANGO_SESSION_TIMEOUT
-        value: "3600"
-      
-      # Sinch Chat Live Configuration
-      - key: SINCH_SERVICE_PLAN_ID
-        value: "shango-service-plan-2024"
-      - key: SINCH_VIRTUAL_NUMBER
-        value: "+1234567890"
-      - key: SINCH_BACKUP_NUMBER_1
-        value: "+1234567891"
-      - key: SINCH_BACKUP_NUMBER_2
-        value: "+1234567892"
-      - key: SINCH_BACKUP_NUMBER_3
-        value: "+1234567893"
-      - key: SINCH_CONVERSATION_PROJECT_ID
-        value: "shango-conversation-2024"
-      - key: NEXT_PUBLIC_SINCH_API_KEY
-        value: "544cdba462974e05adc5140211c0311c"
-      - key: NEXT_PUBLIC_SINCH_WIDGET_ID
-        value: "shango-widget-2024"
-    
-    health_check:
-      http_path: /
-      initial_delay_seconds: 60
-      period_seconds: 10
-      timeout_seconds: 5
-      success_threshold: 1
-      failure_threshold: 3
+        value: "8080"
+
+# Features
+features:
+  - buildpack-stack=ubuntu-22

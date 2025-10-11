@@ -1,186 +1,258 @@
 ---
 import MainLayout from '../components/layout/MainLayout.astro';
-import Button from '../components/shared/Button.astro';
-import FeatureCard from '../components/shared/FeatureCard.astro';
-import TestimonialCard from '../components/shared/TestimonialCard.astro';
-import BlogCarousel from '../components/features/BlogCarousel.astro';
-import HowItWorks from '../components/shared/HowItWorks.astro';
-import ServicesOverview from '../components/shared/ServicesOverview.astro';
-import ContactForm from '../components/shared/ContactForm.astro';
-
-const features = [
-  {
-    icon: 'automation',
-    title: 'AI-Powered Automation',
-    description: 'Seamlessly integrate AI into your existing workflows with our no-code platform.',
-    color: 'brand-red',
-  },
-  {
-    icon: 'integrations',
-    title: 'Universal Integrations',
-    description: 'Connect with 500+ tools and APIs to create intelligent, automated workflows.',
-    color: 'brand-orange',
-  },
-  {
-    icon: 'security',
-    title: 'Enterprise Security',
-    description: 'Bank-grade security with SOC 2 compliance and end-to-end encryption.',
-    color: 'brand-yellow',
-  },
-];
-const testimonials = [
-  { quote: 'TETRIX helped us automate 80% of our manual processes with AI, saving us 20 hours per week.', author: 'Sarah Chen', role: 'CTO, TechFlow Solutions' },
-  { quote: 'The AI integration was seamless. We went from concept to production in just 2 weeks.', author: 'Marcus Rodriguez', role: 'Head of Operations, DataCorp' },
-];
-const blogPosts = [
-  {
-    title: "How to Integrate AI into Your Business Workflow: A Complete Guide",
-    excerpt: "Learn the step-by-step process of successfully integrating AI into your existing business processes and workflows.",
-    author: "Dr. Emily Watson",
-    publishDate: "2024-01-15",
-    lastUpdated: "2024-01-20",
-    readTime: 12,
-    category: "AI Integration",
-    slug: "ai-business-workflow-integration",
-    featured: true,
-    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=400&fit=crop",
-    funnelStage: "awareness"
-  },
-  {
-    title: "5 AI Automation Use Cases That Will Transform Your Business",
-    excerpt: "Discover the most impactful AI automation scenarios that leading companies are implementing today.",
-    author: "Alex Thompson",
-    publishDate: "2024-01-10",
-    readTime: 8,
-    category: "AI Use Cases",
-    slug: "ai-automation-use-cases",
-    featured: true,
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop",
-    funnelStage: "awareness"
-  },
-  {
-    title: "ROI of AI Integration: Real Numbers from Real Companies",
-    excerpt: "See how companies achieved 300% ROI within 6 months by integrating AI into their workflows.",
-    author: "Michael Chang",
-    publishDate: "2024-01-08",
-    readTime: 10,
-    category: "ROI Analysis",
-    slug: "ai-integration-roi",
-    featured: true,
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop",
-    funnelStage: "consideration"
-  },
-  {
-    title: "Building Your First AI Workflow: A Step-by-Step Tutorial",
-    excerpt: "Follow this comprehensive tutorial to create your first AI-powered workflow with TETRIX.",
-    author: "David Kim",
-    publishDate: "2024-01-05",
-    readTime: 15,
-    category: "Tutorials",
-    slug: "first-ai-workflow-tutorial",
-    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop",
-    funnelStage: "consideration"
-  },
-  {
-    title: "AI Integration Best Practices: Lessons from 100+ Implementations",
-    excerpt: "Key insights and best practices from successful AI integration projects across various industries.",
-    author: "Lisa Park",
-    publishDate: "2024-01-03",
-    readTime: 11,
-    category: "Best Practices",
-    slug: "ai-integration-best-practices",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop",
-    funnelStage: "decision"
-  },
-  {
-    title: "The Future of Work: How AI is Reshaping Business Operations",
-    excerpt: "Explore how AI integration is transforming business operations and what it means for your company.",
-    author: "Dr. Robert Chen",
-    publishDate: "2023-12-28",
-    readTime: 9,
-    category: "Industry Trends",
-    slug: "future-of-work-ai",
-    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop",
-    funnelStage: "decision"
-  }
-];
+import UnifiedOnboardingFlow from '../components/UnifiedOnboardingFlow.tsx';
+import UnifiedMessagingDashboard from '../components/UnifiedMessagingDashboard.tsx';
 ---
 
 <MainLayout>
-  <section class="min-h-[60vh] flex flex-col items-center justify-center text-center bg-gradient-to-br from-brand-red via-brand-orange to-brand-yellow text-white py-20 px-4">
-    <h1 class="text-4xl md:text-6xl font-heading font-extrabold mb-4 drop-shadow-lg">Enterprise AI Workflow Integration & <span class="text-brand-yellow">Data Labeling</span></h1>
-    <p class="text-lg md:text-2xl max-w-3xl mx-auto mb-8 font-sans">TETRIX empowers enterprises to accelerate AI adoption with secure, scalable workflow integration and expert data annotation services.</p>
-    <div class="flex flex-col sm:flex-row gap-4">
-      <Button href="/contact" variant="primary">Request a Demo</Button>
-      <Button href="#contact-form" variant="secondary">Talk to an Expert</Button>
-    </div>
-  </section>
-
-  <section aria-label="Features" class="py-16 bg-white">
-    <h2 class="text-center text-3xl font-heading font-bold mb-10 text-brand-dark">Why Choose TETRIX?</h2>
-    <div class="grid gap-8 md:grid-cols-3 max-w-5xl mx-auto">
-      {features.map(f => (
-        <div class={`flex flex-col items-center text-center p-8 bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-2xl transition group`}>
-          <div class={`mb-4 flex items-center justify-center w-16 h-16 rounded-full bg-${f.color}/10 group-hover:bg-${f.color}/20`}>
-            {f.icon === 'automation' && (
-              <svg class="w-8 h-8 text-brand-red" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-            )}
-            {f.icon === 'integrations' && (
-              <svg class="w-8 h-8 text-brand-orange" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06A1.65 1.65 0 0015 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 008.6 15a1.65 1.65 0 00-1.82-.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0015 8.6a1.65 1.65 0 001.82.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 15z"/></svg>
-            )}
-            {f.icon === 'security' && (
-              <svg class="w-8 h-8 text-brand-yellow" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            )}
-          </div>
-          <h3 class="text-xl font-heading font-bold mb-2">{f.title}</h3>
-          <p class="text-gray-600">{f.description}</p>
+  <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <!-- Hero Section -->
+    <section class="py-20 px-4">
+      <div class="max-w-7xl mx-auto text-center">
+        <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+          Cross-Platform
+          <span class="text-blue-600">Management System</span>
+        </h1>
+        <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+          Unified messaging, voice, and AI services across TETRIX and JoRoMi platforms. 
+          Seamlessly manage WhatsApp, SMS, Voice calls, and AI-powered conversations.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="/onboarding" class="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+            Start Free Trial
+          </a>
+          <a href="#features" class="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold border-2 border-blue-600 hover:bg-blue-50 transition-colors">
+            View Features
+          </a>
         </div>
-      ))}
-    </div>
-  </section>
-
-  <HowItWorks />
-  <ServicesOverview />
-
-  <!-- Blog Carousel Section -->
-  <BlogCarousel posts={blogPosts} />
-
-  <section aria-label="Testimonials" class="py-20 bg-gradient-to-br from-brand-light to-white">
-    <h2 class="text-center text-3xl font-heading font-bold mb-12 text-brand-dark">What Our Clients Say</h2>
-    <div class="grid gap-12 md:grid-cols-2 max-w-4xl mx-auto">
-      <div class="relative bg-white rounded-3xl shadow-xl border border-gray-100 p-10 flex flex-col items-center text-center">
-        <svg class="w-12 h-12 text-brand-orange mb-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17a4 4 0 01-4-4V7a4 4 0 014-4h6a4 4 0 014 4v6a4 4 0 01-4 4H9zm0 0v2a2 2 0 002 2h2a2 2 0 002-2v-2"/></svg>
-        <blockquote class="italic text-xl text-gray-800 mb-6 font-serif">TETRIX helped us automate 80% of our manual processes with AI, saving us 20 hours per week.</blockquote>
-        <div class="hidden md:block absolute right-0 top-1/2 h-2/3 w-px bg-gray-200" style="transform: translateY(-50%);"></div>
       </div>
-      <div class="relative bg-white rounded-3xl shadow-xl border border-gray-100 p-10 flex flex-col items-center text-center">
-        <svg class="w-12 h-12 text-brand-orange mb-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17a4 4 0 01-4-4V7a4 4 0 014-4h6a4 4 0 014 4v6a4 4 0 01-4 4H9zm0 0v2a2 2 0 002 2h2a2 2 0 002-2v-2"/></svg>
-        <blockquote class="italic text-xl text-gray-800 mb-6 font-serif">The AI integration was seamless. We went from concept to production in just 2 weeks.</blockquote>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- CTA Section -->
-  <section class="py-16 bg-brand-dark text-white">
-    <div class="max-w-4xl mx-auto text-center px-4">
-      <h2 class="text-3xl font-heading font-bold mb-6">
-        Ready to Transform Your Business with AI?
-      </h2>
-      <p class="text-xl mb-8">
-        Join leading companies using TETRIX to integrate AI into their workflows and automate their operations.
-      </p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <Button href="/contact" variant="primary" size="lg">
-          Start Free Trial
-        </Button>
-        <Button href="/docs" variant="secondary" size="lg">
-          View Documentation
-        </Button>
-      </div>
-    </div>
-  </section>
+    <!-- Features Section -->
+    <section id="features" class="py-20 px-4 bg-white">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl font-bold text-center text-gray-900 mb-16">
+          Unified Platform Features
+        </h2>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- Voice API -->
+          <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-8 rounded-xl shadow-lg">
+            <div class="w-16 h-16 bg-blue-600 rounded-lg flex items-center justify-center mb-6">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Voice API</h3>
+            <p class="text-gray-600 mb-4">
+              Enhanced Telnyx integration with Deepgram STT for intelligent voice processing and AI responses.
+            </p>
+            <a href="/voice-demo-simple" class="text-blue-600 font-semibold hover:text-blue-700">
+              Try Voice Demo →
+            </a>
+          </div>
 
-  <section id="contact-form" class="py-16 bg-white">
-    <ContactForm />
-  </section>
-</MainLayout> 
+          <!-- Smart 2FA -->
+          <div class="bg-gradient-to-br from-green-50 to-green-100 p-8 rounded-xl shadow-lg">
+            <div class="w-16 h-16 bg-green-600 rounded-lg flex items-center justify-center mb-6">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Smart 2FA</h3>
+            <p class="text-gray-600 mb-4">
+              Enterprise-grade authentication with voice primary, SMS fallback, and fraud detection.
+            </p>
+            <a href="/api/v2/2fa/initiate" class="text-green-600 font-semibold hover:text-green-700">
+              Test 2FA API →
+            </a>
+          </div>
+
+          <!-- Unified Messaging -->
+          <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-8 rounded-xl shadow-lg">
+            <div class="w-16 h-16 bg-purple-600 rounded-lg flex items-center justify-center mb-6">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Unified Messaging</h3>
+            <p class="text-gray-600 mb-4">
+              WhatsApp, SMS, Voice, and Chat integration with cross-platform session management.
+            </p>
+            <a href="/onboarding" class="text-purple-600 font-semibold hover:text-purple-700">
+              Setup Messaging →
+            </a>
+          </div>
+
+          <!-- SHANGO AI Agent -->
+          <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-8 rounded-xl shadow-lg">
+            <div class="w-16 h-16 bg-orange-600 rounded-lg flex items-center justify-center mb-6">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">SHANGO AI Agent</h3>
+            <p class="text-gray-600 mb-4">
+              Your AI Super Agent for technical support, sales, billing, and general assistance.
+            </p>
+            <a href="/onboarding" class="text-orange-600 font-semibold hover:text-orange-700">
+              Meet SHANGO →
+            </a>
+          </div>
+
+          <!-- Cross-Platform Sessions -->
+          <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 p-8 rounded-xl shadow-lg">
+            <div class="w-16 h-16 bg-indigo-600 rounded-lg flex items-center justify-center mb-6">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Cross-Platform Sessions</h3>
+            <p class="text-gray-600 mb-4">
+              Seamless session management between TETRIX and JoRoMi platforms with secure tokens.
+            </p>
+            <a href="/onboarding" class="text-indigo-600 font-semibold hover:text-indigo-700">
+              Learn More →
+            </a>
+          </div>
+
+          <!-- Real-time Webhooks -->
+          <div class="bg-gradient-to-br from-red-50 to-red-100 p-8 rounded-xl shadow-lg">
+            <div class="w-16 h-16 bg-red-600 rounded-lg flex items-center justify-center mb-6">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Real-time Webhooks</h3>
+            <p class="text-gray-600 mb-4">
+              Live event processing for 2FA, payments, messaging, and voice call events.
+            </p>
+            <a href="/api/webhooks" class="text-red-600 font-semibold hover:text-red-700">
+              View Webhooks →
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Platform Status Section -->
+    <section class="py-20 px-4 bg-gray-50">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl font-bold text-center text-gray-900 mb-16">
+          Platform Status
+        </h2>
+        <div class="grid md:grid-cols-2 gap-8">
+          <!-- TETRIX Platform -->
+          <div class="bg-white p-8 rounded-xl shadow-lg">
+            <div class="flex items-center mb-6">
+              <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mr-4">
+                <span class="text-white font-bold text-xl">T</span>
+              </div>
+              <div>
+                <h3 class="text-2xl font-bold text-gray-900">TETRIX Platform</h3>
+                <p class="text-green-600 font-semibold">● Online</p>
+              </div>
+            </div>
+            <div class="space-y-4">
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600">Voice API</span>
+                <span class="text-green-600 font-semibold">Operational</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600">2FA System</span>
+                <span class="text-green-600 font-semibold">Operational</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600">Messaging</span>
+                <span class="text-green-600 font-semibold">Operational</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600">AI Agent</span>
+                <span class="text-yellow-600 font-semibold">Limited</span>
+              </div>
+            </div>
+            <a href="http://localhost:4325" target="_blank" class="mt-6 inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+              Visit TETRIX →
+            </a>
+          </div>
+
+          <!-- JoRoMi Platform -->
+          <div class="bg-white p-8 rounded-xl shadow-lg">
+            <div class="flex items-center mb-6">
+              <div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mr-4">
+                <span class="text-white font-bold text-xl">J</span>
+              </div>
+              <div>
+                <h3 class="text-2xl font-bold text-gray-900">JoRoMi Platform</h3>
+                <p class="text-green-600 font-semibold">● Online</p>
+              </div>
+            </div>
+            <div class="space-y-4">
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600">Frontend</span>
+                <span class="text-green-600 font-semibold">Operational</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600">Backend</span>
+                <span class="text-yellow-600 font-semibold">Configuring</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600">VoIP Interface</span>
+                <span class="text-green-600 font-semibold">Operational</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600">Integration</span>
+                <span class="text-green-600 font-semibold">Ready</span>
+              </div>
+            </div>
+            <a href="http://localhost:3000" target="_blank" class="mt-6 inline-block bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors">
+              Visit JoRoMi →
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Actions Section -->
+    <section class="py-20 px-4 bg-white">
+      <div class="max-w-7xl mx-auto text-center">
+        <h2 class="text-4xl font-bold text-gray-900 mb-8">
+          Quick Actions
+        </h2>
+        <div class="grid md:grid-cols-3 gap-8">
+          <a href="/onboarding" class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all">
+            <div class="text-4xl mb-4">🚀</div>
+            <h3 class="text-2xl font-bold mb-4">Start Free Trial</h3>
+            <p class="text-blue-100">Begin your 7-day free trial with WhatsApp Business integration</p>
+          </a>
+          
+          <a href="/voice-demo-simple" class="bg-gradient-to-r from-green-600 to-green-700 text-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all">
+            <div class="text-4xl mb-4">🎤</div>
+            <h3 class="text-2xl font-bold mb-4">Test Voice API</h3>
+            <p class="text-green-100">Try our enhanced voice API with Deepgram STT integration</p>
+          </a>
+          
+          <a href="/api/voice/health" class="bg-gradient-to-r from-purple-600 to-purple-700 text-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all">
+            <div class="text-4xl mb-4">🔧</div>
+            <h3 class="text-2xl font-bold mb-4">API Health</h3>
+            <p class="text-purple-100">Check the status of all our API endpoints and services</p>
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
+</MainLayout>
+
+<style>
+  .animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: .5;
+    }
+  }
+</style>

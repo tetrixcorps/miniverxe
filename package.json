@@ -4,10 +4,10 @@
   "description": "TETRIX & JoRoMi Voice API with Telnyx, Deepgram STT, and SHANGO AI Integration",
   "type": "module",
   "scripts": {
-    "dev": "astro dev --host 0.0.0.0 --port 4321",
-    "start": "astro dev --host 0.0.0.0 --port 4321",
+    "dev": "astro dev",
+    "start": "node ./dist/server/entry.mjs",
     "build": "astro build",
-    "preview": "astro preview --host 0.0.0.0 --port 4321",
+    "preview": "astro preview",
     "astro": "astro",
     "test": "playwright test",
     "test:unit": "playwright test tests/unit/",
@@ -62,5 +62,14 @@
   "engines": {
     "node": ">=18.0.0",
     "pnpm": ">=8.0.0"
+  },
+  "pnpm": {
+    "allowScripts": {
+      "@firebase/util": true,
+      "esbuild": true,
+      "protobufjs": true,
+      "puppeteer": true,
+      "sharp": true
+    }
   }
 }
