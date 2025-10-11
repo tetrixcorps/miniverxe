@@ -82,7 +82,7 @@ export class SHANGOAIService {
         capabilities: ['general_questions', 'basic_support', 'product_info', 'troubleshooting'],
         tools: ['n8n', 'knowledge_base', 'api_docs'],
         personality: 'friendly',
-        avatar: '⚡',
+        avatar: '&#9889;',
         greeting: 'Hello! I\'m SHANGO, your AI Super Agent. How can I help you today?'
       },
       {
@@ -92,7 +92,7 @@ export class SHANGOAIService {
         capabilities: ['technical_support', 'api_integration', 'debugging', 'system_analysis'],
         tools: ['n8n', 'api_docs', 'system_logs', 'debugging_tools'],
         personality: 'technical',
-        avatar: '🔧',
+        avatar: '&#128295;',
         greeting: 'Hi! I\'m SHANGO Tech, your technical AI Super Agent. What technical challenge can I help you solve?'
       },
       {
@@ -102,7 +102,7 @@ export class SHANGOAIService {
         capabilities: ['sales', 'product_recommendations', 'pricing_info', 'demo_requests', 'lead_qualification'],
         tools: ['n8n', 'crm', 'pricing_engine', 'product_catalog'],
         personality: 'sales',
-        avatar: '💼',
+        avatar: '&#128188;',
         greeting: 'Welcome! I\'m SHANGO Sales, your AI Super Agent for all sales inquiries. How can I help you succeed today?'
       },
       {
@@ -112,7 +112,7 @@ export class SHANGOAIService {
         capabilities: ['billing_support', 'payment_issues', 'subscription_management', 'account_updates'],
         tools: ['n8n', 'stripe', 'billing_system', 'account_management'],
         personality: 'professional',
-        avatar: '💳',
+        avatar: '&#128179;',
         greeting: 'Hello! I\'m SHANGO Billing, your AI Super Agent for billing and account matters. How can I assist you?'
       }
     ];

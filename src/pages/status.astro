@@ -72,10 +72,10 @@ const getStatusColor = (status: string) => {
 
 const getStatusIcon = (status: string) => {
   switch (status) {
-    case 'online': return '🟢';
-    case 'configuring': return '🟡';
-    case 'offline': return '🔴';
-    default: return '⚪';
+    case 'online': return '&#128994;';
+    case 'configuring': return '&#128993;';
+    case 'offline': return '&#128308;';
+    default: return '&#9898;';
   }
 };
 ---
@@ -159,8 +159,8 @@ const getStatusIcon = (status: string) => {
                         domain.ssl === 'pending' ? 'text-yellow-600 bg-yellow-100' : 
                         'text-red-600 bg-red-100'
                       }`}>
-                        {domain.ssl === 'valid' ? '✓check;check; Valid' : 
-                         domain.ssl === 'pending' ? '⏳ Pending' : '✗ Invalid'}
+                        {domain.ssl === 'valid' ? '&#10003;check;check; Valid' : 
+                         domain.ssl === 'pending' ? '&#8987; Pending' : '&#10007; Invalid'}
                       </span>
                     </td>
                     <td class="px-6 py-4">
@@ -196,7 +196,7 @@ const getStatusIcon = (status: string) => {
           <div class="bg-white p-8 rounded-xl shadow-lg">
             <div class="flex items-center mb-6">
               <div class="w-12 h-12 bg-brand-red rounded-lg flex items-center justify-center mr-4">
-                <span class="text-white text-xl">📞#128222;#128222;#128222;#128222;#128222;#128222;#128222;#128222;#128222;</span>
+                <span class="text-white text-xl">&#128222;#128222;#128222;#128222;#128222;#128222;#128222;#128222;#128222;#128222;</span>
               </div>
               <div>
                 <h3 class="text-xl font-bold text-gray-900">TETRIX Platform</h3>
@@ -206,19 +206,19 @@ const getStatusIcon = (status: string) => {
             <div class="space-y-3">
               <div class="flex justify-between">
                 <span class="text-gray-600">Voice API</span>
-                <span class="text-green-600 font-semibold">✓check;check; Online</span>
+                <span class="text-green-600 font-semibold">&#10003;check;check; Online</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-600">IVR System</span>
-                <span class="text-green-600 font-semibold">✓check;check; Online</span>
+                <span class="text-green-600 font-semibold">&#10003;check;check; Online</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-600">2FA Service</span>
-                <span class="text-green-600 font-semibold">✓check;check; Online</span>
+                <span class="text-green-600 font-semibold">&#10003;check;check; Online</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-600">Phone Provisioning</span>
-                <span class="text-green-600 font-semibold">✓check;check; Online</span>
+                <span class="text-green-600 font-semibold">&#10003;check;check; Online</span>
               </div>
             </div>
           </div>
@@ -227,7 +227,7 @@ const getStatusIcon = (status: string) => {
           <div class="bg-white p-8 rounded-xl shadow-lg">
             <div class="flex items-center mb-6">
               <div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mr-4">
-                <span class="text-white text-xl">🤖#129302;#129302;#129302;#129302;#129302;#129302;#129302;#129302;#129302;</span>
+                <span class="text-white text-xl">&#129302;#129302;#129302;#129302;#129302;#129302;#129302;#129302;#129302;#129302;</span>
               </div>
               <div>
                 <h3 class="text-xl font-bold text-gray-900">JoRoMi Platform</h3>
@@ -237,19 +237,19 @@ const getStatusIcon = (status: string) => {
             <div class="space-y-3">
               <div class="flex justify-between">
                 <span class="text-gray-600">Frontend</span>
-                <span class="text-green-600 font-semibold">✓check;check; Online</span>
+                <span class="text-green-600 font-semibold">&#10003;check;check; Online</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-600">Backend API</span>
-                <span class="text-yellow-600 font-semibold">⏳ Configuring</span>
+                <span class="text-yellow-600 font-semibold">&#8987; Configuring</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-600">VoIP Interface</span>
-                <span class="text-green-600 font-semibold">✓check;check; Online</span>
+                <span class="text-green-600 font-semibold">&#10003;check;check; Online</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-600">AI Integration</span>
-                <span class="text-green-600 font-semibold">✓check;check; Online</span>
+                <span class="text-green-600 font-semibold">&#10003;check;check; Online</span>
               </div>
             </div>
           </div>
@@ -258,7 +258,7 @@ const getStatusIcon = (status: string) => {
           <div class="bg-white p-8 rounded-xl shadow-lg">
             <div class="flex items-center mb-6">
               <div class="w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center mr-4">
-                <span class="text-white text-xl">🏗️</span>
+                <span class="text-white text-xl">&#127959;</span>
               </div>
               <div>
                 <h3 class="text-xl font-bold text-gray-900">Infrastructure</h3>
@@ -268,19 +268,19 @@ const getStatusIcon = (status: string) => {
             <div class="space-y-3">
               <div class="flex justify-between">
                 <span class="text-gray-600">DigitalOcean App Platform</span>
-                <span class="text-green-600 font-semibold">✓check;check; Online</span>
+                <span class="text-green-600 font-semibold">&#10003;check;check; Online</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-600">Cloudflare CDN</span>
-                <span class="text-green-600 font-semibold">✓check;check; Online</span>
+                <span class="text-green-600 font-semibold">&#10003;check;check; Online</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-600">SSL Certificates</span>
-                <span class="text-yellow-600 font-semibold">⏳ Provisioning</span>
+                <span class="text-yellow-600 font-semibold">&#8987; Provisioning</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-600">Database</span>
-                <span class="text-green-600 font-semibold">✓check;check; Online</span>
+                <span class="text-green-600 font-semibold">&#10003;check;check; Online</span>
               </div>
             </div>
           </div>
@@ -297,14 +297,14 @@ const getStatusIcon = (status: string) => {
         
         <div class="bg-white rounded-2xl shadow-xl p-8">
           <div class="text-center text-gray-500">
-            <div class="text-6xl mb-4">🎉</div>
+            <div class="text-6xl mb-4">&#127881;</div>
             <h3 class="text-2xl font-bold text-gray-900 mb-4">No Recent Incidents</h3>
             <p class="text-lg text-gray-600 mb-6">
               All systems are operating normally. No incidents reported in the last 30 days.
             </p>
             <div class="bg-green-50 border border-green-200 rounded-lg p-4 max-w-md mx-auto">
               <div class="flex items-center justify-center">
-                <span class="text-green-600 text-2xl mr-2">✓check;check;</span>
+                <span class="text-green-600 text-2xl mr-2">&#10003;check;check;</span>
                 <span class="text-green-800 font-semibold">All Services Operational</span>
               </div>
             </div>

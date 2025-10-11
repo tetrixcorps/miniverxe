@@ -59,11 +59,11 @@ const formatDate = (dateString: string) => {
     <div class="flex items-center justify-between text-sm text-gray-500">
       <div class="flex items-center gap-4">
         <span>By {author}</span>
-        <span>•</span>
+        <span>&#8226;</span>
         <span>{formatDate(publishDate)}</span>
         {lastUpdated && (
           <>
-            <span>•</span>
+            <span>&#8226;</span>
             <span class="text-brand-orange">Updated {formatDate(lastUpdated)}</span>
           </>
         )}

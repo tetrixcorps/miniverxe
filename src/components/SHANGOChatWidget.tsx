@@ -200,7 +200,7 @@ export const SHANGOChatWidget: React.FC<SHANGOChatWidgetProps> = ({
             {isLoading ? (
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
             ) : (
-              currentAgent?.avatar || '⚡'
+              currentAgent?.avatar || '&#9889;'
             )}
           </button>
           
@@ -210,7 +210,7 @@ export const SHANGOChatWidget: React.FC<SHANGOChatWidgetProps> = ({
             className="w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center text-gray-600 hover:text-gray-800 transition-colors"
             title="Switch SHANGO Agent"
           >
-            🔄
+            &#8635;
           </button>
         </div>
       )}
@@ -221,7 +221,7 @@ export const SHANGOChatWidget: React.FC<SHANGOChatWidgetProps> = ({
           {/* SHANGO Header */}
           <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-4 rounded-t-lg flex justify-between items-center">
             <div className="flex items-center space-x-2">
-              <span className="text-lg">{currentAgent?.avatar || '⚡'}</span>
+              <span className="text-lg">{currentAgent?.avatar || '&#9889;'}</span>
               <div>
                 <h3 className="font-semibold">{currentAgent?.name || 'SHANGO'}</h3>
                 <p className="text-sm opacity-90">
@@ -233,7 +233,7 @@ export const SHANGOChatWidget: React.FC<SHANGOChatWidgetProps> = ({
               onClick={endSHANGOChat}
               className="text-white hover:text-gray-200 transition-colors"
             >
-              ✕
+              &#10005;
             </button>
           </div>
 
@@ -257,7 +257,7 @@ export const SHANGOChatWidget: React.FC<SHANGOChatWidgetProps> = ({
                 >
                   {message.role === 'shango' && (
                     <div className="flex items-center space-x-1 mb-1">
-                      <span className="text-xs font-semibold">⚡ SHANGO</span>
+                      <span className="text-xs font-semibold">&#9889; SHANGO</span>
                       {message.metadata?.shangoResponse && (
                         <span className="text-xs opacity-70">
                           ({Math.round(message.metadata.shangoResponse.confidence * 100)}% confident)
@@ -277,7 +277,7 @@ export const SHANGOChatWidget: React.FC<SHANGOChatWidgetProps> = ({
               <div className="flex justify-start">
                 <div className="bg-gradient-to-r from-purple-100 to-blue-100 text-purple-800 px-3 py-2 rounded-lg border border-purple-200">
                   <div className="flex items-center space-x-1">
-                    <span className="text-xs font-semibold">⚡ SHANGO</span>
+                    <span className="text-xs font-semibold">&#9889; SHANGO</span>
                     <div className="flex space-x-1">
                       <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"></div>
                       <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
@@ -318,19 +318,19 @@ export const SHANGOChatWidget: React.FC<SHANGOChatWidgetProps> = ({
                 onClick={() => setInput('Help me with...')}
                 className="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded transition-colors"
               >
-                💡 Get Help
+                &#128161; Get Help
               </button>
               <button
                 onClick={() => setInput('Show me pricing...')}
                 className="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded transition-colors"
               >
-                💰 Pricing
+                &#128176; Pricing
               </button>
               <button
                 onClick={() => setInput('Technical support...')}
                 className="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded transition-colors"
               >
-                🔧 Tech Support
+                &#128295; Tech Support
               </button>
             </div>
           </div>

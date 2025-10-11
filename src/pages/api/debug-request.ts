@@ -15,9 +15,9 @@ export const POST: APIRoute = async ({ request }) => {
       // Method 1: request.json()
       body = await request.json();
       parsingMethod = 'request.json()';
-      console.log('✅ Success with request.json():', body);
+      console.log('&#9989; Success with request.json():', body);
     } catch (jsonError) {
-      console.log('❌ request.json() failed:', jsonError);
+      console.log('&#10060; request.json() failed:', jsonError);
       
       try {
         // Method 2: request.text() + JSON.parse()
@@ -28,9 +28,9 @@ export const POST: APIRoute = async ({ request }) => {
         if (rawText && rawText.trim()) {
           body = JSON.parse(rawText);
           parsingMethod = 'request.text() + JSON.parse()';
-          console.log('✅ Success with request.text() + JSON.parse():', body);
+          console.log('&#9989; Success with request.text() + JSON.parse():', body);
         } else {
-          console.log('❌ Empty or whitespace-only body');
+          console.log('&#10060; Empty or whitespace-only body');
           
           // Method 3: Try formData
           try {
@@ -40,10 +40,10 @@ export const POST: APIRoute = async ({ request }) => {
               const dataString = formData.get('data') as string;
               body = JSON.parse(dataString);
               parsingMethod = 'formData';
-              console.log('✅ Success with formData:', body);
+              console.log('&#9989; Success with formData:', body);
             }
           } catch (formError) {
-            console.log('❌ formData failed:', formError);
+            console.log('&#10060; formData failed:', formError);
           }
           
           // Method 4: Try arrayBuffer
@@ -55,14 +55,14 @@ export const POST: APIRoute = async ({ request }) => {
               console.log('ArrayBuffer text:', text);
               body = JSON.parse(text);
               parsingMethod = 'arrayBuffer';
-              console.log('✅ Success with arrayBuffer:', body);
+              console.log('&#9989; Success with arrayBuffer:', body);
             }
           } catch (arrayError) {
-            console.log('❌ arrayBuffer failed:', arrayError);
+            console.log('&#10060; arrayBuffer failed:', arrayError);
           }
         }
       } catch (textError) {
-        console.log('❌ request.text() + JSON.parse() failed:', textError);
+        console.log('&#10060; request.text() + JSON.parse() failed:', textError);
       }
     }
     

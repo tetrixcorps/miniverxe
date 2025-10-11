@@ -89,13 +89,13 @@ export const CrossPlatformIntegrationUI: React.FC = () => {
     switch (status.toLowerCase()) {
       case 'active':
       case 'enabled':
-        return '✅';
+        return '&#9989;';
       case 'disabled':
-        return '❌';
+        return '&#10060;';
       case 'pending':
-        return '⏳';
+        return '&#8987;';
       default:
-        return '❓';
+        return '&#10067;';
     }
   };
 
@@ -114,7 +114,7 @@ export const CrossPlatformIntegrationUI: React.FC = () => {
     return (
       <div className="bg-white rounded-lg shadow-lg p-6">
         <div className="text-center py-8">
-          <div className="text-red-500 text-4xl mb-4">⚠️</div>
+          <div className="text-red-500 text-4xl mb-4">&#9888;</div>
           <h3 className="text-lg font-semibold text-gray-800 mb-2">Error Loading Integration Status</h3>
           <p className="text-gray-600 mb-4">{error}</p>
           <button
@@ -132,7 +132,7 @@ export const CrossPlatformIntegrationUI: React.FC = () => {
     return (
       <div className="bg-white rounded-lg shadow-lg p-6">
         <div className="text-center py-8">
-          <div className="text-gray-400 text-4xl mb-4">📡</div>
+          <div className="text-gray-400 text-4xl mb-4">&#128225;</div>
           <h3 className="text-lg font-semibold text-gray-800 mb-2">No Integration Data</h3>
           <p className="text-gray-600">Integration status data is not available.</p>
         </div>
@@ -144,7 +144,7 @@ export const CrossPlatformIntegrationUI: React.FC = () => {
     <div className="bg-white rounded-lg shadow-lg p-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-800">
-          🔗 Cross-Platform Integration Status
+          &#128279; Cross-Platform Integration Status
         </h2>
         <button
           onClick={fetchIntegrationStatus}
@@ -166,7 +166,7 @@ export const CrossPlatformIntegrationUI: React.FC = () => {
           <ul className="space-y-1 text-sm text-gray-600">
             {integrationStatus.voiceAPI.features.map((feature, index) => (
               <li key={index} className="flex items-center">
-                <span className="text-green-500 mr-2">•</span>
+                <span className="text-green-500 mr-2">&#8226;</span>
                 {feature}
               </li>
             ))}
@@ -184,7 +184,7 @@ export const CrossPlatformIntegrationUI: React.FC = () => {
           <ul className="space-y-1 text-sm text-gray-600">
             {integrationStatus.ivrIntegration.features.map((feature, index) => (
               <li key={index} className="flex items-center">
-                <span className="text-green-500 mr-2">•</span>
+                <span className="text-green-500 mr-2">&#8226;</span>
                 {feature}
               </li>
             ))}
@@ -202,7 +202,7 @@ export const CrossPlatformIntegrationUI: React.FC = () => {
           <ul className="space-y-1 text-sm text-gray-600">
             {integrationStatus.sinchChatIntegration.features.map((feature, index) => (
               <li key={index} className="flex items-center">
-                <span className="text-green-500 mr-2">•</span>
+                <span className="text-green-500 mr-2">&#8226;</span>
                 {feature}
               </li>
             ))}
@@ -220,7 +220,7 @@ export const CrossPlatformIntegrationUI: React.FC = () => {
           <ul className="space-y-1 text-sm text-gray-600">
             {integrationStatus.unifiedMessagingIntegration.features.map((feature, index) => (
               <li key={index} className="flex items-center">
-                <span className="text-green-500 mr-2">•</span>
+                <span className="text-green-500 mr-2">&#8226;</span>
                 {feature}
               </li>
             ))}
@@ -238,7 +238,7 @@ export const CrossPlatformIntegrationUI: React.FC = () => {
           <ul className="space-y-1 text-sm text-gray-600">
             {integrationStatus.transcription.features.map((feature, index) => (
               <li key={index} className="flex items-center">
-                <span className="text-green-500 mr-2">•</span>
+                <span className="text-green-500 mr-2">&#8226;</span>
                 {feature}
               </li>
             ))}
@@ -256,7 +256,7 @@ export const CrossPlatformIntegrationUI: React.FC = () => {
           <ul className="space-y-1 text-sm text-gray-600">
             {integrationStatus.crossPlatformSync.features.map((feature, index) => (
               <li key={index} className="flex items-center">
-                <span className="text-green-500 mr-2">•</span>
+                <span className="text-green-500 mr-2">&#8226;</span>
                 {feature}
               </li>
             ))}
