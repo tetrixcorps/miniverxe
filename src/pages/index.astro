@@ -383,6 +383,31 @@ import UnifiedMessagingDashboard from '../components/UnifiedMessagingDashboard.t
   </div>
 </MainLayout>
 
+<script>
+  // Handle JoRoMi authentication parameter
+  document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const authParam = urlParams.get('auth');
+    
+    if (authParam === 'joromi') {
+      // Check if user is already authenticated
+      const authToken = localStorage.getItem('tetrix_auth_token');
+      
+      if (authToken) {
+        // User is authenticated, redirect to JoRoMi auth handler
+        window.location.href = '/joromi-auth?redirect=joromi-dashboard';
+      } else {
+        // User needs to authenticate first, show 2FA modal
+        if (window.open2FAModal) {
+          // Set authentication context for JoRoMi
+          window.tetrixAuthContext = 'joromi';
+          window.open2FAModal();
+        }
+      }
+    }
+  });
+</script>
+
 <style>
   .animate-pulse {
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;

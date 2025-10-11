@@ -164,7 +164,7 @@ class Enterprise2FAService {
    */
   async verifyCode(verificationId: string, code: string, phoneNumber: string): Promise<VerificationResult> {
     try {
-      const response = await fetch(`https://api.telnyx.com/v2/verifications/by_phone_number/${phoneNumber}/actions/verify`, {
+      const response = await fetch(`https://api.telnyx.com/v2/verifications/${verificationId}/actions/verify`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -172,12 +172,17 @@ class Enterprise2FAService {
           'Authorization': `Bearer ${this.config.apiKey}`
         },
         body: JSON.stringify({
-          code: code,
-          verify_profile_id: this.config.verifyProfileId
+          code: code
         })
       });
 
       const result = await response.json();
+      
+      console.log('Telnyx verification response:', {
+        status: response.status,
+        ok: response.ok,
+        result: result
+      });
       
       const verificationResult: VerificationResult = {
         success: response.ok,
@@ -208,6 +213,8 @@ class Enterprise2FAService {
       return verificationResult;
 
     } catch (error) {
+      console.error('Telnyx verification error:', error);
+      
       await this.logAuditEvent({
         id: this.generateId(),
         phoneNumber,
@@ -221,7 +228,15 @@ class Enterprise2FAService {
         metadata: { error: error instanceof Error ? error.message : 'Unknown error' }
       });
 
-      throw error;
+      // Return a failed verification result instead of throwing
+      return {
+        success: false,
+        verified: false,
+        responseCode: 'rejected',
+        phoneNumber,
+        verificationId,
+        timestamp: new Date().toISOString()
+      };
     }
   }
 
@@ -258,10 +273,17 @@ class Enterprise2FAService {
 
     if (!response.ok) {
       const error = await response.json();
+      console.error('Telnyx initiation error:', {
+        status: response.status,
+        statusText: response.statusText,
+        error: error
+      });
       throw new Error(`Telnyx API error: ${error.message || response.statusText}`);
     }
 
-    return await response.json();
+    const result = await response.json();
+    console.log('Telnyx initiation response:', result);
+    return result;
   }
 
   /**

@@ -23,6 +23,10 @@
     "test:unit:all": "node scripts/run-unit-tests.js --component=all",
     "test:unit:watch": "node scripts/run-unit-tests.js --component=tetrix --watch",
     "test:unit:coverage": "node scripts/run-unit-tests.js --component=tetrix --coverage",
+    "test:vitest": "vitest",
+    "test:vitest:ui": "vitest --ui",
+    "test:vitest:coverage": "vitest --coverage",
+    "test:vitest:run": "vitest run",
     "test:integration": "playwright test tests/integration/",
     "test:functional": "playwright test tests/functional/",
     "test:e2e": "playwright test tests/e2e/",
@@ -60,12 +64,17 @@
   "devDependencies": {
     "@astrojs/tailwind": "^5.1.2",
     "@playwright/test": "^1.56.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
+    "jsdom": "^25.0.1",
     "newman": "^6.2.1",
     "playwright": "^1.56.0",
     "tailwindcss": "^3.4.15",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.9"
   },
   "keywords": [
     "voice-api",
