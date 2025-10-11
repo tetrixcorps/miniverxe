@@ -2,6 +2,7 @@
 import Logo from './Logo.astro';
 import DynamicTetrix from '../shared/DynamicTetrix.astro';
 import ProductsModal from '../ProductsModal.astro';
+import TwoFAModal from '../auth/2FAModal.astro';
 ---
 <header class="w-full bg-gradient-to-r from-brand-red via-brand-orange to-brand-yellow text-white shadow relative">
   <div class="max-w-screen-xl mx-auto flex items-center justify-between px-4 py-3">
@@ -23,14 +24,14 @@ import ProductsModal from '../ProductsModal.astro';
         <li><a href="/docs" class="hover:underline focus:outline-none focus:ring-2 focus:ring-brand-yellow">Documentation</a></li>
         <li><a href="/pricing" class="hover:underline focus:outline-none focus:ring-2 focus:ring-brand-yellow">Pricing</a></li>
             <li>
-              <a href="http://localhost:3000" target="_blank" class="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-300 shadow-lg">
+              <button id="joromi-2fa-btn" class="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-300 shadow-lg">
                 JoRoMi
-              </a>
+              </button>
             </li>
             <li>
-              <a href="/client-login" class="bg-black text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 shadow-lg">
+              <button id="client-login-2fa-btn" class="bg-black text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 shadow-lg">
                 Client Login
-              </a>
+              </button>
             </li>
       </ul>
       <!-- Mobile menu button -->
@@ -51,22 +52,25 @@ import ProductsModal from '../ProductsModal.astro';
           <li><a href="/docs" class="hover:underline">Documentation</a></li>
           <li><a href="/pricing" class="hover:underline">Pricing</a></li>
               <li>
-                <a href="http://localhost:3000" target="_blank" class="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors shadow-lg">
+                <button id="joromi-2fa-btn-mobile" class="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors shadow-lg">
                   JoRoMi
-                </a>
+                </button>
               </li>
               <li>
-                <a href="/client-login" class="bg-black text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-800 transition-colors shadow-lg">
+                <button id="client-login-2fa-btn-mobile" class="bg-black text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-800 transition-colors shadow-lg">
                   Client Login
-                </a>
+                </button>
               </li>
         </ul>
       </div>
     </nav>
   </div>
   
-  <!-- Products Modal -->
-  <ProductsModal />
+      <!-- Products Modal -->
+      <ProductsModal />
+      
+      <!-- 2FA Modal -->
+      <TwoFAModal />
   
   <script>
     const btn = document.getElementById('mobile-menu-btn');
@@ -99,32 +103,96 @@ import ProductsModal from '../ProductsModal.astro';
       });
     }
 
-    // Products modal functionality
-    if (openProductsModal) {
-      openProductsModal.addEventListener('click', function(e) {
-        e.preventDefault();
-        productsModal?.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-        // Close mobile menu if open
-        if (menu) {
-          menu.classList.add('hidden');
-          btn?.setAttribute('aria-expanded', 'false');
+        // Products modal functionality
+        if (openProductsModal) {
+          openProductsModal.addEventListener('click', function(e) {
+            e.preventDefault();
+            productsModal?.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            // Close mobile menu if open
+            if (menu) {
+              menu.classList.add('hidden');
+              btn?.setAttribute('aria-expanded', 'false');
+            }
+          });
         }
-      });
-    }
 
-    if (openProductsModalMobile) {
-      openProductsModalMobile.addEventListener('click', function(e) {
-        e.preventDefault();
-        productsModal?.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-        // Close mobile menu
-        if (menu) {
-          menu.classList.add('hidden');
-          btn?.setAttribute('aria-expanded', 'false');
+        if (openProductsModalMobile) {
+          openProductsModalMobile.addEventListener('click', function(e) {
+            e.preventDefault();
+            productsModal?.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            // Close mobile menu
+            if (menu) {
+              menu.classList.add('hidden');
+              btn?.setAttribute('aria-expanded', 'false');
+            }
+          });
         }
-      });
-    }
+
+        // 2FA Authentication functionality
+        const joromiBtn = document.getElementById('joromi-2fa-btn');
+        const joromiBtnMobile = document.getElementById('joromi-2fa-btn-mobile');
+        const clientLoginBtn = document.getElementById('client-login-2fa-btn');
+        const clientLoginBtnMobile = document.getElementById('client-login-2fa-btn-mobile');
+
+        // JoRoMi button handlers
+        if (joromiBtn) {
+          joromiBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Set authentication context for JoRoMi
+            window.tetrixAuthContext = 'joromi';
+            window.open2FAModal();
+            // Close mobile menu if open
+            if (menu) {
+              menu.classList.add('hidden');
+              btn?.setAttribute('aria-expanded', 'false');
+            }
+          });
+        }
+
+        if (joromiBtnMobile) {
+          joromiBtnMobile.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Set authentication context for JoRoMi
+            window.tetrixAuthContext = 'joromi';
+            window.open2FAModal();
+            // Close mobile menu
+            if (menu) {
+              menu.classList.add('hidden');
+              btn?.setAttribute('aria-expanded', 'false');
+            }
+          });
+        }
+
+        // Client Login button handlers
+        if (clientLoginBtn) {
+          clientLoginBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Set authentication context for Client Dashboard
+            window.tetrixAuthContext = 'dashboard';
+            window.open2FAModal();
+            // Close mobile menu if open
+            if (menu) {
+              menu.classList.add('hidden');
+              btn?.setAttribute('aria-expanded', 'false');
+            }
+          });
+        }
+
+        if (clientLoginBtnMobile) {
+          clientLoginBtnMobile.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Set authentication context for Client Dashboard
+            window.tetrixAuthContext = 'dashboard';
+            window.open2FAModal();
+            // Close mobile menu
+            if (menu) {
+              menu.classList.add('hidden');
+              btn?.setAttribute('aria-expanded', 'false');
+            }
+          });
+        }
   </script>
 </header>
 
