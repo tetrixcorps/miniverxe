@@ -1,6 +1,21 @@
 name: tetrix-production-fixed
 
 # TETRIX Cross-Platform Management Application with SHANGO AI Super Agent
+domains:
+  - domain: tetrixcorp.com
+    type: PRIMARY
+  - domain: www.tetrixcorp.com
+    type: ALIAS
+  - domain: api.tetrixcorp.com
+    type: ALIAS
+  - domain: iot.tetrixcorp.com
+    type: ALIAS
+  - domain: vpn.tetrixcorp.com
+    type: ALIAS
+  - domain: joromi.ai
+    type: PRIMARY
+  - domain: www.joromi.ai
+    type: ALIAS
 services:
   # TETRIX Frontend with SHANGO Integration
   - name: tetrix-frontend
