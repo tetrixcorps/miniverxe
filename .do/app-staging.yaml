@@ -1,0 +1,52 @@
+name: tetrix-staging
+
+# Staging environment for rapid feature testing
+services:
+  - name: tetrix-frontend
+    github:
+      repo: tetrixcorps/miniverxe
+      branch: develop
+      deploy_on_push: true
+    source_dir: /
+    http_port: 8080
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    build_command: |
+      rm -f package-lock.json yarn.lock npm-shrinkwrap.json .yarnrc .yarnrc.yml
+      npm install -g pnpm@10.8.0
+      pnpm install --frozen-lockfile
+      pnpm run build
+    run_command: pnpm run start
+    routes:
+      - path: /
+    envs:
+      - key: NODE_ENV
+        value: staging
+      - key: HOST
+        value: "0.0.0.0"
+      - key: PORT
+        value: "8080"
+      - key: TETRIX_DOMAIN
+        value: "staging.tetrixcorp.com"
+      - key: JOROMI_DOMAIN
+        value: "staging.joromi.ai"
+      - key: CROSS_PLATFORM_SESSION_SECRET
+        value: "tetrix-joromi-staging-secret-2024"
+      # Staging API keys (use test/sandbox keys)
+      - key: SINCH_API_TOKEN
+        value: "staging-sinch-token"
+      - key: SINCH_SERVICE_PLAN_ID
+        value: "staging-service-plan"
+      - key: FIREBASE_PROJECT_ID
+        value: "tetrix-staging"
+    health_check:
+      http_path: /health
+      initial_delay_seconds: 30
+      period_seconds: 10
+      timeout_seconds: 5
+      success_threshold: 1
+      failure_threshold: 3
+
+# Features
+features:
+  - buildpack-stack=ubuntu-22

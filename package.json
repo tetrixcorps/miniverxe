@@ -9,11 +9,14 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "lint": "echo 'Linting not configured yet'",
+    "typecheck": "tsc --noEmit",
     "test": "playwright test",
     "test:unit": "playwright test tests/unit/",
     "test:integration": "playwright test tests/integration/",
     "test:functional": "playwright test tests/functional/",
     "test:e2e": "playwright test tests/e2e/",
+    "test:smoke": "node scripts/test-smoke.js",
     "test:headed": "playwright test --headed",
     "test:debug": "playwright test --debug",
     "test:ui": "playwright test --ui",
@@ -22,7 +25,9 @@
     "test:cross-platform": "node scripts/test-cross-platform-integration.js",
     "test:all": "./scripts/run-voice-api-tests.sh",
     "demo:voice": "node scripts/demo-voice-api.js",
-    "deploy": "./scripts/deploy-unified-onboarding.sh"
+    "deploy": "./scripts/deploy-unified-onboarding.sh",
+    "deploy:staging": "doctl apps update $DO_APP_ID_STAGING --spec .do/app-staging.yaml && doctl apps create-deployment $DO_APP_ID_STAGING --force-rebuild",
+    "deploy:production": "doctl apps update $DO_APP_ID_PRODUCTION --spec .do/app-production-fixed.yaml && doctl apps create-deployment $DO_APP_ID_PRODUCTION --force-rebuild"
   },
   "dependencies": {
     "@astrojs/node": "^9.4.6",
