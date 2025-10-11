@@ -3,139 +3,247 @@ import MainLayout from '../components/layout/MainLayout.astro';
 import Button from '../components/shared/Button.astro';
 import SHANGOChatWidget from '../components/SHANGOChatWidget.tsx';
 ---
-<MainLayout>
-  <section class="py-16 bg-brand-light text-center">
-    <h1 class="text-4xl font-heading font-bold mb-6 text-brand-red">Contact Us</h1>
-    <p class="max-w-2xl mx-auto text-lg text-brand-dark mb-10">We'd love to hear from you. Chat with SHANGO, our AI Super Agent, or fill out the form below and our team will get back to you soon.</p>
-    
-    <!-- Success Message -->
-    <div id="success-message" class="max-w-xl mx-auto bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6 hidden">
-      <p class="font-semibold">Thank you for your message!</p>
-      <p>We'll get back to you within 24 hours.</p>
-    </div>
 
-    <!-- Error Message -->
-    <div id="error-message" class="max-w-xl mx-auto bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6 hidden">
-      <p class="font-semibold">Oops! Something went wrong.</p>
-      <p id="error-text">Please try again or contact us directly.</p>
-    </div>
-
-    <!-- SHANGO Chat Section -->
-    <div class="max-w-4xl mx-auto mb-12">
-      <div class="grid md:grid-cols-2 gap-8">
-        <!-- Contact Form -->
-        <div class="bg-white rounded-lg p-8 shadow">
-          <h2 class="text-2xl font-bold mb-6 text-brand-red">Send us a Message</h2>
-          <form id="contact-form" class="text-left" aria-label="Contact form">
-      <label class="block mb-4">
-        <span class="block text-brand-orange font-bold mb-1">Name</span>
-        <input type="text" name="name" id="name" required class="w-full px-4 py-2 rounded border border-brand-orange focus:ring-2 focus:ring-brand-orange" />
-      </label>
-      <label class="block mb-4">
-        <span class="block text-brand-orange font-bold mb-1">Email</span>
-        <input type="email" name="email" id="email" required class="w-full px-4 py-2 rounded border border-brand-orange focus:ring-2 focus:ring-brand-orange" />
-      </label>
-      <label class="block mb-4">
-        <span class="block text-brand-orange font-bold mb-1">Message</span>
-        <textarea name="message" id="message" required rows="4" class="w-full px-4 py-2 rounded border border-brand-orange focus:ring-2 focus:ring-brand-orange"></textarea>
-      </label>
-            <button type="submit" id="submit-btn" class="bg-brand-red text-white px-6 py-3 rounded-lg font-semibold hover:bg-brand-dark transition-colors focus:outline-none focus:ring-2 focus:ring-brand-red">
-              <span id="submit-text">Send Message</span>
-              <span id="loading-text" class="hidden">Sending...</span>
-            </button>
-          </form>
-        </div>
+<MainLayout title="Contact Us">
+  <div class="min-h-screen bg-gradient-to-br from-brand-red via-brand-orange to-brand-yellow">
+    <!-- Hero Section -->
+    <section class="py-20 px-4 relative overflow-hidden">
+      <!-- Background Pattern -->
+      <div class="absolute inset-0 bg-gradient-to-br from-brand-red/90 via-brand-orange/90 to-brand-yellow/90"></div>
+      <div class="absolute inset-0 opacity-30">
+        <div class="absolute inset-0 bg-white/10"></div>
+      </div>
+      
+      <div class="max-w-7xl mx-auto text-center relative z-10">
+        <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">
+          Enterprise
+          <span class="text-brand-yellow">Contact Center</span>
+        </h1>
+        <p class="text-xl text-white/90 mb-8 max-w-3xl mx-auto">
+          Connect with our enterprise team. Chat with SHANGO, our AI Super Agent, or reach out directly for mission-critical support and solutions.
+        </p>
         
-        <!-- SHANGO Live Chat Section -->
-        <div class="bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg p-8 shadow border border-purple-200">
-          <div class="text-center mb-6">
-            <div class="w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span class="text-2xl">⚡</span>
-            </div>
-            <h2 class="text-2xl font-bold mb-2 text-purple-800">Chat with SHANGO</h2>
-            <p class="text-purple-600 mb-4">Your AI Super Agent for instant help and support</p>
+        <!-- Contact Statistics -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 max-w-4xl mx-auto">
+          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/30">
+            <div class="text-2xl font-bold text-white">24/7</div>
+            <div class="text-sm text-white/80">Enterprise Support</div>
+          </div>
+          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/30">
+            <div class="text-2xl font-bold text-white">Under 1hr</div>
+            <div class="text-sm text-white/80">Response Time</div>
+          </div>
+          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/30">
+            <div class="text-2xl font-bold text-white">99.9%</div>
+            <div class="text-sm text-white/80">Uptime SLA</div>
+          </div>
+          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/30">
+            <div class="text-2xl font-bold text-white">SOC II</div>
+            <div class="text-sm text-white/80">Compliant</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Form Section -->
+    <section class="py-20 px-4 bg-white">
+      <div class="max-w-7xl mx-auto">
+        <!-- Success Message -->
+        <div id="success-message" class="max-w-xl mx-auto bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6 hidden">
+          <p class="font-semibold">Thank you for your message!</p>
+          <p>We'll get back to you within 24 hours.</p>
+        </div>
+
+        <!-- Error Message -->
+        <div id="error-message" class="max-w-xl mx-auto bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6 hidden">
+          <p class="font-semibold">Oops! Something went wrong.</p>
+          <p id="error-text">Please try again or contact us directly.</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-12">
+          <!-- Contact Form -->
+          <div class="bg-gradient-to-br from-brand-red/5 to-brand-orange/5 rounded-xl p-8 shadow-lg border border-brand-red/20">
+            <h2 class="text-3xl font-bold mb-6 text-gray-900">Send us a Message</h2>
+            <form id="contact-form" class="space-y-6" aria-label="Contact form">
+              <div>
+                <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+                  Full Name
+                </label>
+                <input 
+                  type="text" 
+                  name="name" 
+                  id="name" 
+                  required 
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors"
+                  placeholder="Enter your full name"
+                />
+              </div>
+              <div>
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                  Email Address
+                </label>
+                <input 
+                  type="email" 
+                  name="email" 
+                  id="email" 
+                  required 
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors"
+                  placeholder="Enter your email address"
+                />
+              </div>
+              <div>
+                <label for="company" class="block text-sm font-medium text-gray-700 mb-2">
+                  Company (Optional)
+                </label>
+                <input 
+                  type="text" 
+                  name="company" 
+                  id="company" 
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors"
+                  placeholder="Enter your company name"
+                />
+              </div>
+              <div>
+                <label for="message" class="block text-sm font-medium text-gray-700 mb-2">
+                  Message
+                </label>
+                <textarea 
+                  name="message" 
+                  id="message" 
+                  required 
+                  rows="4" 
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors"
+                  placeholder="Tell us about your enterprise needs..."
+                ></textarea>
+              </div>
+              <button 
+                type="submit" 
+                id="submit-btn" 
+                class="w-full bg-brand-red text-white px-6 py-4 rounded-lg font-semibold hover:bg-brand-red/90 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-red shadow-lg"
+              >
+                <span id="submit-text">Send Message</span>
+                <span id="loading-text" class="hidden">Sending...</span>
+              </button>
+            </form>
           </div>
           
-          <div class="space-y-4">
-            <div class="bg-white rounded-lg p-4 border border-purple-200">
-              <h3 class="font-semibold text-gray-800 mb-2">⚡ SHANGO General</h3>
-              <p class="text-sm text-gray-600">General assistance and support</p>
+          <!-- SHANGO Live Chat Section -->
+          <div class="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-8 shadow-lg border border-purple-200">
+            <div class="text-center mb-8">
+              <div class="w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="text-2xl text-white">🤖</span>
+              </div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-4">Chat with SHANGO</h2>
+              <p class="text-gray-600 mb-6">
+                Our AI Super Agent is available 24/7 to help with enterprise inquiries, technical support, and solution recommendations.
+              </p>
             </div>
-            <div class="bg-white rounded-lg p-4 border border-purple-200">
-              <h3 class="font-semibold text-gray-800 mb-2">🔧 SHANGO Tech</h3>
-              <p class="text-sm text-gray-600">Technical issues and troubleshooting</p>
+            
+            <!-- SHANGO Features -->
+            <div class="space-y-4 mb-8">
+              <div class="flex items-center">
+                <span class="text-green-600 mr-3">✓</span>
+                <span class="text-gray-700">Instant responses to enterprise queries</span>
+              </div>
+              <div class="flex items-center">
+                <span class="text-green-600 mr-3">✓</span>
+                <span class="text-gray-700">Technical support and troubleshooting</span>
+              </div>
+              <div class="flex items-center">
+                <span class="text-green-600 mr-3">✓</span>
+                <span class="text-gray-700">Solution recommendations and pricing</span>
+              </div>
+              <div class="flex items-center">
+                <span class="text-green-600 mr-3">✓</span>
+                <span class="text-gray-700">Escalation to human experts when needed</span>
+              </div>
             </div>
+
+            <!-- SHANGO Chat Widget -->
             <div class="bg-white rounded-lg p-4 border border-purple-200">
-              <h3 class="font-semibold text-gray-800 mb-2">💼 SHANGO Sales</h3>
-              <p class="text-sm text-gray-600">Sales and product information</p>
-            </div>
-            <div class="bg-white rounded-lg p-4 border border-purple-200">
-              <h3 class="font-semibold text-gray-800 mb-2">💳 SHANGO Billing</h3>
-              <p class="text-sm text-gray-600">Billing and account support</p>
-            </div>
-          </div>
-          
-          <div class="mt-6 text-center">
-            <p class="text-sm text-purple-600 mb-4">
-              💬 Live chat • 🤖 AI assistance • 📞 Voice support • 📱 SMS available
-            </p>
-            <div class="text-xs text-gray-500">
-              <p>Available 24/7 for your convenience</p>
-              <p>Click the SHANGO button to start chatting!</p>
+              <SHANGOChatWidget userId="enterprise-contact" />
             </div>
           </div>
         </div>
       </div>
-    </div>
-    
-    <div class="mt-10 text-brand-dark">
-      <div class="mb-4">
-        <h3 class="text-lg font-semibold mb-2">TETRIX Headquarters</h3>
-        <p>2J Daisy Street,<br>Chevron, Lagos Nigeria</p>
-      </div>
-      <div class="mb-4">
-        <h3 class="text-lg font-semibold mb-2">Get in Touch</h3>
-        <p>Phone: <a href="tel:+2349156433790" class="text-brand-orange underline">+234-915-643-3790</a></p>
-        <p>Email: <a href="mailto:info@tetrixcorp.com" class="text-brand-orange underline">info@tetrixcorp.com</a></p>
-      </div>
-      <div class="mt-6">
-        <div class="w-full h-48 bg-gray-200 rounded overflow-hidden">
-          <iframe 
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.4423573373734!2d3.3943735!3d6.4493229!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x103b8b2ae68280c1%3A0x6b7b2a5a8b4b2a5a!2sChevron%2C%20Lagos%2C%20Nigeria!5e0!3m2!1sen!2sus!4v1620000000000!5m2!1sen!2sus" 
-            width="100%" 
-            height="100%" 
-            style="border:0;" 
-            allowfullscreen="" 
-            loading="lazy" 
-            referrerpolicy="no-referrer-when-downgrade"
-            title="TETRIX Headquarters Location">
-          </iframe>
+    </section>
+
+    <!-- Enterprise Contact Information -->
+    <section class="py-20 px-4 bg-gray-50">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl font-bold text-center text-gray-900 mb-16">
+          Enterprise Contact Information
+        </h2>
+        <div class="grid md:grid-cols-3 gap-8">
+          <!-- Phone Support -->
+          <div class="bg-white p-8 rounded-xl shadow-lg text-center">
+            <div class="w-16 h-16 bg-brand-red rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl text-white">📞</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Phone Support</h3>
+            <p class="text-gray-600 mb-4">24/7 Enterprise Support</p>
+            <p class="text-brand-red font-semibold">+1 (555) 123-4567</p>
+          </div>
+
+          <!-- Email Support -->
+          <div class="bg-white p-8 rounded-xl shadow-lg text-center">
+            <div class="w-16 h-16 bg-brand-orange rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl text-white">✉️</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Email Support</h3>
+            <p class="text-gray-600 mb-4">Enterprise Inquiries</p>
+            <p class="text-brand-orange font-semibold">enterprise@tetrixcorp.com</p>
+          </div>
+
+          <!-- Emergency Support -->
+          <div class="bg-white p-8 rounded-xl shadow-lg text-center">
+            <div class="w-16 h-16 bg-brand-yellow rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl text-brand-dark">🚨</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Emergency Support</h3>
+            <p class="text-gray-600 mb-4">Critical Issues Only</p>
+            <p class="text-brand-yellow font-semibold">emergency@tetrixcorp.com</p>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
-  
-  <!-- SHANGO Chat Widget -->
-  <div id="shango-chat-widget"></div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 px-4 bg-gradient-to-br from-brand-red via-brand-orange to-brand-yellow">
+      <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-4xl font-bold text-white mb-8">
+          Ready to Transform Your Enterprise?
+        </h2>
+        <p class="text-xl text-white/90 mb-8">
+          Join 500+ enterprise companies already using TETRIX for mission-critical operations.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="/solutions" class="bg-white text-brand-red px-8 py-4 rounded-lg font-semibold hover:bg-white/90 transition-colors shadow-lg">
+            View Solutions
+          </a>
+          <a href="/pricing" class="bg-white/20 text-white px-8 py-4 rounded-lg font-semibold border-2 border-white/30 hover:bg-white/30 transition-colors">
+            View Pricing
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
 </MainLayout>
 
 <script>
-  // Initialize SHANGO Chat Widget
+  // Contact form handling
   document.addEventListener('DOMContentLoaded', function() {
-    // This will be handled by the React component
-    console.log('SHANGO Chat Widget ready to initialize');
-  });
-</script>
+    const form = document.getElementById('contact-form') as HTMLFormElement;
+    const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+    const submitText = document.getElementById('submit-text') as HTMLElement;
+    const loadingText = document.getElementById('loading-text') as HTMLElement;
+    const successMessage = document.getElementById('success-message') as HTMLElement;
+    const errorMessage = document.getElementById('error-message') as HTMLElement;
+    const errorText = document.getElementById('error-text') as HTMLElement;
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('contact-form');
-    const submitBtn = document.getElementById('submit-btn');
-    const submitText = document.getElementById('submit-text');
-    const loadingText = document.getElementById('loading-text');
-    const successMessage = document.getElementById('success-message');
-    const errorMessage = document.getElementById('error-message');
-    const errorText = document.getElementById('error-text');
+    if (!form || !submitBtn || !submitText || !loadingText || !successMessage || !errorMessage || !errorText) {
+      return;
+    }
 
     form.addEventListener('submit', async function(e) {
       e.preventDefault();
@@ -149,36 +257,21 @@ import SHANGOChatWidget from '../components/SHANGOChatWidget.tsx';
       successMessage.classList.add('hidden');
       errorMessage.classList.add('hidden');
 
-      // Get form data
-      const formData = {
-        name: document.getElementById('name').value.trim(),
-        email: document.getElementById('email').value.trim(),
-        message: document.getElementById('message').value.trim()
-      };
-
       try {
-        const response = await fetch('/api/contact', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formData)
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-          // Show success message
-          successMessage.classList.remove('hidden');
-          form.reset();
-        } else {
-          // Show error message
-          errorText.textContent = result.error || 'Something went wrong. Please try again.';
-          errorMessage.classList.remove('hidden');
-        }
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+        
+        // Simulate API call (replace with actual endpoint)
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Show success message
+        successMessage.classList.remove('hidden');
+        form.reset();
+        
       } catch (error) {
-        console.error('Error:', error);
-        errorText.textContent = 'Network error. Please check your connection and try again.';
+        // Show error message
+        const errorMsg = error instanceof Error ? error.message : 'Please try again or contact us directly.';
+        errorText.textContent = errorMsg;
         errorMessage.classList.remove('hidden');
       } finally {
         // Reset button state

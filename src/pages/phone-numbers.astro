@@ -2,37 +2,43 @@
 import MainLayout from '../components/layout/MainLayout.astro';
 ---
 
-<MainLayout>
-  <div class="min-h-screen bg-gradient-to-br from-orange-50 to-red-100">
+<MainLayout title="Phone Numbers & AI Agent">
+  <div class="min-h-screen bg-gradient-to-br from-brand-red via-brand-orange to-brand-yellow">
     <!-- Hero Section -->
-    <section class="py-20 px-4">
-      <div class="max-w-7xl mx-auto text-center">
-        <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-          Phone Numbers &
-          <span class="text-orange-600">AI Agent</span>
+    <section class="py-20 px-4 relative overflow-hidden">
+      <!-- Background Pattern -->
+      <div class="absolute inset-0 bg-gradient-to-br from-brand-red/90 via-brand-orange/90 to-brand-yellow/90"></div>
+      <div class="absolute inset-0 opacity-30">
+        <div class="absolute inset-0 bg-white/10"></div>
+      </div>
+      
+      <div class="max-w-7xl mx-auto text-center relative z-10">
+        <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">
+          Enterprise
+          <span class="text-brand-yellow">Phone Numbers & AI Agent</span>
         </h1>
-        <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+        <p class="text-xl text-white/90 mb-8 max-w-3xl mx-auto">
           Professional phone numbers with 24/7 AI customer support in multiple languages. 
-          Global coverage with enterprise-grade reliability and intelligent call handling.
+          Global coverage with enterprise-grade reliability, security, and intelligent call handling.
         </p>
         
         <!-- Market Coverage Statistics -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 max-w-4xl mx-auto">
-          <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/20">
-            <div class="text-2xl font-bold text-green-600">99.9%</div>
-            <div class="text-sm text-gray-600">Uptime Guarantee</div>
+          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/30">
+            <div class="text-2xl font-bold text-white">99.9%</div>
+            <div class="text-sm text-white/80">Uptime Guarantee</div>
           </div>
-          <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/20">
-            <div class="text-2xl font-bold text-blue-600">24/7</div>
-            <div class="text-sm text-gray-600">AI Support</div>
+          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/30">
+            <div class="text-2xl font-bold text-white">24/7</div>
+            <div class="text-sm text-white/80">AI Support</div>
           </div>
-          <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/20">
-            <div class="text-2xl font-bold text-purple-600">200+</div>
-            <div class="text-sm text-gray-600">Countries Coverage</div>
+          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/30">
+            <div class="text-2xl font-bold text-white">200+</div>
+            <div class="text-sm text-white/80">Countries Coverage</div>
           </div>
-          <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/20">
-            <div class="text-2xl font-bold text-orange-600">50+</div>
-            <div class="text-sm text-gray-600">Languages Support</div>
+          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/30">
+            <div class="text-2xl font-bold text-white">50+</div>
+            <div class="text-sm text-white/80">Languages Support</div>
           </div>
         </div>
       </div>
@@ -42,14 +48,14 @@ import MainLayout from '../components/layout/MainLayout.astro';
     <section class="py-20 px-4 bg-white">
       <div class="max-w-7xl mx-auto">
         <h2 class="text-4xl font-bold text-center text-gray-900 mb-16">
-          Phone Number Services
+          Enterprise Phone Number Services
         </h2>
         <div class="grid md:grid-cols-3 gap-8">
           <!-- Local Numbers -->
-          <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all">
+          <div class="bg-gradient-to-br from-brand-red/10 to-brand-red/20 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all border border-brand-red/20">
             <div class="text-center mb-8">
               <h3 class="text-2xl font-bold text-gray-900 mb-4">Local Numbers</h3>
-              <div class="text-4xl font-bold text-blue-600 mb-2">$29</div>
+              <div class="text-4xl font-bold text-brand-red mb-2">$29</div>
               <div class="text-gray-600">per month</div>
             </div>
             <div class="space-y-4 mb-8">
@@ -73,19 +79,19 @@ import MainLayout from '../components/layout/MainLayout.astro';
             <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold mb-4 text-center">
               99.9% Uptime
             </div>
-            <a href="/contact" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors text-center block">
+            <a href="/contact" class="w-full bg-brand-red text-white py-3 rounded-lg font-semibold hover:bg-brand-red/90 transition-colors text-center block">
               Get Started
             </a>
           </div>
 
           <!-- Toll-Free Numbers -->
-          <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all border-2 border-purple-200">
+          <div class="bg-gradient-to-br from-brand-orange/10 to-brand-orange/20 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all border-2 border-brand-orange/30">
             <div class="text-center mb-8">
-              <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-semibold mb-4 inline-block">
+              <div class="bg-brand-orange text-white px-3 py-1 rounded-full text-sm font-semibold mb-4 inline-block">
                 Most Popular
               </div>
               <h3 class="text-2xl font-bold text-gray-900 mb-4">Toll-Free Numbers</h3>
-              <div class="text-4xl font-bold text-purple-600 mb-2">$49</div>
+              <div class="text-4xl font-bold text-brand-orange mb-2">$49</div>
               <div class="text-gray-600">per month</div>
             </div>
             <div class="space-y-4 mb-8">
@@ -113,16 +119,16 @@ import MainLayout from '../components/layout/MainLayout.astro';
             <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold mb-4 text-center">
               24/7 Support
             </div>
-            <a href="/contact" class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors text-center block">
+            <a href="/contact" class="w-full bg-brand-orange text-white py-3 rounded-lg font-semibold hover:bg-brand-orange/90 transition-colors text-center block">
               Get Started
             </a>
           </div>
 
           <!-- International Numbers -->
-          <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all">
+          <div class="bg-gradient-to-br from-brand-yellow/10 to-brand-yellow/20 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all border border-brand-yellow/20">
             <div class="text-center mb-8">
               <h3 class="text-2xl font-bold text-gray-900 mb-4">International Numbers</h3>
-              <div class="text-4xl font-bold text-orange-600 mb-2">$79</div>
+              <div class="text-4xl font-bold text-brand-yellow mb-2">$79</div>
               <div class="text-gray-600">per month</div>
             </div>
             <div class="space-y-4 mb-8">
@@ -150,7 +156,7 @@ import MainLayout from '../components/layout/MainLayout.astro';
             <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold mb-4 text-center">
               Global Coverage
             </div>
-            <a href="/contact" class="w-full bg-orange-600 text-white py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors text-center block">
+            <a href="/contact" class="w-full bg-brand-yellow text-brand-dark py-3 rounded-lg font-semibold hover:bg-brand-yellow/90 transition-colors text-center block">
               Contact Sales
             </a>
           </div>
@@ -162,52 +168,98 @@ import MainLayout from '../components/layout/MainLayout.astro';
     <section class="py-20 px-4 bg-gray-50">
       <div class="max-w-7xl mx-auto">
         <h2 class="text-4xl font-bold text-center text-gray-900 mb-16">
-          AI Agent Capabilities
+          Enterprise AI Agent Capabilities
         </h2>
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           <div class="bg-white p-8 rounded-xl shadow-lg">
             <div class="text-4xl mb-4">🧠</div>
             <h3 class="text-2xl font-bold text-gray-900 mb-4">Natural Language Processing</h3>
-            <p class="text-gray-600">Advanced NLP capabilities for understanding customer intent and providing relevant responses.</p>
+            <p class="text-gray-600">Advanced NLP capabilities for understanding customer intent and providing relevant responses with enterprise-grade accuracy.</p>
           </div>
           <div class="bg-white p-8 rounded-xl shadow-lg">
             <div class="text-4xl mb-4">🌍</div>
             <h3 class="text-2xl font-bold text-gray-900 mb-4">Multilingual Support</h3>
-            <p class="text-gray-600">Support for 50+ languages with automatic language detection and translation.</p>
+            <p class="text-gray-600">Support for 50+ languages with automatic language detection and translation for global enterprise operations.</p>
           </div>
           <div class="bg-white p-8 rounded-xl shadow-lg">
             <div class="text-4xl mb-4">📊</div>
             <h3 class="text-2xl font-bold text-gray-900 mb-4">Call Analytics</h3>
-            <p class="text-gray-600">Comprehensive call analytics with sentiment analysis, topic extraction, and performance metrics.</p>
+            <p class="text-gray-600">Comprehensive call analytics with sentiment analysis, topic extraction, and performance metrics for enterprise insights.</p>
           </div>
           <div class="bg-white p-8 rounded-xl shadow-lg">
             <div class="text-4xl mb-4">🔄</div>
             <h3 class="text-2xl font-bold text-gray-900 mb-4">Call Routing</h3>
-            <p class="text-gray-600">Intelligent call routing based on customer intent, language, and agent availability.</p>
+            <p class="text-gray-600">Intelligent call routing based on customer intent, language, and agent availability with enterprise SLA guarantees.</p>
           </div>
           <div class="bg-white p-8 rounded-xl shadow-lg">
             <div class="text-4xl mb-4">💬</div>
             <h3 class="text-2xl font-bold text-gray-900 mb-4">Conversation Management</h3>
-            <p class="text-gray-600">Context-aware conversation management with memory and follow-up capabilities.</p>
+            <p class="text-gray-600">Context-aware conversation management with memory and follow-up capabilities for seamless customer experience.</p>
           </div>
           <div class="bg-white p-8 rounded-xl shadow-lg">
             <div class="text-4xl mb-4">🔒</div>
             <h3 class="text-2xl font-bold text-gray-900 mb-4">Security & Compliance</h3>
-            <p class="text-gray-600">Enterprise-grade security with GDPR compliance and data protection measures.</p>
+            <p class="text-gray-600">Enterprise-grade security with SOC II, HIPAA compliance, and advanced data protection measures.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Compliance Section -->
+    <section class="py-20 px-4 bg-white">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl font-bold text-center text-gray-900 mb-16">
+          Enterprise Security & Compliance
+        </h2>
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <!-- SOC II Type II -->
+          <div class="bg-white p-8 rounded-xl shadow-lg text-center border border-gray-200">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl">🛡️</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">SOC II Type II</h3>
+            <p class="text-gray-600 text-sm">Certified for security, availability, and confidentiality controls</p>
+          </div>
+
+          <!-- HIPAA Compliant -->
+          <div class="bg-white p-8 rounded-xl shadow-lg text-center border border-gray-200">
+            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl">🏥</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">HIPAA Compliant</h3>
+            <p class="text-gray-600 text-sm">Full compliance with healthcare data protection standards</p>
+          </div>
+
+          <!-- PKCE OAuth -->
+          <div class="bg-white p-8 rounded-xl shadow-lg text-center border border-gray-200">
+            <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl">🔐</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">PKCE OAuth 2.0</h3>
+            <p class="text-gray-600 text-sm">Advanced authentication with Proof Key for Code Exchange</p>
+          </div>
+
+          <!-- Telnyx Integration -->
+          <div class="bg-white p-8 rounded-xl shadow-lg text-center border border-gray-200">
+            <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl">📡</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Telnyx Certified</h3>
+            <p class="text-gray-600 text-sm">Enterprise-grade telecommunications infrastructure</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Global Coverage -->
-    <section class="py-20 px-4 bg-white">
+    <section class="py-20 px-4 bg-gray-50">
       <div class="max-w-7xl mx-auto">
         <h2 class="text-4xl font-bold text-center text-gray-900 mb-16">
           Global Coverage & Support
         </h2>
         <div class="grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <h3 class="text-3xl font-bold text-gray-900 mb-6">Worldwide Reach</h3>
+            <h3 class="text-3xl font-bold text-gray-900 mb-6">Worldwide Enterprise Reach</h3>
             <div class="space-y-4">
               <div class="flex items-center">
                 <span class="text-green-600 mr-3">✓</span>
@@ -227,9 +279,9 @@ import MainLayout from '../components/layout/MainLayout.astro';
               </div>
             </div>
           </div>
-          <div class="bg-gradient-to-br from-blue-50 to-purple-50 p-8 rounded-xl">
+          <div class="bg-gradient-to-br from-brand-red/10 to-brand-orange/10 p-8 rounded-xl border border-brand-red/20">
             <div class="text-center">
-              <div class="text-6xl font-bold text-blue-600 mb-4">99.9%</div>
+              <div class="text-6xl font-bold text-brand-red mb-4">99.9%</div>
               <div class="text-xl text-gray-600 mb-4">Uptime Guarantee</div>
               <div class="text-sm text-gray-500">With enterprise-grade infrastructure and redundant systems</div>
             </div>
@@ -239,19 +291,19 @@ import MainLayout from '../components/layout/MainLayout.astro';
     </section>
 
     <!-- CTA Section -->
-    <section class="py-20 px-4 bg-gradient-to-r from-orange-600 to-red-600">
+    <section class="py-20 px-4 bg-gradient-to-br from-brand-red via-brand-orange to-brand-yellow">
       <div class="max-w-4xl mx-auto text-center">
         <h2 class="text-4xl font-bold text-white mb-8">
           Ready to Upgrade Your Communication?
         </h2>
-        <p class="text-xl text-orange-100 mb-8">
-          Join 300+ companies already using our AI-powered phone systems for better customer experience.
+        <p class="text-xl text-white/90 mb-8">
+          Join 300+ enterprise companies already using our AI-powered phone systems for better customer experience.
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <a href="/contact" class="bg-white text-orange-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+          <a href="/contact" class="bg-white text-brand-red px-8 py-4 rounded-lg font-semibold hover:bg-white/90 transition-colors shadow-lg">
             Get Your Numbers
           </a>
-          <a href="/demo" class="bg-transparent text-white px-8 py-4 rounded-lg font-semibold border-2 border-white hover:bg-white hover:text-orange-600 transition-colors">
+          <a href="/demo" class="bg-white/20 text-white px-8 py-4 rounded-lg font-semibold border-2 border-white/30 hover:bg-white/30 transition-colors">
             Request Demo
           </a>
         </div>
