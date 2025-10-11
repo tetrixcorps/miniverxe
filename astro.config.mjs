@@ -19,6 +19,8 @@ export default defineConfig({
     // **CRITICAL: Explicitly allow requests from your domains**
     allowedHosts: [
       'goldfish-app-yulr9.ondigitalocean.app', // DigitalOcean's default domain
+      'tetrixcorp.com', // TETRIX main domain
+      'joromi.ai', // JoRoMi domain
       ...allowedHosts // Your custom domains from env vars
     ]
   },
@@ -28,6 +30,8 @@ export default defineConfig({
     port: parseInt(process.env.PORT) || 8080,
     allowedHosts: [
       'goldfish-app-yulr9.ondigitalocean.app',
+      'tetrixcorp.com', // TETRIX main domain
+      'joromi.ai', // JoRoMi domain
       ...allowedHosts
     ]
   }
