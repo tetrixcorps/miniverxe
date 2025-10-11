@@ -1,6 +1,7 @@
 ---
 import Logo from './Logo.astro';
 import DynamicTetrix from '../shared/DynamicTetrix.astro';
+import ProductsModal from '../ProductsModal.astro';
 ---
 <header class="w-full bg-gradient-to-r from-brand-red via-brand-orange to-brand-yellow text-white shadow relative">
   <div class="max-w-screen-xl mx-auto flex items-center justify-between px-4 py-3">
@@ -11,6 +12,12 @@ import DynamicTetrix from '../shared/DynamicTetrix.astro';
     <nav aria-label="Main navigation">
       <ul class="hidden md:flex space-x-8 text-lg font-medium items-center">
         <li><a href="/" class="hover:underline focus:outline-none focus:ring-2 focus:ring-brand-yellow">Home</a></li>
+        <li><button id="open-products-modal" class="hover:underline focus:outline-none focus:ring-2 focus:ring-brand-yellow flex items-center">
+          Products
+          <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button></li>
         <li><a href="/solutions" class="hover:underline focus:outline-none focus:ring-2 focus:ring-brand-yellow">Solutions</a></li>
         <li><a href="/blog" class="hover:underline focus:outline-none focus:ring-2 focus:ring-brand-yellow">Blog</a></li>
         <li><a href="/docs" class="hover:underline focus:outline-none focus:ring-2 focus:ring-brand-yellow">Documentation</a></li>
@@ -33,6 +40,12 @@ import DynamicTetrix from '../shared/DynamicTetrix.astro';
       <div id="mobile-menu" class="absolute top-16 left-0 w-full bg-gradient-to-r from-brand-red via-brand-orange to-brand-yellow shadow-lg z-50 md:hidden hidden animate-fade-in" tabindex="-1">
         <ul class="flex flex-col items-center space-y-6 py-6 text-lg font-medium">
           <li><a href="/" class="hover:underline">Home</a></li>
+          <li><button id="open-products-modal-mobile" class="hover:underline flex items-center">
+            Products
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button></li>
           <li><a href="/solutions" class="hover:underline">Solutions</a></li>
           <li><a href="/blog" class="hover:underline">Blog</a></li>
           <li><a href="/docs" class="hover:underline">Documentation</a></li>
@@ -51,13 +64,21 @@ import DynamicTetrix from '../shared/DynamicTetrix.astro';
       </div>
     </nav>
   </div>
+  
+  <!-- Products Modal -->
+  <ProductsModal />
+  
   <script>
     const btn = document.getElementById('mobile-menu-btn');
     const menu = document.getElementById('mobile-menu');
+    const openProductsModal = document.getElementById('open-products-modal');
+    const openProductsModalMobile = document.getElementById('open-products-modal-mobile');
+    const productsModal = document.getElementById('products-modal');
+    
     if (btn && menu) {
       btn.addEventListener('click', () => {
         const open = menu.classList.toggle('hidden');
-        btn.setAttribute('aria-expanded', !open);
+        btn.setAttribute('aria-expanded', open ? 'false' : 'true');
         if (!open) {
           menu.focus();
         }
@@ -71,9 +92,36 @@ import DynamicTetrix from '../shared/DynamicTetrix.astro';
       });
       // Optional: Close on outside click
       document.addEventListener('click', (e) => {
-        if (!menu.contains(e.target) && !btn.contains(e.target)) {
+        if (e.target instanceof Node && !menu.contains(e.target) && !btn.contains(e.target)) {
           menu.classList.add('hidden');
           btn.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
+    // Products modal functionality
+    if (openProductsModal) {
+      openProductsModal.addEventListener('click', function(e) {
+        e.preventDefault();
+        productsModal?.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        // Close mobile menu if open
+        if (menu) {
+          menu.classList.add('hidden');
+          btn?.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
+    if (openProductsModalMobile) {
+      openProductsModalMobile.addEventListener('click', function(e) {
+        e.preventDefault();
+        productsModal?.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        // Close mobile menu
+        if (menu) {
+          menu.classList.add('hidden');
+          btn?.setAttribute('aria-expanded', 'false');
         }
       });
     }

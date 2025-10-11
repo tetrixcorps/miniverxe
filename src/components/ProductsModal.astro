@@ -1,0 +1,457 @@
+---
+// Products Modal Component
+---
+
+<div id="products-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden">
+  <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden">
+      <!-- Modal Header -->
+      <div class="bg-gradient-to-r from-brand-red via-brand-orange to-brand-yellow p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-3xl font-bold text-white mb-2">Enterprise Products & Solutions</h2>
+            <p class="text-white/90">Comprehensive suite of enterprise-grade products across multiple industries</p>
+          </div>
+          <button id="close-products-modal" class="text-white hover:text-white/80 transition-colors">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Content -->
+      <div class="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+        <!-- Communication & Voice Products -->
+        <div class="mb-8">
+          <h3 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+            <span class="w-8 h-8 bg-brand-red rounded-lg flex items-center justify-center mr-3">
+              <span class="text-white text-lg">📞</span>
+            </span>
+            Communication & Voice Products
+          </h3>
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Voice API -->
+            <div class="bg-gradient-to-br from-brand-red/10 to-brand-red/20 p-6 rounded-xl border border-brand-red/20 hover:shadow-lg transition-all">
+              <div class="flex items-center mb-4">
+                <div class="w-12 h-12 bg-brand-red rounded-lg flex items-center justify-center mr-4">
+                  <span class="text-white text-xl">🎤</span>
+                </div>
+                <div>
+                  <h4 class="text-lg font-bold text-gray-900">Voice API</h4>
+                  <p class="text-sm text-gray-600">Telnyx Integration</p>
+                </div>
+              </div>
+              <p class="text-gray-600 mb-4">Enterprise voice calling with global coverage, TeXML integration, and real-time transcription.</p>
+              <div class="flex flex-wrap gap-2 mb-4">
+                <span class="bg-brand-red/20 text-brand-red px-2 py-1 rounded-full text-xs font-semibold">99.9% Uptime</span>
+                <span class="bg-brand-red/20 text-brand-red px-2 py-1 rounded-full text-xs font-semibold">Global Coverage</span>
+              </div>
+              <a href="/voice-api" class="text-brand-red font-semibold hover:text-brand-red/80">Learn More →</a>
+            </div>
+
+            <!-- IVR System -->
+            <div class="bg-gradient-to-br from-brand-orange/10 to-brand-orange/20 p-6 rounded-xl border border-brand-orange/20 hover:shadow-lg transition-all">
+              <div class="flex items-center mb-4">
+                <div class="w-12 h-12 bg-brand-orange rounded-lg flex items-center justify-center mr-4">
+                  <span class="text-white text-xl">☎️</span>
+                </div>
+                <div>
+                  <h4 class="text-lg font-bold text-gray-900">IVR System</h4>
+                  <p class="text-sm text-gray-600">Interactive Voice Response</p>
+                </div>
+              </div>
+              <p class="text-gray-600 mb-4">Advanced IVR with TeXML integration, voice recognition, and intelligent call routing.</p>
+              <div class="flex flex-wrap gap-2 mb-4">
+                <span class="bg-brand-orange/20 text-brand-orange px-2 py-1 rounded-full text-xs font-semibold">TeXML Ready</span>
+                <span class="bg-brand-orange/20 text-brand-orange px-2 py-1 rounded-full text-xs font-semibold">AI Routing</span>
+              </div>
+              <a href="/ivr-system" class="text-brand-orange font-semibold hover:text-brand-orange/80">Learn More →</a>
+            </div>
+
+            <!-- 2FA Service -->
+            <div class="bg-gradient-to-br from-brand-yellow/10 to-brand-yellow/20 p-6 rounded-xl border border-brand-yellow/20 hover:shadow-lg transition-all">
+              <div class="flex items-center mb-4">
+                <div class="w-12 h-12 bg-brand-yellow rounded-lg flex items-center justify-center mr-4">
+                  <span class="text-brand-dark text-xl">🔐</span>
+                </div>
+                <div>
+                  <h4 class="text-lg font-bold text-gray-900">2FA Service</h4>
+                  <p class="text-sm text-gray-600">Two-Factor Authentication</p>
+                </div>
+              </div>
+              <p class="text-gray-600 mb-4">Secure two-factor authentication via SMS and voice calls with enterprise-grade security.</p>
+              <div class="flex flex-wrap gap-2 mb-4">
+                <span class="bg-brand-yellow/20 text-brand-dark px-2 py-1 rounded-full text-xs font-semibold">SMS & Voice</span>
+                <span class="bg-brand-yellow/20 text-brand-dark px-2 py-1 rounded-full text-xs font-semibold">Enterprise SLA</span>
+              </div>
+              <a href="/2fa-service" class="text-brand-yellow font-semibold hover:text-brand-yellow/80">Learn More →</a>
+            </div>
+
+            <!-- Phone Provisioning -->
+            <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl border border-purple-200 hover:shadow-lg transition-all">
+              <div class="flex items-center mb-4">
+                <div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mr-4">
+                  <span class="text-white text-xl">📱</span>
+                </div>
+                <div>
+                  <h4 class="text-lg font-bold text-gray-900">Phone Provisioning</h4>
+                  <p class="text-sm text-gray-600">Number Management</p>
+                </div>
+              </div>
+              <p class="text-gray-600 mb-4">Phone number provisioning, porting, and management with global coverage and compliance.</p>
+              <div class="flex flex-wrap gap-2 mb-4">
+                <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-semibold">Global Numbers</span>
+                <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-semibold">Porting Service</span>
+              </div>
+              <a href="/phone-provisioning" class="text-purple-600 font-semibold hover:text-purple-700">Learn More →</a>
+            </div>
+
+            <!-- USSD Engine -->
+            <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl border border-green-200 hover:shadow-lg transition-all">
+              <div class="flex items-center mb-4">
+                <div class="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mr-4">
+                  <span class="text-white text-xl">📲</span>
+                </div>
+                <div>
+                  <h4 class="text-lg font-bold text-gray-900">USSD Engine</h4>
+                  <p class="text-sm text-gray-600">Mobile Services</p>
+                </div>
+              </div>
+              <p class="text-gray-600 mb-4">USSD-based mobile services for banking, payments, and customer engagement in emerging markets.</p>
+              <div class="flex flex-wrap gap-2 mb-4">
+                <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-semibold">Mobile Banking</span>
+                <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-semibold">Payments</span>
+              </div>
+              <a href="/ussd-engine" class="text-green-600 font-semibold hover:text-green-700">Learn More →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI & Automation Products -->
+        <div class="mb-8">
+          <h3 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+            <span class="w-8 h-8 bg-brand-orange rounded-lg flex items-center justify-center mr-3">
+              <span class="text-white text-lg">🤖</span>
+            </span>
+            AI & Automation Products
+          </h3>
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- AI Engine -->
+            <div class="bg-gradient-to-br from-brand-orange/10 to-brand-orange/20 p-6 rounded-xl border border-brand-orange/20 hover:shadow-lg transition-all">
+              <div class="flex items-center mb-4">
+                <div class="w-12 h-12 bg-brand-orange rounded-lg flex items-center justify-center mr-4">
+                  <span class="text-white text-xl">🧠</span>
+                </div>
+                <div>
+                  <h4 class="text-lg font-bold text-gray-900">AI Engine</h4>
+                  <p class="text-sm text-gray-600">Machine Learning Platform</p>
+                </div>
+              </div>
+              <p class="text-gray-600 mb-4">Enterprise AI engine with machine learning models, NLP, and computer vision capabilities.</p>
+              <div class="flex flex-wrap gap-2 mb-4">
+                <span class="bg-brand-orange/20 text-brand-orange px-2 py-1 rounded-full text-xs font-semibold">ML Models</span>
+                <span class="bg-brand-orange/20 text-brand-orange px-2 py-1 rounded-full text-xs font-semibold">NLP & CV</span>
+              </div>
+              <a href="/ai-engine" class="text-brand-orange font-semibold hover:text-brand-orange/80">Learn More →</a>
+            </div>
+
+            <!-- Data Labeling -->
+            <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl border border-green-200 hover:shadow-lg transition-all">
+              <div class="flex items-center mb-4">
+                <div class="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mr-4">
+                  <span class="text-white text-xl">🏷️</span>
+                </div>
+                <div>
+                  <h4 class="text-lg font-bold text-gray-900">Data Labeling</h4>
+                  <p class="text-sm text-gray-600">Annotation Platform</p>
+                </div>
+              </div>
+              <p class="text-gray-600 mb-4">Human-in-the-loop data annotation and quality assurance for machine learning models.</p>
+              <div class="flex flex-wrap gap-2 mb-4">
+                <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-semibold">99.5% Accuracy</span>
+                <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-semibold">Fortune 500</span>
+              </div>
+              <a href="/data-labeling" class="text-green-600 font-semibold hover:text-green-700">Learn More →</a>
+            </div>
+
+            <!-- Chatbot -->
+            <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200 hover:shadow-lg transition-all">
+              <div class="flex items-center mb-4">
+                <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mr-4">
+                  <span class="text-white text-xl">💬</span>
+                </div>
+                <div>
+                  <h4 class="text-lg font-bold text-gray-900">AI Chatbot</h4>
+                  <p class="text-sm text-gray-600">Conversational AI</p>
+                </div>
+              </div>
+              <p class="text-gray-600 mb-4">Intelligent chatbot with natural language processing and multi-channel support.</p>
+              <div class="flex flex-wrap gap-2 mb-4">
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold">NLP Ready</span>
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold">Multi-Channel</span>
+              </div>
+              <a href="/chatbot" class="text-blue-600 font-semibold hover:text-blue-700">Learn More →</a>
+            </div>
+
+            <!-- SHANGO AI -->
+            <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl border border-purple-200 hover:shadow-lg transition-all">
+              <div class="flex items-center mb-4">
+                <div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mr-4">
+                  <span class="text-white text-xl">⚡</span>
+                </div>
+                <div>
+                  <h4 class="text-lg font-bold text-gray-900">SHANGO AI</h4>
+                  <p class="text-sm text-gray-600">AI Super Agent</p>
+                </div>
+              </div>
+              <p class="text-gray-600 mb-4">Advanced AI super agent with specialized capabilities for sales, support, and technical assistance.</p>
+              <div class="flex flex-wrap gap-2 mb-4">
+                <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-semibold">Multi-Agent</span>
+                <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-semibold">Specialized</span>
+              </div>
+              <a href="/shango-ai" class="text-purple-600 font-semibold hover:text-purple-700">Learn More →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Business & Commerce Products -->
+        <div class="mb-8">
+          <h3 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+            <span class="w-8 h-8 bg-brand-yellow rounded-lg flex items-center justify-center mr-3">
+              <span class="text-brand-dark text-lg">💼</span>
+            </span>
+            Business & Commerce Products
+          </h3>
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- eSIM Ordering -->
+            <div class="bg-gradient-to-br from-brand-yellow/10 to-brand-yellow/20 p-6 rounded-xl border border-brand-yellow/20 hover:shadow-lg transition-all">
+              <div class="flex items-center mb-4">
+                <div class="w-12 h-12 bg-brand-yellow rounded-lg flex items-center justify-center mr-4">
+                  <span class="text-brand-dark text-xl">📱</span>
+                </div>
+                <div>
+                  <h4 class="text-lg font-bold text-gray-900">eSIM Ordering</h4>
+                  <p class="text-sm text-gray-600">Digital SIM Management</p>
+                </div>
+              </div>
+              <p class="text-gray-600 mb-4">eSIM provisioning and management platform for global connectivity and IoT deployments.</p>
+              <div class="flex flex-wrap gap-2 mb-4">
+                <span class="bg-brand-yellow/20 text-brand-dark px-2 py-1 rounded-full text-xs font-semibold">Global eSIM</span>
+                <span class="bg-brand-yellow/20 text-brand-dark px-2 py-1 rounded-full text-xs font-semibold">IoT Ready</span>
+              </div>
+              <a href="/esim-ordering" class="text-brand-yellow font-semibold hover:text-brand-yellow/80">Learn More →</a>
+            </div>
+
+            <!-- Order Orchestrator -->
+            <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 p-6 rounded-xl border border-indigo-200 hover:shadow-lg transition-all">
+              <div class="flex items-center mb-4">
+                <div class="w-12 h-12 bg-indigo-600 rounded-lg flex items-center justify-center mr-4">
+                  <span class="text-white text-xl">🔄</span>
+                </div>
+                <div>
+                  <h4 class="text-lg font-bold text-gray-900">Order Orchestrator</h4>
+                  <p class="text-sm text-gray-600">Workflow Management</p>
+                </div>
+              </div>
+              <p class="text-gray-600 mb-4">Intelligent order processing and workflow orchestration for complex business processes.</p>
+              <div class="flex flex-wrap gap-2 mb-4">
+                <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs font-semibold">Workflow AI</span>
+                <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs font-semibold">Process Automation</span>
+              </div>
+              <a href="/order-orchestrator" class="text-indigo-600 font-semibold hover:text-indigo-700">Learn More →</a>
+            </div>
+
+            <!-- Wallet Service -->
+            <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 p-6 rounded-xl border border-emerald-200 hover:shadow-lg transition-all">
+              <div class="flex items-center mb-4">
+                <div class="w-12 h-12 bg-emerald-600 rounded-lg flex items-center justify-center mr-4">
+                  <span class="text-white text-xl">💰</span>
+                </div>
+                <div>
+                  <h4 class="text-lg font-bold text-gray-900">Wallet Service</h4>
+                  <p class="text-sm text-gray-600">Digital Payments</p>
+                </div>
+              </div>
+              <p class="text-gray-600 mb-4">Digital wallet and payment processing service with multi-currency support and compliance.</p>
+              <div class="flex flex-wrap gap-2 mb-4">
+                <span class="bg-emerald-100 text-emerald-800 px-2 py-1 rounded-full text-xs font-semibold">Multi-Currency</span>
+                <span class="bg-emerald-100 text-emerald-800 px-2 py-1 rounded-full text-xs font-semibold">PCI Compliant</span>
+              </div>
+              <a href="/wallet-service" class="text-emerald-600 font-semibold hover:text-emerald-700">Learn More →</a>
+            </div>
+
+            <!-- LinkedIn Scraper -->
+            <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200 hover:shadow-lg transition-all">
+              <div class="flex items-center mb-4">
+                <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mr-4">
+                  <span class="text-white text-xl">🔗</span>
+                </div>
+                <div>
+                  <h4 class="text-lg font-bold text-gray-900">LinkedIn Scraper</h4>
+                  <p class="text-sm text-gray-600">Data Extraction</p>
+                </div>
+              </div>
+              <p class="text-gray-600 mb-4">Professional data extraction and lead generation from LinkedIn with compliance and ethics.</p>
+              <div class="flex flex-wrap gap-2 mb-4">
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold">Lead Gen</span>
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold">Compliant</span>
+              </div>
+              <a href="/linkedin-scraper" class="text-blue-600 font-semibold hover:text-blue-700">Learn More →</a>
+            </div>
+
+            <!-- Blog Engine -->
+            <div class="bg-gradient-to-br from-pink-50 to-pink-100 p-6 rounded-xl border border-pink-200 hover:shadow-lg transition-all">
+              <div class="flex items-center mb-4">
+                <div class="w-12 h-12 bg-pink-600 rounded-lg flex items-center justify-center mr-4">
+                  <span class="text-white text-xl">📝</span>
+                </div>
+                <div>
+                  <h4 class="text-lg font-bold text-gray-900">Blog Engine</h4>
+                  <p class="text-sm text-gray-600">Content Management</p>
+                </div>
+              </div>
+              <p class="text-gray-600 mb-4">AI-powered content management and blog engine with SEO optimization and analytics.</p>
+              <div class="flex flex-wrap gap-2 mb-4">
+                <span class="bg-pink-100 text-pink-800 px-2 py-1 rounded-full text-xs font-semibold">AI Content</span>
+                <span class="bg-pink-100 text-pink-800 px-2 py-1 rounded-full text-xs font-semibold">SEO Ready</span>
+              </div>
+              <a href="/blog-engine" class="text-pink-600 font-semibold hover:text-pink-700">Learn More →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Industry Solutions -->
+        <div class="mb-8">
+          <h3 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+            <span class="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center mr-3">
+              <span class="text-white text-lg">🏭</span>
+            </span>
+            Industry Solutions
+          </h3>
+          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Healthcare -->
+            <div class="bg-gradient-to-br from-red-50 to-red-100 p-6 rounded-xl border border-red-200 hover:shadow-lg transition-all">
+              <div class="text-center">
+                <div class="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span class="text-white text-2xl">🏥</span>
+                </div>
+                <h4 class="text-lg font-bold text-gray-900 mb-2">Healthcare</h4>
+                <p class="text-sm text-gray-600 mb-4">HIPAA-compliant communication and AI solutions for healthcare providers.</p>
+                <div class="space-y-2">
+                  <span class="block bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-semibold">HIPAA Compliant</span>
+                  <span class="block bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-semibold">Patient Communication</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Financial Services -->
+            <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl border border-green-200 hover:shadow-lg transition-all">
+              <div class="text-center">
+                <div class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span class="text-white text-2xl">🏦</span>
+                </div>
+                <h4 class="text-lg font-bold text-gray-900 mb-2">Financial Services</h4>
+                <p class="text-sm text-gray-600 mb-4">Banking-grade security and compliance for financial institutions.</p>
+                <div class="space-y-2">
+                  <span class="block bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold">PCI DSS</span>
+                  <span class="block bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold">Fraud Detection</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- E-commerce -->
+            <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200 hover:shadow-lg transition-all">
+              <div class="text-center">
+                <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span class="text-white text-2xl">🛒</span>
+                </div>
+                <h4 class="text-lg font-bold text-gray-900 mb-2">E-commerce</h4>
+                <p class="text-sm text-gray-600 mb-4">Omnichannel customer engagement and AI-powered personalization.</p>
+                <div class="space-y-2">
+                  <span class="block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-semibold">Omnichannel</span>
+                  <span class="block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-semibold">AI Personalization</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- IoT & Telematics -->
+            <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl border border-purple-200 hover:shadow-lg transition-all">
+              <div class="text-center">
+                <div class="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span class="text-white text-2xl">🚛</span>
+                </div>
+                <h4 class="text-lg font-bold text-gray-900 mb-2">IoT & Telematics</h4>
+                <p class="text-sm text-gray-600 mb-4">Fleet management and IoT connectivity solutions for enterprise.</p>
+                <div class="space-y-2">
+                  <span class="block bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-xs font-semibold">Fleet Management</span>
+                  <span class="block bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-xs font-semibold">Real-time Tracking</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="bg-gray-50 px-6 py-4 border-t">
+        <div class="flex flex-col sm:flex-row justify-between items-center">
+          <p class="text-sm text-gray-600 mb-2 sm:mb-0">
+            Need help choosing the right solution? 
+            <a href="/contact" class="text-brand-red font-semibold hover:text-brand-red/80">Contact our experts</a>
+          </p>
+          <div class="flex space-x-3">
+            <a href="/pricing" class="bg-brand-red text-white px-4 py-2 rounded-lg font-semibold hover:bg-brand-red/90 transition-colors">
+              View Pricing
+            </a>
+            <a href="/demo" class="bg-white text-brand-red px-4 py-2 rounded-lg font-semibold border border-brand-red hover:bg-brand-red hover:text-white transition-colors">
+              Request Demo
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Products Modal functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const productsModal = document.getElementById('products-modal');
+    const openProductsModal = document.getElementById('open-products-modal');
+    const closeProductsModal = document.getElementById('close-products-modal');
+
+    if (openProductsModal) {
+      openProductsModal.addEventListener('click', function(e) {
+        e.preventDefault();
+        productsModal?.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      });
+    }
+
+    if (closeProductsModal) {
+      closeProductsModal.addEventListener('click', function() {
+        productsModal?.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+      });
+    }
+
+    // Close modal when clicking outside
+    if (productsModal) {
+      productsModal.addEventListener('click', function(e) {
+        if (e.target === productsModal) {
+          productsModal.classList.add('hidden');
+          document.body.style.overflow = 'auto';
+        }
+      });
+    }
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && productsModal && !productsModal.classList.contains('hidden')) {
+        productsModal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+      }
+    });
+  });
+</script>
