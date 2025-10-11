@@ -20,3 +20,37 @@ cursor-talk-to-figma-mcp/node_modules/
 dist/
 build/
 coverage/
+
+# Development logs and temporary files
+*.log
+*.tmp
+*.cache
+astro-dev.log
+puppeteer-debug.cjs
+
+# Test results and reports
+test-results/
+playwright-report/
+coverage/
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.staging
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

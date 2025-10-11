@@ -27,7 +27,14 @@
     "demo:voice": "node scripts/demo-voice-api.js",
     "deploy": "./scripts/deploy-unified-onboarding.sh",
     "deploy:staging": "doctl apps update $DO_APP_ID_STAGING --spec .do/app-staging.yaml && doctl apps create-deployment $DO_APP_ID_STAGING --force-rebuild",
-    "deploy:production": "doctl apps update $DO_APP_ID_PRODUCTION --spec .do/app-production-fixed.yaml && doctl apps create-deployment $DO_APP_ID_PRODUCTION --force-rebuild"
+    "deploy:production": "doctl apps update $DO_APP_ID_PRODUCTION --spec .do/app-production-fixed.yaml && doctl apps create-deployment $DO_APP_ID_PRODUCTION --force-rebuild",
+    "git:feature": "./scripts/git-workflow.sh feature",
+    "git:fix": "./scripts/git-workflow.sh fix",
+    "git:merge-dev": "./scripts/git-workflow.sh merge-dev",
+    "git:sync-dev": "./scripts/git-workflow.sh sync-dev",
+    "git:deploy-staging": "./scripts/git-workflow.sh deploy-staging",
+    "git:deploy-prod": "./scripts/git-workflow.sh deploy-prod",
+    "git:status": "./scripts/git-workflow.sh status"
   },
   "dependencies": {
     "@astrojs/node": "^9.4.6",

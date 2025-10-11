@@ -1,6 +1,16 @@
-# TETRIX SaaS Website
+# TETRIX & JoRoMi Voice API
 
-A modern, professional SaaS marketing site for TETRIX, built with Astro and Tailwind CSS.
+A comprehensive voice API implementation with Telnyx, Deepgram STT, and SHANGO AI integration for cross-platform unified messaging.
+
+## 📚 Documentation
+
+All project documentation is organized in the [`/docs`](./docs/) directory:
+
+- **[API Documentation](./docs/api/)** - API implementation and testing
+- **[Database Documentation](./docs/database/)** - Database setup and management
+- **[Testing Documentation](./docs/testing/)** - Testing strategies and results
+- **[Deployment Documentation](./docs/deployment/)** - Deployment guides and status
+- **[Analysis Documentation](./docs/analysis/)** - System analysis and architecture
 
 ## 🚀 Project Overview
 TETRIX is a professional services SaaS platform. This site is designed to:
