@@ -22,6 +22,15 @@ services:
     run_command: pnpm run start
     routes:
       - path: /
+    domains:
+      - domain: tetrixcorp.com
+        type: PRIMARY
+      - domain: www.tetrixcorp.com
+        type: ALIAS
+      - domain: joromi.ai
+        type: PRIMARY
+      - domain: www.joromi.ai
+        type: ALIAS
     envs:
       - key: NODE_ENV
         value: production
