@@ -3,6 +3,7 @@ import Logo from './Logo.astro';
 import DynamicTetrix from '../shared/DynamicTetrix.astro';
 import ProductsModal from '../ProductsModal.astro';
 import TwoFAModal from '../auth/2FAModal.astro';
+import CodeAcademyModal from '../CodeAcademyModal.astro';
 ---
 <header class="w-full bg-gradient-to-r from-brand-red via-brand-orange to-brand-yellow text-white shadow relative">
   <div class="max-w-screen-xl mx-auto flex items-center justify-between px-4 py-3">
@@ -23,6 +24,11 @@ import TwoFAModal from '../auth/2FAModal.astro';
         <li><a href="/blog" class="hover:underline focus:outline-none focus:ring-2 focus:ring-brand-yellow">Blog</a></li>
         <li><a href="/docs" class="hover:underline focus:outline-none focus:ring-2 focus:ring-brand-yellow">Documentation</a></li>
         <li><a href="/pricing" class="hover:underline focus:outline-none focus:ring-2 focus:ring-brand-yellow">Pricing</a></li>
+        <li>
+          <button id="open-code-academy-modal" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-300 shadow-lg">
+            Code Academy
+          </button>
+        </li>
             <li>
               <button id="joromi-2fa-btn" class="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-300 shadow-lg">
                 JoRoMi
@@ -51,6 +57,11 @@ import TwoFAModal from '../auth/2FAModal.astro';
           <li><a href="/blog" class="hover:underline">Blog</a></li>
           <li><a href="/docs" class="hover:underline">Documentation</a></li>
           <li><a href="/pricing" class="hover:underline">Pricing</a></li>
+          <li>
+            <button id="open-code-academy-modal-mobile" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg">
+              Code Academy
+            </button>
+          </li>
               <li>
                 <button id="joromi-2fa-btn-mobile" class="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors shadow-lg">
                   JoRoMi
@@ -68,6 +79,9 @@ import TwoFAModal from '../auth/2FAModal.astro';
   
       <!-- Products Modal -->
       <ProductsModal />
+      
+      <!-- Code Academy Modal -->
+      <CodeAcademyModal />
       
       <!-- 2FA Modal -->
       <TwoFAModal />
@@ -141,8 +155,8 @@ import TwoFAModal from '../auth/2FAModal.astro';
           joromiBtn.addEventListener('click', function(e) {
             e.preventDefault();
             // Set authentication context for JoRoMi
-            window.tetrixAuthContext = 'joromi';
-            window.open2FAModal();
+            (window as any).tetrixAuthContext = 'joromi';
+            (window as any).open2FAModal();
             // Close mobile menu if open
             if (menu) {
               menu.classList.add('hidden');
@@ -155,8 +169,8 @@ import TwoFAModal from '../auth/2FAModal.astro';
           joromiBtnMobile.addEventListener('click', function(e) {
             e.preventDefault();
             // Set authentication context for JoRoMi
-            window.tetrixAuthContext = 'joromi';
-            window.open2FAModal();
+            (window as any).tetrixAuthContext = 'joromi';
+            (window as any).open2FAModal();
             // Close mobile menu
             if (menu) {
               menu.classList.add('hidden');
@@ -170,8 +184,8 @@ import TwoFAModal from '../auth/2FAModal.astro';
           clientLoginBtn.addEventListener('click', function(e) {
             e.preventDefault();
             // Set authentication context for Client Dashboard
-            window.tetrixAuthContext = 'dashboard';
-            window.open2FAModal();
+            (window as any).tetrixAuthContext = 'dashboard';
+            (window as any).open2FAModal();
             // Close mobile menu if open
             if (menu) {
               menu.classList.add('hidden');
@@ -184,8 +198,8 @@ import TwoFAModal from '../auth/2FAModal.astro';
           clientLoginBtnMobile.addEventListener('click', function(e) {
             e.preventDefault();
             // Set authentication context for Client Dashboard
-            window.tetrixAuthContext = 'dashboard';
-            window.open2FAModal();
+            (window as any).tetrixAuthContext = 'dashboard';
+            (window as any).open2FAModal();
             // Close mobile menu
             if (menu) {
               menu.classList.add('hidden');
