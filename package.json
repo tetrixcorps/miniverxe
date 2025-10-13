@@ -23,6 +23,12 @@
     "test:unit:all": "node scripts/run-unit-tests.js --component=all",
     "test:unit:watch": "node scripts/run-unit-tests.js --component=tetrix --watch",
     "test:unit:coverage": "node scripts/run-unit-tests.js --component=tetrix --coverage",
+    "test:jest": "jest",
+    "test:jest:unit": "jest --testPathPattern=tests/unit",
+    "test:jest:functional": "jest --testPathPattern=tests/functional",
+    "test:jest:integration": "jest --testPathPattern=tests/integration",
+    "test:jest:watch": "jest --watch",
+    "test:jest:coverage": "jest --coverage",
     "test:vitest": "vitest",
     "test:vitest:ui": "vitest --ui",
     "test:vitest:coverage": "vitest --coverage",
@@ -69,12 +75,16 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^29.5.5",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
+    "jest": "^29.6.2",
+    "jest-environment-jsdom": "^29.6.2",
     "jsdom": "^25.0.1",
     "newman": "^6.2.1",
     "playwright": "^1.56.0",
     "tailwindcss": "^3.4.15",
+    "ts-jest": "^29.1.1",
     "typescript": "^5.6.3",
     "vitest": "^2.1.9"
   },
@@ -95,6 +105,35 @@
   "engines": {
     "node": ">=18.0.0",
     "pnpm": ">=8.0.0"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "jsdom",
+    "setupFilesAfterEnv": ["<rootDir>/tests/setup/jest.setup.js"],
+    "testMatch": [
+      "<rootDir>/tests/unit/**/*.test.{js,ts,tsx}",
+      "<rootDir>/tests/functional/**/*.test.{js,ts,tsx}",
+      "<rootDir>/tests/integration/**/*.test.{js,ts,tsx}"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.{js,ts,tsx}",
+      "!src/**/*.d.ts",
+      "!src/**/*.stories.{js,ts,tsx}",
+      "!src/**/*.test.{js,ts,tsx}"
+    ],
+    "coverageDirectory": "coverage",
+    "coverageReporters": ["text", "lcov", "html"],
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1",
+      "^@tests/(.*)$": "<rootDir>/tests/$1"
+    },
+    "transform": {
+      "^.+\\.(ts|tsx)$": "ts-jest",
+      "^.+\\.(js|jsx)$": "babel-jest"
+    },
+    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json"],
+    "testTimeout": 10000,
+    "verbose": true
   },
   "pnpm": {
     "allowScripts": {

@@ -209,12 +209,14 @@
       document.getElementById('redirect-joromi')?.addEventListener('click', () => {
         // Pass the authentication token to JoRoMi
         const authToken = localStorage.getItem('tetrix_auth_token');
+        const joromiUrl = this.getJoromiUrl();
+        
         if (authToken) {
           // Open JoRoMi with authentication token
-          window.open(`http://localhost:3000/tetrix-auth?redirect=joromi-dashboard&token=${authToken}`, '_blank');
+          window.open(`${joromiUrl}/tetrix-auth?redirect=joromi-dashboard&token=${authToken}`, '_blank');
         } else {
           // Fallback to regular JoRoMi page
-          window.open('http://localhost:3000', '_blank');
+          window.open(joromiUrl, '_blank');
         }
         this.closeModal();
       });
@@ -532,6 +534,13 @@
           if (redirectDashboard) redirectDashboard.classList.remove('hidden');
           if (redirectCustom) redirectCustom.classList.add('hidden');
           break;
+        case 'code-academy':
+          if (modalTitle) modalTitle.textContent = 'Code Academy Access';
+          if (modalSubtitle) modalSubtitle.textContent = 'Authenticate to access TETRIX Code Academy';
+          if (redirectJoromi) redirectJoromi.classList.add('hidden');
+          if (redirectDashboard) redirectDashboard.classList.add('hidden');
+          if (redirectCustom) redirectCustom.classList.remove('hidden');
+          break;
         default:
           if (modalTitle) modalTitle.textContent = 'Enterprise Authentication';
           if (modalSubtitle) modalSubtitle.textContent = 'Secure 2FA verification required';
@@ -541,20 +550,52 @@
       }
     }
 
+    getJoromiUrl() {
+      // Get environment-specific JoRoMi URL
+      const hostname = window.location.hostname;
+      
+      if (hostname.includes('tetrixcorp.com')) {
+        return 'https://joromi.ai';
+      } else if (hostname.includes('staging')) {
+        return 'https://staging-joromi.tetrixcorp.com';
+      } else {
+        return 'http://localhost:3000';
+      }
+    }
+
+    getCodeAcademyUrl() {
+      // Get environment-specific Code Academy URL
+      const hostname = window.location.hostname;
+      
+      if (hostname.includes('tetrixcorp.com')) {
+        return 'https://poisonedreligion.ai';
+      } else if (hostname.includes('staging')) {
+        return 'https://staging.poisonedreligion.ai';
+      } else {
+        return 'http://localhost:3001';
+      }
+    }
+
     handleCustomRedirect() {
       // Handle custom redirects based on context
       switch (this.authContext) {
         case 'joromi':
           // Pass the authentication token to JoRoMi
           const authToken = localStorage.getItem('tetrix_auth_token');
+          const joromiUrl = this.getJoromiUrl();
+          
           if (authToken) {
-            window.open(`http://localhost:3000/tetrix-auth?redirect=joromi-dashboard&token=${authToken}`, '_blank');
+            window.open(`${joromiUrl}/tetrix-auth?redirect=joromi-dashboard&token=${authToken}`, '_blank');
           } else {
-            window.open('http://localhost:3000', '_blank');
+            window.open(joromiUrl, '_blank');
           }
           break;
         case 'dashboard':
           window.location.href = '/dashboard';
+          break;
+        case 'code-academy':
+          const codeAcademyUrl = this.getCodeAcademyUrl();
+          window.location.href = codeAcademyUrl;
           break;
         default:
           window.location.href = '/';

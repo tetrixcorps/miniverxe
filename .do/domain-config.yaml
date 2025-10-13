@@ -36,6 +36,16 @@ domains:
   - domain: www.joromi.ai
     type: ALIAS
     zone: joromi.ai
+  
+  # Primary Code Academy domain
+  - domain: poisonedreligion.ai
+    type: PRIMARY
+    zone: poisonedreligion.ai
+  
+  # Code Academy subdomains
+  - domain: www.poisonedreligion.ai
+    type: ALIAS
+    zone: poisonedreligion.ai
 
 # Services configuration
 services:
@@ -123,6 +133,79 @@ services:
       timeout_seconds: 10
       success_threshold: 1
       failure_threshold: 5
+
+  # Code Academy Frontend
+  - name: code-academy-frontend
+    github:
+      repo: tetrixcorps/miniverxe
+      branch: main
+      deploy_on_push: true
+    source_dir: /code-academy-frontend
+    http_port: 3000
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    build_command: |
+      npm install
+      npm run build
+    run_command: npm run start
+    routes:
+      - path: /code-academy
+    envs:
+      - key: NODE_ENV
+        value: production
+      - key: VITE_API_URL
+        value: "https://poisonedreligion.ai/api"
+      - key: VITE_WS_URL
+        value: "wss://poisonedreligion.ai"
+      - key: VITE_APP_NAME
+        value: "TETRIX Code Academy"
+      - key: TETRIX_AUTH_URL
+        value: "https://tetrixcorp.com"
+    health_check:
+      http_path: /api/health
+      initial_delay_seconds: 30
+      period_seconds: 15
+      timeout_seconds: 10
+      success_threshold: 1
+      failure_threshold: 3
+
+  # Code Academy Backend
+  - name: code-academy-backend
+    github:
+      repo: tetrixcorps/miniverxe
+      branch: main
+      deploy_on_push: true
+    source_dir: /code-academy-backend
+    http_port: 3001
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    build_command: |
+      npm install
+      npx prisma generate
+      npx prisma db push
+    run_command: npm run start
+    routes:
+      - path: /api
+    envs:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3001"
+      - key: DATABASE_URL
+        value: "postgresql://tetrix_user:tetrix_password@tetrix-postgres-do-user-12345678-0.db.ondigitalocean.com:25060/tetrix_code_academy?sslmode=require"
+      - key: TETRIX_2FA_API_URL
+        value: "https://tetrixcorp.com/api/v2/2fa"
+      - key: TETRIX_2FA_API_KEY
+        value: "tetrix-2fa-api-key"
+      - key: CORS_ORIGIN
+        value: "https://poisonedreligion.ai,https://tetrixcorp.com"
+    health_check:
+      http_path: /api/health
+      initial_delay_seconds: 30
+      period_seconds: 15
+      timeout_seconds: 10
+      success_threshold: 1
+      failure_threshold: 3
 
 # Static sites for subdomains (if needed)
 static_sites:

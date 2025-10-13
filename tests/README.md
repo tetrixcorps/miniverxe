@@ -1,389 +1,220 @@
-# Voice API Test Suite
+# TETRIX Cross-Platform Authentication Tests
 
-Comprehensive testing suite for the Voice API implementation using Playwright.
+This directory contains comprehensive tests for the TETRIX cross-platform authentication system.
 
-## 🧪 Test Structure
+## 📁 Test Structure
 
-### Test Categories
+```
+tests/
+├── unit/                    # Unit tests for individual components
+│   ├── 2FAModal.test.tsx
+│   ├── CodeAcademyModal.test.tsx
+│   └── EnvironmentConfig.test.ts
+├── functional/              # Functional tests for user flows
+│   ├── CodeAcademyAuthFlow.test.tsx
+│   └── JoromiAuthFlow.test.tsx
+├── integration/             # Integration tests for cross-platform auth
+│   ├── CrossPlatformAuth.test.tsx
+│   └── AuthBridge.test.tsx
+├── mocks/                   # Mock data and utilities
+│   └── api-mocks.ts
+├── setup/                   # Test setup and configuration
+│   ├── jest.setup.js
+│   ├── test-utils.ts
+│   └── test-environment.ts
+└── README.md               # This file
+```
 
-1. **Unit Tests** (`tests/unit/`)
-   - Individual component testing
-   - API endpoint validation
-   - Service layer testing
-   - Error handling validation
+## 🧪 Test Types
 
-2. **Integration Tests** (`tests/integration/`)
-   - Cross-component integration
-   - API workflow testing
-   - Database integration
-   - External service integration
+### Unit Tests
+- **Purpose**: Test individual components in isolation
+- **Coverage**: Component rendering, event handling, state management
+- **Files**: `tests/unit/*.test.tsx`
 
-3. **Functional Tests** (`tests/functional/`)
-   - End-to-end user scenarios
-   - UI interaction testing
-   - Browser compatibility
-   - Responsive design testing
+### Functional Tests
+- **Purpose**: Test complete user flows and interactions
+- **Coverage**: End-to-end user journeys, authentication flows
+- **Files**: `tests/functional/*.test.tsx`
 
-4. **End-to-End Tests** (`tests/e2e/`)
-   - Complete user journeys
-   - Full system integration
-   - Performance testing
-   - Data consistency testing
+### Integration Tests
+- **Purpose**: Test cross-platform authentication integration
+- **Coverage**: Platform switching, token sharing, error handling
+- **Files**: `tests/integration/*.test.tsx`
 
 ## 🚀 Running Tests
 
-### Prerequisites
-
+### All Tests
 ```bash
-# Install dependencies
-pnpm install
-
-# Install Playwright browsers
-npx playwright install
+npm run test
 ```
 
-### Test Commands
-
+### By Type
 ```bash
-# Run all tests
-pnpm test
+# Unit tests only
+npm run test:unit
 
-# Run specific test categories
-pnpm test:unit
-pnpm test:integration
-pnpm test:functional
-pnpm test:e2e
+# Functional tests only
+npm run test:functional
 
-# Run tests with UI
-pnpm test:ui
-
-# Run tests in headed mode (see browser)
-pnpm test:headed
-
-# Debug tests
-pnpm test:debug
-
-# Generate test report
-pnpm test:report
-
-# Run cross-platform integration tests
-pnpm test:cross-platform
+# Integration tests only
+npm run test:integration
 ```
 
-## 📋 Test Coverage
+### With Coverage
+```bash
+npm run test:coverage
+```
 
-### Voice API Components
+### Watch Mode
+```bash
+npm run test:watch
+```
 
-- ✅ **Telnyx Voice Service**
-  - Call initiation
-  - Call management
-  - TeXML response generation
-  - Webhook handling
+### Debug Mode
+```bash
+npm run test:debug
+```
 
-- ✅ **Deepgram STT Integration**
-  - Audio transcription
-  - Batch processing
-  - Language detection
-  - Speaker diarization
+## 📊 Test Coverage
 
-- ✅ **SHANGO AI Integration**
-  - Response generation
-  - Context awareness
-  - Multi-agent support
-  - Confidence scoring
-
-- ✅ **Cross-Platform Integration**
-  - TETRIX ↔ JoRoMi sync
-  - Session management
-  - Channel synchronization
-  - Message routing
-
-### API Endpoints
-
-- ✅ **Voice Call Management**
-  - `POST /api/voice/initiate`
-  - `GET /api/voice/sessions`
-  - `GET /api/voice/sessions/:id`
-  - `POST /api/voice/sessions/:id/end`
-
-- ✅ **Transcription Processing**
-  - `POST /api/voice/transcribe`
-  - `GET /api/voice/transcribe/:id`
-  - `POST /api/voice/transcribe/batch`
-  - `GET /api/voice/transcribe/stats`
-
-- ✅ **Webhook Handling**
-  - `POST /api/voice/webhook`
-  - `POST /api/voice/texml`
-
-- ✅ **Cross-Platform Integration**
-  - `POST /api/voice/integration/initiate`
-  - `POST /api/voice/integration/transcribe`
-  - `GET /api/voice/integration/sessions`
-  - `GET /api/voice/integration/status`
-
-- ✅ **Demo and Testing**
-  - `POST /api/voice/demo/call`
-  - `POST /api/voice/demo/texml`
-  - `POST /api/voice/demo/ai-response`
-  - `GET /api/voice/demo/capabilities`
+The test suite aims for:
+- **Branches**: 80%
+- **Functions**: 80%
+- **Lines**: 80%
+- **Statements**: 80%
 
 ## 🔧 Test Configuration
 
+### Jest Configuration
+- **Preset**: `ts-jest`
+- **Environment**: `jsdom`
+- **Timeout**: 10 seconds
+- **Setup**: `tests/setup/jest.setup.js`
+
 ### Environment Variables
-
 ```bash
-# Required for testing
-BASE_URL=http://localhost:4321
-***REMOVED***=your_telnyx_api_key
-DEEPGRAM_API_KEY=your_deepgram_api_key
-WEBHOOK_BASE_URL=https://tetrixcorp.com
-
-# Optional
 NODE_ENV=test
-TEST_PHONE_NUMBER=+1234567890
+TETRIX_API_URL=http://localhost:4321
+JOROMI_URL=http://localhost:3000
+CODE_ACADEMY_URL=http://localhost:3001
 ```
-
-### Playwright Configuration
-
-The test suite uses `playwright.config.ts` with the following features:
-
-- **Multi-browser testing**: Chrome, Firefox, Safari
-- **Mobile testing**: iPhone, Android
-- **Parallel execution**: Faster test runs
-- **Retry logic**: Automatic retry on failure
-- **Screenshots**: On failure capture
-- **Video recording**: On failure recording
-- **HTML reports**: Detailed test reports
-
-## 📊 Test Data
-
-### Mock Data
-
-The test suite includes comprehensive mock data:
-
-- **Phone Numbers**: Valid and invalid formats
-- **Audio URLs**: Test audio file URLs
-- **Transcriptions**: Sample voice transcriptions
-- **Session IDs**: Test session identifiers
-- **API Responses**: Mock successful responses
-
-### Test Utilities
-
-- **API Helpers**: Reusable API interaction functions
-- **Validation Helpers**: Data validation utilities
-- **Assertion Helpers**: Custom assertion functions
-- **Mock Generators**: Dynamic test data generation
 
 ## 🎯 Test Scenarios
 
-### Unit Test Scenarios
+### Authentication Flows
+1. **Authenticated User**: Skip 2FA, direct redirect
+2. **Unauthenticated User**: Complete 2FA flow
+3. **Error Handling**: Network errors, invalid codes
+4. **Retry Logic**: Multiple attempts, error recovery
 
-1. **Phone Number Validation**
-   - Valid E.164 format
-   - Invalid formats
-   - Edge cases
+### Cross-Platform Integration
+1. **Platform Switching**: JoRoMi ↔ Code Academy
+2. **Token Sharing**: Unified authentication state
+3. **Environment Detection**: Development vs Production
+4. **Error Propagation**: Consistent error handling
 
-2. **API Request Validation**
-   - Required fields
-   - Data types
-   - Format validation
+### Component Testing
+1. **2FA Modal**: Phone input, code verification
+2. **Code Academy Modal**: Authentication integration
+3. **Environment Config**: URL resolution, environment detection
+4. **Auth Bridges**: Cross-platform token management
 
-3. **Error Handling**
-   - Invalid inputs
-   - Network errors
-   - API errors
+## 🛠️ Mock Data
 
-4. **Service Layer Testing**
-   - Business logic
-   - Data transformation
-   - State management
+### API Responses
+- `mock2FAInitiateResponse`: Successful 2FA initiation
+- `mock2FAVerifyResponse`: Successful code verification
+- `mock2FAErrorResponse`: Error responses
 
-### Integration Test Scenarios
+### User Data
+- `mockUserData`: Valid user information
+- `mockAuthToken`: Authentication token
+- `mockPhoneNumber`: Test phone number
+- `mockVerificationCode`: Test verification code
 
-1. **Voice Call Workflow**
-   - Call initiation → Transcription → AI Response
-   - TeXML response generation
-   - Webhook event handling
-
-2. **Cross-Platform Integration**
-   - Session synchronization
-   - Message routing
-   - Channel switching
-
-3. **Transcription Pipeline**
-   - Audio processing
-   - Batch operations
-   - Statistics tracking
-
-### Functional Test Scenarios
-
-1. **User Interface Testing**
-   - Form interactions
-   - Button clicks
-   - Input validation
-
-2. **Browser Compatibility**
-   - Chrome, Firefox, Safari
-   - Mobile browsers
-   - Responsive design
-
-3. **Accessibility Testing**
-   - Keyboard navigation
-   - Screen reader support
-   - ARIA labels
-
-### End-to-End Test Scenarios
-
-1. **Complete User Journeys**
-   - Voice call initiation
-   - Transcription processing
-   - AI response generation
-   - Cross-platform sync
-
-2. **Performance Testing**
-   - Concurrent requests
-   - Large data processing
-   - Response times
-
-3. **Data Consistency**
-   - Session persistence
-   - State synchronization
-   - Error recovery
-
-## 📈 Test Reports
-
-### HTML Report
-
-```bash
-pnpm test:report
-```
-
-Opens detailed HTML report with:
-- Test results overview
-- Failed test details
-- Screenshots and videos
-- Performance metrics
-- Timeline view
-
-### JSON Report
-
-Test results are saved to `test-results/results.json` for CI/CD integration.
-
-### JUnit Report
-
-Test results are saved to `test-results/results.xml` for Jenkins integration.
+### Environment Configs
+- `mockEnvironmentConfigs`: Development, staging, production
+- `mockPlatforms`: JoRoMi, Code Academy, TETRIX
+- `mockErrorMessages`: Standardized error messages
 
 ## 🔍 Debugging Tests
 
-### Debug Mode
-
-```bash
-pnpm test:debug
-```
-
-Opens Playwright Inspector for step-by-step debugging.
-
-### UI Mode
-
-```bash
-pnpm test:ui
-```
-
-Opens Playwright UI for interactive test running and debugging.
-
-### Code Generation
-
-```bash
-pnpm test:codegen
-```
-
-Generates test code by recording browser interactions.
-
-## 🚨 Troubleshooting
-
 ### Common Issues
+1. **Async Operations**: Use `waitFor()` for async updates
+2. **Mock Cleanup**: Clear mocks between tests
+3. **State Management**: Reset authentication state
+4. **Environment Variables**: Ensure test environment is set
 
-1. **Browser Installation**
-   ```bash
-   npx playwright install
-   ```
+### Debug Commands
+```bash
+# Run specific test file
+npm test -- 2FAModal.test.tsx
 
-2. **Missing Dependencies**
-   ```bash
-   pnpm install
-   ```
+# Run tests with verbose output
+npm run test:verbose
 
-3. **API Connection Issues**
-   - Check BASE_URL configuration
-   - Verify API keys
-   - Ensure server is running
+# Run tests in debug mode
+npm run test:debug
 
-4. **Test Timeouts**
-   - Increase timeout in playwright.config.ts
-   - Check network connectivity
-   - Verify API response times
+# Run tests with coverage
+npm run test:coverage
+```
 
-### Test Environment Setup
+## 📈 Continuous Integration
 
-1. **Local Development**
-   ```bash
-   pnpm run dev
-   pnpm test
-   ```
+Tests run automatically on:
+- **Push** to main, dev, staging branches
+- **Pull Requests** to main, dev branches
+- **Multiple Node.js versions** (18.x, 20.x)
 
-2. **CI/CD Pipeline**
-   ```bash
-   pnpm install
-   npx playwright install --with-deps
-   pnpm test
-   ```
+### CI Pipeline
+1. Install dependencies
+2. Run unit tests
+3. Run functional tests
+4. Run integration tests
+5. Generate coverage report
+6. Upload to Codecov
+
+## 🎉 Test Results
+
+### Success Criteria
+- All tests pass
+- Coverage thresholds met
+- No console errors
+- No memory leaks
+
+### Coverage Reports
+- **HTML**: `coverage/index.html`
+- **LCOV**: `coverage/lcov.info`
+- **Text**: Console output
 
 ## 📝 Writing New Tests
 
 ### Test Structure
-
 ```typescript
-import { test, expect } from '@playwright/test';
-import { VoiceAPIHelper } from './helpers/api-helpers';
+describe('Component Name', () => {
+  beforeEach(() => {
+    // Setup
+  });
 
-test.describe('Feature Name', () => {
-  test('should do something', async ({ request }) => {
-    const api = new VoiceAPIHelper(request);
-    
+  it('should do something', () => {
     // Test implementation
-    const result = await api.someMethod();
-    
-    // Assertions
-    expect(result.response.status()).toBe(200);
-    expect(result.data.success).toBe(true);
   });
 });
 ```
 
 ### Best Practices
+1. **Arrange-Act-Assert**: Clear test structure
+2. **Descriptive Names**: What, when, expected result
+3. **Single Responsibility**: One test, one assertion
+4. **Mock External Dependencies**: Isolate components
+5. **Clean Up**: Reset state between tests
 
-1. **Use descriptive test names**
-2. **Group related tests in describe blocks**
-3. **Use helper functions for common operations**
-4. **Include both positive and negative test cases**
-5. **Clean up test data after tests**
-6. **Use proper assertions**
-7. **Handle async operations correctly**
-
-## 🤝 Contributing
-
-1. **Add new tests** for new features
-2. **Update existing tests** when APIs change
-3. **Maintain test coverage** above 80%
-4. **Follow naming conventions**
-5. **Document test scenarios**
-6. **Run tests before submitting**
-
-## 📞 Support
-
-For test-related issues:
-- Check the troubleshooting section
-- Review test logs and reports
-- Verify environment configuration
-- Contact the development team
+### Test Utilities
+- `render()`: Render components
+- `fireEvent`: Simulate user interactions
+- `waitFor()`: Wait for async operations
+- `screen`: Query DOM elements
+- `mockFetch()`: Mock API calls
+- `setupAuthenticatedState()`: Set auth state
