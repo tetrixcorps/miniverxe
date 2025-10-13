@@ -1,5 +1,85 @@
 // SHANGO AI Super Agent - SinchChatLive Service for TETRIX & JoRoMi Platform
+// Note: SinchChatLive integration is mocked for development
+// In production, uncomment the import below and install the package
 // import { SinchChatLive } from '@sinch/sinch-chat-live';
+
+// Mock SinchChatLive for development
+class MockSinchChatLive {
+  constructor(config: any) {
+    console.log('MockSinchChatLive initialized with config:', config);
+  }
+
+  async initialize() {
+    console.log('MockSinchChatLive initialized');
+    return Promise.resolve();
+  }
+
+  on(event: string, handler: Function) {
+    console.log(`MockSinchChatLive: Event listener added for ${event}`);
+  }
+
+  async startSession(config: any) {
+    return {
+      id: `session-${Date.now()}`,
+      userId: config.userId,
+      agentId: 'mock-agent',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+  }
+
+  async sendMessage(config: any) {
+    console.log('MockSinchChatLive: Message sent', config);
+    // Simulate AI response after a delay
+    setTimeout(() => {
+      const mockResponse = {
+        id: `msg-${Date.now()}`,
+        from: 'agent',
+        text: 'Thank you for your message! This is a mock response from SHANGO AI Super Agent. In production, this would be connected to our real AI system.',
+        timestamp: new Date().toISOString(),
+        agentId: 'mock-agent',
+        sessionId: config.sessionId
+      };
+      // Trigger message event
+      this.emit('message', mockResponse);
+    }, 1000);
+  }
+
+  async endSession(sessionId: string) {
+    console.log('MockSinchChatLive: Session ended', sessionId);
+  }
+
+  async getHistory(sessionId: string) {
+    return [];
+  }
+
+  async isAgentAvailable() {
+    return true;
+  }
+
+  async getAvailableAgents() {
+    return [];
+  }
+
+  async sendFile(config: any) {
+    console.log('MockSinchChatLive: File sent', config);
+  }
+
+  async startVoiceCall(config: any) {
+    console.log('MockSinchChatLive: Voice call started', config);
+  }
+
+  async sendSMS(config: any) {
+    console.log('MockSinchChatLive: SMS sent', config);
+  }
+
+  emit(event: string, data: any) {
+    console.log(`MockSinchChatLive: Event ${event} emitted`, data);
+  }
+}
+
+// Use mock in development, real SinchChatLive in production
+const SinchChatLive = MockSinchChatLive;
 
 export interface ChatSession {
   id: string;
