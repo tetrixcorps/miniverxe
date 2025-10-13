@@ -2,56 +2,213 @@
 import MainLayout from '../components/layout/MainLayout.astro';
 import Button from '../components/shared/Button.astro';
 
-const plans = [
+const healthcarePlans = [
   {
-    name: "Starter",
-    price: "$29",
-    period: "per month",
-    description: "Perfect for small agencies and freelancers",
+    name: "Individual Practice",
+    price: "$150",
+    period: "per provider/month",
+    description: "1-4 Providers",
     features: [
-      "Up to 10 clients",
-      "Basic project management",
-      "Email support",
-      "Standard integrations",
-      "1GB storage",
-      "Basic reporting"
+      "2,000 AI voice sessions/month",
+      "Basic benefit verification",
+      "Appointment scheduling",
+      "Patient communication",
+      "Basic EHR integration",
+      "HIPAA compliance",
+      "Email support"
     ],
-    cta: "Start Free Trial",
+    cta: "Get Started",
+    popular: false
+  },
+  {
+    name: "Small Practice",
+    price: "$200",
+    period: "base + $100/provider",
+    description: "5-49 Providers",
+    features: [
+      "5,000 AI voice sessions/month",
+      "Prior authorization assistance",
+      "Prescription follow-up automation",
+      "Appointment scheduling",
+      "Up to 2 EHR integrations",
+      "Basic workflows",
+      "Email support"
+    ],
+    cta: "Get Started",
     popular: false
   },
   {
     name: "Professional",
-    price: "$99",
-    period: "per month",
-    description: "Ideal for growing consultancies and agencies",
+    price: "$500",
+    period: "base + $75/provider",
+    description: "50-499 Providers",
     features: [
-      "Up to 50 clients",
-      "Advanced project management",
-      "Priority support",
-      "All integrations",
-      "10GB storage",
-      "Advanced analytics",
-      "Team collaboration",
-      "Custom branding"
+      "10,000 AI voice sessions/month",
+      "Advanced prior authorization",
+      "Prescription follow-up automation",
+      "Up to 5 EHR integrations",
+      "Advanced analytics & reporting",
+      "Priority support + phone",
+      "Standard integrations"
     ],
-    cta: "Start Free Trial",
+    cta: "Get Started",
     popular: true
   },
   {
     name: "Enterprise",
-    price: "Custom",
-    period: "contact us",
-    description: "For large organizations with complex needs",
+    price: "$2,000",
+    period: "base + $50/provider",
+    description: "500+ Providers",
     features: [
-      "Unlimited clients",
-      "Enterprise project management",
+      "Unlimited AI voice sessions",
+      "Unlimited EHR integrations",
+      "Custom healthcare workflows",
+      "Advanced analytics & reporting",
       "24/7 dedicated support",
-      "Custom integrations",
-      "Unlimited storage",
-      "Advanced security",
-      "White-label solution",
-      "Custom training",
-      "SLA guarantee"
+      "Dedicated account manager",
+      "White-label options"
+    ],
+    cta: "Contact Sales",
+    popular: false
+  }
+];
+
+const legalPlans = [
+  {
+    name: "Solo Practice",
+    price: "$150",
+    period: "per attorney/month",
+    description: "1-4 Attorneys",
+    features: [
+      "2,000 AI legal assistant sessions/month",
+      "Basic case management",
+      "Document generation",
+      "Client communication",
+      "Time tracking and billing",
+      "Attorney-client privilege protection",
+      "Email support"
+    ],
+    cta: "Get Started",
+    popular: false
+  },
+  {
+    name: "Small Firm",
+    price: "$500",
+    period: "base + $125/attorney",
+    description: "5-24 Attorneys",
+    features: [
+      "5,000 AI legal assistant sessions/month",
+      "Case management automation",
+      "Document generation",
+      "Client communication workflows",
+      "Time tracking and billing",
+      "Basic legal research",
+      "Email support"
+    ],
+    cta: "Get Started",
+    popular: false
+  },
+  {
+    name: "Mid-Size Firm",
+    price: "$1,000",
+    period: "base + $100/attorney",
+    description: "25-99 Attorneys",
+    features: [
+      "10,000 AI legal assistant sessions/month",
+      "Advanced case management",
+      "Document generation",
+      "Legal research integration",
+      "Client communication workflows",
+      "Conflict checking",
+      "Priority support + phone"
+    ],
+    cta: "Get Started",
+    popular: true
+  },
+  {
+    name: "Enterprise Law Firm",
+    price: "$3,000",
+    period: "base + $75/attorney",
+    description: "100+ Attorneys",
+    features: [
+      "Unlimited AI legal assistant sessions",
+      "Advanced case management automation",
+      "Document generation and automation",
+      "Legal research integration",
+      "Advanced analytics and reporting",
+      "24/7 dedicated support",
+      "Dedicated account manager"
+    ],
+    cta: "Contact Sales",
+    popular: false
+  }
+];
+
+const businessPlans = [
+  {
+    name: "Starter",
+    price: "$99",
+    period: "per month",
+    description: "Small businesses, startups (1-10 employees)",
+    features: [
+      "1,000 voice minutes included",
+      "1,000 SMS messages included",
+      "500 2FA attempts included",
+      "2 toll-free numbers",
+      "Basic AI workflow automation",
+      "Email support",
+      "Basic analytics"
+    ],
+    cta: "Get Started",
+    popular: false
+  },
+  {
+    name: "Professional",
+    price: "$299",
+    period: "per month",
+    description: "Growing businesses (11-100 employees)",
+    features: [
+      "5,000 voice minutes included",
+      "5,000 SMS messages included",
+      "2,500 2FA attempts included",
+      "5 toll-free numbers",
+      "Advanced AI automation + data labeling",
+      "Priority support + phone",
+      "Advanced analytics"
+    ],
+    cta: "Get Started",
+    popular: true
+  },
+  {
+    name: "Enterprise",
+    price: "$799",
+    period: "per month",
+    description: "Large enterprises (100+ employees)",
+    features: [
+      "15,000 voice minutes included",
+      "15,000 SMS messages included",
+      "7,500 2FA attempts included",
+      "15 toll-free numbers",
+      "Full AI suite + custom models",
+      "Dedicated account manager",
+      "Real-time analytics"
+    ],
+    cta: "Contact Sales",
+    popular: false
+  },
+  {
+    name: "Custom Enterprise",
+    price: "Contact Sales",
+    period: "custom pricing",
+    description: "Fortune 500, government, high-volume",
+    features: [
+      "Unlimited usage with volume discounts",
+      "Custom pricing based on usage",
+      "Dedicated infrastructure",
+      "24/7 support with SLA guarantees",
+      "Custom AI model training",
+      "White-label options",
+      "Custom integrations"
     ],
     cta: "Contact Sales",
     popular: false
@@ -65,7 +222,7 @@ const faqs = [
   },
   {
     question: "Is there a free trial available?",
-    answer: "Yes, we offer a 14-day free trial on all plans. No credit card required to start your trial."
+    answer: "Yes, we offer a 30-day free trial on all plans. No credit card required to start your trial."
   },
   {
     question: "What payment methods do you accept?",
@@ -73,7 +230,7 @@ const faqs = [
   },
   {
     question: "Do you offer discounts for annual billing?",
-    answer: "Yes, we offer a 20% discount when you choose annual billing instead of monthly billing."
+    answer: "Yes, we offer up to 20% discount when you choose annual billing instead of monthly billing, depending on your plan."
   },
   {
     question: "What happens if I exceed my plan limits?",
@@ -81,7 +238,15 @@ const faqs = [
   },
   {
     question: "Is there a setup fee?",
-    answer: "No setup fees for any of our plans. You only pay the advertised monthly or annual price."
+    answer: "Setup fees vary by plan. Enterprise plans include free setup, while smaller plans may have minimal setup fees."
+  },
+  {
+    question: "Do you offer industry-specific features?",
+    answer: "Yes, we offer specialized features for healthcare (HIPAA compliance, EHR integration), legal (attorney-client privilege), and general business use cases."
+  },
+  {
+    question: "What kind of support do you provide?",
+    answer: "Support varies by plan: Email support for individual/small plans, priority phone support for professional plans, and 24/7 dedicated support for enterprise plans."
   }
 ];
 ---
@@ -91,31 +256,48 @@ const faqs = [
   <section class="bg-gradient-to-br from-brand-red via-brand-orange to-brand-yellow text-white py-20">
     <div class="max-w-4xl mx-auto text-center px-4">
       <h1 class="text-4xl md:text-6xl font-heading font-extrabold mb-6">
-        Simple, Transparent Pricing
+        Enterprise-Grade Pricing
       </h1>
       <p class="text-xl md:text-2xl mb-8">
-        Choose the plan that fits your business needs. All plans include our core features and 14-day free trial.
+        Transparent, scalable pricing for AI-powered communication and workflow automation. 
+        Choose the perfect plan for your industry and organization size.
       </p>
-      <div class="flex justify-center items-center gap-4">
-        <span class="text-lg">Monthly</span>
-        <label class="relative inline-flex items-center cursor-pointer">
-          <input type="checkbox" id="billing-toggle" class="sr-only peer">
-          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-orange"></div>
-        </label>
-        <span class="text-lg">Annual <span class="text-brand-yellow font-semibold">(Save 20%)</span></span>
+    </div>
+  </section>
+
+  <!-- Industry Tabs -->
+  <section class="py-12 bg-white">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="flex flex-wrap justify-center gap-4 mb-8">
+        <button id="healthcare-tab" class="px-6 py-3 rounded-lg bg-brand-red text-white font-semibold shadow-lg transition-colors">
+          Healthcare
+        </button>
+        <button id="legal-tab" class="px-6 py-3 rounded-lg bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition-colors">
+          Legal
+        </button>
+        <button id="business-tab" class="px-6 py-3 rounded-lg bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition-colors">
+          General Business
+        </button>
       </div>
     </div>
   </section>
 
-  <!-- Pricing Plans -->
-  <section class="py-20 bg-white">
+  <!-- Healthcare Pricing Plans -->
+  <section id="healthcare-pricing" class="py-20 bg-white">
     <div class="max-w-7xl mx-auto px-4">
-      <div class="grid gap-8 md:grid-cols-3">
-        {plans.map(plan => (
-          <div class={`relative bg-white rounded-2xl shadow-lg border-2 p-8 ${plan.popular ? 'border-brand-orange scale-105' : 'border-gray-200'}`}>
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-heading font-bold text-brand-dark mb-4">Healthcare Solutions</h2>
+        <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+          AI-powered healthcare communication and automation services designed for organizations of all sizes
+        </p>
+      </div>
+
+      <div class="grid gap-8 lg:grid-cols-4">
+        {healthcarePlans.map(plan => (
+          <div class={`relative bg-white rounded-2xl shadow-lg border-2 p-8 ${plan.popular ? 'border-brand-red scale-105' : 'border-gray-200'}`}>
             {plan.popular && (
               <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <span class="bg-brand-orange text-white px-4 py-2 rounded-full text-sm font-semibold">
+                <span class="bg-brand-red text-white px-4 py-2 rounded-full text-sm font-semibold">
                   Most Popular
                 </span>
               </div>
@@ -123,11 +305,11 @@ const faqs = [
             
             <div class="text-center mb-8">
               <h3 class="text-2xl font-bold text-brand-dark mb-2">{plan.name}</h3>
+              <p class="text-gray-600 mb-4">{plan.description}</p>
               <div class="mb-4">
                 <span class="text-4xl font-bold text-brand-dark">{plan.price}</span>
                 <span class="text-gray-600">/{plan.period}</span>
               </div>
-              <p class="text-gray-600">{plan.description}</p>
             </div>
             
             <ul class="space-y-4 mb-8">
@@ -154,56 +336,110 @@ const faqs = [
     </div>
   </section>
 
-  <!-- Comparison Table -->
-  <section class="py-20 bg-gray-50">
-    <div class="max-w-6xl mx-auto px-4">
-      <h2 class="text-3xl font-heading font-bold text-center text-brand-dark mb-12">
-        Compare Plans
-      </h2>
-      
-      <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-        <table class="w-full">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900">Feature</th>
-              <th class="px-6 py-4 text-center text-sm font-semibold text-gray-900">Starter</th>
-              <th class="px-6 py-4 text-center text-sm font-semibold text-gray-900">Professional</th>
-              <th class="px-6 py-4 text-center text-sm font-semibold text-gray-900">Enterprise</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200">
-            <tr>
-              <td class="px-6 py-4 text-sm text-gray-900">Clients</td>
-              <td class="px-6 py-4 text-center text-sm text-gray-600">Up to 10</td>
-              <td class="px-6 py-4 text-center text-sm text-gray-600">Up to 50</td>
-              <td class="px-6 py-4 text-center text-sm text-gray-600">Unlimited</td>
-            </tr>
-            <tr>
-              <td class="px-6 py-4 text-sm text-gray-900">Storage</td>
-              <td class="px-6 py-4 text-center text-sm text-gray-600">1GB</td>
-              <td class="px-6 py-4 text-center text-sm text-gray-600">10GB</td>
-              <td class="px-6 py-4 text-center text-sm text-gray-600">Unlimited</td>
-            </tr>
-            <tr>
-              <td class="px-6 py-4 text-sm text-gray-900">Support</td>
-              <td class="px-6 py-4 text-center text-sm text-gray-600">Email</td>
-              <td class="px-6 py-4 text-center text-sm text-gray-600">Priority</td>
-              <td class="px-6 py-4 text-center text-sm text-gray-600">24/7 Dedicated</td>
-            </tr>
-            <tr>
-              <td class="px-6 py-4 text-sm text-gray-900">Integrations</td>
-              <td class="px-6 py-4 text-center text-sm text-gray-600">Standard</td>
-              <td class="px-6 py-4 text-center text-sm text-gray-600">All</td>
-              <td class="px-6 py-4 text-center text-sm text-gray-600">Custom</td>
-            </tr>
-            <tr>
-              <td class="px-6 py-4 text-sm text-gray-900">Analytics</td>
-              <td class="px-6 py-4 text-center text-sm text-gray-600">Basic</td>
-              <td class="px-6 py-4 text-center text-sm text-gray-600">Advanced</td>
-              <td class="px-6 py-4 text-center text-sm text-gray-600">Custom</td>
-            </tr>
-          </tbody>
-        </table>
+  <!-- Legal Pricing Plans -->
+  <section id="legal-pricing" class="py-20 bg-gray-50 hidden">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-heading font-bold text-brand-dark mb-4">Legal Solutions</h2>
+        <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+          AI-powered legal practice management and client communication services for law firms of all sizes
+        </p>
+      </div>
+
+      <div class="grid gap-8 lg:grid-cols-4">
+        {legalPlans.map(plan => (
+          <div class={`relative bg-white rounded-2xl shadow-lg border-2 p-8 ${plan.popular ? 'border-brand-red scale-105' : 'border-gray-200'}`}>
+            {plan.popular && (
+              <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                <span class="bg-brand-red text-white px-4 py-2 rounded-full text-sm font-semibold">
+                  Most Popular
+                </span>
+              </div>
+            )}
+            
+            <div class="text-center mb-8">
+              <h3 class="text-2xl font-bold text-brand-dark mb-2">{plan.name}</h3>
+              <p class="text-gray-600 mb-4">{plan.description}</p>
+              <div class="mb-4">
+                <span class="text-4xl font-bold text-brand-dark">{plan.price}</span>
+                <span class="text-gray-600">/{plan.period}</span>
+              </div>
+            </div>
+            
+            <ul class="space-y-4 mb-8">
+              {plan.features.map(feature => (
+                <li class="flex items-center gap-3">
+                  <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                  <span class="text-gray-700">{feature}</span>
+                </li>
+              ))}
+            </ul>
+            
+            <Button 
+              href={plan.name === "Enterprise Law Firm" ? "/contact" : "/contact"} 
+              variant={plan.popular ? "primary" : "secondary"}
+              class="w-full"
+            >
+              {plan.cta}
+            </Button>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Business Pricing Plans -->
+  <section id="business-pricing" class="py-20 bg-gray-50 hidden">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-heading font-bold text-brand-dark mb-4">General Business Solutions</h2>
+        <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+          Unified messaging and AI services platform for businesses of all sizes
+        </p>
+      </div>
+
+      <div class="grid gap-8 lg:grid-cols-4">
+        {businessPlans.map(plan => (
+          <div class={`relative bg-white rounded-2xl shadow-lg border-2 p-8 ${plan.popular ? 'border-brand-red scale-105' : 'border-gray-200'}`}>
+            {plan.popular && (
+              <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                <span class="bg-brand-red text-white px-4 py-2 rounded-full text-sm font-semibold">
+                  Most Popular
+                </span>
+              </div>
+            )}
+            
+            <div class="text-center mb-8">
+              <h3 class="text-2xl font-bold text-brand-dark mb-2">{plan.name}</h3>
+              <p class="text-gray-600 mb-4">{plan.description}</p>
+              <div class="mb-4">
+                <span class="text-4xl font-bold text-brand-dark">{plan.price}</span>
+                <span class="text-gray-600">/{plan.period}</span>
+              </div>
+            </div>
+            
+            <ul class="space-y-4 mb-8">
+              {plan.features.map(feature => (
+                <li class="flex items-center gap-3">
+                  <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                  <span class="text-gray-700">{feature}</span>
+                </li>
+              ))}
+            </ul>
+            
+            <Button 
+              href={plan.name === "Custom Enterprise" ? "/contact" : "/contact"} 
+              variant={plan.popular ? "primary" : "secondary"}
+              class="w-full"
+            >
+              {plan.cta}
+            </Button>
+          </div>
+        ))}
       </div>
     </div>
   </section>
@@ -243,7 +479,7 @@ const faqs = [
         Ready to Get Started?
       </h2>
       <p class="text-xl mb-8">
-        Start your 14-day free trial today. No credit card required.
+        Start your 30-day free trial today. No credit card required.
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
         <Button href="/contact" variant="primary" size="lg">
@@ -279,13 +515,40 @@ const faqs = [
       });
     });
     
-    // Billing Toggle (for future implementation)
-    const billingToggle = document.getElementById('billing-toggle');
-    if (billingToggle) {
-      billingToggle.addEventListener('change', () => {
-        // This would update pricing display for annual vs monthly
-        console.log('Billing toggle changed:', billingToggle.checked);
+    // Industry Tab Toggle
+    const tabs = {
+      healthcare: document.getElementById('healthcare-tab'),
+      legal: document.getElementById('legal-tab'),
+      business: document.getElementById('business-tab')
+    };
+    
+    const sections = {
+      healthcare: document.getElementById('healthcare-pricing'),
+      legal: document.getElementById('legal-pricing'),
+      business: document.getElementById('business-pricing')
+    };
+    
+    function switchTab(activeTab) {
+      // Reset all tabs
+      Object.values(tabs).forEach(tab => {
+        tab.className = 'px-6 py-3 rounded-lg bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition-colors';
       });
+      
+      // Reset all sections
+      Object.values(sections).forEach(section => {
+        section.classList.add('hidden');
+      });
+      
+      // Activate selected tab
+      tabs[activeTab].className = 'px-6 py-3 rounded-lg bg-brand-red text-white font-semibold shadow-lg transition-colors';
+      
+      // Show selected section
+      sections[activeTab].classList.remove('hidden');
     }
+    
+    // Add event listeners
+    tabs.healthcare.addEventListener('click', () => switchTab('healthcare'));
+    tabs.legal.addEventListener('click', () => switchTab('legal'));
+    tabs.business.addEventListener('click', () => switchTab('business'));
   });
-</script> 
+</script>
