@@ -30,5 +30,9 @@ export const env = {
   domains: {
     tetrix: process.env.TETRIX_DOMAIN || '',
     joromi: process.env.JOROMI_DOMAIN || ''
+  },
+  mailgun: {
+    apiKey: process.env.MAILGUN_API_KEY || '',
+    domain: process.env.MAILGUN_DOMAIN || 'mg.tetrixcorp.com'
   }
 };

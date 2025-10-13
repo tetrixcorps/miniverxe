@@ -43,7 +43,10 @@ export async function POST({ request }) {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            ...formData,
+            name: formData.name,
+            email: formData.email,
+            subject: formData.subject || 'Contact Form Submission',
+            message: formData.message,
             submissionId: result.id
           })
         });
