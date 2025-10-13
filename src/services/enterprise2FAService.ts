@@ -276,6 +276,13 @@ class Enterprise2FAService {
       return this.generateMockVerification(request);
     }
 
+    console.log('Sending Telnyx verification with config:', {
+      apiKey: this.config.apiKey ? `${this.config.apiKey.substring(0, 10)}...` : 'NOT_SET',
+      verifyProfileId: this.config.verifyProfileId,
+      method: request.method,
+      phoneNumber: request.phoneNumber
+    });
+
     const endpoint = request.method === 'voice' 
       ? 'https://api.telnyx.com/v2/verifications/call'
       : 'https://api.telnyx.com/v2/verifications/sms';
@@ -293,6 +300,9 @@ class Enterprise2FAService {
       payload.timeout_secs = request.timeoutSecs;
     }
 
+    console.log('Sending Telnyx request to:', endpoint);
+    console.log('Telnyx request payload:', payload);
+
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
@@ -302,6 +312,9 @@ class Enterprise2FAService {
       },
       body: JSON.stringify(payload)
     });
+
+    console.log('Telnyx response status:', response.status);
+    console.log('Telnyx response headers:', Object.fromEntries(response.headers.entries()));
 
     if (!response.ok) {
       const error = await response.json();
