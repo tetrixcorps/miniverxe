@@ -54,6 +54,7 @@ const variantClasses = {
     animation: gradient-shift 3s ease-in-out infinite;
     position: relative;
     display: inline-block;
+    letter-spacing: 0.1em;
   }
 
   .tetrix-text::before {
@@ -78,6 +79,7 @@ const variantClasses = {
     transition: all 0.3s ease;
     position: relative;
     animation: letter-float 4s ease-in-out infinite;
+    margin-right: 0.15em;
   }
 
   .tetrix-letter:nth-child(1) { animation-delay: 0s; }
@@ -87,12 +89,19 @@ const variantClasses = {
   .tetrix-letter:nth-child(5) { animation-delay: 0.4s; }
   .tetrix-letter:nth-child(6) { animation-delay: 0.5s; }
 
+  /* Hero variant specific letter spacing */
+  .tetrix-hero .tetrix-letter {
+    margin-right: 0.4em;
+  }
+
   /* Variant Styles */
   .tetrix-hero .tetrix-text {
     background: linear-gradient(45deg, #FF3B30, #FF9500, #FFB300, #FF3B30, #FF9500);
     background-size: 400% 400%;
     animation: gradient-shift 2s ease-in-out infinite;
     text-shadow: 0 0 30px rgba(255, 59, 48, 0.5);
+    letter-spacing: 0.3em;
+    font-weight: 900;
   }
 
   .tetrix-subtle .tetrix-text {
