@@ -34,6 +34,7 @@
     "test:shango:functional": "node tests/run-tests.js --functional",
     "test:shango:integration": "node tests/run-tests.js --integration",
     "test:shango:coverage": "node tests/run-tests.js --coverage",
+    "test:mailgun": "node scripts/test-mailgun.js",
     "test:vitest": "vitest",
     "test:vitest:ui": "vitest --ui",
     "test:vitest:coverage": "vitest --coverage",

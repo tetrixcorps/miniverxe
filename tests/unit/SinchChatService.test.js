@@ -123,8 +123,14 @@ class SHANGOAIService {
   }
 
   async initialize() {
-    await this.sinchChat.initialize();
-    this.setupEventHandlers();
+    try {
+      await this.sinchChat.initialize();
+      this.setupEventHandlers();
+      console.log('SHANGO AI Super Agent initialized successfully');
+    } catch (error) {
+      console.error('Failed to initialize SHANGO AI Super Agent:', error);
+      throw error;
+    }
   }
 
   setupEventHandlers() {
@@ -144,10 +150,19 @@ class SHANGOAIService {
 
   emit(event, data) {
     console.log(`SHANGO Event: ${event}`, data);
+    if (this.eventHandlers && this.eventHandlers[event]) {
+      this.eventHandlers[event].forEach(handler => handler(data));
+    }
   }
 
   on(event, handler) {
-    this[`_${event}Handler`] = handler;
+    if (!this.eventHandlers) {
+      this.eventHandlers = {};
+    }
+    if (!this.eventHandlers[event]) {
+      this.eventHandlers[event] = [];
+    }
+    this.eventHandlers[event].push(handler);
   }
 
   getSHANGOAgents() {
@@ -160,13 +175,22 @@ class SHANGOAIService {
 
   routeToSHANGOAgent(message, context) {
     const intent = this.analyzeIntent(message);
-    if (intent.includes('technical') || intent.includes('bug') || intent.includes('error') || intent.includes('api')) {
+    const lowerMessage = message.toLowerCase();
+    
+    // Check for technical keywords first
+    if (intent.includes('technical') || lowerMessage.includes('bug') || lowerMessage.includes('error') || lowerMessage.includes('api') || lowerMessage.includes('technical')) {
       return this.shangoAgents.find(a => a.id === 'shango-technical');
-    } else if (intent.includes('purchase') || intent.includes('price') || intent.includes('demo') || intent.includes('buy')) {
+    } 
+    // Check for sales keywords
+    else if (intent.includes('sales') || lowerMessage.includes('purchase') || lowerMessage.includes('price') || lowerMessage.includes('demo') || lowerMessage.includes('buy') || lowerMessage.includes('cost')) {
       return this.shangoAgents.find(a => a.id === 'shango-sales');
-    } else if (intent.includes('billing') || intent.includes('payment') || intent.includes('subscription') || intent.includes('invoice')) {
+    } 
+    // Check for billing keywords
+    else if (intent.includes('billing') || lowerMessage.includes('billing') || lowerMessage.includes('payment') || lowerMessage.includes('subscription') || lowerMessage.includes('invoice')) {
       return this.shangoAgents.find(a => a.id === 'shango-billing');
-    } else {
+    } 
+    // Default to general agent
+    else {
       return this.shangoAgents.find(a => a.id === 'shango-general');
     }
   }
@@ -178,7 +202,7 @@ class SHANGOAIService {
     if (lowerMessage.includes('technical') || lowerMessage.includes('bug') || lowerMessage.includes('error')) {
       intents.push('technical');
     }
-    if (lowerMessage.includes('buy') || lowerMessage.includes('purchase') || lowerMessage.includes('price')) {
+    if (lowerMessage.includes('buy') || lowerMessage.includes('purchase') || lowerMessage.includes('price') || lowerMessage.includes('pricing') || lowerMessage.includes('cost')) {
       intents.push('sales');
     }
     if (lowerMessage.includes('billing') || lowerMessage.includes('payment') || lowerMessage.includes('invoice')) {
@@ -207,93 +231,158 @@ class SHANGOAIService {
   }
 
   async startSHANGOChat(userId, preferredAgent) {
-    const agent = preferredAgent ? this.getSHANGOAgent(preferredAgent) : this.shangoAgents[0];
-    
-    const session = await this.sinchChat.startSession({
-      userId,
-      metadata: {
-        platform: 'tetrix-joromi',
-        shangoAgent: agent?.id || 'shango-general',
-        timestamp: new Date().toISOString()
+    try {
+      const agent = preferredAgent ? this.getSHANGOAgent(preferredAgent) : this.shangoAgents[0];
+      
+      const session = await this.sinchChat.startSession({
+        userId,
+        metadata: {
+          platform: 'tetrix-joromi',
+          shangoAgent: agent?.id || 'shango-general',
+          timestamp: new Date().toISOString()
+        }
+      });
+      
+      const chatSession = {
+        id: session.id,
+        userId: session.userId,
+        agentId: session.agentId,
+        status: 'active',
+        channel: 'chat',
+        createdAt: new Date(session.createdAt),
+        updatedAt: new Date(session.updatedAt),
+        messages: [],
+        shangoAgent: agent ? {
+          personality: agent.personality,
+          capabilities: agent.capabilities,
+          tools: agent.tools
+        } : undefined
+      };
+
+      // Add greeting message
+      if (agent) {
+        chatSession.messages.push({
+          id: `shango-greeting-${Date.now()}`,
+          role: 'shango',
+          content: agent.greeting,
+          timestamp: new Date(),
+          type: 'text',
+          metadata: {
+            shangoResponse: {
+              confidence: 1.0,
+              intent: 'greeting',
+              entities: []
+            }
+          }
+        });
       }
-    });
-    
-    return {
-      id: session.id,
-      userId: session.userId,
-      agentId: session.agentId,
-      status: 'active',
-      channel: 'chat',
-      createdAt: new Date(session.createdAt),
-      updatedAt: new Date(session.updatedAt),
-      messages: [],
-      shangoAgent: agent ? {
-        personality: agent.personality,
-        capabilities: agent.capabilities,
-        tools: agent.tools
-      } : undefined
-    };
+
+      return chatSession;
+    } catch (error) {
+      console.error('Failed to start SHANGO chat session:', error);
+      throw error;
+    }
   }
 
   async sendSHANGOMessage(sessionId, message) {
-    await this.sinchChat.sendMessage({
-      sessionId,
-      text: message
-    });
+    try {
+      await this.sinchChat.sendMessage({
+        sessionId,
+        text: message
+      });
+    } catch (error) {
+      console.error('Failed to send SHANGO message:', error);
+      throw error;
+    }
   }
 
   async endSHANGOChat(sessionId) {
-    await this.sinchChat.endSession(sessionId);
+    try {
+      await this.sinchChat.endSession(sessionId);
+    } catch (error) {
+      console.error('Failed to end SHANGO chat session:', error);
+      throw error;
+    }
   }
 
   async getSHANGOChatHistory(sessionId) {
-    const history = await this.sinchChat.getHistory(sessionId);
-    return history.map((msg) => ({
-      id: msg.id,
-      role: msg.from === 'agent' ? 'agent' : 'user',
-      content: msg.text,
-      timestamp: new Date(msg.timestamp),
-      type: 'text',
-      metadata: {
-        agentId: msg.agentId,
-        sessionId: msg.sessionId
-      }
-    }));
+    try {
+      const history = await this.sinchChat.getHistory(sessionId);
+      return history.map((msg) => ({
+        id: msg.id,
+        role: msg.from === 'agent' ? 'agent' : 'user',
+        content: msg.text,
+        timestamp: new Date(msg.timestamp),
+        type: 'text',
+        metadata: {
+          agentId: msg.agentId,
+          sessionId: msg.sessionId
+        }
+      }));
+    } catch (error) {
+      console.error('Failed to get SHANGO chat history:', error);
+      throw error;
+    }
   }
 
   async isAgentAvailable() {
-    return await this.sinchChat.isAgentAvailable();
+    try {
+      return await this.sinchChat.isAgentAvailable();
+    } catch (error) {
+      console.error('Failed to check agent availability:', error);
+      return false;
+    }
   }
 
   async getAvailableAgents() {
-    return await this.sinchChat.getAvailableAgents();
+    try {
+      return await this.sinchChat.getAvailableAgents();
+    } catch (error) {
+      console.error('Failed to get available agents:', error);
+      return [];
+    }
   }
 
   async sendFile(sessionId, file) {
-    await this.sinchChat.sendFile({
-      sessionId,
-      file,
-      metadata: {
-        name: file.name,
-        type: file.type,
-        size: file.size
-      }
-    });
+    try {
+      await this.sinchChat.sendFile({
+        sessionId,
+        file,
+        metadata: {
+          name: file.name,
+          type: file.type,
+          size: file.size
+        }
+      });
+    } catch (error) {
+      console.error('Failed to send file:', error);
+      throw error;
+    }
   }
 
   async startVoiceCall(sessionId, phoneNumber) {
-    await this.sinchChat.startVoiceCall({
-      sessionId,
-      phoneNumber
-    });
+    try {
+      await this.sinchChat.startVoiceCall({
+        sessionId,
+        phoneNumber
+      });
+    } catch (error) {
+      console.error('Failed to start voice call:', error);
+      throw error;
+    }
   }
 
   async sendSMS(sessionId, phoneNumber, message) {
-    await this.sinchChat.sendSMS({
-      sessionId,
-      phoneNumber,
-      text: message
-    });
+    try {
+      await this.sinchChat.sendSMS({
+        sessionId,
+        phoneNumber,
+        text: message
+      });
+    } catch (error) {
+      console.error('Failed to send SMS:', error);
+      throw error;
+    }
   }
 }
 
