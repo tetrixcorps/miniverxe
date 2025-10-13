@@ -19,12 +19,12 @@ module.exports = {
   },
   
   // Setup files
-  setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
+  setupFilesAfterEnv: ['<rootDir>/setup.ts'],
   
   // Module name mapping
-  moduleNameMapping: {
-    '^@/(.*)$': '<rootDir>/src/$1',
-    '^@tests/(.*)$': '<rootDir>/tests/$1'
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/../src/$1',
+    '^@tests/(.*)$': '<rootDir>/$1'
   },
   
   // Coverage configuration

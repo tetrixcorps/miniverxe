@@ -146,6 +146,39 @@ import CodeAcademyModal from '../CodeAcademyModal.astro';
         }
 
 
+        // Code Academy functionality
+        const codeAcademyBtn = document.getElementById('open-code-academy-modal');
+        const codeAcademyBtnMobile = document.getElementById('open-code-academy-modal-mobile');
+
+        // Code Academy button handlers
+        if (codeAcademyBtn) {
+          codeAcademyBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Set authentication context for Code Academy
+            (window as any).tetrixAuthContext = 'code-academy';
+            (window as any).open2FAModal();
+            // Close mobile menu if open
+            if (menu) {
+              menu.classList.add('hidden');
+              btn?.setAttribute('aria-expanded', 'false');
+            }
+          });
+        }
+
+        if (codeAcademyBtnMobile) {
+          codeAcademyBtnMobile.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Set authentication context for Code Academy
+            (window as any).tetrixAuthContext = 'code-academy';
+            (window as any).open2FAModal();
+            // Close mobile menu
+            if (menu) {
+              menu.classList.add('hidden');
+              btn?.setAttribute('aria-expanded', 'false');
+            }
+          });
+        }
+
         // 2FA Authentication functionality
         const joromiBtn = document.getElementById('joromi-2fa-btn');
         const joromiBtnMobile = document.getElementById('joromi-2fa-btn-mobile');
