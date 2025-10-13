@@ -25,17 +25,17 @@ import CodeAcademyModal from '../CodeAcademyModal.astro';
         <li><a href="/contact" class="hover:underline focus:outline-none focus:ring-2 focus:ring-brand-yellow">Contact Us</a></li>
         <li><a href="/about" class="hover:underline focus:outline-none focus:ring-2 focus:ring-brand-yellow">About Us</a></li>
         <li>
-          <button id="open-code-academy-modal" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-300 shadow-lg">
+          <button id="open-code-academy-modal" class="auth-button bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-300 shadow-lg text-sm min-w-[120px]">
             Code Academy
           </button>
         </li>
             <li>
-              <button id="joromi-2fa-btn" class="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-300 shadow-lg">
+              <button id="joromi-2fa-btn" class="auth-button bg-red-600 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-300 shadow-lg text-sm min-w-[100px]">
                 JoRoMi
               </button>
             </li>
             <li>
-              <button id="client-login-2fa-btn" class="bg-black text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 shadow-lg">
+              <button id="client-login-2fa-btn" class="auth-button bg-black text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 shadow-lg text-sm min-w-[110px]">
                 Client Login
               </button>
             </li>
@@ -58,17 +58,17 @@ import CodeAcademyModal from '../CodeAcademyModal.astro';
           <li><a href="/contact" class="hover:underline">Contact Us</a></li>
           <li><a href="/about" class="hover:underline">About Us</a></li>
           <li>
-            <button id="open-code-academy-modal-mobile" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg">
+            <button id="open-code-academy-modal-mobile" class="auth-button bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg text-sm min-w-[120px] w-full">
               Code Academy
             </button>
           </li>
               <li>
-                <button id="joromi-2fa-btn-mobile" class="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors shadow-lg">
+                <button id="joromi-2fa-btn-mobile" class="auth-button bg-red-600 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-red-700 transition-colors shadow-lg text-sm min-w-[100px] w-full">
                   JoRoMi
                 </button>
               </li>
               <li>
-                <button id="client-login-2fa-btn-mobile" class="bg-black text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-800 transition-colors shadow-lg">
+                <button id="client-login-2fa-btn-mobile" class="auth-button bg-black text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-gray-800 transition-colors shadow-lg text-sm min-w-[110px] w-full">
                   Client Login
                 </button>
               </li>
@@ -216,6 +216,36 @@ import CodeAcademyModal from '../CodeAcademyModal.astro';
   .tetrix-brand {
     position: relative;
     cursor: pointer;
+  }
+
+  /* Professional button styling for authentication buttons */
+  .auth-button {
+    position: relative;
+    overflow: hidden;
+    transform: translateY(0);
+    transition: all 0.2s ease-in-out;
+  }
+
+  .auth-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .auth-button:active {
+    transform: translateY(0);
+  }
+
+  /* Button spacing and alignment */
+  nav ul li:has(.auth-button) {
+    margin-left: 0.5rem;
+  }
+
+  /* Mobile button improvements */
+  @media (max-width: 768px) {
+    .auth-button {
+      margin: 0.25rem 0;
+      text-align: center;
+    }
   }
 
   .tetrix-text {
