@@ -150,13 +150,17 @@ import CodeAcademyModal from '../CodeAcademyModal.astro';
         const codeAcademyBtn = document.getElementById('open-code-academy-modal');
         const codeAcademyBtnMobile = document.getElementById('open-code-academy-modal-mobile');
 
-        // Code Academy button handlers
+        // Code Academy button handlers - Seamless redirect to external domain
         if (codeAcademyBtn) {
           codeAcademyBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            // Set authentication context for Code Academy
-            (window as any).tetrixAuthContext = 'code-academy';
-            (window as any).open2FAModal();
+            // Seamless redirect to Code Academy domain
+            if (window.redirectToExternal) {
+              window.redirectToExternal('code-academy');
+            } else {
+              // Fallback to direct redirect
+              window.open('https://www.poisonedreligion.ai', '_blank');
+            }
             // Close mobile menu if open
             if (menu) {
               menu.classList.add('hidden');
@@ -168,9 +172,13 @@ import CodeAcademyModal from '../CodeAcademyModal.astro';
         if (codeAcademyBtnMobile) {
           codeAcademyBtnMobile.addEventListener('click', function(e) {
             e.preventDefault();
-            // Set authentication context for Code Academy
-            (window as any).tetrixAuthContext = 'code-academy';
-            (window as any).open2FAModal();
+            // Seamless redirect to Code Academy domain
+            if (window.redirectToExternal) {
+              window.redirectToExternal('code-academy');
+            } else {
+              // Fallback to direct redirect
+              window.open('https://www.poisonedreligion.ai', '_blank');
+            }
             // Close mobile menu
             if (menu) {
               menu.classList.add('hidden');
@@ -185,13 +193,17 @@ import CodeAcademyModal from '../CodeAcademyModal.astro';
         const clientLoginBtn = document.getElementById('client-login-2fa-btn');
         const clientLoginBtnMobile = document.getElementById('client-login-2fa-btn-mobile');
 
-        // JoRoMi button handlers
+        // JoRoMi button handlers - Seamless redirect to external domain
         if (joromiBtn) {
           joromiBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            // Set authentication context for JoRoMi
-            (window as any).tetrixAuthContext = 'joromi';
-            (window as any).open2FAModal();
+            // Seamless redirect to JoRoMi domain
+            if (window.redirectToExternal) {
+              window.redirectToExternal('joromi');
+            } else {
+              // Fallback to direct redirect
+              window.open('https://www.joromi.ai', '_blank');
+            }
             // Close mobile menu if open
             if (menu) {
               menu.classList.add('hidden');
@@ -203,9 +215,13 @@ import CodeAcademyModal from '../CodeAcademyModal.astro';
         if (joromiBtnMobile) {
           joromiBtnMobile.addEventListener('click', function(e) {
             e.preventDefault();
-            // Set authentication context for JoRoMi
-            (window as any).tetrixAuthContext = 'joromi';
-            (window as any).open2FAModal();
+            // Seamless redirect to JoRoMi domain
+            if (window.redirectToExternal) {
+              window.redirectToExternal('joromi');
+            } else {
+              // Fallback to direct redirect
+              window.open('https://www.joromi.ai', '_blank');
+            }
             // Close mobile menu
             if (menu) {
               menu.classList.add('hidden');
@@ -214,13 +230,18 @@ import CodeAcademyModal from '../CodeAcademyModal.astro';
           });
         }
 
-        // Client Login button handlers
+        // Client Login button handlers - Seamless internal redirect
         if (clientLoginBtn) {
           clientLoginBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            // Set authentication context for Client Dashboard
-            (window as any).tetrixAuthContext = 'dashboard';
-            (window as any).open2FAModal();
+            // Seamless redirect to internal dashboard
+            if (window.redirectToInternal) {
+              window.redirectToInternal('dashboard');
+            } else {
+              // Fallback to 2FA modal
+              (window as any).tetrixAuthContext = 'dashboard';
+              (window as any).open2FAModal();
+            }
             // Close mobile menu if open
             if (menu) {
               menu.classList.add('hidden');
@@ -232,9 +253,14 @@ import CodeAcademyModal from '../CodeAcademyModal.astro';
         if (clientLoginBtnMobile) {
           clientLoginBtnMobile.addEventListener('click', function(e) {
             e.preventDefault();
-            // Set authentication context for Client Dashboard
-            (window as any).tetrixAuthContext = 'dashboard';
-            (window as any).open2FAModal();
+            // Seamless redirect to internal dashboard
+            if (window.redirectToInternal) {
+              window.redirectToInternal('dashboard');
+            } else {
+              // Fallback to 2FA modal
+              (window as any).tetrixAuthContext = 'dashboard';
+              (window as any).open2FAModal();
+            }
             // Close mobile menu
             if (menu) {
               menu.classList.add('hidden');
