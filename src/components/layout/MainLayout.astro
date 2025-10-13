@@ -5,11 +5,48 @@ import Footer from './Footer.astro';
 import ServiceModals from '../ServiceModals.astro';
 // MainLayout.astro
 ---
-<Header />
-<main>
-  <slot />
-</main>
-<Footer />
 
-<!-- Global Service Modals -->
-<ServiceModals /> 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="description" content="TETRIX - Enterprise-Grade Communications Platform and AI-Powered Business Workflows" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="generator" content={Astro.generator} />
+  <title>TETRIX - Enterprise Communications & AI Solutions</title>
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://tetrixcorp.com" />
+  <meta property="og:title" content="TETRIX - Enterprise Communications & AI Solutions" />
+  <meta property="og:description" content="Transform your enterprise with our comprehensive suite of professional services: IVR Systems, Unified Messaging Platform, Marketing Campaigns, and IoT Telematics." />
+  <meta property="og:image" content="https://tetrixcorp.com/og-image.jpg" />
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://tetrixcorp.com" />
+  <meta property="twitter:title" content="TETRIX - Enterprise Communications & AI Solutions" />
+  <meta property="twitter:description" content="Transform your enterprise with our comprehensive suite of professional services: IVR Systems, Unified Messaging Platform, Marketing Campaigns, and IoT Telematics." />
+  <meta property="twitter:image" content="https://tetrixcorp.com/og-image.jpg" />
+
+  <!-- Theme color -->
+  <meta name="theme-color" content="#FF3B30" />
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <Header />
+  <main>
+    <slot />
+  </main>
+  <Footer />
+
+  <!-- Global Service Modals -->
+  <ServiceModals />
+</body>
+</html>
+
+<style is:global>
+  html {
+    font-family: system-ui, sans-serif;
+  }
+</style> 
