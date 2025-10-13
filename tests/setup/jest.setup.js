@@ -1,6 +1,11 @@
 // Jest setup file for authentication tests
 require('@testing-library/jest-dom');
 
+// Mock TextEncoder and TextDecoder for JSDOM
+const { TextEncoder, TextDecoder } = require('util');
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
+
 // Mock localStorage
 const localStorageMock = {
   getItem: jest.fn(),
