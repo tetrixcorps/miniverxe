@@ -1,220 +1,275 @@
-# TETRIX Cross-Platform Authentication Tests
+# 🧪 TETRIX Dual Invoice Delivery Test Suite
 
-This directory contains comprehensive tests for the TETRIX cross-platform authentication system.
+Comprehensive test suite for the TETRIX dual invoice delivery system covering all pricing page services.
 
-## 📁 Test Structure
+## 📋 Test Overview
 
-```
-tests/
-├── unit/                    # Unit tests for individual components
-│   ├── 2FAModal.test.tsx
-│   ├── CodeAcademyModal.test.tsx
-│   └── EnvironmentConfig.test.ts
-├── functional/              # Functional tests for user flows
-│   ├── CodeAcademyAuthFlow.test.tsx
-│   └── JoromiAuthFlow.test.tsx
-├── integration/             # Integration tests for cross-platform auth
-│   ├── CrossPlatformAuth.test.tsx
-│   └── AuthBridge.test.tsx
-├── mocks/                   # Mock data and utilities
-│   └── api-mocks.ts
-├── setup/                   # Test setup and configuration
-│   ├── jest.setup.js
-│   ├── test-utils.ts
-│   └── test-environment.ts
-└── README.md               # This file
-```
+This test suite validates the complete dual invoice delivery pipeline for:
+- **Healthcare Services** (4 tiers)
+- **Legal Services** (4 tiers) 
+- **Business Services** (4 tiers)
 
-## 🧪 Test Types
+## 🏗️ Test Structure
 
-### Unit Tests
-- **Purpose**: Test individual components in isolation
-- **Coverage**: Component rendering, event handling, state management
-- **Files**: `tests/unit/*.test.tsx`
+### **Unit Tests** (`tests/unit/`)
+- **enhancedInvoiceService.test.ts** - Core invoice processing logic
+- **enhancedStripeWebhookService.test.ts** - Webhook event handling
+- **esimIntegrationService.test.ts** - eSIM ordering and activation
 
-### Functional Tests
-- **Purpose**: Test complete user flows and interactions
-- **Coverage**: End-to-end user journeys, authentication flows
-- **Files**: `tests/functional/*.test.tsx`
+### **Functional Tests** (`tests/functional/`)
+- **dualDeliveryPipeline.test.ts** - End-to-end delivery workflows
+- Service-specific payment processing
+- Error handling and recovery scenarios
+- Bulk processing validation
 
-### Integration Tests
-- **Purpose**: Test cross-platform authentication integration
-- **Coverage**: Platform switching, token sharing, error handling
-- **Files**: `tests/integration/*.test.tsx`
+### **Integration Tests** (`tests/integration/`)
+- **fullSystemIntegration.test.ts** - Complete system integration
+- Real service interactions
+- Webhook-to-delivery pipeline
+- Cross-service communication
 
 ## 🚀 Running Tests
 
-### All Tests
+### **Quick Start**
 ```bash
+# Run all tests
 npm run test
-```
 
-### By Type
-```bash
-# Unit tests only
+# Run specific test suites
 npm run test:unit
-
-# Functional tests only
 npm run test:functional
-
-# Integration tests only
 npm run test:integration
-```
 
-### With Coverage
-```bash
+# Run with coverage
 npm run test:coverage
-```
 
-### Watch Mode
-```bash
+# Run in watch mode
 npm run test:watch
 ```
 
-### Debug Mode
+### **Jest Commands**
 ```bash
-npm run test:debug
+# Direct Jest execution
+npm run test:jest
+
+# Specific test suites
+npm run test:jest:unit
+npm run test:jest:functional
+npm run test:jest:integration
+
+# Coverage report
+npm run test:jest:coverage
+
+# Watch mode
+npm run test:jest:watch
+```
+
+### **CI/CD**
+```bash
+# Continuous integration
+npm run test:ci
 ```
 
 ## 📊 Test Coverage
 
-The test suite aims for:
+### **Coverage Targets**
 - **Branches**: 80%
 - **Functions**: 80%
 - **Lines**: 80%
 - **Statements**: 80%
 
-## 🔧 Test Configuration
-
-### Jest Configuration
-- **Preset**: `ts-jest`
-- **Environment**: `jsdom`
-- **Timeout**: 10 seconds
-- **Setup**: `tests/setup/jest.setup.js`
-
-### Environment Variables
-```bash
-NODE_ENV=test
-TETRIX_API_URL=http://localhost:4321
-JOROMI_URL=http://localhost:3000
-CODE_ACADEMY_URL=http://localhost:3001
-```
-
-## 🎯 Test Scenarios
-
-### Authentication Flows
-1. **Authenticated User**: Skip 2FA, direct redirect
-2. **Unauthenticated User**: Complete 2FA flow
-3. **Error Handling**: Network errors, invalid codes
-4. **Retry Logic**: Multiple attempts, error recovery
-
-### Cross-Platform Integration
-1. **Platform Switching**: JoRoMi ↔ Code Academy
-2. **Token Sharing**: Unified authentication state
-3. **Environment Detection**: Development vs Production
-4. **Error Propagation**: Consistent error handling
-
-### Component Testing
-1. **2FA Modal**: Phone input, code verification
-2. **Code Academy Modal**: Authentication integration
-3. **Environment Config**: URL resolution, environment detection
-4. **Auth Bridges**: Cross-platform token management
-
-## 🛠️ Mock Data
-
-### API Responses
-- `mock2FAInitiateResponse`: Successful 2FA initiation
-- `mock2FAVerifyResponse`: Successful code verification
-- `mock2FAErrorResponse`: Error responses
-
-### User Data
-- `mockUserData`: Valid user information
-- `mockAuthToken`: Authentication token
-- `mockPhoneNumber`: Test phone number
-- `mockVerificationCode`: Test verification code
-
-### Environment Configs
-- `mockEnvironmentConfigs`: Development, staging, production
-- `mockPlatforms`: JoRoMi, Code Academy, TETRIX
-- `mockErrorMessages`: Standardized error messages
-
-## 🔍 Debugging Tests
-
-### Common Issues
-1. **Async Operations**: Use `waitFor()` for async updates
-2. **Mock Cleanup**: Clear mocks between tests
-3. **State Management**: Reset authentication state
-4. **Environment Variables**: Ensure test environment is set
-
-### Debug Commands
-```bash
-# Run specific test file
-npm test -- 2FAModal.test.tsx
-
-# Run tests with verbose output
-npm run test:verbose
-
-# Run tests in debug mode
-npm run test:debug
-
-# Run tests with coverage
-npm run test:coverage
-```
-
-## 📈 Continuous Integration
-
-Tests run automatically on:
-- **Push** to main, dev, staging branches
-- **Pull Requests** to main, dev branches
-- **Multiple Node.js versions** (18.x, 20.x)
-
-### CI Pipeline
-1. Install dependencies
-2. Run unit tests
-3. Run functional tests
-4. Run integration tests
-5. Generate coverage report
-6. Upload to Codecov
-
-## 🎉 Test Results
-
-### Success Criteria
-- All tests pass
-- Coverage thresholds met
-- No console errors
-- No memory leaks
-
-### Coverage Reports
+### **Coverage Reports**
+- **Text**: Console output
 - **HTML**: `coverage/index.html`
 - **LCOV**: `coverage/lcov.info`
-- **Text**: Console output
 
-## 📝 Writing New Tests
+## 🧩 Test Utilities
 
-### Test Structure
-```typescript
-describe('Component Name', () => {
-  beforeEach(() => {
-    // Setup
-  });
+### **Mock Services**
+- **Stripe API** - Complete Stripe object mocking
+- **Notification Service** - Email/SMS delivery simulation
+- **eSIM Integration** - API call mocking
+- **Webhook Events** - Stripe webhook simulation
 
-  it('should do something', () => {
-    // Test implementation
-  });
-});
+### **Test Data**
+- **Service Configurations** - All pricing page services
+- **Customer Data** - Various customer profiles
+- **Invoice Data** - Different payment scenarios
+- **Error Scenarios** - Failure case simulation
+
+### **Helper Functions**
+- **Data Generators** - Bulk test data creation
+- **Assertion Helpers** - Custom validation functions
+- **Mock Factories** - Service mock creation
+
+## 🔍 Test Scenarios
+
+### **Healthcare Services**
+- ✅ Individual Practice ($150/provider) - Email + SMS + Internal
+- ✅ Small Practice ($200 base + $100/provider) - Email + SMS + Internal
+- ✅ Professional ($500 base + $75/provider) - Email + SMS + Internal + eSIM
+- ✅ Enterprise ($2,000 base + $50/provider) - Email + SMS + Internal + eSIM
+
+### **Legal Services**
+- ✅ Solo Practice ($150/attorney) - Email + SMS + Internal
+- ✅ Small Firm ($500 base + $125/attorney) - Email + SMS + Internal
+- ✅ Mid-Size Firm ($1,000 base + $100/attorney) - Email + SMS + Internal + eSIM
+- ✅ Enterprise Law Firm ($3,000 base + $75/attorney) - Email + SMS + Internal + eSIM
+
+### **Business Services**
+- ✅ Starter ($99/month) - Email + SMS + Internal + eSIM
+- ✅ Professional ($299/month) - Email + SMS + Internal + eSIM
+- ✅ Enterprise ($799/month) - Email + SMS + Internal + eSIM
+- ✅ Custom Enterprise (Contact Sales) - Email + SMS + Internal + eSIM
+
+## 🛠️ Test Configuration
+
+### **Jest Configuration** (`tests/jest.config.js`)
+```javascript
+module.exports = {
+  testEnvironment: 'node',
+  testMatch: ['**/tests/**/*.test.ts'],
+  setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
+  collectCoverage: true,
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80
+    }
+  }
+};
 ```
 
-### Best Practices
-1. **Arrange-Act-Assert**: Clear test structure
-2. **Descriptive Names**: What, when, expected result
-3. **Single Responsibility**: One test, one assertion
-4. **Mock External Dependencies**: Isolate components
-5. **Clean Up**: Reset state between tests
+### **Environment Variables**
+```bash
+NODE_ENV=test
+STRIPE_SECRET_KEY=sk_test_mock_key
+STRIPE_WEBHOOK_SECRET=whsec_mock_secret
+MAILGUN_API_KEY=key_mock_mailgun
+MAILGUN_DOMAIN=mg.test.com
+***REMOVED***=KEY_mock_telnyx
+ESIM_API_BASE_URL=https://api.test-esim.com
+ESIM_API_KEY=esim_mock_key
+INTERNAL_SUPPORT_EMAIL=support@test.com
+```
 
-### Test Utilities
-- `render()`: Render components
-- `fireEvent`: Simulate user interactions
-- `waitFor()`: Wait for async operations
-- `screen`: Query DOM elements
-- `mockFetch()`: Mock API calls
-- `setupAuthenticatedState()`: Set auth state
+## 🐛 Debugging Tests
+
+### **Verbose Output**
+```bash
+npm run test:jest -- --verbose
+```
+
+### **Specific Test File**
+```bash
+npm run test:jest tests/unit/enhancedInvoiceService.test.ts
+```
+
+### **Test Pattern Matching**
+```bash
+npm run test:jest -- --testNamePattern="should process healthcare"
+```
+
+### **Debug Mode**
+```bash
+node --inspect-brk node_modules/.bin/jest --config=tests/jest.config.js
+```
+
+## 📈 Performance Testing
+
+### **Load Testing**
+- Bulk invoice processing (100+ invoices)
+- Concurrent webhook handling
+- Memory usage monitoring
+- Response time validation
+
+### **Stress Testing**
+- High-volume payment processing
+- Service failure scenarios
+- Network timeout handling
+- Resource exhaustion recovery
+
+## 🔒 Security Testing
+
+### **Input Validation**
+- Malicious webhook payloads
+- Invalid invoice data
+- SQL injection attempts
+- XSS prevention
+
+### **Authentication**
+- Webhook signature verification
+- API key validation
+- Service authentication
+- Access control testing
+
+## 📝 Test Documentation
+
+### **Test Reports**
+- **Unit Test Results** - Individual component validation
+- **Functional Test Results** - Workflow validation
+- **Integration Test Results** - System validation
+- **Coverage Reports** - Code coverage analysis
+
+### **Test Metrics**
+- **Test Execution Time** - Performance benchmarks
+- **Success Rate** - Reliability metrics
+- **Coverage Percentage** - Code coverage stats
+- **Error Rate** - Failure analysis
+
+## 🚀 Continuous Integration
+
+### **GitHub Actions**
+```yaml
+name: Test Suite
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+      - run: npm install
+      - run: npm run test:ci
+```
+
+### **Pre-commit Hooks**
+```bash
+# Install pre-commit hook
+npm run test:jest -- --passWithNoTests
+```
+
+## 📞 Support
+
+### **Test Issues**
+- Check test logs for detailed error messages
+- Verify environment variables are set correctly
+- Ensure all dependencies are installed
+- Review test data and mock configurations
+
+### **Debugging Tips**
+- Use `console.log` in tests for debugging
+- Check Jest configuration for correct paths
+- Verify TypeScript compilation
+- Review mock service implementations
+
+---
+
+## ✅ Test Checklist
+
+- [x] Unit tests for all services
+- [x] Functional tests for workflows
+- [x] Integration tests for system
+- [x] Error handling validation
+- [x] Performance testing
+- [x] Security testing
+- [x] Coverage reporting
+- [x] CI/CD integration
+- [x] Documentation
+- [x] Mock services
+
+**Ready for Production! 🚀**

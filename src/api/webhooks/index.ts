@@ -46,21 +46,44 @@ export const handleTelnyxWebhook = async (req: Request, res: Response) => {
   }
 };
 
-// Stripe Trial Webhooks
+// Enhanced Stripe Webhooks with Dual Invoice Delivery
 export const handleStripeWebhook = async (req: Request, res: Response) => {
   try {
     const signature = req.headers['stripe-signature'] as string;
-    const payload = req.body;
+    const payload = JSON.stringify(req.body);
 
-    // Verify webhook signature
-    const event = stripeTrialService.handleWebhook(payload, signature);
+    // Import enhanced webhook service
+    const { enhancedStripeWebhookService } = await import('../../services/enhancedStripeWebhookService');
     
-    console.log('Stripe webhook received:', event.type);
+    // Process webhook with enhanced service
+    const result = await enhancedStripeWebhookService.handleWebhook(payload, signature);
+    
+    console.log('Enhanced Stripe webhook processed:', {
+      success: result.success,
+      eventType: result.eventType,
+      invoiceId: result.invoiceId,
+      customerId: result.customerId
+    });
 
-    res.status(200).json({ received: true });
+    if (result.success) {
+      res.status(200).json({ 
+        received: true, 
+        eventType: result.eventType,
+        invoiceId: result.invoiceId,
+        customerId: result.customerId
+      });
+    } else {
+      res.status(400).json({ 
+        error: 'Webhook processing failed',
+        details: result.error
+      });
+    }
   } catch (error) {
-    console.error('Stripe webhook error:', error);
-    res.status(400).json({ error: 'Webhook processing failed' });
+    console.error('Enhanced Stripe webhook error:', error);
+    res.status(500).json({ 
+      error: 'Webhook processing failed',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 };
 

@@ -1,41 +1,77 @@
+// Jest configuration for TETRIX dual invoice delivery tests
+
 module.exports = {
-  preset: 'ts-jest',
-  testEnvironment: 'jsdom',
-  setupFilesAfterEnv: ['<rootDir>/tests/setup/jest.setup.js'],
+  // Test environment
+  testEnvironment: 'node',
+  
+  // Test file patterns
   testMatch: [
-    '<rootDir>/tests/unit/**/*.test.{js,ts,tsx}',
-    '<rootDir>/tests/functional/**/*.test.{js,ts,tsx}',
-    '<rootDir>/tests/integration/**/*.test.{js,ts,tsx}'
+    '**/tests/**/*.test.ts',
+    '**/tests/**/*.test.js'
   ],
-  collectCoverageFrom: [
-    'src/**/*.{js,ts,tsx}',
-    '!src/**/*.d.ts',
-    '!src/**/*.stories.{js,ts,tsx}',
-    '!src/**/*.test.{js,ts,tsx}'
-  ],
-  coverageDirectory: 'coverage',
-  coverageReporters: ['text', 'lcov', 'html'],
-  moduleNameMapper: {
+  
+  // Module file extensions
+  moduleFileExtensions: ['ts', 'js', 'json'],
+  
+  // Transform files
+  transform: {
+    '^.+\\.ts$': 'ts-jest'
+  },
+  
+  // Setup files
+  setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
+  
+  // Module name mapping
+  moduleNameMapping: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@tests/(.*)$': '<rootDir>/tests/$1'
   },
-  transform: {
-    '^.+\\.(ts|tsx)$': 'ts-jest',
-    '^.+\\.(js|jsx)$': 'babel-jest'
-  },
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
-  testTimeout: 15000, // Increased timeout for integration tests
-  verbose: true,
-  // Add globals for test environment
-  globals: {
-    'ts-jest': {
-      useESM: true
+  
+  // Coverage configuration
+  collectCoverage: true,
+  coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'lcov', 'html'],
+  collectCoverageFrom: [
+    'src/**/*.{ts,js}',
+    '!src/**/*.d.ts',
+    '!src/**/*.test.{ts,js}',
+    '!src/**/*.spec.{ts,js}'
+  ],
+  
+  // Coverage thresholds
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80
     }
   },
-  // Handle ES modules
-  extensionsToTreatAsEsm: ['.ts', '.tsx'],
-  // Transform ignore patterns
-  transformIgnorePatterns: [
-    'node_modules/(?!(.*\\.mjs$))'
-  ]
+  
+  // Test timeout
+  testTimeout: 30000,
+  
+  // Clear mocks between tests
+  clearMocks: true,
+  
+  // Restore mocks after each test
+  restoreMocks: true,
+  
+  // Verbose output
+  verbose: true,
+  
+  // Error on deprecated
+  errorOnDeprecated: true,
+  
+  // Globals
+  globals: {
+    'ts-jest': {
+      tsconfig: 'tsconfig.json'
+    }
+  },
+  
+  // Test environment variables
+  testEnvironmentOptions: {
+    NODE_ENV: 'test'
+  }
 };
