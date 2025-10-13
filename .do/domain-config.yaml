@@ -1,0 +1,205 @@
+# TETRIX Domain Configuration for DigitalOcean App Platform
+# This file contains the complete domain setup for the TETRIX platform
+
+name: tetrix-production-fixed
+
+# Custom domains configuration
+domains:
+  # Primary TETRIX domain
+  - domain: tetrixcorp.com
+    type: PRIMARY
+    zone: tetrixcorp.com
+  
+  # TETRIX subdomains
+  - domain: www.tetrixcorp.com
+    type: ALIAS
+    zone: tetrixcorp.com
+  
+  - domain: api.tetrixcorp.com
+    type: ALIAS
+    zone: tetrixcorp.com
+  
+  - domain: iot.tetrixcorp.com
+    type: ALIAS
+    zone: tetrixcorp.com
+  
+  - domain: vpn.tetrixcorp.com
+    type: ALIAS
+    zone: tetrixcorp.com
+  
+  # Primary JoRoMi domain
+  - domain: joromi.ai
+    type: PRIMARY
+    zone: joromi.ai
+  
+  # JoRoMi subdomains
+  - domain: www.joromi.ai
+    type: ALIAS
+    zone: joromi.ai
+
+# Services configuration
+services:
+  # TETRIX Frontend with SHANGO Integration
+  - name: tetrix-frontend
+    github:
+      repo: tetrixcorps/miniverxe
+      branch: main
+      deploy_on_push: true
+    source_dir: /
+    http_port: 8080
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    build_command: |
+      # Clean up any conflicting lockfiles
+      rm -f package-lock.json yarn.lock npm-shrinkwrap.json .yarnrc .yarnrc.yml
+      # Install dependencies (pnpm already installed by buildpack)
+      pnpm install --frozen-lockfile
+      # Build the application
+      pnpm run build
+    run_command: pnpm run start
+    routes:
+      - path: /
+    envs:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: "0.0.0.0"
+      - key: PORT
+        value: "8080"
+      - key: TETRIX_DOMAIN
+        value: "tetrixcorp.com"
+      - key: JOROMI_DOMAIN
+        value: "joromi.ai"
+      - key: CROSS_PLATFORM_SESSION_SECRET
+        value: "tetrix-joromi-session-secret-2024"
+      # Sinch API Configuration for SHANGO
+      - key: SINCH_API_TOKEN
+        value: "544cdba462974e05adc5140211c0311c"
+      - key: SINCH_SERVICE_PLAN_ID
+        value: "01K1GYEHZAXEZVGDA34V3873KM"
+      - key: SINCH_VIRTUAL_NUMBER
+        value: "+16465799770"
+      - key: SINCH_BACKUP_NUMBER_1
+        value: "+18888046762"
+      - key: SINCH_BACKUP_NUMBER_2
+        value: "+12082792555"
+      - key: SINCH_BACKUP_NUMBER_3
+        value: "+12082792555"
+      - key: SINCH_CONVERSATION_PROJECT_ID
+        value: "01K1GYEHZAXEZVGDA34V3873KM"
+      # SHANGO AI Super Agent Configuration
+      - key: NEXT_PUBLIC_SINCH_API_KEY
+        value: "544cdba462974e05adc5140211c0311c"
+      - key: NEXT_PUBLIC_SINCH_WIDGET_ID
+        value: "shango-widget-2024"
+      - key: SHANGO_SESSION_TIMEOUT
+        value: "3600"
+      - key: SHANGO_MAX_MESSAGES
+        value: "1000"
+      - key: SHANGO_DEFAULT_AGENT
+        value: "shango-general"
+      # Firebase Configuration
+      - key: FIREBASE_API_KEY
+        value: "AIzaSyBvQjK8X9Y2Z3A4B5C6D7E8F9G0H1I2J3K"
+      - key: FIREBASE_AUTH_DOMAIN
+        value: "fir-rtc-7b55d.firebaseapp.com"
+      - key: "FIREBASE_PROJECT_ID"
+        value: "fir-rtc-7b55d"
+      - key: "FIREBASE_STORAGE_BUCKET"
+        value: "fir-rtc-7b55d.appspot.com"
+      - key: "FIREBASE_MESSAGING_SENDER_ID"
+        value: "1073036366262"
+      - key: "FIREBASE_APP_ID"
+        value: "1:1073036366262:web:a76a0e270753f3e9497117"
+      # Server configuration for DigitalOcean
+      - key: HOSTNAME
+        value: "0.0.0.0"
+      - key: NODE_OPTIONS
+        value: "--max-old-space-size=512"
+    health_check:
+      http_path: /api/health
+      initial_delay_seconds: 60
+      period_seconds: 15
+      timeout_seconds: 10
+      success_threshold: 1
+      failure_threshold: 5
+
+# Static sites for subdomains (if needed)
+static_sites:
+  # API Documentation Site
+  - name: api-docs
+    github:
+      repo: tetrixcorps/miniverxe
+      branch: main
+      deploy_on_push: true
+    source_dir: /docs/api
+    build_command: |
+      echo "Building API documentation..."
+    routes:
+      - path: /api/docs
+    envs:
+      - key: NODE_ENV
+        value: production
+
+# Database configuration
+databases:
+  - name: tetrix-postgres
+    engine: PG
+    version: "15"
+    size: db-s-1vcpu-1gb
+    num_nodes: 1
+
+# CDN configuration
+cdn:
+  enabled: true
+  cache_ttl: 3600
+  compress: true
+  gzip: true
+
+# Monitoring and alerts
+monitoring:
+  enabled: true
+  health_checks:
+    - path: /api/health
+      interval: 30
+      timeout: 10
+      retries: 3
+  alerts:
+    - type: uptime
+      threshold: 99.9
+    - type: response_time
+      threshold: 1000
+    - type: error_rate
+      threshold: 1.0
+
+# Security configuration
+security:
+  ssl_certificates:
+    auto_ssl: true
+    force_https: true
+  headers:
+    - name: X-Frame-Options
+      value: DENY
+    - name: X-Content-Type-Options
+      value: nosniff
+    - name: X-XSS-Protection
+      value: "1; mode=block"
+    - name: Strict-Transport-Security
+      value: "max-age=31536000; includeSubDomains"
+    - name: Content-Security-Policy
+      value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:; frame-ancestors 'none';"
+
+# Backup configuration
+backups:
+  enabled: true
+  schedule: "0 2 * * *"  # Daily at 2 AM
+  retention_days: 30
+
+# Scaling configuration
+scaling:
+  auto_scaling:
+    enabled: true
+    min_instances: 1
+    max_instances: 5
+    cpu_threshold: 70
+    memory_threshold: 80

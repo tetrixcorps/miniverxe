@@ -1,0 +1,15 @@
+---
+import '../../styles/tailwind.css';
+import Header from './Header.astro';
+import Footer from './Footer.astro';
+import ServiceModals from '../ServiceModals.astro';
+// MainLayout.astro
+---
+<Header />
+<main>
+  <slot />
+</main>
+<Footer />
+
+<!-- Global Service Modals -->
+<ServiceModals /> 

@@ -1,0 +1,32 @@
+name: tetrix-minimal
+
+# Minimal TETRIX deployment configuration
+services:
+  - name: tetrix-frontend
+    github:
+      repo: tetrixcorps/miniverxe
+      branch: main
+      deploy_on_push: true
+    source_dir: /
+    http_port: 8080
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    build_command: |
+      rm -f package-lock.json yarn.lock npm-shrinkwrap.json .yarnrc .yarnrc.yml
+      npm install -g pnpm@10.8.0
+      pnpm install --frozen-lockfile
+      pnpm run build
+    run_command: pnpm run start
+    routes:
+      - path: /
+    envs:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: "0.0.0.0"
+      - key: PORT
+        value: "8080"
+
+# Features
+features:
+  - buildpack-stack=ubuntu-22

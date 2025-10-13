@@ -1,0 +1,398 @@
+---
+import MainLayout from '../components/layout/MainLayout.astro';
+---
+
+<MainLayout title="TETRIX Code Academy - Learn to Code with AI">
+  <div class="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50">
+    <!-- Hero Section -->
+    <section class="py-20 px-4 relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-purple-600/10 to-indigo-600/10"></div>
+      <div class="max-w-7xl mx-auto text-center relative z-10">
+        <div class="w-24 h-24 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-8">
+          <span class="text-4xl text-white">&#128187;</span>
+        </div>
+        <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+          TETRIX <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Code Academy</span>
+        </h1>
+        <p class="text-xl text-gray-600 mb-8 max-w-4xl mx-auto">
+          Master programming with our AI-powered learning platform. Get real-time assistance, 
+          collaborate with peers, and build enterprise-grade applications.
+        </p>
+        
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 max-w-4xl mx-auto">
+          <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/30">
+            <div class="text-2xl font-bold text-blue-600">10K+</div>
+            <div class="text-sm text-gray-600">Students</div>
+          </div>
+          <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/30">
+            <div class="text-2xl font-bold text-purple-600">50+</div>
+            <div class="text-sm text-gray-600">Courses</div>
+          </div>
+          <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/30">
+            <div class="text-2xl font-bold text-indigo-600">95%</div>
+            <div class="text-sm text-gray-600">Success Rate</div>
+          </div>
+          <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/30">
+            <div class="text-2xl font-bold text-green-600">24/7</div>
+            <div class="text-sm text-gray-600">AI Support</div>
+          </div>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <button id="start-learning-btn" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg">
+            Start Learning Now
+          </button>
+          <button id="view-demo-btn" class="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-blue-50 transition-colors border border-blue-600">
+            View Live Demo
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-20 px-4 bg-white">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl font-bold text-center text-gray-900 mb-16">
+          Why Choose TETRIX Code Academy?
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- AI Assistant -->
+          <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-blue-200">
+            <div class="w-16 h-16 bg-blue-600 rounded-lg flex items-center justify-center mb-6">
+              <span class="text-2xl text-white">&#129302;</span>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">AI-Powered Learning</h3>
+            <p class="text-gray-600 mb-4">
+              Get instant help with our SHANGO AI agent. Ask questions, get code reviews, 
+              and receive personalized explanations tailored to your learning level.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">Real-time Help</span>
+              <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">Voice Input</span>
+              <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">Code Review</span>
+            </div>
+          </div>
+
+          <!-- Interactive Learning -->
+          <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-purple-200">
+            <div class="w-16 h-16 bg-purple-600 rounded-lg flex items-center justify-center mb-6">
+              <span class="text-2xl text-white">&#128218;</span>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Interactive Courses</h3>
+            <p class="text-gray-600 mb-4">
+              Learn by doing with hands-on coding exercises, live coding sessions, 
+              and instant feedback on your progress.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-semibold">Live Coding</span>
+              <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-semibold">Progress Tracking</span>
+              <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-semibold">Instant Feedback</span>
+            </div>
+          </div>
+
+          <!-- Collaboration -->
+          <div class="bg-gradient-to-br from-green-50 to-green-100 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-green-200">
+            <div class="w-16 h-16 bg-green-600 rounded-lg flex items-center justify-center mb-6">
+              <span class="text-2xl text-white">&#128101;</span>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Collaborative Learning</h3>
+            <p class="text-gray-600 mb-4">
+              Work together on projects with real-time collaboration, peer review, 
+              and team-based learning experiences.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">Real-time Sync</span>
+              <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">Peer Review</span>
+              <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">Team Projects</span>
+            </div>
+          </div>
+
+          <!-- Enterprise Features -->
+          <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-orange-200">
+            <div class="w-16 h-16 bg-orange-600 rounded-lg flex items-center justify-center mb-6">
+              <span class="text-2xl text-white">&#127970;</span>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Enterprise Ready</h3>
+            <p class="text-gray-600 mb-4">
+              Team management, analytics, custom learning paths, and enterprise-grade security 
+              for organizations.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-semibold">Team Analytics</span>
+              <span class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-semibold">Custom Paths</span>
+              <span class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-semibold">Enterprise Security</span>
+            </div>
+          </div>
+
+          <!-- Voice Learning -->
+          <div class="bg-gradient-to-br from-red-50 to-red-100 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-red-200">
+            <div class="w-16 h-16 bg-red-600 rounded-lg flex items-center justify-center mb-6">
+              <span class="text-2xl text-white">&#127908;</span>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Voice Learning</h3>
+            <p class="text-gray-600 mb-4">
+              Ask questions using voice commands with advanced speech-to-text technology 
+              powered by Deepgram.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold">Voice Commands</span>
+              <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold">Deepgram AI</span>
+              <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold">Hands-free</span>
+            </div>
+          </div>
+
+          <!-- Security -->
+          <div class="bg-gradient-to-br from-gray-50 to-gray-100 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200">
+            <div class="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center mb-6">
+              <span class="text-2xl text-white">&#128274;</span>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Secure & Compliant</h3>
+            <p class="text-gray-600 mb-4">
+              Enterprise-grade security with 2FA, SOC II compliance, and data protection 
+              for your learning journey.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm font-semibold">2FA Protected</span>
+              <span class="bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm font-semibold">SOC II</span>
+              <span class="bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm font-semibold">Data Protected</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Technology Stack -->
+    <section class="py-20 px-4 bg-gray-50">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl font-bold text-center text-gray-900 mb-16">
+          Modern Technology Stack
+        </h2>
+        <div class="grid md:grid-cols-2 gap-12">
+          <div>
+            <h3 class="text-2xl font-semibold text-gray-900 mb-8">Frontend Technologies</h3>
+            <div class="space-y-4">
+              <div class="flex items-center space-x-4 p-4 bg-white rounded-lg shadow-sm">
+                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <span class="text-blue-600 font-bold text-lg">R</span>
+                </div>
+                <div>
+                  <h4 class="font-semibold text-gray-900">React with Vite</h4>
+                  <p class="text-gray-600 text-sm">Fast, modern UI framework for interactive learning</p>
+                </div>
+              </div>
+              <div class="flex items-center space-x-4 p-4 bg-white rounded-lg shadow-sm">
+                <div class="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center">
+                  <span class="text-cyan-600 font-bold text-lg">T</span>
+                </div>
+                <div>
+                  <h4 class="font-semibold text-gray-900">Tailwind CSS</h4>
+                  <p class="text-gray-600 text-sm">Utility-first CSS for rapid styling</p>
+                </div>
+              </div>
+              <div class="flex items-center space-x-4 p-4 bg-white rounded-lg shadow-sm">
+                <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                  <span class="text-yellow-600 font-bold text-lg">TS</span>
+                </div>
+                <div>
+                  <h4 class="font-semibold text-gray-900">TypeScript</h4>
+                  <p class="text-gray-600 text-sm">Type-safe development experience</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-2xl font-semibold text-gray-900 mb-8">Backend Technologies</h3>
+            <div class="space-y-4">
+              <div class="flex items-center space-x-4 p-4 bg-white rounded-lg shadow-sm">
+                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                  <span class="text-green-600 font-bold text-lg">N</span>
+                </div>
+                <div>
+                  <h4 class="font-semibold text-gray-900">Node.js & Express</h4>
+                  <p class="text-gray-600 text-sm">Scalable server-side JavaScript runtime</p>
+                </div>
+              </div>
+              <div class="flex items-center space-x-4 p-4 bg-white rounded-lg shadow-sm">
+                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <span class="text-blue-600 font-bold text-lg">P</span>
+                </div>
+                <div>
+                  <h4 class="font-semibold text-gray-900">PostgreSQL</h4>
+                  <p class="text-gray-600 text-sm">Robust relational database for user data</p>
+                </div>
+              </div>
+              <div class="flex items-center space-x-4 p-4 bg-white rounded-lg shadow-sm">
+                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <span class="text-purple-600 font-bold text-lg">S</span>
+                </div>
+                <div>
+                  <h4 class="font-semibold text-gray-900">Socket.io</h4>
+                  <p class="text-gray-600 text-sm">Real-time communication for collaboration</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Learning Paths -->
+    <section class="py-20 px-4 bg-white">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl font-bold text-center text-gray-900 mb-16">
+          Choose Your Learning Path
+        </h2>
+        <div class="grid md:grid-cols-3 gap-8">
+          <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-8 rounded-xl shadow-lg border border-blue-200">
+            <div class="text-4xl mb-6">&#128640;</div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Beginner</h3>
+            <p class="text-gray-600 mb-6">Perfect for those new to programming</p>
+            <ul class="space-y-3 text-gray-600 mb-8">
+              <li class="flex items-center">
+                <span class="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
+                HTML & CSS Fundamentals
+              </li>
+              <li class="flex items-center">
+                <span class="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
+                JavaScript Basics
+              </li>
+              <li class="flex items-center">
+                <span class="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
+                Git Version Control
+              </li>
+              <li class="flex items-center">
+                <span class="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
+                Introduction to React
+              </li>
+            </ul>
+            <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-semibold mb-6 text-center">
+              4-6 weeks &#8226; Self-paced
+            </div>
+            <button class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+              Start Beginner Path
+            </button>
+          </div>
+
+          <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-8 rounded-xl shadow-lg border border-purple-200">
+            <div class="text-4xl mb-6">&#9889;</div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Intermediate</h3>
+            <p class="text-gray-600 mb-6">For developers with basic programming knowledge</p>
+            <ul class="space-y-3 text-gray-600 mb-8">
+              <li class="flex items-center">
+                <span class="w-2 h-2 bg-purple-600 rounded-full mr-3"></span>
+                Advanced React & Hooks
+              </li>
+              <li class="flex items-center">
+                <span class="w-2 h-2 bg-purple-600 rounded-full mr-3"></span>
+                Node.js & Express
+              </li>
+              <li class="flex items-center">
+                <span class="w-2 h-2 bg-purple-600 rounded-full mr-3"></span>
+                Database Design
+              </li>
+              <li class="flex items-center">
+                <span class="w-2 h-2 bg-purple-600 rounded-full mr-3"></span>
+                API Development
+              </li>
+            </ul>
+            <div class="bg-purple-100 text-purple-800 px-4 py-2 rounded-full text-sm font-semibold mb-6 text-center">
+              6-8 weeks &#8226; Self-paced
+            </div>
+            <button class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors">
+              Start Intermediate Path
+            </button>
+          </div>
+
+          <div class="bg-gradient-to-br from-green-50 to-green-100 p-8 rounded-xl shadow-lg border border-green-200">
+            <div class="text-4xl mb-6">&#127942;</div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Advanced</h3>
+            <p class="text-gray-600 mb-6">For experienced developers ready for enterprise</p>
+            <ul class="space-y-3 text-gray-600 mb-8">
+              <li class="flex items-center">
+                <span class="w-2 h-2 bg-green-600 rounded-full mr-3"></span>
+                Microservices Architecture
+              </li>
+              <li class="flex items-center">
+                <span class="w-2 h-2 bg-green-600 rounded-full mr-3"></span>
+                Cloud Deployment
+              </li>
+              <li class="flex items-center">
+                <span class="w-2 h-2 bg-green-600 rounded-full mr-3"></span>
+                DevOps & CI/CD
+              </li>
+              <li class="flex items-center">
+                <span class="w-2 h-2 bg-green-600 rounded-full mr-3"></span>
+                AI Integration
+              </li>
+            </ul>
+            <div class="bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-semibold mb-6 text-center">
+              8-12 weeks &#8226; Self-paced
+            </div>
+            <button class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors">
+              Start Advanced Path
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 px-4 bg-gradient-to-r from-blue-600 to-purple-600">
+      <div class="max-w-4xl mx-auto text-center text-white">
+        <h2 class="text-4xl font-bold mb-6">Ready to Transform Your Coding Skills?</h2>
+        <p class="text-xl text-blue-100 mb-8">
+          Join thousands of developers learning with our AI-powered platform. 
+          Start your journey today and build the future of technology.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <button id="enroll-now-btn" class="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-blue-50 transition-colors shadow-lg">
+            Enroll Now - Free Trial
+          </button>
+          <button id="schedule-demo-btn" class="bg-blue-500 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-400 transition-colors border border-blue-400">
+            Schedule Demo
+          </button>
+        </div>
+        <p class="text-blue-200 text-sm mt-4">
+          No credit card required &#8226; 7-day free trial &#8226; Cancel anytime
+        </p>
+      </div>
+    </section>
+  </div>
+</MainLayout>
+
+<script>
+  // Code Academy page functionality
+  const startLearningBtn = document.getElementById('start-learning-btn');
+  const viewDemoBtn = document.getElementById('view-demo-btn');
+  const enrollNowBtn = document.getElementById('enroll-now-btn');
+  const scheduleDemoBtn = document.getElementById('schedule-demo-btn');
+
+  if (startLearningBtn) {
+    startLearningBtn.addEventListener('click', function() {
+      // Redirect to sign up or login
+      window.location.href = '/code-academy/signup';
+    });
+  }
+
+  if (viewDemoBtn) {
+    viewDemoBtn.addEventListener('click', function() {
+      // Open demo in new tab
+      window.open('/code-academy/demo', '_blank');
+    });
+  }
+
+  if (enrollNowBtn) {
+    enrollNowBtn.addEventListener('click', function() {
+      // Redirect to enrollment
+      window.location.href = '/code-academy/signup';
+    });
+  }
+
+  if (scheduleDemoBtn) {
+    scheduleDemoBtn.addEventListener('click', function() {
+      // Open contact form or calendar
+      window.location.href = '/contact?demo=code-academy';
+    });
+  }
+</script>

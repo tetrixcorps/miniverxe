@@ -1,0 +1,29 @@
+# Use a specific Node.js version on Alpine for a small, secure image
+FROM node:20-alpine
+
+# Install pnpm globally
+RUN npm install -g pnpm
+
+# Set the working directory
+WORKDIR /app
+
+# Copy dependency manifests
+COPY package.json pnpm-lock.yaml ./
+
+# Install dependencies using --prod flag to skip devDependencies
+RUN pnpm install --prod --frozen-lockfile
+
+# Copy the rest of the application source code
+COPY . .
+
+# Build the Astro application
+RUN pnpm run build
+
+# Clear pnpm cache to reduce image size
+RUN pnpm store prune
+
+# Expose the port the app will run on (should match DigitalOcean's config)
+EXPOSE 8080
+
+# **CRITICAL: Run the production server, not the dev server**
+CMD ["pnpm", "run", "start"]

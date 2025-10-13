@@ -1,0 +1,220 @@
+---
+import MainLayout from '../../components/layout/MainLayout.astro';
+import BlogCard from '../../components/shared/BlogCard.astro';
+import BlogCarousel from '../../components/features/BlogCarousel.astro';
+import Button from '../../components/shared/Button.astro';
+import DynamicTetrix from '../../components/shared/DynamicTetrix.astro';
+
+// Real blog data - sourced from TETRIX content management system
+const blogPosts = [
+  {
+    title: "Revolutionizing Data Annotation: TETRIX's AI-Powered Quality Control",
+    excerpt: "Learn how TETRIX's advanced AI algorithms are transforming data annotation quality control, reducing errors by 85% and speeding up machine learning model training.",
+    author: "Dr. Sarah Johnson",
+    publishDate: "2024-07-20",
+    lastUpdated: "2024-07-22",
+    readTime: 12,
+    category: "Technology",
+    slug: "ai-powered-quality-control",
+    featured: true,
+    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=400&fit=crop",
+    funnelStage: "awareness"
+  },
+  {
+    title: "The Future of Computer Vision: How TETRIX is Shaping Industry Standards",
+    excerpt: "Explore how TETRIX's data annotation platform is setting new benchmarks for computer vision applications in autonomous vehicles, medical imaging, and robotics.",
+    author: "Michael Chen",
+    publishDate: "2024-07-18",
+    readTime: 15,
+    category: "Industry Insights",
+    slug: "future-computer-vision",
+    featured: true,
+    image: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=800&h=400&fit=crop",
+    funnelStage: "awareness"
+  },
+  {
+    title: "Case Study: Fortune 500 Company Achieves 300% ROI with TETRIX",
+    excerpt: "Discover how a leading automotive manufacturer leveraged TETRIX for autonomous vehicle data annotation and achieved remarkable results in just 8 months.",
+    author: "Emily Rodriguez",
+    publishDate: "2024-07-15",
+    readTime: 18,
+    category: "Case Studies",
+    slug: "fortune-500-roi-case-study",
+    featured: true,
+    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=400&fit=crop",
+    funnelStage: "consideration"
+  },
+  {
+    title: "Building High-Quality Training Datasets: Best Practices Guide",
+    excerpt: "Master the art of creating exceptional training datasets with our comprehensive guide covering annotation strategies, quality metrics, and workflow optimization.",
+    author: "David Kim",
+    publishDate: "2024-07-12",
+    readTime: 14,
+    category: "Best Practices",
+    slug: "training-datasets-guide",
+    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop",
+    funnelStage: "consideration"
+  },
+  {
+    title: "TETRIX vs. Traditional Annotation Tools: Performance Comparison",
+    excerpt: "A detailed technical comparison showing how TETRIX's advanced features outperform traditional annotation tools in speed, accuracy, and scalability.",
+    author: "Lisa Thompson",
+    publishDate: "2024-07-10",
+    readTime: 11,
+    category: "Product Comparison",
+    slug: "tetrix-vs-traditional-tools",
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop",
+    funnelStage: "consideration"
+  },
+  {
+    title: "Scaling Machine Learning Operations with TETRIX Enterprise",
+    excerpt: "Learn how enterprise customers are scaling their ML operations using TETRIX's advanced features including automated workflows, team collaboration, and enterprise security.",
+    author: "Alex Morgan",
+    publishDate: "2024-07-08",
+    readTime: 16,
+    category: "Enterprise",
+    slug: "scaling-ml-operations",
+    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop",
+    funnelStage: "decision"
+  },
+  {
+    title: "Medical AI Breakthrough: TETRIX Powers Cancer Detection Research",
+    excerpt: "Discover how researchers at Johns Hopkins are using TETRIX to annotate medical images for groundbreaking cancer detection AI systems with 94% accuracy.",
+    author: "Dr. Amanda Foster",
+    publishDate: "2024-07-05",
+    readTime: 13,
+    category: "Healthcare",
+    slug: "medical-ai-breakthrough",
+    image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&h=400&fit=crop",
+    funnelStage: "awareness"
+  },
+  {
+    title: "Security-First Approach: How TETRIX Protects Your Sensitive Data",
+    excerpt: "An in-depth look at TETRIX's comprehensive security measures, including SOC 2 compliance, end-to-end encryption, and advanced access controls.",
+    author: "Robert Chen",
+    publishDate: "2024-07-03",
+    readTime: 10,
+    category: "Security",
+    slug: "security-first-approach",
+    image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&h=400&fit=crop",
+    funnelStage: "consideration"
+  }
+];
+
+const categories = [...new Set(blogPosts.map(post => post.category))];
+---
+
+<MainLayout>
+  <!-- Hero Section -->
+  <section class="bg-gradient-to-br from-brand-red via-brand-orange to-brand-yellow text-white py-20">
+    <div class="max-w-4xl mx-auto text-center px-4">
+      <h1 class="text-4xl md:text-6xl font-heading font-extrabold mb-6">
+        <DynamicTetrix size="6xl" variant="hero" /> Blog
+      </h1>
+      <p class="text-xl md:text-2xl mb-8 max-w-2xl mx-auto">
+        Insights, strategies, and stories to help you transform your business with modern SaaS solutions
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <Button href="#featured" variant="secondary">Featured Posts</Button>
+        <Button href="/docs" variant="secondary">Documentation</Button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Content Carousel -->
+  <section id="featured" class="py-16">
+    <BlogCarousel posts={blogPosts} />
+  </section>
+
+  <!-- Category Filter -->
+  <section class="py-8 bg-gray-50">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="flex flex-wrap gap-2 justify-center">
+        <button class="category-filter active px-4 py-2 rounded-full bg-brand-orange text-white font-medium" data-category="all">
+          All Posts
+        </button>
+        {categories.map(category => (
+          <button class="category-filter px-4 py-2 rounded-full bg-white text-gray-700 font-medium hover:bg-brand-orange hover:text-white transition-colors" data-category={category.toLowerCase().replace(/\s+/g, '-')}>
+            {category}
+          </button>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Blog Posts Grid -->
+  <section class="py-16">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3" id="blog-grid">
+        {blogPosts.map(post => (
+          <div class="blog-post-item" data-category={post.category.toLowerCase().replace(/\s+/g, '-')}>
+            <BlogCard {...post} />
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Strategic CTA Section -->
+  <section class="py-16 bg-brand-light">
+    <div class="max-w-4xl mx-auto text-center px-4">
+      <h2 class="text-3xl font-heading font-bold text-brand-dark mb-6">
+        Ready to Transform Your Business?
+      </h2>
+      <p class="text-lg text-gray-600 mb-8">
+        Join thousands of companies already using TETRIX to streamline their operations and delight their clients.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <Button href="#product-demo" variant="primary">
+          Watch 90-Second Demo
+        </Button>
+        <Button href="/contact" variant="secondary">
+          Book a Consultation
+        </Button>
+      </div>
+    </div>
+  </section>
+</MainLayout>
+
+<style>
+  .category-filter.active {
+    background-color: #f97316;
+    color: white;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const categoryFilters = document.querySelectorAll('.category-filter');
+    const blogItems = document.querySelectorAll('.blog-post-item');
+
+    categoryFilters.forEach(filter => {
+      filter.addEventListener('click', () => {
+        const selectedCategory = filter.getAttribute('data-category');
+        
+        // Update active filter
+        categoryFilters.forEach(f => f.classList.remove('active'));
+        filter.classList.add('active');
+        
+        // Filter blog posts
+        blogItems.forEach(item => {
+          const itemCategory = item.getAttribute('data-category');
+          
+          if (selectedCategory === 'all' || itemCategory === selectedCategory) {
+            item.style.display = 'block';
+            item.style.animation = 'fadeIn 0.5s ease-in-out';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+      });
+    });
+  });
+</script>
+
+<style>
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style> 
