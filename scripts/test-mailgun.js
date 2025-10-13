@@ -5,11 +5,35 @@
  * Run with: node scripts/test-mailgun.js
  */
 
-const https = require('https');
-const querystring = require('querystring');
+import https from 'https';
+import querystring from 'querystring';
+import fs from 'fs';
+import path from 'path';
+
+// Load environment variables from .env file
+function loadEnvFile() {
+  const envPath = path.join(process.cwd(), '.env');
+  if (fs.existsSync(envPath)) {
+    const envContent = fs.readFileSync(envPath, 'utf8');
+    const lines = envContent.split('\n');
+    
+    for (const line of lines) {
+      const trimmedLine = line.trim();
+      if (trimmedLine && !trimmedLine.startsWith('#')) {
+        const [key, ...valueParts] = trimmedLine.split('=');
+        if (key && valueParts.length > 0) {
+          const value = valueParts.join('=');
+          process.env[key] = value;
+        }
+      }
+    }
+  }
+}
+
+loadEnvFile();
 
 // Configuration
-const MAILGUN_DOMAIN = 'mg.tetrixcorp.com';
+const MAILGUN_DOMAIN = process.env.MAILGUN_DOMAIN || 'mg.tetrixcorp.com';
 const MAILGUN_API_KEY = process.env.MAILGUN_API_KEY;
 const CONTACT_EMAIL = 'support@tetrixcorp.com';
 const FROM_EMAIL = 'noreply@tetrixcorp.com';

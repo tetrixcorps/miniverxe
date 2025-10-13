@@ -84,6 +84,12 @@ This message was sent from the TETRIX contact form.
 
 export const POST: APIRoute = async ({ request }) => {
   try {
+    // Debug environment variables
+    console.log('Environment variables check:');
+    console.log('MAILGUN_API_KEY:', process.env.MAILGUN_API_KEY ? 'SET' : 'NOT SET');
+    console.log('MAILGUN_DOMAIN:', process.env.MAILGUN_DOMAIN || 'NOT SET');
+    console.log('MAILGUN_WEBHOOK:', process.env.MAILGUN_WEBHOOK ? 'SET' : 'NOT SET');
+    
     // Validate Mailgun configuration
     if (!validateMailgunConfig()) {
       return new Response(JSON.stringify({
