@@ -1,0 +1,205 @@
+---
+export interface ApiEndpoint {
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  path: string;
+  description: string;
+  parameters?: Array<{
+    name: string;
+    type: string;
+    required: boolean;
+    description: string;
+    example?: string;
+  }>;
+  requestBody?: {
+    type: string;
+    description: string;
+    example: string;
+  };
+  responses: Array<{
+    code: number;
+    description: string;
+    example: string;
+  }>;
+  tags: string[];
+}
+
+export interface Props {
+  endpoint: ApiEndpoint;
+}
+
+const { endpoint } = Astro.props;
+
+const methodColors = {
+  GET: 'bg-green-100 text-green-800',
+  POST: 'bg-blue-100 text-blue-800',
+  PUT: 'bg-yellow-100 text-yellow-800',
+  DELETE: 'bg-red-100 text-red-800',
+  PATCH: 'bg-purple-100 text-purple-800'
+};
+---
+
+<div class="api-endpoint bg-white rounded-lg border border-gray-200 overflow-hidden">
+  <!-- Endpoint Header -->
+  <div class="p-6 border-b border-gray-200">
+    <div class="flex items-center gap-4 mb-4">
+      <span class={`px-3 py-1 rounded-full text-sm font-semibold ${methodColors[endpoint.method]}`}>
+        {endpoint.method}
+      </span>
+      <code class="text-lg font-mono text-brand-dark bg-gray-100 px-3 py-1 rounded">
+        {endpoint.path}
+      </code>
+    </div>
+    <p class="text-gray-600">{endpoint.description}</p>
+    <div class="flex flex-wrap gap-2 mt-3">
+      {endpoint.tags.map(tag => (
+        <span class="px-2 py-1 bg-brand-light text-brand-dark text-xs rounded">
+          {tag}
+        </span>
+      ))}
+    </div>
+  </div>
+
+  <!-- Try It Section -->
+  <div class="p-6 bg-gray-50 border-b border-gray-200">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-semibold text-brand-dark">Try it out</h3>
+      <button 
+        id="try-it-btn"
+        class="px-4 py-2 bg-brand-orange text-white rounded-lg hover:bg-brand-red transition-colors"
+      >
+        Send Request
+      </button>
+    </div>
+    
+    <div id="try-it-form" class="space-y-4">
+      {endpoint.parameters && endpoint.parameters.length > 0 && (
+        <div>
+          <h4 class="font-medium text-gray-700 mb-2">Parameters</h4>
+          <div class="space-y-2">
+            {endpoint.parameters.map(param => (
+              <div class="flex items-center gap-4">
+                <label class="w-32 text-sm font-medium text-gray-600">
+                  {param.name}
+                  {param.required && <span class="text-red-500">*</span>}
+                </label>
+                <input 
+                  type="text" 
+                  class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-orange focus:border-brand-orange"
+                  placeholder={param.example || param.description}
+                  data-param={param.name}
+                />
+                <span class="text-xs text-gray-500 w-20">{param.type}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      
+      {endpoint.requestBody && (
+        <div>
+          <h4 class="font-medium text-gray-700 mb-2">Request Body</h4>
+          <textarea 
+            class="w-full h-32 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-orange focus:border-brand-orange font-mono text-sm"
+            placeholder={endpoint.requestBody.example}
+            id="request-body"
+          ></textarea>
+        </div>
+      )}
+    </div>
+  </div>
+
+  <!-- Response Section -->
+  <div class="p-6">
+    <h3 class="text-lg font-semibold text-brand-dark mb-4">Responses</h3>
+    <div class="space-y-4">
+      {endpoint.responses.map(response => (
+        <div class="border border-gray-200 rounded-lg overflow-hidden">
+          <div class="px-4 py-2 bg-gray-50 border-b border-gray-200">
+            <span class={`inline-flex items-center px-2 py-1 rounded text-xs font-semibold ${
+              response.code >= 200 && response.code < 300 ? 'bg-green-100 text-green-800' :
+              response.code >= 400 && response.code < 500 ? 'bg-yellow-100 text-yellow-800' :
+              'bg-red-100 text-red-800'
+            }`}>
+              {response.code}
+            </span>
+            <span class="ml-2 text-sm text-gray-600">{response.description}</span>
+          </div>
+          <div class="p-4">
+            <pre class="text-sm text-gray-800 bg-gray-50 p-3 rounded overflow-x-auto"><code>{response.example}</code></pre>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- Live Response -->
+  <div id="live-response" class="hidden p-6 bg-gray-50 border-t border-gray-200">
+    <h3 class="text-lg font-semibold text-brand-dark mb-4">Response</h3>
+    <div id="response-content" class="bg-white border border-gray-200 rounded-lg p-4">
+      <!-- Response will be populated by JavaScript -->
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tryItBtn = document.getElementById('try-it-btn');
+    const liveResponse = document.getElementById('live-response');
+    const responseContent = document.getElementById('response-content');
+    
+    if (tryItBtn && liveResponse && responseContent) {
+      tryItBtn.addEventListener('click', async () => {
+        // Show loading state
+        tryItBtn.textContent = 'Sending...';
+        tryItBtn.disabled = true;
+        
+        // Collect form data
+        const params = {};
+        const paramInputs = document.querySelectorAll('[data-param]');
+        paramInputs.forEach(input => {
+          if (input.value.trim()) {
+            params[input.getAttribute('data-param')] = input.value.trim();
+          }
+        });
+        
+        const requestBody = document.getElementById('request-body')?.value;
+        
+        // Simulate API call (in real implementation, this would make actual HTTP request)
+        setTimeout(() => {
+          // Show response
+          liveResponse.classList.remove('hidden');
+          
+          // Simulate response based on endpoint
+          const mockResponse = {
+            status: 200,
+            data: {
+              success: true,
+              message: 'API request completed successfully',
+              timestamp: new Date().toISOString(),
+              requestId: `req_${Math.random().toString(36).substr(2, 9)}`,
+              version: '1.0.0',
+              ...params
+            }
+          };
+          
+          responseContent.innerHTML = `
+            <div class="mb-2">
+              <span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-green-100 text-green-800">
+                ${mockResponse.status}
+              </span>
+              <span class="ml-2 text-sm text-gray-600">OK</span>
+            </div>
+            <pre class="text-sm text-gray-800 bg-gray-50 p-3 rounded overflow-x-auto"><code>${JSON.stringify(mockResponse.data, null, 2)}</code></pre>
+          `;
+          
+          // Reset button
+          tryItBtn.textContent = 'Send Request';
+          tryItBtn.disabled = false;
+          
+          // Scroll to response
+          liveResponse.scrollIntoView({ behavior: 'smooth' });
+        }, 1000);
+      });
+    }
+  });
+</script> 

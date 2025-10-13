@@ -1,0 +1,291 @@
+---
+import MainLayout from '../components/layout/MainLayout.astro';
+import Button from '../components/shared/Button.astro';
+
+const plans = [
+  {
+    name: "Starter",
+    price: "$29",
+    period: "per month",
+    description: "Perfect for small agencies and freelancers",
+    features: [
+      "Up to 10 clients",
+      "Basic project management",
+      "Email support",
+      "Standard integrations",
+      "1GB storage",
+      "Basic reporting"
+    ],
+    cta: "Start Free Trial",
+    popular: false
+  },
+  {
+    name: "Professional",
+    price: "$99",
+    period: "per month",
+    description: "Ideal for growing consultancies and agencies",
+    features: [
+      "Up to 50 clients",
+      "Advanced project management",
+      "Priority support",
+      "All integrations",
+      "10GB storage",
+      "Advanced analytics",
+      "Team collaboration",
+      "Custom branding"
+    ],
+    cta: "Start Free Trial",
+    popular: true
+  },
+  {
+    name: "Enterprise",
+    price: "Custom",
+    period: "contact us",
+    description: "For large organizations with complex needs",
+    features: [
+      "Unlimited clients",
+      "Enterprise project management",
+      "24/7 dedicated support",
+      "Custom integrations",
+      "Unlimited storage",
+      "Advanced security",
+      "White-label solution",
+      "Custom training",
+      "SLA guarantee"
+    ],
+    cta: "Contact Sales",
+    popular: false
+  }
+];
+
+const faqs = [
+  {
+    question: "Can I change my plan at any time?",
+    answer: "Yes, you can upgrade or downgrade your plan at any time. Changes will be prorated and reflected in your next billing cycle."
+  },
+  {
+    question: "Is there a free trial available?",
+    answer: "Yes, we offer a 14-day free trial on all plans. No credit card required to start your trial."
+  },
+  {
+    question: "What payment methods do you accept?",
+    answer: "We accept all major credit cards, PayPal, and bank transfers for annual plans. Enterprise customers can also pay via invoice."
+  },
+  {
+    question: "Do you offer discounts for annual billing?",
+    answer: "Yes, we offer a 20% discount when you choose annual billing instead of monthly billing."
+  },
+  {
+    question: "What happens if I exceed my plan limits?",
+    answer: "We'll notify you when you're approaching your limits. You can upgrade your plan at any time to continue without interruption."
+  },
+  {
+    question: "Is there a setup fee?",
+    answer: "No setup fees for any of our plans. You only pay the advertised monthly or annual price."
+  }
+];
+---
+
+<MainLayout>
+  <!-- Hero Section -->
+  <section class="bg-gradient-to-br from-brand-red via-brand-orange to-brand-yellow text-white py-20">
+    <div class="max-w-4xl mx-auto text-center px-4">
+      <h1 class="text-4xl md:text-6xl font-heading font-extrabold mb-6">
+        Simple, Transparent Pricing
+      </h1>
+      <p class="text-xl md:text-2xl mb-8">
+        Choose the plan that fits your business needs. All plans include our core features and 14-day free trial.
+      </p>
+      <div class="flex justify-center items-center gap-4">
+        <span class="text-lg">Monthly</span>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" id="billing-toggle" class="sr-only peer">
+          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-orange"></div>
+        </label>
+        <span class="text-lg">Annual <span class="text-brand-yellow font-semibold">(Save 20%)</span></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Plans -->
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="grid gap-8 md:grid-cols-3">
+        {plans.map(plan => (
+          <div class={`relative bg-white rounded-2xl shadow-lg border-2 p-8 ${plan.popular ? 'border-brand-orange scale-105' : 'border-gray-200'}`}>
+            {plan.popular && (
+              <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                <span class="bg-brand-orange text-white px-4 py-2 rounded-full text-sm font-semibold">
+                  Most Popular
+                </span>
+              </div>
+            )}
+            
+            <div class="text-center mb-8">
+              <h3 class="text-2xl font-bold text-brand-dark mb-2">{plan.name}</h3>
+              <div class="mb-4">
+                <span class="text-4xl font-bold text-brand-dark">{plan.price}</span>
+                <span class="text-gray-600">/{plan.period}</span>
+              </div>
+              <p class="text-gray-600">{plan.description}</p>
+            </div>
+            
+            <ul class="space-y-4 mb-8">
+              {plan.features.map(feature => (
+                <li class="flex items-center gap-3">
+                  <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                  <span class="text-gray-700">{feature}</span>
+                </li>
+              ))}
+            </ul>
+            
+            <Button 
+              href={plan.name === "Enterprise" ? "/contact" : "/contact"} 
+              variant={plan.popular ? "primary" : "secondary"}
+              class="w-full"
+            >
+              {plan.cta}
+            </Button>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Comparison Table -->
+  <section class="py-20 bg-gray-50">
+    <div class="max-w-6xl mx-auto px-4">
+      <h2 class="text-3xl font-heading font-bold text-center text-brand-dark mb-12">
+        Compare Plans
+      </h2>
+      
+      <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <table class="w-full">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900">Feature</th>
+              <th class="px-6 py-4 text-center text-sm font-semibold text-gray-900">Starter</th>
+              <th class="px-6 py-4 text-center text-sm font-semibold text-gray-900">Professional</th>
+              <th class="px-6 py-4 text-center text-sm font-semibold text-gray-900">Enterprise</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <tr>
+              <td class="px-6 py-4 text-sm text-gray-900">Clients</td>
+              <td class="px-6 py-4 text-center text-sm text-gray-600">Up to 10</td>
+              <td class="px-6 py-4 text-center text-sm text-gray-600">Up to 50</td>
+              <td class="px-6 py-4 text-center text-sm text-gray-600">Unlimited</td>
+            </tr>
+            <tr>
+              <td class="px-6 py-4 text-sm text-gray-900">Storage</td>
+              <td class="px-6 py-4 text-center text-sm text-gray-600">1GB</td>
+              <td class="px-6 py-4 text-center text-sm text-gray-600">10GB</td>
+              <td class="px-6 py-4 text-center text-sm text-gray-600">Unlimited</td>
+            </tr>
+            <tr>
+              <td class="px-6 py-4 text-sm text-gray-900">Support</td>
+              <td class="px-6 py-4 text-center text-sm text-gray-600">Email</td>
+              <td class="px-6 py-4 text-center text-sm text-gray-600">Priority</td>
+              <td class="px-6 py-4 text-center text-sm text-gray-600">24/7 Dedicated</td>
+            </tr>
+            <tr>
+              <td class="px-6 py-4 text-sm text-gray-900">Integrations</td>
+              <td class="px-6 py-4 text-center text-sm text-gray-600">Standard</td>
+              <td class="px-6 py-4 text-center text-sm text-gray-600">All</td>
+              <td class="px-6 py-4 text-center text-sm text-gray-600">Custom</td>
+            </tr>
+            <tr>
+              <td class="px-6 py-4 text-sm text-gray-900">Analytics</td>
+              <td class="px-6 py-4 text-center text-sm text-gray-600">Basic</td>
+              <td class="px-6 py-4 text-center text-sm text-gray-600">Advanced</td>
+              <td class="px-6 py-4 text-center text-sm text-gray-600">Custom</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="py-20 bg-white">
+    <div class="max-w-4xl mx-auto px-4">
+      <h2 class="text-3xl font-heading font-bold text-center text-brand-dark mb-12">
+        Frequently Asked Questions
+      </h2>
+      
+      <div class="space-y-6">
+        {faqs.map((faq, index) => (
+          <div class="border border-gray-200 rounded-lg">
+            <button 
+              class="faq-toggle w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+              data-faq={index}
+            >
+              <span class="font-semibold text-brand-dark">{faq.question}</span>
+              <svg class="w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+            <div class="faq-content hidden px-6 pb-4">
+              <p class="text-gray-600">{faq.answer}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-20 bg-brand-dark text-white">
+    <div class="max-w-4xl mx-auto text-center px-4">
+      <h2 class="text-3xl font-heading font-bold mb-6">
+        Ready to Get Started?
+      </h2>
+      <p class="text-xl mb-8">
+        Start your 14-day free trial today. No credit card required.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <Button href="/contact" variant="primary" size="lg">
+          Start Free Trial
+        </Button>
+        <Button href="/docs" variant="secondary" size="lg">
+          View Documentation
+        </Button>
+      </div>
+    </div>
+  </section>
+</MainLayout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // FAQ Toggle
+    const faqToggles = document.querySelectorAll('.faq-toggle');
+    
+    faqToggles.forEach(toggle => {
+      toggle.addEventListener('click', () => {
+        const content = toggle.nextElementSibling;
+        const icon = toggle.querySelector('svg');
+        
+        // Toggle content
+        content.classList.toggle('hidden');
+        
+        // Rotate icon
+        if (content.classList.contains('hidden')) {
+          icon.style.transform = 'rotate(0deg)';
+        } else {
+          icon.style.transform = 'rotate(180deg)';
+        }
+      });
+    });
+    
+    // Billing Toggle (for future implementation)
+    const billingToggle = document.getElementById('billing-toggle');
+    if (billingToggle) {
+      billingToggle.addEventListener('change', () => {
+        // This would update pricing display for annual vs monthly
+        console.log('Billing toggle changed:', billingToggle.checked);
+      });
+    }
+  });
+</script> 

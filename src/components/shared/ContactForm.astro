@@ -1,0 +1,23 @@
+---
+// No imports needed for a static Astro form
+---
+<form class="max-w-lg mx-auto bg-white rounded-lg shadow p-8 flex flex-col gap-6" name="contact" method="POST" netlify>
+  <h2 class="text-2xl font-heading font-bold mb-2 text-brand-dark text-center">Request a Demo / Contact Us</h2>
+  <div>
+    <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+    <input id="name" name="name" type="text" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-yellow focus:ring focus:ring-brand-yellow focus:ring-opacity-50" />
+  </div>
+  <div>
+    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+    <input id="email" name="email" type="email" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-yellow focus:ring focus:ring-brand-yellow focus:ring-opacity-50" />
+  </div>
+  <div>
+    <label for="company" class="block text-sm font-medium text-gray-700">Company</label>
+    <input id="company" name="company" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-yellow focus:ring focus:ring-brand-yellow focus:ring-opacity-50" />
+  </div>
+  <div>
+    <label for="message" class="block text-sm font-medium text-gray-700">Message</label>
+    <textarea id="message" name="message" rows="4" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-yellow focus:ring focus:ring-brand-yellow focus:ring-opacity-50"></textarea>
+  </div>
+  <button type="submit" class="w-full py-3 px-6 rounded font-bold transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-yellow bg-brand-red text-white hover:bg-brand-orange text-lg">Send Request</button>
+</form> 
