@@ -496,9 +496,44 @@ import Button from '../components/shared/Button.astro';
       this.render();
       
       try {
-        // Simulate starting a chat session
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Create session via SHANGO API
+        const response = await fetch('/api/v1/shango/sessions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: this.userId,
+            agentId: this.selectedAgent,
+            channel: 'chat'
+          })
+        });
+
+        const result = await response.json();
         
+        if (result.success) {
+          this.currentSession = result.session;
+          
+          // Add greeting message from API response
+          if (result.session.messages && result.session.messages.length > 0) {
+            const greetingMessage = result.session.messages[0];
+            this.addMessage({
+              id: greetingMessage.id,
+              role: 'shango',
+              content: greetingMessage.content,
+              timestamp: new Date(greetingMessage.timestamp),
+              type: 'text'
+            });
+          }
+
+          this.isOpen = true;
+          this.render();
+        } else {
+          throw new Error(result.error || 'Failed to start chat session');
+        }
+      } catch (error) {
+        console.error('Failed to start SHANGO chat:', error);
+        // Fallback to mock behavior
         this.currentSession = {
           id: `session-${Date.now()}`,
           userId: this.userId,
@@ -510,7 +545,6 @@ import Button from '../components/shared/Button.astro';
           messages: []
         };
 
-        // Add SHANGO greeting message
         const currentAgent = this.getAgentInfo(this.selectedAgent);
         if (currentAgent) {
           this.addMessage({
@@ -524,8 +558,6 @@ import Button from '../components/shared/Button.astro';
 
         this.isOpen = true;
         this.render();
-      } catch (error) {
-        console.error('Failed to start SHANGO chat:', error);
       } finally {
         this.isLoading = false;
       }
@@ -571,19 +603,33 @@ import Button from '../components/shared/Button.astro';
       this.render();
 
       try {
-        // Simulate AI response
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        // Generate mock AI response based on message content
-        const aiResponse = this.generateAIResponse(messageText);
-        
-        this.addMessage({
-          id: `shango-${Date.now()}`,
-          role: 'shango',
-          content: aiResponse,
-          timestamp: new Date(),
-          type: 'text'
+        // Send message to SHANGO API
+        const response = await fetch(`/api/v1/shango/sessions/${this.currentSession.id}/messages`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: messageText,
+            role: 'user',
+            agentId: this.selectedAgent
+          })
         });
+
+        const result = await response.json();
+        
+        if (result.success) {
+          // Add AI response
+          this.addMessage({
+            id: result.aiResponse.id,
+            role: 'shango',
+            content: result.aiResponse.content,
+            timestamp: new Date(result.aiResponse.timestamp),
+            type: 'text'
+          });
+        } else {
+          throw new Error(result.error || 'Failed to send message');
+        }
       } catch (error) {
         console.error('Failed to send message:', error);
         this.addMessage({
