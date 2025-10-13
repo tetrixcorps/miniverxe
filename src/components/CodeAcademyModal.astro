@@ -282,8 +282,29 @@
   // Action buttons
   if (startLearningBtn) {
     startLearningBtn.addEventListener('click', function() {
-      // Redirect to Code Academy platform
-      window.location.href = '/code-academy';
+      // Check if user is already authenticated
+      const authToken = localStorage.getItem('tetrix_auth_token');
+      
+      if (authToken) {
+        // User is authenticated, redirect to Code Academy domain
+        const codeAcademyUrl = window.location.hostname.includes('tetrixcorp.com') 
+          ? 'https://poisonedreligion.ai' 
+          : 'http://localhost:3001';
+        window.location.href = codeAcademyUrl;
+      } else {
+        // User needs to authenticate first, show 2FA modal
+        if (window.open2FAModal) {
+          // Set authentication context for Code Academy
+          window.tetrixAuthContext = 'code-academy';
+          window.open2FAModal();
+        } else {
+          // Fallback to direct redirect if 2FA modal not available
+          const codeAcademyUrl = window.location.hostname.includes('tetrixcorp.com') 
+            ? 'https://poisonedreligion.ai' 
+            : 'http://localhost:3001';
+          window.location.href = codeAcademyUrl;
+        }
+      }
     });
   }
 
