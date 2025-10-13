@@ -174,7 +174,25 @@ import Button from '../components/shared/Button.astro';
             <!-- SHANGO Chat Widget -->
             <div class="bg-white rounded-lg p-4 border border-purple-200">
               <div id="shango-chat-widget" class="min-h-[400px]">
-                <!-- SHANGO Chat Widget will be rendered here -->
+                <div class="flex flex-col items-center justify-center h-full min-h-[400px] text-center">
+                  <div class="w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center mb-4">
+                    <span class="text-2xl text-white">⚡</span>
+                  </div>
+                  <h3 class="text-xl font-bold text-gray-900 mb-2">SHANGO AI Super Agent</h3>
+                  <p class="text-gray-600 mb-4">Our AI Super Agent is ready to help you with enterprise inquiries and technical support.</p>
+                  <div class="space-y-2 text-sm text-gray-500 mb-6">
+                    <p>• Instant responses to enterprise queries</p>
+                    <p>• Technical support and troubleshooting</p>
+                    <p>• Solution recommendations and pricing</p>
+                    <p>• Escalation to human experts when needed</p>
+                  </div>
+                  <button 
+                    onclick="startSHANGOChat()"
+                    class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-colors"
+                  >
+                    Start Chat with SHANGO
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -666,13 +684,13 @@ import Button from '../components/shared/Button.astro';
 
   // Contact form handling
   document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('contact-form') as HTMLFormElement;
-    const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
-    const submitText = document.getElementById('submit-text') as HTMLElement;
-    const loadingText = document.getElementById('loading-text') as HTMLElement;
-    const successMessage = document.getElementById('success-message') as HTMLElement;
-    const errorMessage = document.getElementById('error-message') as HTMLElement;
-    const errorText = document.getElementById('error-text') as HTMLElement;
+    const form = document.getElementById('contact-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const submitText = document.getElementById('submit-text');
+    const loadingText = document.getElementById('loading-text');
+    const successMessage = document.getElementById('success-message');
+    const errorMessage = document.getElementById('error-message');
+    const errorText = document.getElementById('error-text');
 
     if (!form || !submitBtn || !submitText || !loadingText || !successMessage || !errorMessage || !errorText) {
       return;
@@ -730,44 +748,270 @@ import Button from '../components/shared/Button.astro';
 
   // SHANGO Chat Widget Integration
   function initializeSHANGOChatWidget() {
+    console.log('Initializing SHANGO Chat Widget...');
+    
     // Create a unique user ID for the chat session
     const userId = `contact-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    console.log('User ID:', userId);
     
     // Initialize the SHANGO Chat Widget directly
     const chatContainer = document.getElementById('shango-chat-widget');
+    console.log('Chat container found:', !!chatContainer);
+    
     if (chatContainer) {
-      new SHANGOChatWidget('shango-chat-widget', {
-        userId: userId,
-        defaultAgent: 'shango-general'
-      });
+      console.log('Creating SHANGOChatWidget instance...');
+      try {
+        new SHANGOChatWidget('shango-chat-widget', {
+          userId: userId,
+          defaultAgent: 'shango-general'
+        });
+        console.log('SHANGOChatWidget created successfully');
+      } catch (error) {
+        console.error('Error creating SHANGOChatWidget:', error);
+      }
+    } else {
+      console.error('Chat container not found!');
     }
   }
 
-  // Fallback chat widget when React is not available
-  function showFallbackChatWidget() {
+  // Start SHANGO Chat
+  async function startSHANGOChat() {
     const chatContainer = document.getElementById('shango-chat-widget');
-    if (chatContainer) {
+    if (!chatContainer) return;
+
+    try {
+      // Show loading state
       chatContainer.innerHTML = `
         <div class="flex flex-col items-center justify-center h-full min-h-[400px] text-center">
-          <div class="w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center mb-4">
-            <span class="text-2xl text-white">⚡</span>
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mb-4"></div>
+          <p class="text-gray-600">Starting SHANGO AI Super Agent...</p>
+        </div>
+      `;
+
+      // Create session
+      const response = await fetch('/api/v1/shango/sessions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: `contact-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          agentId: 'shango-general',
+          channel: 'chat'
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        window.currentSession = data.session;
+        window.messages = data.session.messages || [];
+        renderChatInterface();
+      } else {
+        throw new Error('Failed to start chat session');
+      }
+    } catch (error) {
+      console.error('Error starting chat:', error);
+      chatContainer.innerHTML = `
+        <div class="flex flex-col items-center justify-center h-full min-h-[400px] text-center">
+          <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+            <span class="text-2xl text-red-600">⚠️</span>
           </div>
-          <h3 class="text-xl font-bold text-gray-900 mb-2">SHANGO AI Super Agent</h3>
-          <p class="text-gray-600 mb-4">Our AI Super Agent is ready to help you with enterprise inquiries and technical support.</p>
-          <div class="space-y-2 text-sm text-gray-500">
-            <p>• Instant responses to enterprise queries</p>
-            <p>• Technical support and troubleshooting</p>
-            <p>• Solution recommendations and pricing</p>
-            <p>• Escalation to human experts when needed</p>
-          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-2">Connection Error</h3>
+          <p class="text-gray-600 mb-4">Unable to start SHANGO chat. Please try again.</p>
           <button 
-            onclick="window.open('mailto:support@tetrixcorp.com', '_blank')"
-            class="mt-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-colors"
+            onclick="startSHANGOChat()"
+            class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-colors"
           >
-            Contact Support
+            Try Again
           </button>
         </div>
       `;
+    }
+  }
+
+  // Render chat interface
+  function renderChatInterface() {
+    const chatContainer = document.getElementById('shango-chat-widget');
+    if (!chatContainer) return;
+
+    chatContainer.innerHTML = `
+      <div class="h-96 flex flex-col">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-4 rounded-t-lg flex justify-between items-center">
+          <div class="flex items-center space-x-2">
+            <span class="text-lg">⚡</span>
+            <div>
+              <h3 class="font-semibold">SHANGO</h3>
+              <p class="text-sm opacity-90">AI Super Agent Online</p>
+            </div>
+          </div>
+          <button onclick="closeSHANGOChat()" class="text-white hover:text-gray-200 transition-colors">
+            ✕
+          </button>
+        </div>
+
+        <!-- Messages -->
+        <div id="shango-messages" class="flex-1 overflow-y-auto p-4 space-y-2 bg-gray-50">
+          ${window.messages.map(message => renderMessage(message)).join('')}
+        </div>
+
+        <!-- Input -->
+        <div class="p-4 border-t border-gray-200 bg-white">
+          <div class="flex space-x-2">
+            <input
+              type="text"
+              id="shango-message-input"
+              placeholder="Ask SHANGO anything..."
+              class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              onkeypress="handleKeyPress(event)"
+            />
+            <button
+              onclick="sendSHANGOMessage()"
+              class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-colors"
+            >
+              Send
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Render individual message
+  function renderMessage(message) {
+    const isUser = message.role === 'user';
+    const isSHANGO = message.role === 'assistant';
+    
+    return `
+      <div class="flex ${isUser ? 'justify-end' : 'justify-start'}">
+        <div class="max-w-xs px-3 py-2 rounded-lg ${
+          isUser 
+            ? 'bg-blue-600 text-white' 
+            : isSHANGO
+            ? 'bg-gradient-to-r from-purple-100 to-blue-100 text-purple-800 border border-purple-200'
+            : 'bg-gray-100 text-gray-800'
+        }">
+          ${isSHANGO ? '<div class="flex items-center space-x-1 mb-1"><span class="text-xs font-semibold">⚡ SHANGO</span></div>' : ''}
+          <p class="text-sm">${message.content}</p>
+          <p class="text-xs opacity-70 mt-1">${new Date(message.timestamp).toLocaleTimeString()}</p>
+        </div>
+      </div>
+    `;
+  }
+
+  // Close chat
+  function closeSHANGOChat() {
+    const chatContainer = document.getElementById('shango-chat-widget');
+    if (!chatContainer) return;
+
+    chatContainer.innerHTML = `
+      <div class="flex flex-col items-center justify-center h-full min-h-[400px] text-center">
+        <div class="w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center mb-4">
+          <span class="text-2xl text-white">⚡</span>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">SHANGO AI Super Agent</h3>
+        <p class="text-gray-600 mb-4">Our AI Super Agent is ready to help you with enterprise inquiries and technical support.</p>
+        <div class="space-y-2 text-sm text-gray-500 mb-6">
+          <p>• Instant responses to enterprise queries</p>
+          <p>• Technical support and troubleshooting</p>
+          <p>• Solution recommendations and pricing</p>
+          <p>• Escalation to human experts when needed</p>
+        </div>
+        <button 
+          onclick="startSHANGOChat()"
+          class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-colors"
+        >
+          Start Chat with SHANGO
+        </button>
+      </div>
+    `;
+    window.currentSession = null;
+    window.messages = [];
+  }
+
+  // Handle key press
+  function handleKeyPress(event) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      sendSHANGOMessage();
+    }
+  }
+
+  // Send message
+  async function sendSHANGOMessage() {
+    const input = document.getElementById('shango-message-input');
+    const message = input.value.trim();
+    
+    if (!message || !window.currentSession) return;
+
+    // Add user message
+    const userMessage = {
+      id: `user-${Date.now()}`,
+      role: 'user',
+      content: message,
+      timestamp: new Date().toISOString(),
+      type: 'text'
+    };
+    
+    window.messages.push(userMessage);
+    input.value = '';
+    updateMessagesDisplay();
+    
+    try {
+      // Send message to API
+      const response = await fetch(`/api/v1/shango/sessions/${window.currentSession.id}/messages`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: message,
+          role: 'user',
+          agentId: 'shango-general'
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Add AI response
+        const aiMessage = {
+          id: data.aiResponse.id,
+          role: 'assistant',
+          content: data.aiResponse.content,
+          timestamp: data.aiResponse.timestamp,
+          type: 'text',
+          agentId: data.aiResponse.agentId
+        };
+        
+        window.messages.push(aiMessage);
+        updateMessagesDisplay();
+      } else {
+        throw new Error('Failed to send message');
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      
+      // Add error message
+      const errorMessage = {
+        id: `error-${Date.now()}`,
+        role: 'assistant',
+        content: 'Sorry, I encountered an error. Please try again.',
+        timestamp: new Date().toISOString(),
+        type: 'text'
+      };
+      
+      window.messages.push(errorMessage);
+      updateMessagesDisplay();
+    }
+  }
+
+  // Update messages display
+  function updateMessagesDisplay() {
+    const messagesContainer = document.getElementById('shango-messages');
+    if (messagesContainer) {
+      messagesContainer.innerHTML = window.messages.map(message => renderMessage(message)).join('');
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
   }
 </script>
