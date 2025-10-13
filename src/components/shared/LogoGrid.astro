@@ -1,0 +1,19 @@
+---
+const { logos = [] } = Astro.props;
+---
+<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 items-center justify-items-center py-8">
+  {logos.map(logo => (
+    <div class="flex items-center justify-center h-16 w-32">
+      <img 
+        src={logo.src} 
+        alt={logo.alt} 
+        class="h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100" 
+        loading="lazy"
+        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+      />
+      <div class="hidden items-center justify-center h-12 w-auto text-gray-400 font-semibold text-sm">
+        {logo.alt}
+      </div>
+    </div>
+  ))}
+</div> 

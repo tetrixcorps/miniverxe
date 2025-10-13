@@ -1,0 +1,115 @@
+---
+import MainLayout from '../components/layout/MainLayout.astro';
+import { submitContactForm, getContactSubmissions } from '../lib/firebase.js';
+
+let testResult = null;
+let error = null;
+
+// Test Firebase connection
+try {
+  // Test submission
+  const testData = {
+    name: 'John Smith',
+    email: 'john.smith@tetrixcorp.com',
+    message: 'Testing contact form integration with Firebase backend services. This message confirms proper connectivity and data flow.'
+  };
+  
+  const submissionResult = await submitContactForm(testData);
+  
+  if (submissionResult.success) {
+    // Test retrieval
+    const submissions = await getContactSubmissions();
+    testResult = {
+      submission: submissionResult,
+      retrieval: { success: true, count: submissions.length },
+      latestSubmission: submissions[submissions.length - 1]
+    };
+  } else {
+    error = submissionResult.error;
+  }
+} catch (err) {
+  error = err.message;
+}
+---
+
+<MainLayout>
+  <div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-4xl mx-auto px-4">
+      <div class="bg-white rounded-lg shadow-sm p-8">
+        <h1 class="text-3xl font-heading font-bold text-gray-900 mb-6">
+          Firebase Connection Test
+        </h1>
+        
+        {error ? (
+          <div class="bg-red-50 border border-red-200 rounded-lg p-6">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-lg font-medium text-red-800">
+                  Firebase Connection Failed
+                </h3>
+                <div class="mt-2 text-sm text-red-700">
+                  <p><strong>Error:</strong> {error}</p>
+                  <p class="mt-2">Please check your Firebase configuration and make sure:</p>
+                  <ul class="list-disc list-inside mt-1">
+                    <li>Your Firebase project is properly set up</li>
+                    <li>Firestore is enabled in your project</li>
+                    <li>Your API key and configuration are correct</li>
+                    <li>You have the correct App ID in your .env file</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div class="bg-green-50 border border-green-200 rounded-lg p-6">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="h-6 w-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-lg font-medium text-green-800">
+                  Firebase Connection Successful!
+                </h3>
+                <div class="mt-2 text-sm text-green-700">
+                  <p><strong>Submission Test:</strong> &#9989; Success</p>
+                  <p><strong>Retrieval Test:</strong> &#9989; Success ({testResult.retrieval.count} submissions found)</p>
+                  <p><strong>Document ID:</strong> {testResult.submission.id}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        <div class="mt-8">
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">Next Steps</h2>
+          <div class="grid gap-4 md:grid-cols-2">
+            <a href="/contact" class="block p-4 bg-brand-orange text-white rounded-lg hover:bg-brand-red transition-colors">
+              <h3 class="font-semibold">Test Contact Form</h3>
+              <p class="text-sm opacity-90">Try submitting a real contact form</p>
+            </a>
+            <a href="/admin/contact-submissions" class="block p-4 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors">
+              <h3 class="font-semibold">View Submissions</h3>
+              <p class="text-sm opacity-90">Check the admin panel</p>
+            </a>
+          </div>
+        </div>
+        
+        {testResult && (
+          <div class="mt-8">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Test Results Details</h2>
+            <div class="bg-gray-50 rounded-lg p-4">
+              <pre class="text-sm overflow-x-auto">{JSON.stringify(testResult, null, 2)}</pre>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+</MainLayout> 

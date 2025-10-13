@@ -1,0 +1,239 @@
+---
+import MainLayout from '../components/layout/MainLayout.astro';
+import Button from '../components/shared/Button.astro';
+import DynamicTetrix from '../components/shared/DynamicTetrix.astro';
+---
+
+<MainLayout title="Enterprise Solutions">
+  <div class="min-h-screen bg-gradient-to-br from-brand-red via-brand-orange to-brand-yellow">
+    <!-- Hero Section -->
+    <section class="py-20 px-4 relative overflow-hidden">
+      <!-- Background Pattern -->
+      <div class="absolute inset-0 bg-gradient-to-br from-brand-red/90 via-brand-orange/90 to-brand-yellow/90"></div>
+      <div class="absolute inset-0 opacity-30">
+        <div class="absolute inset-0 bg-white/10"></div>
+      </div>
+      
+      <div class="max-w-7xl mx-auto text-center relative z-10">
+        <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">
+          <DynamicTetrix size="4xl" variant="hero" /> Enterprise Solutions
+        </h1>
+        <p class="text-xl text-white/90 mb-8 max-w-3xl mx-auto">
+          Transform your enterprise with our comprehensive AI integration platform. 
+          Connect, automate, and scale with intelligent workflows designed for mission-critical operations.
+        </p>
+        
+        <!-- Enterprise Statistics -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 max-w-4xl mx-auto">
+          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/30">
+            <div class="text-2xl font-bold text-white">500+</div>
+            <div class="text-sm text-white/80">Enterprise Clients</div>
+          </div>
+          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/30">
+            <div class="text-2xl font-bold text-white">99.9%</div>
+            <div class="text-sm text-white/80">Uptime SLA</div>
+          </div>
+          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/30">
+            <div class="text-2xl font-bold text-white">24/7</div>
+            <div class="text-sm text-white/80">Enterprise Support</div>
+          </div>
+          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/30">
+            <div class="text-2xl font-bold text-white">SOC II</div>
+            <div class="text-sm text-white/80">Compliant</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Solutions Overview -->
+    <section class="py-20 px-4 bg-white">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl font-bold text-center text-gray-900 mb-16">
+          Enterprise AI Integration Solutions
+        </h2>
+        <div class="grid md:grid-cols-3 gap-8">
+          <div class="bg-gradient-to-br from-brand-red/10 to-brand-red/20 rounded-xl p-8 shadow-lg border border-brand-red/20 hover:shadow-xl transition-all">
+            <div class="w-16 h-16 bg-gradient-to-br from-brand-red to-brand-orange rounded-lg flex items-center justify-center mb-6 mx-auto">
+              <span class="text-2xl text-white">&#129302;#129302;#129302;#129302;</span>
+            </div>
+            <h2 class="text-2xl font-bold mb-4 text-gray-900">AI Workflow Automation</h2>
+            <p class="text-gray-600 mb-6">Build intelligent workflows that automatically process data, make decisions, and execute actions using AI models and machine learning.</p>
+            <ul class="text-sm text-gray-600 mb-6 space-y-2">
+              <li>&bull; Natural Language Processing</li>
+              <li>&bull; Predictive Analytics</li>
+              <li>&bull; Computer Vision Integration</li>
+              <li>&bull; Custom AI Model Deployment</li>
+            </ul>
+            <Button href="/contact" variant="primary" class="w-full">Get Started</Button>
+          </div>
+          
+          <div class="bg-gradient-to-br from-brand-orange/10 to-brand-orange/20 rounded-xl p-8 shadow-lg border border-brand-orange/20 hover:shadow-xl transition-all">
+            <div class="w-16 h-16 bg-gradient-to-br from-brand-orange to-brand-yellow rounded-lg flex items-center justify-center mb-6 mx-auto">
+              <span class="text-2xl text-white">&#128279;#128279;#128279;#128279;</span>
+            </div>
+            <h2 class="text-2xl font-bold mb-4 text-gray-900">Universal Integrations</h2>
+            <p class="text-gray-600 mb-6">Connect with 500+ tools and APIs to create seamless data flows between your existing systems and AI-powered workflows.</p>
+            <ul class="text-sm text-gray-600 mb-6 space-y-2">
+              <li>&bull; CRM & Marketing Tools</li>
+              <li>&bull; Cloud Services (AWS, Azure, GCP)</li>
+              <li>&bull; Business Intelligence Platforms</li>
+              <li>&bull; Custom API Development</li>
+            </ul>
+            <Button href="/contact" variant="primary" class="w-full">Explore Integrations</Button>
+          </div>
+          
+          <div class="bg-gradient-to-br from-brand-yellow/10 to-brand-yellow/20 rounded-xl p-8 shadow-lg border border-brand-yellow/20 hover:shadow-xl transition-all">
+            <div class="w-16 h-16 bg-gradient-to-br from-brand-yellow to-brand-red rounded-lg flex items-center justify-center mb-6 mx-auto">
+              <span class="text-2xl text-brand-dark">&#128202;#128202;#128202;#128202;</span>
+            </div>
+            <h2 class="text-2xl font-bold mb-4 text-gray-900">AI Analytics & Insights</h2>
+            <p class="text-gray-600 mb-6">Transform your data into actionable insights with AI-powered analytics, real-time monitoring, and predictive reporting.</p>
+            <ul class="text-sm text-gray-600 mb-6 space-y-2">
+              <li>&bull; Real-time Data Processing</li>
+              <li>&bull; Predictive Analytics</li>
+              <li>&bull; Automated Reporting</li>
+              <li>&bull; Custom Dashboards</li>
+            </ul>
+            <Button href="/contact" variant="primary" class="w-full">View Analytics</Button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Enterprise Services -->
+    <section class="py-20 px-4 bg-gray-50">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl font-bold text-center text-gray-900 mb-16">
+          Enterprise Services
+        </h2>
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <!-- IVR System -->
+          <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all">
+            <div class="w-16 h-16 bg-brand-red rounded-lg flex items-center justify-center mb-6">
+              <span class="text-2xl text-white">&#128222;#128222;#128222;#128222;</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">IVR System</h3>
+            <p class="text-gray-600 mb-4">Advanced Interactive Voice Response system with TeXML integration and intelligent call routing.</p>
+            <div class="bg-brand-red/20 text-brand-red px-3 py-1 rounded-full text-sm font-semibold mb-4">
+              99.9% Uptime SLA
+            </div>
+            <a href="/ivr-system" class="text-brand-red font-semibold hover:text-brand-red/80">
+              Learn More &rarr;
+            </a>
+          </div>
+
+          <!-- Unified Messaging -->
+          <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all">
+            <div class="w-16 h-16 bg-brand-orange rounded-lg flex items-center justify-center mb-6">
+              <span class="text-2xl text-white">&#128172;#128172;#128172;#128172;</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">Unified Messaging</h3>
+            <p class="text-gray-600 mb-4">Voice-activated unified messaging across WhatsApp, SMS, Email, AI Chat, and Voice channels.</p>
+            <div class="bg-brand-orange/20 text-brand-orange px-3 py-1 rounded-full text-sm font-semibold mb-4">
+              Multi-Channel Platform
+            </div>
+            <a href="/unified-messaging" class="text-brand-orange font-semibold hover:text-brand-orange/80">
+              Get Started &rarr;
+            </a>
+          </div>
+
+          <!-- Marketing Campaigns -->
+          <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all">
+            <div class="w-16 h-16 bg-brand-yellow rounded-lg flex items-center justify-center mb-6">
+              <span class="text-2xl text-brand-dark">&#128200;</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">Marketing Campaigns</h3>
+            <p class="text-gray-600 mb-4">AI-powered marketing campaigns with enterprise-grade optimization and comprehensive analytics.</p>
+            <div class="bg-brand-yellow/20 text-brand-dark px-3 py-1 rounded-full text-sm font-semibold mb-4">
+              3x Higher Engagement
+            </div>
+            <a href="/marketing-campaigns" class="text-brand-yellow font-semibold hover:text-brand-yellow/80">
+              View Campaigns &rarr;
+            </a>
+          </div>
+
+          <!-- IoT Telematics -->
+          <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all">
+            <div class="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center mb-6">
+              <span class="text-2xl text-white">&#128755;#128739;#128739;#128739;</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">IoT Telematics</h3>
+            <p class="text-gray-600 mb-4">Fleet management and IoT telematics services with real-time tracking and predictive analytics.</p>
+            <div class="bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm font-semibold mb-4">
+              Real-time Analytics
+            </div>
+            <a href="/iot-telematics" class="text-gray-800 font-semibold hover:text-gray-600">
+              Get Fleet Solution &rarr;
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Compliance Section -->
+    <section class="py-20 px-4 bg-white">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl font-bold text-center text-gray-900 mb-16">
+          Enterprise Security & Compliance
+        </h2>
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <!-- SOC II Type II -->
+          <div class="bg-white p-8 rounded-xl shadow-lg text-center border border-gray-200">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl">&#128737;#128737;&#128737;#65039;#128737;&#128737;#128737;&#128737;#65039;#65039;</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">SOC II Type II</h3>
+            <p class="text-gray-600 text-sm">Certified for security, availability, and confidentiality controls</p>
+          </div>
+
+          <!-- HIPAA Compliant -->
+          <div class="bg-white p-8 rounded-xl shadow-lg text-center border border-gray-200">
+            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl">&#127973;#127973;#127973;#127973;</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">HIPAA Compliant</h3>
+            <p class="text-gray-600 text-sm">Full compliance with healthcare data protection standards</p>
+          </div>
+
+          <!-- PKCE OAuth -->
+          <div class="bg-white p-8 rounded-xl shadow-lg text-center border border-gray-200">
+            <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl">&#128273;#128272;#128272;#128272;</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">PKCE OAuth 2.0</h3>
+            <p class="text-gray-600 text-sm">Advanced authentication with Proof Key for Code Exchange</p>
+          </div>
+
+          <!-- Telnyx Integration -->
+          <div class="bg-white p-8 rounded-xl shadow-lg text-center border border-gray-200">
+            <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl">&#128225;#128225;#128225;#128225;</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Telnyx Certified</h3>
+            <p class="text-gray-600 text-sm">Enterprise-grade telecommunications infrastructure</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 px-4 bg-gradient-to-br from-brand-red via-brand-orange to-brand-yellow">
+      <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-4xl font-bold text-white mb-8">
+          Ready to Transform Your Enterprise?
+        </h2>
+        <p class="text-xl text-white/90 mb-8">
+          Join 500+ enterprise companies already using TETRIX for mission-critical operations.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="/contact" class="bg-white text-brand-red px-8 py-4 rounded-lg font-semibold hover:bg-white/90 transition-colors shadow-lg">
+            Contact Sales
+          </a>
+          <a href="/pricing" class="bg-white/20 text-white px-8 py-4 rounded-lg font-semibold border-2 border-white/30 hover:bg-white/30 transition-colors">
+            View Pricing
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
+</MainLayout>

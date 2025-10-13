@@ -1,0 +1,81 @@
+name: goldfish-app
+
+# Cross-Platform Management Application with SHANGO AI Super Agent
+services:
+  # TETRIX Frontend with SHANGO Integration
+  - name: tetrix-frontend
+    github:
+      repo: tetrixcorps/miniverxe
+      branch: main
+      deploy_on_push: true
+    source_dir: /
+    http_port: 4321
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    build_command: |
+      # Clean up any conflicting lockfiles
+      rm -f package-lock.json yarn.lock npm-shrinkwrap.json .yarnrc .yarnrc.yml
+      # Install pnpm globally
+      npm install -g pnpm@10.8.0
+      # Install dependencies with pnpm
+      pnpm install --frozen-lockfile
+      # Build the application
+      pnpm run build
+    run_command: pnpm run dev
+    routes:
+      - path: /
+    envs:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: "0.0.0.0"
+      - key: PORT
+        value: "4321"
+      - key: TETRIX_DOMAIN
+        value: "tetrixcorp.com"
+      - key: JOROMI_DOMAIN
+        value: "joromi.ai"
+      - key: CROSS_PLATFORM_SESSION_SECRET
+        value: "tetrix-joromi-session-secret-2024"
+      # Sinch API Configuration for SHANGO
+      - key: SINCH_API_TOKEN
+        value: "544cdba462974e05adc5140211c0311c"
+      - key: SINCH_SERVICE_PLAN_ID
+        value: "01K1GYEHZAXEZVGDA34V3873KM"
+      - key: SINCH_VIRTUAL_NUMBER
+        value: "+16465799770"
+      - key: SINCH_BACKUP_NUMBER_1
+        value: "+18888046762"
+      - key: SINCH_BACKUP_NUMBER_2
+        value: "+12082792555"
+      - key: SINCH_BACKUP_NUMBER_3
+        value: "+12082792555"
+      - key: SINCH_CONVERSATION_PROJECT_ID
+        value: "01K1GYEHZAXEZVGDA34V3873KM"
+      # SHANGO AI Super Agent Configuration
+      - key: NEXT_PUBLIC_SINCH_API_KEY
+        value: "544cdba462974e05adc5140211c0311c"
+      - key: NEXT_PUBLIC_SINCH_WIDGET_ID
+        value: "shango-widget-2024"
+      - key: SHANGO_SESSION_TIMEOUT
+        value: "3600"
+      - key: SHANGO_MAX_MESSAGES
+        value: "1000"
+      - key: SHANGO_DEFAULT_AGENT
+        value: "shango-general"
+    health_check:
+      http_path: /health
+      initial_delay_seconds: 30
+      period_seconds: 10
+      timeout_seconds: 5
+      success_threshold: 1
+      failure_threshold: 3
+
+# Alerts
+alerts:
+  - rule: DEPLOYMENT_FAILED
+  - rule: DOMAIN_FAILED
+
+# Features
+features:
+  - buildpack-stack=ubuntu-22

@@ -1,0 +1,113 @@
+---
+export interface Props {
+  headings: Array<{
+    id: string;
+    text: string;
+    level: number;
+  }>;
+}
+
+const { headings } = Astro.props;
+---
+
+<nav class="toc-container hidden lg:block sticky top-24 max-w-xs">
+  <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-brand-orange">
+    <h3 class="text-lg font-semibold text-brand-dark mb-4">Table of Contents</h3>
+    <ul class="space-y-2">
+      {headings.map(heading => (
+        <li>
+          <a 
+            href={`#${heading.id}`}
+            class={`block py-1 px-2 rounded text-sm transition-colors hover:bg-brand-light hover:text-brand-dark ${
+              heading.level === 1 ? 'font-semibold text-brand-dark' : 
+              heading.level === 2 ? 'font-medium text-gray-700 ml-2' : 
+              'text-gray-600 ml-4'
+            }`}
+            data-heading-id={heading.id}
+          >
+            {heading.text}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</nav>
+
+<style>
+  .toc-container {
+    max-height: calc(100vh - 8rem);
+    overflow-y: auto;
+  }
+  
+  .toc-container::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  .toc-container::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 2px;
+  }
+  
+  .toc-container::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px;
+  }
+  
+  .toc-container::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tocLinks = document.querySelectorAll('[data-heading-id]');
+    const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+    
+    // Add intersection observer for active heading highlighting
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const id = entry.target.id;
+        const tocLink = document.querySelector(`[data-heading-id="${id}"]`);
+        
+        if (entry.isIntersecting) {
+          // Remove active class from all links
+          tocLinks.forEach(link => {
+            link.classList.remove('bg-brand-orange', 'text-white');
+            link.classList.add('text-gray-600');
+          });
+          
+          // Add active class to current link
+          if (tocLink) {
+            tocLink.classList.add('bg-brand-orange', 'text-white');
+            tocLink.classList.remove('text-gray-600');
+          }
+        }
+      });
+    }, {
+      rootMargin: '-20% 0px -35% 0px'
+    });
+    
+    // Observe all headings
+    headings.forEach(heading => {
+      if (heading.id) {
+        observer.observe(heading);
+      }
+    });
+    
+    // Smooth scroll for TOC links
+    tocLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = link.getAttribute('data-heading-id');
+        const targetElement = document.getElementById(targetId);
+        
+        if (targetElement) {
+          targetElement.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+  });
+</script> 

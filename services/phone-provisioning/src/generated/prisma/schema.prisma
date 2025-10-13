@@ -1,0 +1,167 @@
+// Phone Provisioning Service Database Schema
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Phone Numbers
+model PhoneNumber {
+  id             String            @id @default(cuid())
+  number         String            @unique
+  customerId     String
+  billingAddress Json?
+  voiceUrl       String?
+  smsUrl         String?
+  status         PhoneNumberStatus @default(ACTIVE)
+  purchasedAt    DateTime          @default(now())
+  releasedAt     DateTime?
+  releaseReason  String?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  // Relations
+  portingRequests PortingRequest[]
+
+  @@map("phone_numbers")
+}
+
+// Porting Requests
+model PortingRequest {
+  id                  String        @id @default(cuid())
+  currentNumber       String
+  currentCarrier      String
+  accountNumber       String
+  pin                 String?
+  customerId          String
+  billingAddress      Json?
+  authorizedUser      String?
+  serviceAddress      Json?
+  status              PortingStatus @default(PENDING)
+  estimatedCompletion DateTime?
+  notes               String?
+  rejectionReason     String?
+  completedAt         DateTime?
+  rejectedAt          DateTime?
+  cancelledAt         DateTime?
+  cancellationReason  String?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+
+  // Relations
+  phoneNumber PhoneNumber? @relation(fields: [currentNumber], references: [number])
+
+  @@map("porting_requests")
+}
+
+// Provisioning Jobs
+model ProvisioningJob {
+  id                 String      @id @default(cuid())
+  customerId         String
+  phoneNumber        String
+  deviceType         String
+  deviceId           String?
+  configuration      Json?
+  priority           JobPriority @default(NORMAL)
+  status             JobStatus   @default(PENDING)
+  progress           Int         @default(0) // 0-100
+  notes              String?
+  errorMessage       String?
+  completedAt        DateTime?
+  failedAt           DateTime?
+  cancelledAt        DateTime?
+  cancellationReason String?
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+
+  @@map("provisioning_jobs")
+}
+
+// Inventory
+model InventoryItem {
+  id                 String          @id @default(cuid())
+  type               InventoryType
+  value              String? // Phone number or device model
+  model              String? // For devices
+  region             String
+  capabilities       String[] // Array of capabilities
+  monthlyCost        Float           @default(0)
+  status             InventoryStatus @default(AVAILABLE)
+  reservedBy         String?
+  reservedAt         DateTime?
+  reservationExpires DateTime?
+  releasedAt         DateTime?
+  releaseReason      String?
+  addedAt            DateTime        @default(now())
+
+  @@map("inventory_items")
+}
+
+// Webhooks
+model Webhook {
+  id          String        @id @default(cuid())
+  url         String
+  events      String[] // Array of event types
+  secret      String
+  customerId  String
+  description String?
+  status      WebhookStatus @default(ACTIVE)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@map("webhooks")
+}
+
+// Enums
+enum PhoneNumberStatus {
+  ACTIVE
+  INACTIVE
+  RELEASED
+  SUSPENDED
+}
+
+enum PortingStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  REJECTED
+  CANCELLED
+}
+
+enum JobStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum JobPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum InventoryType {
+  PHONE_NUMBER
+  DEVICE
+  SIM_CARD
+}
+
+enum InventoryStatus {
+  AVAILABLE
+  RESERVED
+  ALLOCATED
+  OUT_OF_STOCK
+}
+
+enum WebhookStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}

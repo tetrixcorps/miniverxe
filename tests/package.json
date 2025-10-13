@@ -1,0 +1,33 @@
+{
+  "name": "voice-api-tests",
+  "version": "1.0.0",
+  "description": "Comprehensive test suite for Voice API with Playwright",
+  "scripts": {
+    "test": "playwright test",
+    "test:unit": "playwright test tests/unit/",
+    "test:integration": "playwright test tests/integration/",
+    "test:functional": "playwright test tests/functional/",
+    "test:e2e": "playwright test tests/e2e/",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:ui": "playwright test --ui",
+    "test:report": "playwright show-report",
+    "test:install": "playwright install",
+    "test:codegen": "playwright codegen",
+    "test:cross-platform": "node scripts/test-cross-platform-integration.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.0",
+    "playwright": "^1.56.0"
+  },
+  "keywords": [
+    "playwright",
+    "testing",
+    "voice-api",
+    "e2e",
+    "integration",
+    "unit-tests"
+  ],
+  "author": "TETRIX & JoRoMi Platform",
+  "license": "MIT"
+}

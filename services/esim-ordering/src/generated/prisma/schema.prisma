@@ -1,0 +1,158 @@
+// eSIM Ordering Service Database Schema
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// eSIM Orders
+model Order {
+  id                 String      @id @default(cuid())
+  customerId         String
+  esimType           String
+  dataPlan           String
+  duration           String
+  region             String
+  quantity           Int         @default(1)
+  status             OrderStatus @default(PENDING)
+  trackingId         String?
+  estimatedDelivery  DateTime?
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+  cancelledAt        DateTime?
+  cancellationReason String?
+  refundAmount       Float?
+
+  // Relations
+  esims    ESIM[]
+  payments Payment[]
+
+  @@map("orders")
+}
+
+// eSIM Records
+model ESIM {
+  id                 String     @id @default(cuid())
+  orderId            String
+  activationCode     String
+  deviceInfo         Json?
+  status             ESIMStatus @default(PENDING)
+  activatedAt        DateTime?
+  deactivatedAt      DateTime?
+  deactivationReason String?
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
+  // Relations
+  order    Order         @relation(fields: [orderId], references: [id])
+  profiles ESIMProfile[]
+
+  @@map("esims")
+}
+
+// eSIM Profiles
+model ESIMProfile {
+  id          String   @id @default(cuid())
+  esimId      String
+  profileId   String   @unique
+  iccid       String   @unique
+  downloadUrl String
+  qrCode      String
+  expiresAt   DateTime
+  deviceInfo  Json?
+  createdAt   DateTime @default(now())
+
+  // Relations
+  esim ESIM @relation(fields: [esimId], references: [id])
+
+  @@map("esim_profiles")
+}
+
+// Data Plans
+model DataPlan {
+  id         String   @id @default(cuid())
+  name       String
+  dataAmount String
+  duration   String
+  price      Float
+  currency   String   @default("USD")
+  region     String
+  features   String[] // Array of features
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("data_plans")
+}
+
+// Payments
+model Payment {
+  id             String        @id @default(cuid())
+  orderId        String
+  amount         Float
+  currency       String        @default("USD")
+  paymentMethod  String
+  customerId     String
+  billingAddress Json?
+  status         PaymentStatus @default(PROCESSING)
+  completedAt    DateTime?
+  refundAmount   Float?
+  refundedAt     DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  // Relations
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@map("payments")
+}
+
+// Webhooks
+model Webhook {
+  id          String        @id @default(cuid())
+  url         String
+  events      String[] // Array of event types
+  secret      String
+  customerId  String
+  description String?
+  status      WebhookStatus @default(ACTIVE)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@map("webhooks")
+}
+
+// Enums
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum ESIMStatus {
+  PENDING
+  ACTIVATED
+  DEACTIVATED
+  EXPIRED
+}
+
+enum PaymentStatus {
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+  CANCELLED
+}
+
+enum WebhookStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}

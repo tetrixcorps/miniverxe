@@ -1,0 +1,9 @@
+---
+const { quote, author, role } = Astro.props;
+---
+<figure class="bg-white rounded-lg shadow p-6 text-left">
+  <blockquote class="italic text-gray-800 mb-4">&ldquo;{quote}&rdquo;</blockquote>
+  <figcaption class="text-sm text-gray-500">
+    <span class="font-bold text-brand-blue">{author}</span>, {role}
+  </figcaption>
+</figure> 

@@ -1,0 +1,192 @@
+name: goldfish-app
+
+# Cross-Platform Management Application with SHANGO AI Super Agent
+services:
+  # TETRIX Frontend with SHANGO Integration
+  - name: tetrix-frontend
+    github:
+      repo: tetrixcorps/miniverxe
+      branch: main
+      deploy_on_push: true
+    source_dir: /
+    dockerfile_path: Dockerfile
+    http_port: 4321
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    routes:
+      - path: /
+    envs:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: "0.0.0.0"
+      - key: PORT
+        value: "4321"
+      - key: TETRIX_DOMAIN
+        value: "tetrixcorp.com"
+      - key: JOROMI_DOMAIN
+        value: "joromi.ai"
+      - key: CROSS_PLATFORM_SESSION_SECRET
+        value: "tetrix-joromi-session-secret-2024"
+      # Sinch API Configuration for SHANGO
+      - key: SINCH_API_TOKEN
+        value: "544cdba462974e05adc5140211c0311c"
+      - key: SINCH_SERVICE_PLAN_ID
+        value: "01K1GYEHZAXEZVGDA34V3873KM"
+      - key: SINCH_VIRTUAL_NUMBER
+        value: "+16465799770"
+      - key: SINCH_BACKUP_NUMBER_1
+        value: "+18888046762"
+      - key: SINCH_BACKUP_NUMBER_2
+        value: "+12082792555"
+      - key: SINCH_BACKUP_NUMBER_3
+        value: "+12082792555"
+      - key: SINCH_CONVERSATION_PROJECT_ID
+        value: "01K1GYEHZAXEZVGDA34V3873KM"
+      # SHANGO AI Super Agent Configuration
+      - key: NEXT_PUBLIC_SINCH_API_KEY
+        value: "544cdba462974e05adc5140211c0311c"
+      - key: NEXT_PUBLIC_SINCH_WIDGET_ID
+        value: "shango-widget-2024"
+      - key: SHANGO_SESSION_TIMEOUT
+        value: "3600"
+      - key: SHANGO_MAX_MESSAGES
+        value: "1000"
+      - key: SHANGO_DEFAULT_AGENT
+        value: "shango-general"
+    health_check:
+      http_path: /health
+      initial_delay_seconds: 30
+      period_seconds: 10
+      timeout_seconds: 5
+      success_threshold: 1
+      failure_threshold: 3
+
+  # TETRIX API Backend
+  - name: tetrix-api
+    github:
+      repo: tetrixcorps/miniverxe
+      branch: main
+      deploy_on_push: true
+    source_dir: /services/api
+    http_port: 4000
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    run_command: npm run dev
+    routes:
+      - path: /api
+    envs:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "4000"
+      - key: DATABASE_URL
+        value: "postgresql://tetrix_user:tetrix_password@tetrix-db-do-user-12345678-0.db.ondigitalocean.com:25060/tetrix_db?sslmode=require"
+      - key: REDIS_URL
+        value: "redis://tetrix-redis-do-user-12345678-0.db.ondigitalocean.com:25060"
+      # Sinch API Configuration
+      - key: SINCH_API_TOKEN
+        value: "544cdba462974e05adc5140211c0311c"
+      - key: SINCH_SERVICE_PLAN_ID
+        value: "01K1GYEHZAXEZVGDA34V3873KM"
+      - key: SINCH_VIRTUAL_NUMBER
+        value: "+16465799770"
+    health_check:
+      http_path: /health
+      initial_delay_seconds: 30
+      period_seconds: 10
+      timeout_seconds: 5
+      success_threshold: 1
+      failure_threshold: 3
+
+  # JoRoMi Frontend with SHANGO Integration
+  - name: joromi-frontend
+    github:
+      repo: tetrixcorps/miniverxe
+      branch: main
+      deploy_on_push: true
+    source_dir: /joromi/frontend
+    http_port: 3000
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    run_command: npm run dev
+    routes:
+      - path: /joromi
+    envs:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3000"
+      - key: NEXT_PUBLIC_API_URL
+        value: "https://tetrix-api-${APP_ID}.ondigitalocean.app"
+      # SHANGO AI Super Agent Configuration
+      - key: NEXT_PUBLIC_SINCH_API_KEY
+        value: "544cdba462974e05adc5140211c0311c"
+      - key: NEXT_PUBLIC_SINCH_WIDGET_ID
+        value: "shango-widget-2024"
+    health_check:
+      http_path: /health
+      initial_delay_seconds: 30
+      period_seconds: 10
+      timeout_seconds: 5
+      success_threshold: 1
+      failure_threshold: 3
+
+  # JoRoMi Backend with SHANGO API
+  - name: joromi-backend
+    github:
+      repo: tetrixcorps/miniverxe
+      branch: main
+      deploy_on_push: true
+    source_dir: /joromi/backend
+    http_port: 8000
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    run_command: python -m uvicorn main:app --host 0.0.0.0 --port 8000
+    routes:
+      - path: /api/v1
+    envs:
+      - key: PYTHON_VERSION
+        value: "3.11"
+      - key: PORT
+        value: "8000"
+      - key: DATABASE_URL
+        value: "postgresql://tetrix_user:tetrix_password@tetrix-db-do-user-12345678-0.db.ondigitalocean.com:25060/tetrix_db?sslmode=require"
+      - key: REDIS_URL
+        value: "redis://tetrix-redis-do-user-12345678-0.db.ondigitalocean.com:25060"
+      # SHANGO AI Super Agent Configuration
+      - key: SHANGO_SESSION_TIMEOUT
+        value: "3600"
+      - key: SHANGO_MAX_MESSAGES
+        value: "1000"
+      - key: SHANGO_DEFAULT_AGENT
+        value: "shango-general"
+      - key: AIQ_ORCHESTRATOR_URL
+        value: "http://aiq_orchestrator:8082/aiq/run"
+      - key: AIQ_ORCHESTRATOR_STREAM_URL
+        value: "http://aiq_orchestrator:8082/aiq/run/stream"
+    health_check:
+      http_path: /health
+      initial_delay_seconds: 30
+      period_seconds: 10
+      timeout_seconds: 5
+      success_threshold: 1
+      failure_threshold: 3
+
+# Databases
+databases:
+  - name: tetrix-db
+    engine: PG
+    version: "15"
+    size: db-s-1vcpu-1gb
+    num_nodes: 1
+
+  - name: tetrix-redis
+    engine: REDIS
+    version: "7"
+    size: db-s-1vcpu-1gb
+    num_nodes: 1
+
+# Note: Static sites are configured via Digital Ocean dashboard
+
+# Note: Load balancers, alerts, and features are configured via Digital Ocean dashboard

@@ -1,0 +1,152 @@
+---
+// API Gateway - Routes all API requests to appropriate services
+import type { APIRoute } from 'astro';
+
+export const prerender = false;
+
+export const GET: APIRoute = async ({ request, params }) => {
+  const url = new URL(request.url);
+  const hostname = request.headers.get('host') || '';
+  const path = params.path || '';
+  
+  // Route based on subdomain
+  if (hostname.startsWith('api.')) {
+    // API Gateway routing
+    return new Response(JSON.stringify({
+      service: 'TETRIX API Gateway',
+      subdomain: 'api',
+      path: path,
+      status: 'operational',
+      timestamp: new Date().toISOString(),
+      endpoints: {
+        '/health': 'Health check endpoint',
+        '/voice': 'Voice API services',
+        '/messaging': 'Messaging services',
+        '/auth': 'Authentication services',
+        '/projects': 'Project management',
+        '/users': 'User management'
+      }
+    }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      }
+    });
+  }
+  
+  if (hostname.startsWith('iot.')) {
+    // IoT Gateway routing
+    return new Response(JSON.stringify({
+      service: 'TETRIX IoT Gateway',
+      subdomain: 'iot',
+      path: path,
+      status: 'operational',
+      timestamp: new Date().toISOString(),
+      endpoints: {
+        '/devices': 'Device management',
+        '/telemetry': 'Telemetry data',
+        '/fleet': 'Fleet management',
+        '/analytics': 'IoT analytics',
+        '/alerts': 'Alert management'
+      }
+    }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      }
+    });
+  }
+  
+  if (hostname.startsWith('vpn.')) {
+    // VPN Gateway routing
+    return new Response(JSON.stringify({
+      service: 'TETRIX VPN Gateway',
+      subdomain: 'vpn',
+      path: path,
+      status: 'operational',
+      timestamp: new Date().toISOString(),
+      endpoints: {
+        '/status': 'VPN status',
+        '/config': 'VPN configuration',
+        '/users': 'VPN user management',
+        '/logs': 'Connection logs',
+        '/security': 'Security settings'
+      }
+    }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      }
+    });
+  }
+  
+  // Default API response
+  return new Response(JSON.stringify({
+    service: 'TETRIX Platform',
+    status: 'operational',
+    timestamp: new Date().toISOString(),
+    message: 'Welcome to TETRIX API Gateway'
+  }), {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    }
+  });
+};
+
+export const POST: APIRoute = async ({ request, params }) => {
+  const url = new URL(request.url);
+  const hostname = request.headers.get('host') || '';
+  const path = params.path || '';
+  
+  // Handle POST requests based on subdomain
+  if (hostname.startsWith('api.')) {
+    // Process API requests
+    return new Response(JSON.stringify({
+      service: 'TETRIX API Gateway',
+      method: 'POST',
+      subdomain: 'api',
+      path: path,
+      status: 'processed',
+      timestamp: new Date().toISOString()
+    }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
+    });
+  }
+  
+  return new Response(JSON.stringify({
+    error: 'Method not supported',
+    status: 405
+  }), {
+    status: 405,
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+};
+
+export const OPTIONS: APIRoute = async ({ request }) => {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Max-Age': '86400'
+    }
+  });
+};

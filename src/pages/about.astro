@@ -1,0 +1,341 @@
+---
+import MainLayout from '../components/layout/MainLayout.astro';
+---
+
+<MainLayout>
+  <div class="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+    <!-- Hero Section -->
+    <section class="py-20 px-4 relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-brand-red/10 via-brand-orange/10 to-brand-yellow/10"></div>
+      
+      <div class="max-w-7xl mx-auto text-center relative z-10">
+        <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+          About <span class="text-brand-red">TETRIX</span>
+        </h1>
+        <p class="text-xl text-gray-600 mb-8 max-w-4xl mx-auto">
+          Leading enterprise technology company specializing in AI-powered solutions, 
+          unified communications, and automation platforms that transform businesses worldwide.
+        </p>
+        
+        <!-- Key Statistics -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12 max-w-4xl mx-auto">
+          <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+            <div class="text-3xl font-bold text-brand-red mb-2">500+</div>
+            <div class="text-gray-600">Enterprise Clients</div>
+          </div>
+          <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+            <div class="text-3xl font-bold text-brand-orange mb-2">99.9%</div>
+            <div class="text-gray-600">Uptime SLA</div>
+          </div>
+          <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+            <div class="text-3xl font-bold text-brand-yellow mb-2">24/7</div>
+            <div class="text-gray-600">Global Support</div>
+          </div>
+          <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+            <div class="text-3xl font-bold text-purple-600 mb-2">200+</div>
+            <div class="text-gray-600">Countries Served</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mission & Vision -->
+    <section class="py-20 px-4">
+      <div class="max-w-7xl mx-auto">
+        <div class="grid lg:grid-cols-2 gap-12 mb-20">
+          <div>
+            <h2 class="text-4xl font-bold text-gray-900 mb-6">Our Mission</h2>
+            <p class="text-lg text-gray-700 leading-relaxed mb-6">
+              To empower businesses across industries with cutting-edge AI, communication, 
+              and automation technologies that drive growth, efficiency, and innovation. 
+              We believe technology should be accessible, reliable, and transformative.
+            </p>
+            <p class="text-lg text-gray-700 leading-relaxed">
+              Our mission is to bridge the gap between complex enterprise needs and 
+              simple, powerful solutions that deliver measurable results.
+            </p>
+          </div>
+          
+          <div>
+            <h2 class="text-4xl font-bold text-gray-900 mb-6">Our Vision</h2>
+            <p class="text-lg text-gray-700 leading-relaxed mb-6">
+              To be the global leader in enterprise communication and AI solutions, 
+              recognized for our innovation, reliability, and commitment to customer success.
+            </p>
+            <p class="text-lg text-gray-700 leading-relaxed">
+              We envision a world where every business, regardless of size or industry, 
+              has access to enterprise-grade technology that scales with their ambitions.
+            </p>
+          </div>
+        </div>
+
+        <!-- Why Choose TETRIX -->
+        <div class="bg-gradient-to-r from-brand-red/10 to-brand-orange/10 p-8 rounded-2xl border border-brand-red/20 mb-20">
+          <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">Why Choose TETRIX?</h2>
+          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="text-center">
+              <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="text-green-600 text-2xl">🔒</span>
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 mb-3">Enterprise Security</h3>
+              <p class="text-gray-600">SOC II Type II certified with HIPAA compliance and advanced security protocols</p>
+            </div>
+            
+            <div class="text-center">
+              <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="text-blue-600 text-2xl">⚡</span>
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 mb-3">24/7 Support</h3>
+              <p class="text-gray-600">Round-the-clock global support with dedicated account management</p>
+            </div>
+            
+            <div class="text-center">
+              <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="text-purple-600 text-2xl">📈</span>
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 mb-3">Proven ROI</h3>
+              <p class="text-gray-600">Measurable cost savings and efficiency improvements for our clients</p>
+            </div>
+            
+            <div class="text-center">
+              <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="text-orange-600 text-2xl">🚀</span>
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 mb-3">Scalable Solutions</h3>
+              <p class="text-gray-600">Flexible platforms that grow with your business from startup to enterprise</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Our Services -->
+    <section class="py-20 px-4 bg-gray-50">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl font-bold text-center text-gray-900 mb-16">What We Do</h2>
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <!-- AI & Automation -->
+          <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all">
+            <div class="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
+              <span class="text-2xl">🤖</span>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">AI & Automation</h3>
+            <p class="text-gray-600 mb-4">
+              Advanced AI solutions including machine learning, natural language processing, 
+              and intelligent automation for enterprise workflows.
+            </p>
+            <ul class="text-sm text-gray-600 space-y-2">
+              <li>• Machine Learning Platforms</li>
+              <li>• Conversational AI (SHANGO)</li>
+              <li>• Data Labeling & Annotation</li>
+              <li>• Workflow Automation</li>
+            </ul>
+          </div>
+
+          <!-- Communications -->
+          <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all">
+            <div class="w-16 h-16 bg-green-100 rounded-lg flex items-center justify-center mb-6">
+              <span class="text-2xl">📞</span>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Communications</h3>
+            <p class="text-gray-600 mb-4">
+              Unified communication solutions including voice, SMS, messaging, 
+              and phone number provisioning with global coverage.
+            </p>
+            <ul class="text-sm text-gray-600 space-y-2">
+              <li>• Voice API & IVR Systems</li>
+              <li>• SMS & Messaging</li>
+              <li>• Phone Number Provisioning</li>
+              <li>• 2FA & Security Services</li>
+            </ul>
+          </div>
+
+          <!-- IoT & Telematics -->
+          <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all">
+            <div class="w-16 h-16 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
+              <span class="text-2xl">🚛</span>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">IoT & Telematics</h3>
+            <p class="text-gray-600 mb-4">
+              Enterprise IoT solutions for fleet management, device tracking, 
+              and real-time analytics with predictive maintenance.
+            </p>
+            <ul class="text-sm text-gray-600 space-y-2">
+              <li>• Fleet Management</li>
+              <li>• Device Tracking</li>
+              <li>• Predictive Analytics</li>
+              <li>• Real-time Monitoring</li>
+            </ul>
+          </div>
+
+          <!-- Security & Compliance -->
+          <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all">
+            <div class="w-16 h-16 bg-orange-100 rounded-lg flex items-center justify-center mb-6">
+              <span class="text-2xl">🔒</span>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Security & Compliance</h3>
+            <p class="text-gray-600 mb-4">
+              Enterprise-grade security solutions with compliance certifications 
+              for healthcare, financial, and government sectors.
+            </p>
+            <ul class="text-sm text-gray-600 space-y-2">
+              <li>• VPN Gateway Services</li>
+              <li>• HIPAA Compliance</li>
+              <li>• SOC II Type II</li>
+              <li>• PCI DSS Ready</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Global Presence -->
+    <section class="py-20 px-4">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl font-bold text-center text-gray-900 mb-16">Global Presence</h2>
+        <div class="grid lg:grid-cols-2 gap-12">
+          <div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-8">Our Offices</h3>
+            <div class="space-y-8">
+              <div class="bg-gradient-to-br from-brand-red/10 to-brand-red/20 p-8 rounded-xl border border-brand-red/20">
+                <div class="flex items-center mb-4">
+                  <span class="text-3xl mr-4">🇺🇸</span>
+                  <div>
+                    <h4 class="text-xl font-bold text-gray-900">Houston, Texas</h4>
+                    <p class="text-gray-600">Headquarters</p>
+                  </div>
+                </div>
+                <p class="text-gray-700 mb-4">4330 Hazelton Street, Houston, TX 77035</p>
+                <div class="text-sm text-gray-600">
+                  <p><strong>Business Hours:</strong> Mon-Fri 9AM-6PM CST</p>
+                  <p><strong>Services:</strong> Sales, Support, Development</p>
+                </div>
+              </div>
+              
+              <div class="bg-gradient-to-br from-brand-orange/10 to-brand-orange/20 p-8 rounded-xl border border-brand-orange/20">
+                <div class="flex items-center mb-4">
+                  <span class="text-3xl mr-4">🇳🇬</span>
+                  <div>
+                    <h4 class="text-xl font-bold text-gray-900">Lagos, Nigeria</h4>
+                    <p class="text-gray-600">Regional Office</p>
+                  </div>
+                </div>
+                <p class="text-gray-700 mb-4">2J Daisy Street, Chevron-Lagos</p>
+                <div class="text-sm text-gray-600">
+                  <p><strong>Business Hours:</strong> Mon-Fri 9AM-6PM WAT</p>
+                  <p><strong>Services:</strong> Sales, Support, Local Operations</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-8">Global Coverage</h3>
+            <div class="space-y-6">
+              <div class="bg-white p-6 rounded-xl shadow-lg">
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-600">Countries Served:</span>
+                  <span class="text-2xl font-bold text-brand-red">200+</span>
+                </div>
+              </div>
+              
+              <div class="bg-white p-6 rounded-xl shadow-lg">
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-600">Languages Supported:</span>
+                  <span class="text-2xl font-bold text-brand-orange">50+</span>
+                </div>
+              </div>
+              
+              <div class="bg-white p-6 rounded-xl shadow-lg">
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-600">Time Zones Covered:</span>
+                  <span class="text-2xl font-bold text-brand-yellow">24/7</span>
+                </div>
+              </div>
+              
+              <div class="bg-white p-6 rounded-xl shadow-lg">
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-600">Response Time:</span>
+                  <span class="text-2xl font-bold text-purple-600">&lt; 1 hour</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Team & Culture -->
+    <section class="py-20 px-4 bg-gray-50">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl font-bold text-center text-gray-900 mb-16">Our Team & Culture</h2>
+        <div class="grid lg:grid-cols-2 gap-12">
+          <div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-6">Innovation-Driven Team</h3>
+            <p class="text-lg text-gray-700 leading-relaxed mb-6">
+              Our team consists of world-class engineers, designers, and business professionals 
+              who are passionate about creating solutions that make a real difference. We believe 
+              in continuous learning, collaboration, and pushing the boundaries of what's possible.
+            </p>
+            <div class="space-y-4">
+              <div class="flex items-center">
+                <span class="text-green-500 mr-3">✓</span>
+                <span class="text-gray-700">Diverse, inclusive workplace culture</span>
+              </div>
+              <div class="flex items-center">
+                <span class="text-green-500 mr-3">✓</span>
+                <span class="text-gray-700">Continuous learning and development</span>
+              </div>
+              <div class="flex items-center">
+                <span class="text-green-500 mr-3">✓</span>
+                <span class="text-gray-700">Work-life balance and flexibility</span>
+              </div>
+              <div class="flex items-center">
+                <span class="text-green-500 mr-3">✓</span>
+                <span class="text-gray-700">Innovation and creativity encouraged</span>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-6">Join Our Team</h3>
+            <p class="text-lg text-gray-700 leading-relaxed mb-6">
+              We're always looking for talented individuals who share our passion for technology 
+              and innovation. If you're ready to make an impact and work on cutting-edge projects, 
+              we'd love to hear from you.
+            </p>
+            <div class="space-y-4">
+              <a href="/careers" class="block bg-brand-red text-white px-6 py-3 rounded-lg font-semibold hover:bg-brand-red/90 transition-colors text-center">
+                View Open Positions
+              </a>
+              <a href="/contact" class="block bg-white text-brand-red px-6 py-3 rounded-lg font-semibold border border-brand-red hover:bg-brand-red hover:text-white transition-colors text-center">
+                Contact HR Team
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 px-4 bg-gradient-to-br from-brand-red via-brand-orange to-brand-yellow">
+      <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-4xl font-bold text-white mb-6">Ready to Work With Us?</h2>
+        <p class="text-xl text-white/90 mb-8">
+          Discover how TETRIX can transform your business with our enterprise-grade solutions.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="/contact" class="bg-white text-brand-red px-8 py-4 rounded-lg font-semibold hover:bg-white/90 transition-colors shadow-lg text-lg">
+            Get in Touch
+          </a>
+          <a href="/pricing" class="bg-white/20 text-white px-8 py-4 rounded-lg font-semibold hover:bg-white/30 transition-colors border border-white/30 text-lg">
+            View Pricing
+          </a>
+          <a href="/demo" class="bg-white/20 text-white px-8 py-4 rounded-lg font-semibold hover:bg-white/30 transition-colors border border-white/30 text-lg">
+            Request Demo
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
+</MainLayout>

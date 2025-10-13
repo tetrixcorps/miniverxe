@@ -1,0 +1,248 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions for authentication and role checking
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function getUserRole() {
+      return isAuthenticated() 
+        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role 
+        : null;
+    }
+    
+    function hasRole(role) {
+      return getUserRole() == role;
+    }
+    
+    function hasAnyRole(roles) {
+      return getUserRole() in roles;
+    }
+    
+    function isOwner(resource) {
+      return isAuthenticated() && resource.data.uid == request.auth.uid;
+    }
+    
+    function isAssignedTo(resource) {
+      return isAuthenticated() && resource.data.assignedTo == request.auth.uid;
+    }
+    
+    function isCreatedBy(resource) {
+      return isAuthenticated() && resource.data.createdBy == request.auth.uid;
+    }
+
+    // Users collection - users can read/write their own data, admins can read all
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (
+        request.auth.uid == userId || 
+        hasAnyRole(['admin', 'project_manager'])
+      );
+      
+      allow write: if isAuthenticated() && (
+        request.auth.uid == userId ||
+        hasRole('admin')
+      );
+      
+      // Prevent users from changing their own role (only admins can)
+      allow update: if isAuthenticated() && 
+        request.auth.uid == userId &&
+        (!('role' in request.resource.data) || 
+         request.resource.data.role == resource.data.role);
+    }
+
+    // Contact submissions - admin only access
+    match /contact_submissions/{submissionId} {
+      allow read, write: if hasRole('admin');
+      
+      // Allow public creation (for contact form)
+      allow create: if true;
+    }
+
+    // Task items - role-based access with ownership rules
+    match /task_items/{taskId} {
+      // Read access: assigned user, reviewers, admins, project managers
+      allow read: if isAuthenticated() && (
+        isAssignedTo(resource) ||
+        hasAnyRole(['admin', 'reviewer', 'project_manager'])
+      );
+      
+      // Create: admins and project managers only
+      allow create: if hasAnyRole(['admin', 'project_manager']) &&
+        // Ensure required fields are present
+        'status' in request.resource.data &&
+        request.resource.data.status in ['pending', 'in_progress'];
+      
+      // Update: different rules based on current status and user role
+      allow update: if isAuthenticated() && (
+        // Admins can update anything
+        hasRole('admin') ||
+        
+        // Project managers can update anything
+        hasRole('project_manager') ||
+        
+        // Reviewers can update status to approved/rejected and add review comments
+        (hasRole('reviewer') && 
+         resource.data.status == 'submitted' &&
+         request.resource.data.status in ['approved', 'rejected']) ||
+        
+        // Assigned annotators can claim tasks and submit annotations
+        (isAssignedTo(resource) && (
+          // Claiming a task (pending -> in_progress)
+          (resource.data.status == 'pending' && 
+           request.resource.data.status == 'in_progress') ||
+          
+          // Submitting annotation (in_progress -> submitted)
+          (resource.data.status == 'in_progress' && 
+           request.resource.data.status == 'submitted' &&
+           'annotation' in request.resource.data)
+        ))
+      );
+      
+      // Delete: admins only
+      allow delete: if hasRole('admin');
+    }
+
+    // Projects - admin and project manager access
+    match /projects/{projectId} {
+      // Read: all authenticated users can see projects
+      allow read: if isAuthenticated();
+      
+      // Create/Update: admins and project managers only
+      allow create, update: if hasAnyRole(['admin', 'project_manager']) &&
+        // Validate required fields
+        'name' in request.resource.data &&
+        'description' in request.resource.data &&
+        'annotationType' in request.resource.data &&
+        'status' in request.resource.data &&
+        request.resource.data.status in ['draft', 'active', 'completed', 'archived'];
+      
+      // Delete: admins only
+      allow delete: if hasRole('admin');
+    }
+
+    // Payments - restricted access
+    match /payments/{paymentId} {
+      // Read: payment recipient or admins
+      allow read: if isAuthenticated() && (
+        isOwner(resource) ||
+        hasRole('admin')
+      );
+      
+      // Create: admins only (payments are created through API)
+      allow create: if hasRole('admin') &&
+        'uid' in request.resource.data &&
+        'amountUSD' in request.resource.data &&
+        'txHash' in request.resource.data;
+      
+      // Update/Delete: admins only
+      allow update, delete: if hasRole('admin');
+    }
+
+    // Migration tracking - system only
+    match /_migrations/{migrationId} {
+      // Read: admins only
+      allow read: if hasRole('admin');
+      
+      // Write: system only (no user writes allowed)
+      allow write: if false;
+    }
+
+    // User activity logs (if implemented)
+    match /activity_logs/{logId} {
+      // Read: own logs or admins
+      allow read: if isAuthenticated() && (
+        isOwner(resource) ||
+        hasRole('admin')
+      );
+      
+      // Create: authenticated users for their own logs
+      allow create: if isAuthenticated() && 
+        request.resource.data.uid == request.auth.uid;
+      
+      // Update/Delete: admins only
+      allow update, delete: if hasRole('admin');
+    }
+
+    // Project memberships (if implemented)
+    match /project_memberships/{membershipId} {
+      // Read: project members or admins
+      allow read: if isAuthenticated() && (
+        resource.data.uid == request.auth.uid ||
+        hasAnyRole(['admin', 'project_manager'])
+      );
+      
+      // Create/Update: admins and project managers only
+      allow create, update: if hasAnyRole(['admin', 'project_manager']);
+      
+      // Delete: admins only
+      allow delete: if hasRole('admin');
+    }
+
+    // Notifications (if implemented)
+    match /notifications/{notificationId} {
+      // Read: notification recipient or admins
+      allow read: if isAuthenticated() && (
+        resource.data.recipientId == request.auth.uid ||
+        hasRole('admin')
+      );
+      
+      // Create: system or admins
+      allow create: if hasRole('admin');
+      
+      // Update: recipient can mark as read, admins can do anything
+      allow update: if isAuthenticated() && (
+        (resource.data.recipientId == request.auth.uid && 
+         // Only allow updating read status
+         request.resource.data.diff(resource.data).affectedKeys() == ['read'].toSet()) ||
+        hasRole('admin')
+      );
+      
+      // Delete: admins only
+      allow delete: if hasRole('admin');
+    }
+
+    // File uploads metadata (if implemented)
+    match /file_uploads/{fileId} {
+      // Read: file uploader or admins
+      allow read: if isAuthenticated() && (
+        isOwner(resource) ||
+        hasRole('admin')
+      );
+      
+      // Create: authenticated users
+      allow create: if isAuthenticated() &&
+        request.resource.data.uid == request.auth.uid;
+      
+      // Update/Delete: file owner or admins
+      allow update, delete: if isAuthenticated() && (
+        isOwner(resource) ||
+        hasRole('admin')
+      );
+    }
+
+    // Analytics and metrics (if implemented)
+    match /analytics/{metricId} {
+      // Read: admins and project managers only
+      allow read: if hasAnyRole(['admin', 'project_manager']);
+      
+      // Write: system only
+      allow write: if false;
+    }
+
+    // Audit logs (if implemented)
+    match /audit_logs/{logId} {
+      // Read: admins only
+      allow read: if hasRole('admin');
+      
+      // Write: system only
+      allow write: if false;
+    }
+
+    // Default deny rule for any other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

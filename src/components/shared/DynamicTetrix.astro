@@ -1,0 +1,219 @@
+---
+export interface Props {
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl';
+  variant?: 'default' | 'hero' | 'subtle' | 'glow';
+  className?: string;
+}
+
+const { size = 'md', variant = 'default', className = '' } = Astro.props;
+
+const sizeClasses = {
+  sm: 'text-sm',
+  md: 'text-base',
+  lg: 'text-lg',
+  xl: 'text-xl',
+  '2xl': 'text-2xl',
+  '3xl': 'text-3xl',
+  '4xl': 'text-4xl',
+  '5xl': 'text-5xl',
+  '6xl': 'text-6xl'
+};
+
+const variantClasses = {
+  default: 'tetrix-default',
+  hero: 'tetrix-hero',
+  subtle: 'tetrix-subtle',
+  glow: 'tetrix-glow'
+};
+---
+
+<div class={`tetrix-brand ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}>
+  <span class="tetrix-text font-extrabold tracking-tight font-heading">
+    <span class="tetrix-letter" data-letter="T">T</span>
+    <span class="tetrix-letter" data-letter="E">E</span>
+    <span class="tetrix-letter" data-letter="T">T</span>
+    <span class="tetrix-letter" data-letter="R">R</span>
+    <span class="tetrix-letter" data-letter="I">I</span>
+    <span class="tetrix-letter" data-letter="X">X</span>
+  </span>
+</div>
+
+<style>
+  .tetrix-brand {
+    position: relative;
+    cursor: pointer;
+    display: inline-block;
+  }
+
+  .tetrix-text {
+    background: linear-gradient(45deg, #ffffff, #FFB300, #FF9500, #FF3B30, #ffffff);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradient-shift 3s ease-in-out infinite;
+    position: relative;
+    display: inline-block;
+  }
+
+  .tetrix-text::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, #FF3B30, #FF9500, #FFB300, #FF3B30);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    opacity: 0;
+    animation: glow-pulse 2s ease-in-out infinite;
+    z-index: -1;
+  }
+
+  .tetrix-letter {
+    display: inline-block;
+    transition: all 0.3s ease;
+    position: relative;
+    animation: letter-float 4s ease-in-out infinite;
+  }
+
+  .tetrix-letter:nth-child(1) { animation-delay: 0s; }
+  .tetrix-letter:nth-child(2) { animation-delay: 0.1s; }
+  .tetrix-letter:nth-child(3) { animation-delay: 0.2s; }
+  .tetrix-letter:nth-child(4) { animation-delay: 0.3s; }
+  .tetrix-letter:nth-child(5) { animation-delay: 0.4s; }
+  .tetrix-letter:nth-child(6) { animation-delay: 0.5s; }
+
+  /* Variant Styles */
+  .tetrix-hero .tetrix-text {
+    background: linear-gradient(45deg, #FF3B30, #FF9500, #FFB300, #FF3B30, #FF9500);
+    background-size: 400% 400%;
+    animation: gradient-shift 2s ease-in-out infinite;
+    text-shadow: 0 0 30px rgba(255, 59, 48, 0.5);
+  }
+
+  .tetrix-subtle .tetrix-text {
+    background: linear-gradient(45deg, #666666, #888888, #999999, #666666);
+    background-size: 200% 200%;
+    animation: gradient-shift 4s ease-in-out infinite;
+  }
+
+  .tetrix-glow .tetrix-text {
+    background: linear-gradient(45deg, #FFB300, #FF9500, #FF3B30, #FFB300);
+    background-size: 300% 300%;
+    animation: gradient-shift 1.5s ease-in-out infinite;
+    filter: drop-shadow(0 0 10px rgba(255, 179, 0, 0.6));
+  }
+
+  /* Hover Effects */
+  .tetrix-brand:hover .tetrix-letter {
+    transform: scale(1.2) rotate(5deg);
+    text-shadow: 0 0 20px rgba(255, 179, 0, 0.8);
+  }
+
+  .tetrix-brand:hover .tetrix-text {
+    animation: gradient-shift 1s ease-in-out infinite;
+  }
+
+  .tetrix-brand:hover .tetrix-text::before {
+    opacity: 0.3;
+  }
+
+  /* Special hover effects for variants */
+  .tetrix-hero:hover .tetrix-text {
+    filter: drop-shadow(0 0 20px rgba(255, 59, 48, 0.8));
+  }
+
+  .tetrix-glow:hover .tetrix-text {
+    filter: drop-shadow(0 0 25px rgba(255, 179, 0, 0.9));
+  }
+
+  /* Animations */
+  @keyframes gradient-shift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% {
+      opacity: 0;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.3;
+      transform: scale(1.05);
+    }
+  }
+
+  @keyframes letter-float {
+    0%, 100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    25% {
+      transform: translateY(-2px) rotate(1deg);
+    }
+    50% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    75% {
+      transform: translateY(2px) rotate(-1deg);
+    }
+  }
+
+  /* Sparkle effect for hero variant */
+  .tetrix-hero::after {
+    content: '';
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle, rgba(255, 179, 0, 0.8) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: sparkle 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes sparkle {
+    0%, 100% {
+      opacity: 0;
+      transform: scale(0) rotate(0deg);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1) rotate(180deg);
+    }
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .tetrix-letter {
+      animation: letter-float 3s ease-in-out infinite;
+    }
+    
+    .tetrix-hero::after {
+      display: none;
+    }
+  }
+
+  /* Reduce motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .tetrix-text,
+    .tetrix-letter,
+    .tetrix-text::before,
+    .tetrix-hero::after {
+      animation: none;
+    }
+    
+    .tetrix-brand:hover .tetrix-letter {
+      transform: none;
+    }
+  }
+</style> 

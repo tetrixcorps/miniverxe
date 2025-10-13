@@ -1,0 +1,159 @@
+---
+import BlogCard from '../shared/BlogCard.astro';
+
+export interface BlogPost {
+  title: string;
+  excerpt: string;
+  author: string;
+  publishDate: string;
+  lastUpdated?: string;
+  readTime: number;
+  category: string;
+  slug: string;
+  featured?: boolean;
+  image?: string;
+  funnelStage: 'awareness' | 'consideration' | 'decision';
+}
+
+export interface Props {
+  posts: BlogPost[];
+}
+
+const { posts } = Astro.props;
+
+// Group posts by funnel stage
+const awarenessPosts = posts.filter(post => post.funnelStage === 'awareness');
+const considerationPosts = posts.filter(post => post.funnelStage === 'consideration');
+const decisionPosts = posts.filter(post => post.funnelStage === 'decision');
+---
+
+<section class="py-16 bg-gradient-to-br from-brand-light to-white">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl md:text-4xl font-heading font-bold text-brand-dark mb-4">
+        Featured Insights
+      </h2>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        Discover strategies and insights tailored to your journey with TETRIX
+      </p>
+    </div>
+
+    <!-- Funnel Stage Navigation -->
+    <div class="flex justify-center mb-8">
+      <div class="flex space-x-1 bg-white rounded-lg p-1 shadow-md">
+        <button 
+          class="funnel-tab px-4 py-2 rounded-md font-medium transition-colors active" 
+          data-stage="awareness"
+        >
+          Awareness
+        </button>
+        <button 
+          class="funnel-tab px-4 py-2 rounded-md font-medium transition-colors" 
+          data-stage="consideration"
+        >
+          Consideration
+        </button>
+        <button 
+          class="funnel-tab px-4 py-2 rounded-md font-medium transition-colors" 
+          data-stage="decision"
+        >
+          Decision
+        </button>
+      </div>
+    </div>
+
+    <!-- Carousel Container -->
+    <div class="relative">
+      <!-- Awareness Posts -->
+      <div class="funnel-content active" data-stage="awareness">
+        <div class="grid gap-8 md:grid-cols-3">
+          {awarenessPosts.slice(0, 3).map(post => (
+            <BlogCard {...post} />
+          ))}
+        </div>
+      </div>
+
+      <!-- Consideration Posts -->
+      <div class="funnel-content hidden" data-stage="consideration">
+        <div class="grid gap-8 md:grid-cols-3">
+          {considerationPosts.slice(0, 3).map(post => (
+            <BlogCard {...post} />
+          ))}
+        </div>
+      </div>
+
+      <!-- Decision Posts -->
+      <div class="funnel-content hidden" data-stage="decision">
+        <div class="grid gap-8 md:grid-cols-3">
+          {decisionPosts.slice(0, 3).map(post => (
+            <BlogCard {...post} />
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <!-- View All Posts CTA -->
+    <div class="text-center mt-12">
+      <a 
+        href="/blog" 
+        class="inline-flex items-center gap-2 bg-brand-orange text-white px-6 py-3 rounded-lg font-semibold hover:bg-brand-red transition-colors"
+      >
+        View All Posts
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .funnel-tab.active {
+    background-color: #f97316;
+    color: white;
+  }
+  
+  .funnel-tab:not(.active) {
+    color: #6b7280;
+  }
+  
+  .funnel-tab:not(.active):hover {
+    background-color: #f3f4f6;
+  }
+  
+  .funnel-content {
+    transition: opacity 0.3s ease-in-out;
+  }
+  
+  .funnel-content.hidden {
+    display: none;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tabs = document.querySelectorAll('.funnel-tab');
+    const contents = document.querySelectorAll('.funnel-content');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const stage = tab.getAttribute('data-stage');
+        
+        // Update active tab
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        // Update active content
+        contents.forEach(content => {
+          if (content.getAttribute('data-stage') === stage) {
+            content.classList.remove('hidden');
+            content.classList.add('active');
+          } else {
+            content.classList.add('hidden');
+            content.classList.remove('active');
+          }
+        });
+      });
+    });
+  });
+</script> 

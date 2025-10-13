@@ -1,0 +1,42 @@
+<svg
+  width="64"
+  height="64"
+  viewBox="0 0 64 64"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  aria-label="TETRIX Logo"
+  role="img"
+  class="block drop-shadow-lg animate-logo-spin"
+>
+  <title>TETRIX Logo</title>
+  <defs>
+    <linearGradient id="tetrix-gradient" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FF3B30" />
+      <stop offset="0.5" stop-color="#FF9500" />
+      <stop offset="1" stop-color="#FFB300" />
+    </linearGradient>
+  </defs>
+  <!-- Dynamic T blocks -->
+  <rect x="8" y="8" width="16" height="16" rx="4" fill="url(#tetrix-gradient)">
+    <animate attributeName="y" values="8;12;8" dur="2s" repeatCount="indefinite" />
+  </rect>
+  <rect x="24" y="8" width="32" height="16" rx="4" fill="url(#tetrix-gradient)">
+    <animate attributeName="x" values="24;28;24" dur="2s" repeatCount="indefinite" />
+  </rect>
+  <rect x="24" y="24" width="16" height="32" rx="4" fill="url(#tetrix-gradient)">
+    <animate attributeName="height" values="32;28;32" dur="2s" repeatCount="indefinite" />
+  </rect>
+  <rect x="40" y="40" width="16" height="16" rx="4" fill="url(#tetrix-gradient)">
+    <animate attributeName="y" values="40;44;40" dur="2s" repeatCount="indefinite" />
+  </rect>
+</svg>
+<style>
+  @keyframes logo-spin {
+    0% { filter: brightness(1); }
+    50% { filter: brightness(1.2) drop-shadow(0 0 8px #FF9500); }
+    100% { filter: brightness(1); }
+  }
+  .animate-logo-spin {
+    animation: logo-spin 2.5s infinite linear;
+  }
+</style> 

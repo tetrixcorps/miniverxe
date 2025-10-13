@@ -1,0 +1,173 @@
+// OAuth Auth Service Database Schema
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Users
+model User {
+  id            String     @id @default(cuid())
+  email         String     @unique
+  password      String
+  firstName     String
+  lastName      String
+  phone         String?
+  company       String?
+  role          UserRole   @default(USER)
+  status        UserStatus @default(ACTIVE)
+  emailVerified Boolean    @default(false)
+  lastLoginAt   DateTime?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  // Relations
+  sessions     Session[]
+  tokens       Token[]
+  oauthClients OAuthClient[]
+  webhooks     Webhook[]
+
+  @@map("users")
+}
+
+// User Sessions
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("sessions")
+}
+
+// API Tokens
+model Token {
+  id          String    @id @default(cuid())
+  userId      String
+  name        String
+  permissions String[] // Array of permissions
+  token       String    @unique
+  expiresAt   DateTime?
+  lastUsedAt  DateTime?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("tokens")
+}
+
+// OAuth Clients
+model OAuthClient {
+  id          String       @id @default(cuid())
+  name        String
+  secret      String?
+  redirectUri String
+  scopes      String[] // Array of scopes
+  clientType  ClientType
+  description String?
+  status      ClientStatus @default(ACTIVE)
+  userId      String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // Relations
+  user               User                @relation(fields: [userId], references: [id])
+  authorizationCodes AuthorizationCode[]
+  accessTokens       AccessToken[]
+
+  @@map("oauth_clients")
+}
+
+// Authorization Codes
+model AuthorizationCode {
+  id          String   @id @default(cuid())
+  clientId    String
+  userId      String
+  scopes      String[] // Array of scopes
+  redirectUri String
+  state       String?
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  // Relations
+  client OAuthClient @relation(fields: [clientId], references: [id])
+
+  @@map("authorization_codes")
+}
+
+// Access Tokens
+model AccessToken {
+  id           String   @id @default(cuid())
+  clientId     String
+  userId       String
+  scopes       String[] // Array of scopes
+  expiresAt    DateTime
+  refreshToken String   @unique
+  createdAt    DateTime @default(now())
+
+  // Relations
+  client OAuthClient @relation(fields: [clientId], references: [id])
+
+  @@map("access_tokens")
+}
+
+// Webhooks
+model Webhook {
+  id          String        @id @default(cuid())
+  url         String
+  events      String[] // Array of event types
+  secret      String
+  customerId  String
+  description String?
+  status      WebhookStatus @default(ACTIVE)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  user User @relation(fields: [customerId], references: [id])
+
+  @@map("webhooks")
+}
+
+// Enums
+enum UserRole {
+  ADMIN
+  USER
+  GUEST
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  PENDING_VERIFICATION
+}
+
+enum ClientType {
+  PUBLIC
+  CONFIDENTIAL
+}
+
+enum ClientStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum WebhookStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}

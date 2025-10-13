@@ -1,0 +1,88 @@
+---
+export interface Props {
+  title: string;
+  excerpt: string;
+  author: string;
+  publishDate: string;
+  lastUpdated?: string;
+  readTime: number;
+  category: string;
+  slug: string;
+  featured?: boolean;
+  image?: string;
+}
+
+const { title, excerpt, author, publishDate, lastUpdated, readTime, category, slug, featured = false, image } = Astro.props;
+
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+};
+---
+
+<article class={`group bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden ${featured ? 'ring-2 ring-brand-orange' : ''}`}>
+  {image && (
+    <div class="aspect-video overflow-hidden">
+      <img 
+        src={image} 
+        alt={title}
+        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        loading="lazy"
+      />
+    </div>
+  )}
+  <div class="p-6">
+    <div class="flex items-center gap-2 mb-3">
+      <span class="px-3 py-1 bg-brand-light text-brand-dark text-sm font-medium rounded-full">
+        {category}
+      </span>
+      {featured && (
+        <span class="px-3 py-1 bg-brand-orange text-white text-sm font-medium rounded-full">
+          Featured
+        </span>
+      )}
+    </div>
+    
+    <h3 class="text-xl font-bold text-brand-dark mb-3 group-hover:text-brand-orange transition-colors">
+      <a href={`/blog/${slug}`} class="hover:underline">
+        {title}
+      </a>
+    </h3>
+    
+    <p class="text-gray-600 mb-4 line-clamp-3">
+      {excerpt}
+    </p>
+    
+    <div class="flex items-center justify-between text-sm text-gray-500">
+      <div class="flex items-center gap-4">
+        <span>By {author}</span>
+        <span>&#8226;</span>
+        <span>{formatDate(publishDate)}</span>
+        {lastUpdated && (
+          <>
+            <span>&#8226;</span>
+            <span class="text-brand-orange">Updated {formatDate(lastUpdated)}</span>
+          </>
+        )}
+      </div>
+      <span class="flex items-center gap-1">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        {readTime} min read
+      </span>
+    </div>
+  </div>
+</article>
+
+<style>
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style> 

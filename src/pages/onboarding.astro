@@ -1,0 +1,293 @@
+---
+import MainLayout from '../components/layout/MainLayout.astro';
+import UnifiedOnboardingFlow from '../components/UnifiedOnboardingFlow.tsx';
+import UnifiedMessagingDashboard from '../components/UnifiedMessagingDashboard.tsx';
+---
+
+<MainLayout>
+  <div id="onboarding-app"></div>
+</MainLayout>
+
+<script>
+  // Initialize the unified onboarding flow
+  document.addEventListener('DOMContentLoaded', function() {
+    const appContainer = document.getElementById('onboarding-app');
+    
+    if (appContainer) {
+      // This would be handled by React in a real implementation
+      console.log('Onboarding app initialized');
+      
+      // Show onboarding flow by default
+      appContainer.innerHTML = `
+        <div class="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+          <div class="max-w-md w-full space-y-8">
+            <div class="text-center">
+              <h1 class="text-3xl font-bold text-gray-900 mb-4">Welcome to TETRIX</h1>
+              <p class="text-gray-600 mb-8">Get started with your 7-day free trial and WhatsApp Business integration</p>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md p-8">
+              <div class="space-y-6">
+                <div class="text-center">
+                  <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-2xl">&#128640;</span>
+                  </div>
+                  <h2 class="text-xl font-semibold text-gray-900 mb-2">Start Your Free Trial</h2>
+                  <p class="text-gray-600">Complete setup in just a few steps</p>
+                </div>
+                
+                <div class="space-y-4">
+                  <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                      <span class="text-green-600 text-sm">1</span>
+                    </div>
+                    <div>
+                      <h3 class="font-medium text-gray-900">Phone Verification</h3>
+                      <p class="text-sm text-gray-600">Verify your phone number with voice call or SMS</p>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                      <span class="text-blue-600 text-sm">2</span>
+                    </div>
+                    <div>
+                      <h3 class="font-medium text-gray-900">Business Information</h3>
+                      <p class="text-sm text-gray-600">Tell us about your business for WhatsApp setup</p>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                      <span class="text-purple-600 text-sm">3</span>
+                    </div>
+                    <div>
+                      <h3 class="font-medium text-gray-900">Payment Method</h3>
+                      <p class="text-sm text-gray-600">Add a card for your 7-day free trial</p>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                      <span class="text-orange-600 text-sm">4</span>
+                    </div>
+                    <div>
+                      <h3 class="font-medium text-gray-900">WhatsApp Setup</h3>
+                      <p class="text-sm text-gray-600">Automated WhatsApp Business Account creation</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                  <div class="flex items-center">
+                    <div class="text-yellow-600 mr-3">&#9888;</div>
+                    <div class="text-sm text-yellow-800">
+                      <strong>Free Trial:</strong> Your card will be charged $99/month after the 7-day trial period.
+                    </div>
+                  </div>
+                </div>
+                
+                <button 
+                  onclick="startOnboarding()"
+                  class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                >
+                  Start Free Trial
+                </button>
+              </div>
+            </div>
+            
+            <div class="text-center text-sm text-gray-500">
+              <p>Already have an account? <a href="/login" class="text-blue-600 hover:text-blue-700">Sign in</a></p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+  });
+  
+  function startOnboarding() {
+    // This would trigger the React onboarding flow
+    console.log('Starting onboarding process...');
+    
+    // For demo purposes, show a simple form
+    const appContainer = document.getElementById('onboarding-app');
+    if (appContainer) {
+      appContainer.innerHTML = `
+        <div class="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+          <div class="max-w-md w-full space-y-8">
+            <div class="text-center">
+              <h1 class="text-2xl font-bold text-gray-900 mb-4">Get Started</h1>
+              <p class="text-gray-600 mb-8">Enter your phone number to begin</p>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md p-8">
+              <form onsubmit="handlePhoneSubmit(event)" class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    id="phoneNumber"
+                    placeholder="+1 (555) 123-4567"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                  />
+                </div>
+                
+                <button
+                  type="submit"
+                  class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                >
+                  Send Verification Code
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+  }
+  
+  function handlePhoneSubmit(event) {
+    event.preventDefault();
+    const phoneNumber = document.getElementById('phoneNumber').value;
+    
+    // This would integrate with the actual 2FA service
+    console.log('Phone number submitted:', phoneNumber);
+    
+    // Show verification step
+    const appContainer = document.getElementById('onboarding-app');
+    if (appContainer) {
+      appContainer.innerHTML = `
+        <div class="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+          <div class="max-w-md w-full space-y-8">
+            <div class="text-center">
+              <h1 class="text-2xl font-bold text-gray-900 mb-4">Verify Your Phone</h1>
+              <p class="text-gray-600 mb-8">We've sent a verification code to ${phoneNumber}</p>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md p-8">
+              <form onsubmit="handleOTPSubmit(event)" class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Verification Code
+                  </label>
+                  <input
+                    type="text"
+                    id="otpCode"
+                    placeholder="Enter 6-digit code"
+                    maxlength="6"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-lg tracking-widest"
+                    required
+                  />
+                </div>
+                
+                <button
+                  type="submit"
+                  class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                >
+                  Verify & Continue
+                </button>
+                
+                <button
+                  type="button"
+                  onclick="startOnboarding()"
+                  class="w-full text-gray-600 py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  Change Phone Number
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+  }
+  
+  function handleOTPSubmit(event) {
+    event.preventDefault();
+    const otpCode = document.getElementById('otpCode').value;
+    
+    // This would integrate with the actual verification service
+    console.log('OTP code submitted:', otpCode);
+    
+    // Show success and redirect to dashboard
+    const appContainer = document.getElementById('onboarding-app');
+    if (appContainer) {
+      appContainer.innerHTML = `
+        <div class="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+          <div class="max-w-md w-full space-y-8">
+            <div class="text-center">
+              <div class="text-green-600 text-6xl mb-4">&#127881;</div>
+              <h1 class="text-2xl font-bold text-gray-900 mb-4">Welcome to TETRIX!</h1>
+              <p class="text-gray-600 mb-8">Your account has been created successfully</p>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md p-8">
+              <div class="space-y-4">
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div class="flex items-center">
+                    <div class="text-green-600 mr-3">&#9989;</div>
+                    <div class="text-sm text-green-800">
+                      <strong>Phone Verified:</strong> ${document.getElementById('phoneNumber').value}
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div class="flex items-center">
+                    <div class="text-blue-600 mr-3">&#127881;</div>
+                    <div class="text-sm text-blue-800">
+                      <strong>Free Trial:</strong> 7 days remaining
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                  <div class="flex items-center">
+                    <div class="text-yellow-600 mr-3">&#8987;</div>
+                    <div class="text-sm text-yellow-800">
+                      <strong>WhatsApp Setup:</strong> In progress (24-48 hours)
+                    </div>
+                  </div>
+                </div>
+                
+                <button
+                  onclick="goToDashboard()"
+                  class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                >
+                  Go to Dashboard
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+  }
+  
+  function goToDashboard() {
+    // Redirect to dashboard
+    window.location.href = '/dashboard';
+  }
+</script>
+
+<style>
+  /* Custom styles for the onboarding flow */
+  .onboarding-step {
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .step-indicator {
+    transition: background-color 0.3s ease;
+  }
+  
+  .step-indicator.active {
+    background-color: #3B82F6;
+  }
+  
+  .step-indicator.completed {
+    background-color: #10B981;
+  }
+</style>
