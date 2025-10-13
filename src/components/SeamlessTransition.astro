@@ -1,0 +1,313 @@
+---
+// SeamlessTransition.astro - PWA-like smooth transitions between platforms
+---
+
+<div id="seamless-transition-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden">
+  <div class="flex items-center justify-center min-h-screen">
+    <div class="bg-white rounded-2xl p-8 max-w-md mx-4 text-center shadow-2xl">
+      <!-- Loading Animation -->
+      <div class="mb-6">
+        <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+      </div>
+      
+      <!-- Transition Message -->
+      <h3 id="transition-title" class="text-xl font-semibold text-gray-900 mb-2">
+        Redirecting to Platform
+      </h3>
+      <p id="transition-message" class="text-gray-600 mb-4">
+        Please wait while we redirect you to the platform...
+      </p>
+      
+      <!-- Progress Bar -->
+      <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
+        <div id="transition-progress" class="bg-red-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+      </div>
+      
+      <!-- Platform Info -->
+      <div id="platform-info" class="text-sm text-gray-500">
+        <div class="flex items-center justify-center space-x-2">
+          <div id="platform-icon" class="w-5 h-5"></div>
+          <span id="platform-name">Platform</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  interface PlatformInfo {
+    name: string;
+    icon: string;
+    url: string;
+    color: string;
+  }
+
+  interface Platforms {
+    [key: string]: PlatformInfo;
+  }
+
+  class SeamlessTransition {
+    private overlay: HTMLElement | null;
+    private title: HTMLElement | null;
+    private message: HTMLElement | null;
+    private progress: HTMLElement | null;
+    private platformIcon: HTMLElement | null;
+    private platformName: HTMLElement | null;
+    private platforms: Platforms;
+
+    constructor() {
+      this.overlay = document.getElementById('seamless-transition-overlay');
+      this.title = document.getElementById('transition-title');
+      this.message = document.getElementById('transition-message');
+      this.progress = document.getElementById('transition-progress');
+      this.platformIcon = document.getElementById('platform-icon');
+      this.platformName = document.getElementById('platform-name');
+      
+      this.platforms = {
+        'code-academy': {
+          name: 'Code Academy',
+          icon: '🎓',
+          url: 'https://www.poisonedreligion.ai',
+          color: 'text-blue-600'
+        },
+        'joromi': {
+          name: 'JoRoMi Platform',
+          icon: '🤖',
+          url: 'https://www.joromi.ai',
+          color: 'text-green-600'
+        },
+        'dashboard': {
+          name: 'Client Dashboard',
+          icon: '📊',
+          url: '/dashboard',
+          color: 'text-purple-600'
+        }
+      };
+    }
+
+    show(platform: string) {
+      const platformInfo = this.platforms[platform];
+      if (!platformInfo) {
+        console.error('Unknown platform:', platform);
+        return;
+      }
+
+      // Update UI
+      if (this.title) this.title.textContent = `Redirecting to ${platformInfo.name}`;
+      if (this.message) this.message.textContent = `Please wait while we redirect you to ${platformInfo.name}...`;
+      if (this.platformIcon) this.platformIcon.textContent = platformInfo.icon;
+      if (this.platformName) {
+        this.platformName.textContent = platformInfo.name;
+        this.platformName.className = `text-sm ${platformInfo.color}`;
+      }
+
+      // Show overlay
+      if (this.overlay) this.overlay.classList.remove('hidden');
+      
+      // Animate progress bar
+      this.animateProgress();
+      
+      // Store transition context
+      this.storeTransitionContext(platform, platformInfo);
+    }
+
+    hide() {
+      if (this.overlay) this.overlay.classList.add('hidden');
+      if (this.progress) this.progress.style.width = '0%';
+    }
+
+    animateProgress() {
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += Math.random() * 15;
+        if (progress > 100) {
+          progress = 100;
+          clearInterval(interval);
+        }
+        if (this.progress) this.progress.style.width = `${progress}%`;
+      }, 100);
+    }
+
+    storeTransitionContext(platform: string, platformInfo: PlatformInfo) {
+      // Store in localStorage for cross-platform continuity
+      const transitionContext = {
+        platform,
+        platformInfo,
+        timestamp: Date.now(),
+        source: 'tetrix'
+      };
+      
+      localStorage.setItem('tetrix_transition_context', JSON.stringify(transitionContext));
+      
+      // Store in sessionStorage for immediate use
+      sessionStorage.setItem('current_transition', JSON.stringify(transitionContext));
+    }
+
+    // Handle external redirects with seamless transition
+    async redirectToExternal(platform: string) {
+      const platformInfo = this.platforms[platform];
+      if (!platformInfo) return;
+
+      // Show transition overlay
+      this.show(platform);
+
+      // Wait for animation to complete
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // Open in new tab with seamless transition
+      const newWindow = window.open(platformInfo.url, '_blank');
+      
+      if (newWindow) {
+        // Send transition context to new window
+        newWindow.addEventListener('load', () => {
+          newWindow.postMessage({
+            type: 'TETRIX_TRANSITION_CONTEXT',
+            data: {
+              source: 'tetrix',
+              platform,
+              timestamp: Date.now()
+            }
+          }, platformInfo.url);
+        });
+      }
+
+      // Hide overlay after redirect
+      setTimeout(() => {
+        this.hide();
+      }, 500);
+    }
+
+    // Handle internal redirects with smooth transition
+    async redirectToInternal(platform: string) {
+      const platformInfo = this.platforms[platform];
+      if (!platformInfo) return;
+
+      // Show transition overlay
+      this.show(platform);
+
+      // Wait for animation to complete
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      // Navigate to internal page
+      window.location.href = platformInfo.url;
+    }
+  }
+
+  // Initialize seamless transition
+  const seamlessTransition = new SeamlessTransition();
+
+  // Global function for external redirects
+  (window as any).redirectToExternal = (platform: string) => {
+    seamlessTransition.redirectToExternal(platform);
+  };
+
+  // Global function for internal redirects
+  (window as any).redirectToInternal = (platform: string) => {
+    seamlessTransition.redirectToInternal(platform);
+  };
+
+  // Handle messages from other windows
+  window.addEventListener('message', (event) => {
+    if (event.data.type === 'TETRIX_TRANSITION_CONTEXT') {
+      console.log('Received transition context:', event.data.data);
+      // Handle cross-platform communication
+    }
+  });
+
+  // Register service worker for PWA functionality
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then((registration) => {
+          console.log('TETRIX PWA Service Worker registered:', registration);
+        })
+        .catch((error) => {
+          console.log('TETRIX PWA Service Worker registration failed:', error);
+        });
+    });
+  }
+
+  // Handle PWA install prompt
+  let deferredPrompt: any = null;
+  window.addEventListener('beforeinstallprompt', (e: any) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    
+    // Show install button or banner
+    const installButton = document.getElementById('pwa-install-button');
+    if (installButton) {
+      installButton.style.display = 'block';
+      installButton.addEventListener('click', () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then((choiceResult: any) => {
+            if (choiceResult.outcome === 'accepted') {
+              console.log('PWA installed successfully');
+            }
+            deferredPrompt = null;
+          });
+        }
+      });
+    }
+  });
+
+  // Handle PWA app installed
+  window.addEventListener('appinstalled', () => {
+    console.log('TETRIX PWA installed successfully');
+    // Track installation analytics
+  });
+</script>
+
+<style>
+  /* Seamless transition animations */
+  #seamless-transition-overlay {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      backdrop-filter: blur(0px);
+    }
+    to {
+      opacity: 1;
+      backdrop-filter: blur(8px);
+    }
+  }
+
+  /* Progress bar animation */
+  #transition-progress {
+    transition: width 0.3s ease-in-out;
+  }
+
+  /* Platform icon animation */
+  #platform-icon {
+    animation: bounce 1s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+      transform: translateY(0);
+    }
+    40% {
+      transform: translateY(-10px);
+    }
+    60% {
+      transform: translateY(-5px);
+    }
+  }
+
+  /* Loading spinner animation */
+  .animate-spin {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>

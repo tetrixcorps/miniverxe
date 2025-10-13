@@ -3,6 +3,7 @@ import '../../styles/tailwind.css';
 import Header from './Header.astro';
 import Footer from './Footer.astro';
 import ServiceModals from '../ServiceModals.astro';
+import SeamlessTransition from '../SeamlessTransition.astro';
 // MainLayout.astro
 ---
 
@@ -32,6 +33,31 @@ import ServiceModals from '../ServiceModals.astro';
 
   <!-- Theme color -->
   <meta name="theme-color" content="#FF3B30" />
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json" />
+  
+  <!-- PWA Meta Tags -->
+  <meta name="application-name" content="TETRIX" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="TETRIX" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="msapplication-config" content="/browserconfig.xml" />
+  <meta name="msapplication-TileColor" content="#FF3B30" />
+  <meta name="msapplication-tap-highlight" content="no" />
+  
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" href="/favicon-192.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/favicon-192.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon-192.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/favicon-192.png" />
+  
+  <!-- Favicons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="shortcut icon" href="/favicon.ico" />
 </head>
 <body class="bg-gray-100 min-h-screen">
   <Header />
@@ -42,6 +68,9 @@ import ServiceModals from '../ServiceModals.astro';
 
   <!-- Global Service Modals -->
   <ServiceModals />
+  
+  <!-- Seamless Transition Component -->
+  <SeamlessTransition />
 </body>
 </html>
 
