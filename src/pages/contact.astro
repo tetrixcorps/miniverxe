@@ -646,14 +646,24 @@ import Button from '../components/shared/Button.astro';
 
       try {
         const formData = new FormData(form);
-        const data = Object.fromEntries(formData);
         
-        // Simulate API call (replace with actual endpoint)
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Send form data to API endpoint
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          body: formData
+        });
         
-        // Show success message
-        successMessage.classList.remove('hidden');
-        form.reset();
+        const result = await response.json();
+        
+        if (result.success) {
+          // Show success message
+          successMessage.classList.remove('hidden');
+          form.reset();
+        } else {
+          // Show error message
+          errorText.textContent = result.message || 'Please try again or contact us directly.';
+          errorMessage.classList.remove('hidden');
+        }
         
       } catch (error) {
         // Show error message
