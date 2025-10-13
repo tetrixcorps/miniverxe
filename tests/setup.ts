@@ -1,6 +1,6 @@
 // Test setup file for TETRIX 2FA and dual invoice delivery tests
 
-import { vi } from 'vitest';
+import { jest } from '@jest/globals';
 
 // Global test setup
 beforeAll(() => {
@@ -21,7 +21,7 @@ beforeAll(() => {
 // Global test teardown
 afterAll(() => {
   // Clean up any global resources
-  vi.clearAllMocks();
+  jest.clearAllMocks();
 });
 
 // Mock console methods to reduce noise in tests
@@ -42,7 +42,7 @@ afterEach(() => {
 
 // Global test utilities
 declare global {
-  namespace Vi {
+  namespace jest {
     interface Matchers<R> {
       toBeValidInvoice(): R;
       toBeValidCustomer(): R;
@@ -104,59 +104,57 @@ expect.extend({
 });
 
 // Mock fetch globally
-global.fetch = vi.fn();
+global.fetch = jest.fn();
 
 // Mock Stripe globally
-vi.mock('stripe', () => {
-  return {
-    default: vi.fn().mockImplementation(() => ({
-      customers: {
-        retrieve: vi.fn(),
-        update: vi.fn(),
-        create: vi.fn()
-      },
-      invoices: {
-        retrieve: vi.fn(),
-        create: vi.fn()
-      },
-      subscriptions: {
-        list: vi.fn(),
-        cancel: vi.fn(),
-        create: vi.fn()
-      },
-      webhooks: {
-        constructEvent: vi.fn()
-      }
-    }))
-  };
+jest.mock('stripe', () => {
+  return jest.fn().mockImplementation(() => ({
+    customers: {
+      retrieve: jest.fn(),
+      update: jest.fn(),
+      create: jest.fn()
+    },
+    invoices: {
+      retrieve: jest.fn(),
+      create: jest.fn()
+    },
+    subscriptions: {
+      list: jest.fn(),
+      cancel: jest.fn(),
+      create: jest.fn()
+    },
+    webhooks: {
+      constructEvent: jest.fn()
+    }
+  }));
 });
 
 // Mock notification service globally
-vi.mock('../../src/services/notificationService', () => ({
+jest.mock('../../src/services/notificationService', () => ({
   notificationService: {
-    sendNotification: vi.fn(),
-    sendBulkNotifications: vi.fn()
+    sendNotification: jest.fn(),
+    sendBulkNotifications: jest.fn()
   }
 }));
 
 // Mock eSIM integration service globally
-vi.mock('../../src/services/esimIntegrationService', () => ({
+jest.mock('../../src/services/esimIntegrationService', () => ({
   esimIntegrationService: {
-    shouldOrderESIM: vi.fn(),
-    createESIMOrder: vi.fn(),
-    getActivationDetails: vi.fn(),
-    sendActivationDetails: vi.fn()
+    shouldOrderESIM: jest.fn(),
+    createESIMOrder: jest.fn(),
+    getActivationDetails: jest.fn(),
+    sendActivationDetails: jest.fn()
   }
 }));
 
 // Mock enterprise 2FA service globally
-vi.mock('../../src/services/enterprise2FAService', () => ({
+jest.mock('../../src/services/enterprise2FAService', () => ({
   enterprise2FAService: {
-    initiateVerification: vi.fn(),
-    verifyCode: vi.fn(),
-    getVerificationStatus: vi.fn(),
-    getAuditLogs: vi.fn(),
-    blockPhoneNumber: vi.fn()
+    initiateVerification: jest.fn(),
+    verifyCode: jest.fn(),
+    getVerificationStatus: jest.fn(),
+    getAuditLogs: jest.fn(),
+    blockPhoneNumber: jest.fn()
   }
 }));
 

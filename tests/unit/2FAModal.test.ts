@@ -1,12 +1,12 @@
 // Unit tests for 2FA Modal functionality
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
 
 // Mock DOM environment
 const mockDocument = {
-  getElementById: vi.fn(),
-  querySelectorAll: vi.fn(),
-  addEventListener: vi.fn(),
-  removeEventListener: vi.fn(),
+  getElementById: jest.fn(),
+  querySelectorAll: jest.fn(),
+  addEventListener: jest.fn(),
+  removeEventListener: jest.fn(),
   body: {
     style: {}
   }
@@ -15,19 +15,19 @@ const mockDocument = {
 // Mock window object
 const mockWindow = {
   localStorage: {
-    getItem: vi.fn(),
-    setItem: vi.fn(),
-    removeItem: vi.fn()
+    getItem: jest.fn(),
+    setItem: jest.fn(),
+    removeItem: jest.fn()
   },
   location: {
     href: '',
     hostname: 'localhost'
   },
-  open: vi.fn(),
+  open: jest.fn(),
   navigator: {
     userAgent: 'test-user-agent'
   },
-  fetch: vi.fn()
+  fetch: jest.fn()
 };
 
 // Mock global objects
@@ -35,7 +35,7 @@ Object.defineProperty(global, 'document', { value: mockDocument });
 Object.defineProperty(global, 'window', { value: mockWindow });
 
 // Mock fetch globally
-global.fetch = vi.fn();
+global.fetch = jest.fn();
 
 describe('2FA Modal Unit Tests', () => {
   let TwoFAManager: any;
@@ -43,7 +43,7 @@ describe('2FA Modal Unit Tests', () => {
 
   beforeEach(() => {
     // Reset mocks
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     
     // Mock DOM elements
     mockElements = {
@@ -296,7 +296,7 @@ describe('2FA Modal Unit Tests', () => {
   });
 
   afterEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('TwoFAManager Initialization', () => {
