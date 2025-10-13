@@ -7,8 +7,11 @@ export default defineConfig({
     setupFiles: ['./tests/setup.js'],
     include: [
       'tests/unit/**/*.test.js',
+      'tests/unit/**/*.test.ts',
       'tests/functional/**/*.test.js',
-      'tests/integration/**/*.test.js'
+      'tests/functional/**/*.test.ts',
+      'tests/integration/**/*.test.js',
+      'tests/integration/**/*.test.ts'
     ],
     exclude: [
       '**/*.spec.ts',

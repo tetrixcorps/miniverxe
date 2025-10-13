@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHANGO Widget Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8">SHANGO Widget Test</h1>
+        
+        <!-- SHANGO Chat Widget -->
+        <div class="bg-white rounded-lg p-4 border border-purple-200">
+            <div id="shango-chat-widget" class="min-h-[400px]">
+                <!-- SHANGO Chat Widget will be rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // SHANGO AI Super Agent - Vanilla JavaScript Chat Widget
+        class SHANGOChatWidget {
+            constructor(containerId, options = {}) {
+                this.containerId = containerId;
+                this.userId = options.userId || `user-${Date.now()}`;
+                this.defaultAgent = options.defaultAgent || 'shango-general';
+                this.isOpen = false;
+                this.isLoading = false;
+                this.currentSession = null;
+                this.messages = [];
+                this.isTyping = false;
+                this.selectedAgent = this.defaultAgent;
+                
+                // SHANGO AI Agents
+                this.shangoAgents = [
+                    {
+                        id: 'shango-general',
+                        name: 'SHANGO',
+                        description: 'Your AI Super Agent for general assistance and support',
+                        capabilities: ['general_questions', 'basic_support', 'product_info', 'troubleshooting'],
+                        tools: ['n8n', 'knowledge_base', 'api_docs'],
+                        personality: 'friendly',
+                        avatar: '⚡',
+                        greeting: 'Hello! I\'m SHANGO, your AI Super Agent. How can I help you today?'
+                    }
+                ];
+
+                this.init();
+            }
+
+            init() {
+                this.render();
+                this.setupEventListeners();
+            }
+
+            render() {
+                const container = document.getElementById(this.containerId);
+                if (!container) return;
+
+                const currentAgent = this.getAgentInfo(this.selectedAgent);
+                
+                container.innerHTML = `
+                    <div class="shango-chat-widget">
+                        ${!this.isOpen ? this.renderToggleButton() : ''}
+                        ${this.isOpen ? this.renderChatInterface(currentAgent) : ''}
+                    </div>
+                `;
+            }
+
+            renderToggleButton() {
+                return `
+                    <div class="flex flex-col items-center justify-center h-full min-h-[400px] text-center">
+                        <div class="w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center mb-4">
+                            <span class="text-2xl text-white">⚡</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">SHANGO AI Super Agent</h3>
+                        <p class="text-gray-600 mb-4">Our AI Super Agent is ready to help you with enterprise inquiries and technical support.</p>
+                        <div class="space-y-2 text-sm text-gray-500 mb-6">
+                            <p>• Instant responses to enterprise queries</p>
+                            <p>• Technical support and troubleshooting</p>
+                            <p>• Solution recommendations and pricing</p>
+                            <p>• Escalation to human experts when needed</p>
+                        </div>
+                        <button 
+                            id="shango-start-chat"
+                            class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-colors"
+                        >
+                            Start Chat with SHANGO
+                        </button>
+                    </div>
+                `;
+            }
+
+            renderChatInterface(currentAgent) {
+                return `
+                    <div class="flex flex-col h-[400px] bg-white rounded-lg border border-gray-200 shadow-lg">
+                        <!-- Header -->
+                        <div class="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-t-lg">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xl">${currentAgent?.avatar || '⚡'}</span>
+                                <div>
+                                    <h3 class="font-semibold">${currentAgent?.name || 'SHANGO'}</h3>
+                                    <p class="text-xs opacity-90">AI Super Agent</p>
+                                </div>
+                            </div>
+                            <button id="shango-close-chat" class="text-white hover:text-gray-200">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <!-- Messages -->
+                        <div id="shango-messages" class="flex-1 overflow-y-auto p-4 space-y-4">
+                            ${this.messages.map(msg => this.renderMessage(msg)).join('')}
+                            ${this.isTyping ? this.renderTypingIndicator() : ''}
+                        </div>
+
+                        <!-- Input -->
+                        <div class="p-4 border-t border-gray-200">
+                            <div class="flex space-x-2">
+                                <input
+                                    type="text"
+                                    id="shango-message-input"
+                                    placeholder="Ask ${currentAgent?.name || 'SHANGO'} anything..."
+                                    class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    ${!this.currentSession ? 'disabled' : ''}
+                                />
+                                <button
+                                    id="shango-send-message"
+                                    class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-purple-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                    ${!this.currentSession ? 'disabled' : ''}
+                                >
+                                    Send
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderMessage(message) {
+                const isUser = message.role === 'user';
+                const isShango = message.role === 'shango';
+                
+                return `
+                    <div class="flex ${isUser ? 'justify-end' : 'justify-start'}">
+                        <div class="max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                            isUser 
+                                ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white' 
+                                : isShango
+                                ? 'bg-gradient-to-r from-purple-100 to-blue-100 text-gray-800 border border-purple-200'
+                                : 'bg-gray-100 text-gray-800'
+                        }">
+                            <div class="text-sm">${message.content}</div>
+                            <div class="text-xs mt-1 opacity-70">
+                                ${new Date(message.timestamp).toLocaleTimeString()}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderTypingIndicator() {
+                return `
+                    <div class="flex justify-start">
+                        <div class="bg-gray-100 rounded-lg px-4 py-2">
+                            <div class="flex space-x-1">
+                                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            setupEventListeners() {
+                // Start chat button
+                const startButton = document.getElementById('shango-start-chat');
+                if (startButton) {
+                    startButton.addEventListener('click', () => this.startChat());
+                }
+
+                // Close chat button
+                const closeButton = document.getElementById('shango-close-chat');
+                if (closeButton) {
+                    closeButton.addEventListener('click', () => this.closeChat());
+                }
+
+                // Send message button
+                const sendButton = document.getElementById('shango-send-message');
+                if (sendButton) {
+                    sendButton.addEventListener('click', () => this.sendMessage());
+                }
+
+                // Message input
+                const messageInput = document.getElementById('shango-message-input');
+                if (messageInput) {
+                    messageInput.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            this.sendMessage();
+                        }
+                    });
+                }
+            }
+
+            getAgentInfo(agentId) {
+                return this.shangoAgents.find(agent => agent.id === agentId);
+            }
+
+            async startChat() {
+                if (this.isLoading) return;
+                
+                this.isLoading = true;
+                this.render();
+                
+                try {
+                    // Create session via SHANGO API
+                    const response = await fetch('/api/v1/shango/sessions', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            userId: this.userId,
+                            agentId: this.selectedAgent,
+                            channel: 'chat'
+                        })
+                    });
+
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        this.currentSession = result.session;
+                        
+                        // Add greeting message from API response
+                        if (result.session.messages && result.session.messages.length > 0) {
+                            const greetingMessage = result.session.messages[0];
+                            this.addMessage({
+                                id: greetingMessage.id,
+                                role: 'shango',
+                                content: greetingMessage.content,
+                                timestamp: new Date(greetingMessage.timestamp),
+                                type: 'text'
+                            });
+                        }
+
+                        this.isOpen = true;
+                        this.render();
+                    } else {
+                        throw new Error(result.error || 'Failed to start chat session');
+                    }
+                } catch (error) {
+                    console.error('Failed to start SHANGO chat:', error);
+                    // Fallback to mock behavior
+                    this.currentSession = {
+                        id: `session-${Date.now()}`,
+                        userId: this.userId,
+                        agentId: this.selectedAgent,
+                        status: 'active',
+                        channel: 'chat',
+                        createdAt: new Date(),
+                        updatedAt: new Date(),
+                        messages: []
+                    };
+
+                    const currentAgent = this.getAgentInfo(this.selectedAgent);
+                    if (currentAgent) {
+                        this.addMessage({
+                            id: `shango-greeting-${Date.now()}`,
+                            role: 'shango',
+                            content: currentAgent.greeting,
+                            timestamp: new Date(),
+                            type: 'text'
+                        });
+                    }
+
+                    this.isOpen = true;
+                    this.render();
+                } finally {
+                    this.isLoading = false;
+                }
+            }
+
+            closeChat() {
+                this.isOpen = false;
+                this.currentSession = null;
+                this.messages = [];
+                this.render();
+            }
+
+            addMessage(message) {
+                this.messages.push(message);
+                this.scrollToBottom();
+            }
+
+            scrollToBottom() {
+                const messagesContainer = document.getElementById('shango-messages');
+                if (messagesContainer) {
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }
+            }
+
+            async sendMessage() {
+                const input = document.getElementById('shango-message-input');
+                if (!input || !input.value.trim() || !this.currentSession) return;
+
+                const messageText = input.value.trim();
+                input.value = '';
+
+                // Add user message
+                this.addMessage({
+                    id: `user-${Date.now()}`,
+                    role: 'user',
+                    content: messageText,
+                    timestamp: new Date(),
+                    type: 'text'
+                });
+
+                // Show typing indicator
+                this.isTyping = true;
+                this.render();
+
+                try {
+                    // Send message to SHANGO API
+                    const response = await fetch(`/api/v1/shango/sessions/${this.currentSession.id}/messages`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            message: messageText,
+                            role: 'user',
+                            agentId: this.selectedAgent
+                        })
+                    });
+
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        // Add AI response
+                        this.addMessage({
+                            id: result.aiResponse.id,
+                            role: 'shango',
+                            content: result.aiResponse.content,
+                            timestamp: new Date(result.aiResponse.timestamp),
+                            type: 'text'
+                        });
+                    } else {
+                        throw new Error(result.error || 'Failed to send message');
+                    }
+                } catch (error) {
+                    console.error('Failed to send message:', error);
+                    this.addMessage({
+                        id: `error-${Date.now()}`,
+                        role: 'system',
+                        content: 'Sorry, I encountered an error. Please try again.',
+                        timestamp: new Date(),
+                        type: 'text'
+                    });
+                } finally {
+                    this.isTyping = false;
+                    this.render();
+                }
+            }
+        }
+
+        // Initialize SHANGO Chat Widget
+        document.addEventListener('DOMContentLoaded', function() {
+            const userId = `test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+            
+            const chatContainer = document.getElementById('shango-chat-widget');
+            if (chatContainer) {
+                new SHANGOChatWidget('shango-chat-widget', {
+                    userId: userId,
+                    defaultAgent: 'shango-general'
+                });
+            }
+        });
+    </script>
+</body>
+</html>

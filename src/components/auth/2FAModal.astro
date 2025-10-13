@@ -362,15 +362,19 @@
           else if (digits.length === 11 && digits.startsWith('1')) {
             value = `+1 (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
           }
-          // Handle other international numbers
+          // Handle other international numbers - more flexible formatting
           else if (digits.length <= 3) {
             value = `+${digits}`;
           } else if (digits.length <= 6) {
             value = `+${digits.slice(0, 1)} (${digits.slice(1, 4)}) ${digits.slice(4)}`;
           } else if (digits.length <= 10) {
             value = `+${digits.slice(0, 1)} (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
+          } else if (digits.length <= 12) {
+            // Handle longer international numbers
+            value = `+${digits.slice(0, 2)} (${digits.slice(2, 5)}) ${digits.slice(5, 8)}-${digits.slice(8)}`;
           } else {
-            value = `+${digits.slice(0, 1)} (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7, 11)}`;
+            // Very long numbers - just add + and basic formatting
+            value = `+${digits.slice(0, 2)} (${digits.slice(2, 5)}) ${digits.slice(5, 8)}-${digits.slice(8, 12)}`;
           }
         } else {
           value = '';
@@ -395,13 +399,19 @@
         cleanPhone = '+' + cleanPhone;
       }
       
-      // Extract just the digits for validation
-      this.phoneNumber = cleanPhone.slice(1); // Remove the + for storage
+      // Extract just the digits for validation (remove + prefix)
+      this.phoneNumber = cleanPhone.slice(1);
       this.method = methodSelect?.value || 'sms';
 
       // Validate phone number length (international numbers can be 7-15 digits)
       if (!this.phoneNumber || this.phoneNumber.length < 7 || this.phoneNumber.length > 15) {
-        this.showError('Please enter a valid international phone number (7-15 digits)');
+        this.showError('Please enter a valid international phone number (7-15 digits). Examples: +1 (555) 123-4567, +44 20 7946 0958, +33 1 42 86 83 26');
+        return;
+      }
+
+      // Additional validation for common country codes
+      if (this.phoneNumber.startsWith('1') && this.phoneNumber.length !== 11) {
+        this.showError('US/Canada numbers must be 11 digits (including country code 1)');
         return;
       }
 
@@ -847,14 +857,23 @@
   }
 
   /* Ensure input text is visible */
-  #phone-number,
-  #verification-code,
-  #verification-method {
-    color: #111827 !important;
-    background-color: #ffffff !important;
-    z-index: 10;
-    position: relative;
-  }
+    #phone-number,
+    #verification-code,
+    #verification-method {
+      color: #111827 !important;
+      background-color: #ffffff !important;
+      z-index: 10;
+      position: relative;
+      border: 2px solid #d1d5db !important;
+    }
+    
+    #phone-number:focus,
+    #verification-code:focus,
+    #verification-method:focus {
+      border-color: #ef4444 !important;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+      outline: none !important;
+    }
 
   /* Fix dropdown visibility */
   #verification-method {
@@ -868,9 +887,17 @@
 
   /* Ensure dropdown options are visible */
   #verification-method option {
-    background-color: #ffffff;
-    color: #111827;
+    background-color: #ffffff !important;
+    color: #111827 !important;
     padding: 8px 12px;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  
+  /* Ensure dropdown options are visible when opened */
+  #verification-method:focus option {
+    background-color: #ffffff !important;
+    color: #111827 !important;
   }
 
   /* Button hover improvements */

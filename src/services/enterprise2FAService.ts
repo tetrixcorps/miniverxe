@@ -251,18 +251,21 @@ class Enterprise2FAService {
    * Verify mock verification codes for development
    */
   private verifyMockCode(verificationId: string, code: string, phoneNumber: string): VerificationResult {
-    // For development, accept any 6-digit code
-    const isValidCode = /^\d{6}$/.test(code);
+    // For development, accept 123456 or any 6-digit code
+    const isValidCode = code === '123456' || /^\d{6}$/.test(code);
     
-    console.log(`[MOCK] Verifying code ${code} for ${phoneNumber}: ${isValidCode ? 'ACCEPTED' : 'REJECTED'}`);
+    console.log(`[MOCK] Verifying code ${code} for +${phoneNumber}: ${isValidCode ? 'ACCEPTED' : 'REJECTED'}`);
+    console.log(`[MOCK] Expected: 123456 or any 6-digit code`);
     
     return {
       success: true,
       verified: isValidCode,
       responseCode: isValidCode ? 'accepted' : 'rejected',
-      phoneNumber,
+      phoneNumber: `+${phoneNumber}`,
       verificationId,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      fraudScore: 0.1,
+      riskLevel: 'low'
     };
   }
 
@@ -337,7 +340,9 @@ class Enterprise2FAService {
   private generateMockVerification(request: VerificationRequest): any {
     const verificationId = `mock_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
-    console.log(`[MOCK] Generated verification for ${request.phoneNumber} via ${request.method}: ${verificationId}`);
+    console.log(`[MOCK] Generated verification for +${request.phoneNumber} via ${request.method}: ${verificationId}`);
+    console.log(`[MOCK] In development mode - OTP code is: 123456`);
+    console.log(`[MOCK] This verification will expire in ${request.timeoutSecs || 300} seconds`);
     
     return {
       id: verificationId,
@@ -517,7 +522,7 @@ export const enterprise2FAService = new Enterprise2FAService({
   verifyProfileId: process.env.TELNYX_PROFILE_ID || '***REMOVED***',
   apiKey: process.env.***REMOVED*** || '',
   apiUrl: 'https://api.telnyx.com/v2',
-  webhookUrl: process.env.WEBHOOK_BASE_URL + '/webhooks/telnyx/verify',
+  webhookUrl: (process.env.WEBHOOK_BASE_URL || 'http://localhost:3000') + '/webhooks/telnyx/verify',
   fallbackEnabled: true,
   auditLogging: true,
   rateLimiting: true,
