@@ -80,7 +80,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
 
     return createSuccessResponse({
-      data: verification,
+      verificationId: verification.verificationId,
       message: `Verification ${method.toUpperCase()} sent successfully`,
       estimatedDelivery: method === 'sms' ? '30-60 seconds' : '10-30 seconds'
     });

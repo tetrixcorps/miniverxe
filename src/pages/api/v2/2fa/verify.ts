@@ -60,14 +60,13 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     if (result.verified) {
       return createSuccessResponse({
-        data: {
-          verified: true,
-          verificationId: result.verificationId,
-          phoneNumber: result.phoneNumber,
-          responseCode: result.responseCode,
-          timestamp: result.timestamp,
-          riskLevel: result.riskLevel
-        },
+        verified: true,
+        verificationId: result.verificationId,
+        phoneNumber: result.phoneNumber,
+        responseCode: result.responseCode,
+        timestamp: result.timestamp,
+        riskLevel: result.riskLevel,
+        token: `tetrix_auth_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         message: 'Verification successful'
       });
     } else {
