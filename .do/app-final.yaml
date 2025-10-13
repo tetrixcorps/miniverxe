@@ -32,6 +32,12 @@ services:
         value: "false"
       - key: PNPM_VERSION
         value: "10.8.0"
+      - key: MAILGUN_API_KEY
+        value: "your-mailgun-api-key-here"
+      - key: MAILGUN_DOMAIN
+        value: "mg.tetrixcorp.com"
+      - key: ADMIN_EMAIL
+        value: "support@tetrixcorp.com"
     health_check:
       http_path: /health
       initial_delay_seconds: 30
