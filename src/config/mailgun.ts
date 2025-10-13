@@ -1,8 +1,8 @@
-// Mailgun Configuration
+// Mailgun Configuration - Production Ready
 export const mailgunConfig = {
-  domain: 'mg.tetrixcorp.com',
-  apiKey: process.env.MAILGUN_API_KEY,
-  webhookSigningKey: process.env.MAILGUN_WEBHOOK_SIGNING_KEY,
+  domain: import.meta.env.MAILGUN_DOMAIN || process.env.MAILGUN_DOMAIN || 'mg.tetrixcorp.com',
+  apiKey: import.meta.env.MAILGUN_API_KEY || process.env.MAILGUN_API_KEY,
+  webhookSigningKey: import.meta.env.MAILGUN_WEBHOOK || import.meta.env.MAILGUN_WEBHOOK_SIGNING_KEY || process.env.MAILGUN_WEBHOOK || process.env.MAILGUN_WEBHOOK_SIGNING_KEY,
   contactEmail: 'support@tetrixcorp.com',
   fromEmail: 'noreply@tetrixcorp.com',
 };
@@ -16,7 +16,7 @@ export function validateMailgunConfig() {
   }
   
   if (!mailgunConfig.webhookSigningKey) {
-    missing.push('MAILGUN_WEBHOOK_SIGNING_KEY');
+    missing.push('MAILGUN_WEBHOOK or MAILGUN_WEBHOOK_SIGNING_KEY');
   }
   
   if (missing.length > 0) {

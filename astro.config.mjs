@@ -2,6 +2,10 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import node from '@astrojs/node';
+import { loadEnv } from 'vite';
+
+// Load environment variables
+const env = loadEnv(process.env.NODE_ENV || 'development', process.cwd(), '');
 
 // Get allowed hosts from environment variables
 const allowedHosts = process.env.ALLOWED_DOMAINS ? process.env.ALLOWED_DOMAINS.split(',') : [];
@@ -13,6 +17,13 @@ export default defineConfig({
   adapter: node({
     mode: 'standalone'
   }),
+  define: {
+    // Make environment variables available to the client
+    'import.meta.env.MAILGUN_API_KEY': JSON.stringify(env.MAILGUN_API_KEY),
+    'import.meta.env.MAILGUN_DOMAIN': JSON.stringify(env.MAILGUN_DOMAIN),
+    'import.meta.env.MAILGUN_WEBHOOK': JSON.stringify(env.MAILGUN_WEBHOOK),
+    'import.meta.env.MAILGUN_WEBHOOK_SIGNING_KEY': JSON.stringify(env.MAILGUN_WEBHOOK_SIGNING_KEY),
+  },
   vite: {
     build: {
       rollupOptions: {
