@@ -2,9 +2,9 @@
 // 2FA Modal Component for Enterprise Authentication
 ---
 
-<div id="2fa-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden">
+<div id="2fa-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden">
   <div class="flex items-center justify-center min-h-screen p-4">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-hidden border-2 border-gray-200">
       <!-- Modal Header -->
       <div class="bg-gradient-to-r from-brand-red via-brand-orange to-brand-yellow p-6">
         <div class="flex items-center justify-between">
@@ -42,7 +42,7 @@
                 id="phone-number"
                 name="phoneNumber"
                 placeholder="+1 (555) 123-4567"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors"
+                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors text-lg font-medium bg-white shadow-sm"
                 required
               >
               <p class="text-xs text-gray-500 mt-1">Include country code (e.g., +1 for US)</p>
@@ -55,7 +55,7 @@
               <select
                 id="verification-method"
                 name="method"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors"
+                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors text-lg font-medium bg-white shadow-sm"
               >
                 <option value="sms">SMS Text Message</option>
                 <option value="voice">Voice Call</option>
@@ -106,7 +106,7 @@
                 name="code"
                 placeholder="123456"
                 maxlength="6"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors text-center text-2xl font-mono tracking-widest"
+                class="w-full px-4 py-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors text-center text-3xl font-mono tracking-widest bg-white shadow-sm"
                 required
               >
             </div>
@@ -157,14 +157,16 @@
         </div>
 
         <!-- Error Messages -->
-        <div id="2fa-error" class="hidden bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
+        <div id="2fa-error" class="hidden bg-red-50 border-2 border-red-200 rounded-lg p-4 mt-4 shadow-sm">
           <div class="flex">
             <div class="flex-shrink-0">
-              <span class="text-red-400">&#9888;</span>
+              <svg class="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+              </svg>
             </div>
             <div class="ml-3">
-              <h3 class="text-sm font-medium text-red-800">Authentication Error</h3>
-              <p id="error-message" class="text-sm text-red-700 mt-1"></p>
+              <h3 class="text-sm font-semibold text-red-800">Authentication Error</h3>
+              <p id="error-message" class="text-sm text-red-700 mt-1 font-medium"></p>
             </div>
           </div>
         </div>
@@ -175,6 +177,14 @@
 
 <script>
   class TwoFAManager {
+    currentStep: number;
+    verificationId: string | null;
+    phoneNumber: string | null;
+    method: string;
+    resendCountdown: number;
+    resendTimer: NodeJS.Timeout | null;
+    authContext: string;
+
     constructor() {
       this.currentStep = 1;
       this.verificationId = null;
@@ -285,8 +295,11 @@
       }
 
       this.setLoading('send-code', true);
+      this.hideError();
 
       try {
+        console.log('Initiating 2FA for phone:', `+${this.phoneNumber}`, 'method:', this.method);
+        
         const response = await fetch('/api/v2/2fa/initiate', {
           method: 'POST',
           headers: {
@@ -301,19 +314,22 @@
           })
         });
 
+        console.log('2FA initiation response status:', response.status);
         const result = await response.json();
+        console.log('2FA initiation result:', result);
 
         if (result.success) {
           this.verificationId = result.verificationId;
           this.showStep(2);
           this.startResendTimer();
           this.hideError();
+          console.log('2FA initiated successfully, verification ID:', this.verificationId);
         } else {
-          this.showError(result.message || 'Failed to send verification code');
+          this.showError(result.message || result.error || 'Failed to send verification code');
         }
       } catch (error) {
         console.error('2FA initiation error:', error);
-        this.showError('Network error. Please try again.');
+        this.showError('Network error. Please check your connection and try again.');
       } finally {
         this.setLoading('send-code', false);
       }
@@ -329,8 +345,11 @@
       }
 
       this.setLoading('verify-code', true);
+      this.hideError();
 
       try {
+        console.log('Verifying code:', code, 'for verification ID:', this.verificationId);
+        
         const response = await fetch('/api/v2/2fa/verify', {
           method: 'POST',
           headers: {
@@ -343,21 +362,25 @@
           })
         });
 
+        console.log('2FA verification response status:', response.status);
         const result = await response.json();
+        console.log('2FA verification result:', result);
 
-        if (result.success) {
+        if (result.success && result.verified) {
           this.showStep(3);
           this.hideError();
           // Store authentication token
           if (result.token) {
             localStorage.setItem('tetrix_auth_token', result.token);
+            console.log('Authentication token stored:', result.token);
           }
+          console.log('2FA verification successful');
         } else {
-          this.showError(result.message || 'Invalid verification code');
+          this.showError(result.message || result.error || 'Invalid verification code. Please try again.');
         }
       } catch (error) {
         console.error('2FA verification error:', error);
-        this.showError('Network error. Please try again.');
+        this.showError('Network error. Please check your connection and try again.');
       } finally {
         this.setLoading('verify-code', false);
       }
@@ -637,3 +660,55 @@
     window.twoFAManager.openModal();
   };
 </script>
+
+<style>
+  /* Enhanced modal styling for better visibility */
+  #2fa-modal {
+    backdrop-filter: blur(8px);
+  }
+
+  #2fa-modal .bg-white {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+
+  /* Input focus improvements */
+  #phone-number:focus,
+  #verification-code:focus,
+  #verification-method:focus {
+    transform: scale(1.02);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  }
+
+  /* Button hover improvements */
+  #send-code-btn:hover,
+  #verify-code-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Loading spinner improvements */
+  .animate-spin {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Error message animation */
+  #2fa-error {
+    animation: slideIn 0.3s ease-out;
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
