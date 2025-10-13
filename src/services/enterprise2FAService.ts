@@ -125,7 +125,7 @@ class Enterprise2FAService {
 
       return {
         verificationId: verification.id,
-        phoneNumber: verification.phone_number,
+        phoneNumber: verification.phone_number.startsWith('+') ? verification.phone_number.slice(1) : verification.phone_number, // Remove + for storage
         method: verification.type,
         status: 'pending',
         timeoutSecs: verification.timeout_secs,
@@ -288,7 +288,7 @@ class Enterprise2FAService {
       : 'https://api.telnyx.com/v2/verifications/sms';
 
     const payload: any = {
-      phone_number: request.phoneNumber,
+      phone_number: `+${request.phoneNumber}`, // Ensure phone number has + prefix
       verify_profile_id: this.config.verifyProfileId
     };
 
@@ -341,7 +341,7 @@ class Enterprise2FAService {
     
     return {
       id: verificationId,
-      phone_number: request.phoneNumber,
+      phone_number: `+${request.phoneNumber}`, // Ensure phone number has + prefix
       type: request.method,
       status: 'pending',
       created_at: new Date().toISOString(),
