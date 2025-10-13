@@ -2,10 +2,10 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import node from '@astrojs/node';
-import { loadEnv } from 'vite';
+// Note: loadEnv is not available in this context, using process.env directly
 
-// Load environment variables
-const env = loadEnv(process.env.NODE_ENV || 'development', process.cwd(), '');
+// Load environment variables from process.env
+const env = process.env;
 
 // Get allowed hosts from environment variables
 const allowedHosts = process.env.ALLOWED_DOMAINS ? process.env.ALLOWED_DOMAINS.split(',') : [];
