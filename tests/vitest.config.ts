@@ -5,7 +5,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: ['./tests/setup.ts'],
+    setupFiles: ['./tests/setup-simple.ts'],
     include: [
       'tests/unit/**/*.test.ts',
       'tests/functional/**/*.test.ts',
@@ -14,7 +14,8 @@ export default defineConfig({
     exclude: [
       'node_modules',
       'dist',
-      'build'
+      '.git',
+      '.cache'
     ],
     coverage: {
       provider: 'v8',
@@ -41,7 +42,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
-      '~': resolve(__dirname, './src')
+      '~': resolve(__dirname, './src'),
+      'tests': resolve(__dirname, './tests')
     }
   }
 });
