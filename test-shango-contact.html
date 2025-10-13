@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHANGO Chat Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        #results { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 SHANGO Chat Integration Test</h1>
+    
+    <div class="test-section">
+        <h2>Test 1: API Endpoints</h2>
+        <button onclick="testAPIEndpoints()">Test API Endpoints</button>
+        <div id="api-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 2: Chat Widget</h2>
+        <button onclick="testChatWidget()">Test Chat Widget</button>
+        <div id="chat-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 3: Full Integration</h2>
+        <button onclick="testFullIntegration()">Test Full Integration</button>
+        <div id="integration-results"></div>
+    </div>
+
+    <script>
+        const baseUrl = 'http://localhost:8080';
+        
+        async function testAPIEndpoints() {
+            const results = document.getElementById('api-results');
+            results.innerHTML = '<p>Testing API endpoints...</p>';
+            
+            try {
+                // Test agents endpoint
+                const agentsResponse = await fetch(`${baseUrl}/api/v1/shango/sessions`);
+                const agentsData = await agentsResponse.json();
+                
+                if (agentsData.success) {
+                    results.innerHTML += '<p class="success">✅ Agents endpoint working</p>';
+                } else {
+                    results.innerHTML += '<p class="error">❌ Agents endpoint failed</p>';
+                }
+                
+                // Test session creation
+                const sessionResponse = await fetch(`${baseUrl}/api/v1/shango/sessions`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: 'test-user',
+                        agentId: 'shango-general',
+                        channel: 'chat'
+                    })
+                });
+                
+                const sessionData = await sessionResponse.json();
+                
+                if (sessionData.success) {
+                    results.innerHTML += '<p class="success">✅ Session creation working</p>';
+                    window.testSessionId = sessionData.session.id;
+                } else {
+                    results.innerHTML += '<p class="error">❌ Session creation failed</p>';
+                }
+                
+            } catch (error) {
+                results.innerHTML += `<p class="error">❌ API test failed: ${error.message}</p>`;
+            }
+        }
+        
+        async function testChatWidget() {
+            const results = document.getElementById('chat-results');
+            results.innerHTML = '<p>Testing chat widget...</p>';
+            
+            try {
+                // Test if we can access the contact page
+                const contactResponse = await fetch(`${baseUrl}/contact`);
+                const contactHtml = await contactResponse.text();
+                
+                if (contactHtml.includes('SHANGO') && contactHtml.includes('shango-chat-widget')) {
+                    results.innerHTML += '<p class="success">✅ Contact page contains SHANGO chat widget</p>';
+                } else {
+                    results.innerHTML += '<p class="error">❌ Contact page missing SHANGO chat widget</p>';
+                }
+                
+                // Test if JavaScript is present
+                if (contactHtml.includes('SHANGOChatWidget')) {
+                    results.innerHTML += '<p class="success">✅ SHANGO chat JavaScript found</p>';
+                } else {
+                    results.innerHTML += '<p class="error">❌ SHANGO chat JavaScript missing</p>';
+                }
+                
+            } catch (error) {
+                results.innerHTML += `<p class="error">❌ Chat widget test failed: ${error.message}</p>`;
+            }
+        }
+        
+        async function testFullIntegration() {
+            const results = document.getElementById('integration-results');
+            results.innerHTML = '<p>Testing full integration...</p>';
+            
+            try {
+                if (!window.testSessionId) {
+                    results.innerHTML += '<p class="error">❌ No test session available. Run API test first.</p>';
+                    return;
+                }
+                
+                // Test sending a message
+                const messageResponse = await fetch(`${baseUrl}/api/v1/shango/sessions/${window.testSessionId}/messages`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: 'Hello SHANGO! Test message.',
+                        role: 'user',
+                        agentId: 'shango-general'
+                    })
+                });
+                
+                const messageData = await messageResponse.json();
+                
+                if (messageData.success) {
+                    results.innerHTML += '<p class="success">✅ Message sending working</p>';
+                    results.innerHTML += `<p>User: ${messageData.message.content}</p>`;
+                    results.innerHTML += `<p>SHANGO: ${messageData.aiResponse.content}</p>`;
+                } else {
+                    results.innerHTML += '<p class="error">❌ Message sending failed</p>';
+                }
+                
+                // Test getting chat history
+                const historyResponse = await fetch(`${baseUrl}/api/v1/shango/sessions/${window.testSessionId}/messages`);
+                const historyData = await historyResponse.json();
+                
+                if (historyData.success) {
+                    results.innerHTML += '<p class="success">✅ Chat history retrieval working</p>';
+                    results.innerHTML += `<p>Found ${historyData.messages.length} messages in history</p>`;
+                } else {
+                    results.innerHTML += '<p class="error">❌ Chat history retrieval failed</p>';
+                }
+                
+            } catch (error) {
+                results.innerHTML += `<p class="error">❌ Full integration test failed: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
