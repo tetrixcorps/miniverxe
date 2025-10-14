@@ -1,5 +1,5 @@
-// Voice Webhook API Endpoint
-// Handles Telnyx webhook events and TeXML responses
+// Telnyx Voice Webhook Endpoint
+// Handles Telnyx webhook events for toll free numbers
 
 import type { APIRoute } from 'astro';
 
@@ -8,7 +8,7 @@ function generateGreetingTwiML(): string {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Say voice="alice">Welcome to TETRIX Enterprise Solutions. Press 1 for sales, 2 for support, 3 for billing, or 0 to speak with an operator.</Say>
-  <Gather numDigits="1" action="${process.env.WEBHOOK_BASE_URL || 'https://tetrixcorp.com'}/api/voice/webhook" method="POST" timeout="10">
+  <Gather numDigits="1" action="${process.env.WEBHOOK_BASE_URL || 'https://tetrixcorp.com'}/webhooks/telnyx/voice" method="POST" timeout="10">
     <Say voice="alice">Please make your selection.</Say>
   </Gather>
   <Say voice="alice">We didn't receive any input. Please call back later. Goodbye.</Say>
@@ -64,7 +64,7 @@ function generateRoutingTwiML(dtmf: string): string {
       return `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Say voice="alice">Invalid selection. Please try again.</Say>
-  <Redirect>${webhookUrl}/api/voice/webhook</Redirect>
+  <Redirect>${webhookUrl}/webhooks/telnyx/voice</Redirect>
 </Response>`;
   }
 }
@@ -76,12 +76,12 @@ function generateHangupTwiML(): string {
 </Response>`;
 }
 
-export const POST: APIRoute = async ({ request, url }) => {
+export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
     const { event_type, data } = body;
     
-    console.log('Voice webhook received:', {
+    console.log('Telnyx voice webhook received:', {
       event_type,
       call_control_id: data?.call_control_id,
       from: data?.from,
@@ -126,7 +126,7 @@ export const POST: APIRoute = async ({ request, url }) => {
     });
 
   } catch (error) {
-    console.error('Webhook processing failed:', error);
+    console.error('Telnyx webhook processing failed:', error);
     
     // Always return TwiML for voice webhooks
     const errorTwiML = `<?xml version="1.0" encoding="UTF-8"?>
