@@ -1,0 +1,230 @@
+---
+// Universal Metrics Component - Shared across all industry dashboards
+// Displays system-wide metrics that are relevant to all client types
+---
+
+<div class="bg-white rounded-lg shadow p-6 mb-8">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-xl font-semibold text-gray-900">System Overview</h2>
+    <div class="flex items-center space-x-2">
+      <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+      <span class="text-sm text-gray-500">Live Data</span>
+    </div>
+  </div>
+
+  <!-- Key Metrics Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+    <!-- Active Users -->
+    <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-4">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+          </svg>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-blue-600">Active Users</p>
+          <p id="universal-active-users" class="text-2xl font-bold text-blue-900">1,247</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total Revenue -->
+    <div class="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-4">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+          </svg>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-green-600">Total Revenue</p>
+          <p id="universal-revenue" class="text-2xl font-bold text-green-900">$125,430</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- System Uptime -->
+    <div class="bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg p-4">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-purple-600">System Uptime</p>
+          <p id="universal-uptime" class="text-2xl font-bold text-purple-900">99.9%</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Processed -->
+    <div class="bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg p-4">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path>
+          </svg>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-orange-600">Data Processed</p>
+          <p id="universal-data" class="text-2xl font-bold text-orange-900">2.4TB</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity & Notifications -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Recent Activity -->
+    <div>
+      <h3 class="text-lg font-medium text-gray-900 mb-4">Recent Activity</h3>
+      <div id="universal-activity" class="space-y-3">
+        <!-- Activity items will be populated by JavaScript -->
+      </div>
+    </div>
+
+    <!-- System Notifications -->
+    <div>
+      <h3 class="text-lg font-medium text-gray-900 mb-4">System Notifications</h3>
+      <div id="universal-notifications" class="space-y-3">
+        <!-- Notifications will be populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Universal Metrics Component
+  class UniversalMetrics {
+    constructor() {
+      this.init();
+    }
+
+    async init() {
+      await this.loadMetrics();
+      this.setupRealTimeUpdates();
+    }
+
+    async loadMetrics() {
+      try {
+        // In a real implementation, this would fetch from the dashboard service
+        const metrics = {
+          activeUsers: 1247,
+          totalRevenue: 125430,
+          systemUptime: 99.9,
+          dataProcessed: '2.4TB',
+          recentActivity: [
+            { type: 'login', user: 'John Doe', time: '2 minutes ago', icon: '👤' },
+            { type: 'data_export', user: 'Jane Smith', time: '5 minutes ago', icon: '📊' },
+            { type: 'alert', user: 'System', time: '10 minutes ago', icon: '⚠️' },
+            { type: 'update', user: 'Mike Johnson', time: '15 minutes ago', icon: '🔄' }
+          ],
+          notifications: [
+            { 
+              type: 'info', 
+              message: 'System maintenance scheduled for tonight', 
+              time: '1 hour ago', 
+              priority: 'low',
+              icon: 'ℹ️'
+            },
+            { 
+              type: 'warning', 
+              message: 'High data usage detected', 
+              time: '2 hours ago', 
+              priority: 'medium',
+              icon: '⚠️'
+            },
+            { 
+              type: 'success', 
+              message: 'Backup completed successfully', 
+              time: '3 hours ago', 
+              priority: 'low',
+              icon: '✅'
+            }
+          ]
+        };
+
+        this.updateDisplay(metrics);
+      } catch (error) {
+        console.error('Failed to load universal metrics:', error);
+      }
+    }
+
+    updateDisplay(metrics: any) {
+      // Update key metrics
+      const activeUsersEl = document.getElementById('universal-active-users');
+      const revenueEl = document.getElementById('universal-revenue');
+      const uptimeEl = document.getElementById('universal-uptime');
+      const dataEl = document.getElementById('universal-data');
+
+      if (activeUsersEl) activeUsersEl.textContent = metrics.activeUsers.toLocaleString();
+      if (revenueEl) revenueEl.textContent = `$${metrics.totalRevenue.toLocaleString()}`;
+      if (uptimeEl) uptimeEl.textContent = `${metrics.systemUptime}%`;
+      if (dataEl) dataEl.textContent = metrics.dataProcessed;
+
+      // Update recent activity
+      this.updateActivityList(metrics.recentActivity);
+      
+      // Update notifications
+      this.updateNotificationsList(metrics.notifications);
+    }
+
+    updateActivityList(activities: any[]) {
+      const container = document.getElementById('universal-activity');
+      if (!container) return;
+
+      container.innerHTML = activities.map((activity: any) => `
+        <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+          <span class="text-lg">${activity.icon}</span>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-gray-900">${activity.user}</p>
+            <p class="text-sm text-gray-500">${activity.type.replace('_', ' ')}</p>
+          </div>
+          <span class="text-xs text-gray-400">${activity.time}</span>
+        </div>
+      `).join('');
+    }
+
+    updateNotificationsList(notifications: any[]) {
+      const container = document.getElementById('universal-notifications');
+      if (!container) return;
+
+      container.innerHTML = notifications.map((notification: any) => `
+        <div class="flex items-start space-x-3 p-3 bg-${this.getNotificationColor(notification.type)}-50 rounded-lg">
+          <span class="text-lg">${notification.icon}</span>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-gray-900">${notification.message}</p>
+            <p class="text-xs text-gray-500">${notification.time}</p>
+          </div>
+          <span class="px-2 py-1 text-xs font-medium rounded-full bg-${this.getNotificationColor(notification.type)}-100 text-${this.getNotificationColor(notification.type)}-800">
+            ${notification.priority}
+          </span>
+        </div>
+      `).join('');
+    }
+
+    getNotificationColor(type: string) {
+      const colorMap: Record<string, string> = {
+        'info': 'blue',
+        'warning': 'yellow',
+        'error': 'red',
+        'success': 'green'
+      };
+      return colorMap[type] || 'gray';
+    }
+
+    setupRealTimeUpdates() {
+      // Update metrics every 30 seconds
+      setInterval(() => {
+        this.loadMetrics();
+      }, 30000);
+    }
+  }
+
+  // Initialize when component loads
+  document.addEventListener('DOMContentLoaded', () => {
+    new UniversalMetrics();
+  });
+</script>

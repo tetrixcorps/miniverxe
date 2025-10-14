@@ -1,0 +1,341 @@
+---
+// Fleet Management Widgets - Industry-specific components for fleet managers
+// Displays vehicle tracking, driver performance, fuel efficiency, and alerts
+---
+
+<div class="fleet-widgets">
+  <!-- Vehicle Status Overview -->
+  <div class="bg-white rounded-lg shadow p-6 mb-6">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-semibold text-gray-900">Vehicle Status Overview</h3>
+      <div class="flex items-center space-x-2">
+        <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+        <span class="text-sm text-gray-500">Live Tracking</span>
+      </div>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <!-- Active Vehicles -->
+      <div class="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-green-600">Active Vehicles</p>
+            <p id="fleet-active-count" class="text-3xl font-bold text-green-900">24</p>
+            <p class="text-xs text-green-600">+2 from yesterday</p>
+          </div>
+          <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- In Maintenance -->
+      <div class="bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-lg p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-yellow-600">In Maintenance</p>
+            <p id="fleet-maintenance-count" class="text-3xl font-bold text-yellow-900">3</p>
+            <p class="text-xs text-yellow-600">2 scheduled today</p>
+          </div>
+          <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Offline -->
+      <div class="bg-gradient-to-r from-red-50 to-red-100 rounded-lg p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-red-600">Offline</p>
+            <p id="fleet-offline-count" class="text-3xl font-bold text-red-900">1</p>
+            <p class="text-xs text-red-600">Needs attention</p>
+          </div>
+          <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Driver Performance & Fuel Efficiency -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <!-- Driver Performance -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Driver Performance</h3>
+      
+      <!-- Average Score -->
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm font-medium text-gray-600">Average Performance Score</span>
+          <span id="fleet-driver-avg-score" class="text-2xl font-bold text-blue-600">8.7</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2">
+          <div class="bg-blue-600 h-2 rounded-full" style="width: 87%"></div>
+        </div>
+        <p class="text-xs text-gray-500 mt-1">Based on safety, efficiency, and compliance metrics</p>
+      </div>
+
+      <!-- Top Performers -->
+      <div>
+        <h4 class="text-sm font-medium text-gray-900 mb-3">Top Performers</h4>
+        <div id="fleet-top-drivers" class="space-y-2">
+          <!-- Driver list will be populated by JavaScript -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Fuel Efficiency -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Fuel Efficiency</h3>
+      
+      <!-- Average MPG -->
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm font-medium text-gray-600">Average MPG</span>
+          <span id="fleet-avg-mpg" class="text-2xl font-bold text-green-600">12.4</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2">
+          <div class="bg-green-600 h-2 rounded-full" style="width: 82%"></div>
+        </div>
+        <p class="text-xs text-gray-500 mt-1">Target: 15.0 MPG</p>
+      </div>
+
+      <!-- Cost Savings -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="text-center p-3 bg-green-50 rounded-lg">
+          <p class="text-sm text-green-600">Monthly Savings</p>
+          <p id="fleet-monthly-savings" class="text-xl font-bold text-green-900">$2,340</p>
+        </div>
+        <div class="text-center p-3 bg-blue-50 rounded-lg">
+          <p class="text-sm text-blue-600">CO2 Reduced</p>
+          <p id="fleet-co2-reduction" class="text-xl font-bold text-blue-900">1.2T</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Real-time Alerts -->
+  <div class="bg-white rounded-lg shadow p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-semibold text-gray-900">Real-time Alerts</h3>
+      <div class="flex items-center space-x-2">
+        <button id="refresh-alerts" class="p-1 text-gray-400 hover:text-gray-600 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+        </button>
+        <span class="text-sm text-gray-500">Auto-refresh: 30s</span>
+      </div>
+    </div>
+    
+    <div id="fleet-alerts-list" class="space-y-3">
+      <!-- Alerts will be populated by JavaScript -->
+    </div>
+  </div>
+
+  <!-- Vehicle Map (Placeholder) -->
+  <div class="bg-white rounded-lg shadow p-6 mt-6">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">Vehicle Locations</h3>
+    <div class="bg-gray-100 rounded-lg h-64 flex items-center justify-center">
+      <div class="text-center">
+        <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        </svg>
+        <p class="text-gray-500">Interactive map will be displayed here</p>
+        <p class="text-sm text-gray-400">Real-time vehicle tracking</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Fleet Widgets Component
+  class FleetWidgets {
+    constructor() {
+      this.alerts = [];
+      this.drivers = [];
+      this.init();
+    }
+
+    async init() {
+      await this.loadFleetData();
+      this.setupEventListeners();
+      this.setupRealTimeUpdates();
+    }
+
+    setupEventListeners() {
+      // Refresh alerts button
+      document.getElementById('refresh-alerts')?.addEventListener('click', () => {
+        this.loadFleetData();
+      });
+    }
+
+    async loadFleetData() {
+      try {
+        // In a real implementation, this would fetch from the fleet API
+        const data = {
+          active: 24,
+          maintenance: 3,
+          offline: 1,
+          driverScore: 8.7,
+          topDrivers: [
+            { name: 'John Smith', score: 9.2, trips: 45 },
+            { name: 'Sarah Johnson', score: 9.0, trips: 42 },
+            { name: 'Mike Davis', score: 8.9, trips: 38 },
+            { name: 'Lisa Wilson', score: 8.8, trips: 41 },
+            { name: 'Tom Brown', score: 8.7, trips: 39 }
+          ],
+          mpg: 12.4,
+          monthlySavings: 2340,
+          co2Reduction: 1.2,
+          alerts: [
+            { 
+              type: 'maintenance', 
+              message: 'Vehicle #123 needs oil change', 
+              time: '2 hours ago', 
+              priority: 'medium',
+              vehicleId: 'VH-123',
+              driver: 'John Smith'
+            },
+            { 
+              type: 'violation', 
+              message: 'Driver exceeded speed limit on Route 66', 
+              time: '4 hours ago', 
+              priority: 'high',
+              driverId: 'DRV-456',
+              driver: 'Sarah Johnson'
+            },
+            { 
+              type: 'fuel', 
+              message: 'Low fuel alert for Vehicle #789', 
+              time: '6 hours ago', 
+              priority: 'low',
+              vehicleId: 'VH-789',
+              driver: 'Mike Davis'
+            },
+            { 
+              type: 'safety', 
+              message: 'Hard braking detected on Vehicle #456', 
+              time: '8 hours ago', 
+              priority: 'medium',
+              vehicleId: 'VH-456',
+              driver: 'Lisa Wilson'
+            }
+          ]
+        };
+
+        this.updateDisplay(data);
+      } catch (error) {
+        console.error('Failed to load fleet data:', error);
+      }
+    }
+
+    updateDisplay(data) {
+      // Update vehicle counts
+      document.getElementById('fleet-active-count').textContent = data.active;
+      document.getElementById('fleet-maintenance-count').textContent = data.maintenance;
+      document.getElementById('fleet-offline-count').textContent = data.offline;
+
+      // Update driver performance
+      document.getElementById('fleet-driver-avg-score').textContent = data.driverScore;
+      this.updateTopDrivers(data.topDrivers);
+
+      // Update fuel efficiency
+      document.getElementById('fleet-avg-mpg').textContent = data.mpg;
+      document.getElementById('fleet-monthly-savings').textContent = `$${data.monthlySavings.toLocaleString()}`;
+      document.getElementById('fleet-co2-reduction').textContent = `${data.co2Reduction}T`;
+
+      // Update alerts
+      this.updateAlerts(data.alerts);
+    }
+
+    updateTopDrivers(drivers) {
+      const container = document.getElementById('fleet-top-drivers');
+      if (!container) return;
+
+      container.innerHTML = drivers.slice(0, 5).map((driver, index) => `
+        <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+          <div class="flex items-center space-x-3">
+            <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+              <span class="text-xs font-medium text-blue-600">${index + 1}</span>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-900">${driver.name}</p>
+              <p class="text-xs text-gray-500">${driver.trips} trips</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="text-sm font-bold text-blue-600">${driver.score}</p>
+            <p class="text-xs text-gray-500">score</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    updateAlerts(alerts) {
+      const container = document.getElementById('fleet-alerts-list');
+      if (!container) return;
+
+      this.alerts = alerts;
+      container.innerHTML = alerts.map(alert => `
+        <div class="flex items-start space-x-3 p-4 bg-${this.getAlertColor(alert.priority)}-50 rounded-lg border-l-4 border-${this.getAlertColor(alert.priority)}-400">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 bg-${this.getAlertColor(alert.priority)}-100 rounded-full flex items-center justify-center">
+              <svg class="w-4 h-4 text-${this.getAlertColor(alert.priority)}-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                ${this.getAlertIcon(alert.type)}
+              </svg>
+            </div>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between">
+              <p class="text-sm font-medium text-gray-900">${alert.message}</p>
+              <span class="px-2 py-1 text-xs font-medium rounded-full bg-${this.getAlertColor(alert.priority)}-100 text-${this.getAlertColor(alert.priority)}-800">
+                ${alert.priority}
+              </span>
+            </div>
+            <div class="mt-1 flex items-center space-x-4 text-xs text-gray-500">
+              <span>${alert.driver}</span>
+              <span>•</span>
+              <span>${alert.time}</span>
+              ${alert.vehicleId ? `<span>•</span><span>${alert.vehicleId}</span>` : ''}
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    getAlertColor(priority) {
+      const colorMap = {
+        'high': 'red',
+        'medium': 'yellow',
+        'low': 'green'
+      };
+      return colorMap[priority] || 'gray';
+    }
+
+    getAlertIcon(type) {
+      const iconMap = {
+        'maintenance': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>',
+        'violation': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>',
+        'fuel': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"></path>',
+        'safety': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>'
+      };
+      return iconMap[type] || '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
+    }
+
+    setupRealTimeUpdates() {
+      // Update data every 30 seconds
+      setInterval(() => {
+        this.loadFleetData();
+      }, 30000);
+    }
+  }
+
+  // Initialize when component loads
+  document.addEventListener('DOMContentLoaded', () => {
+    new FleetWidgets();
+  });
+</script>
