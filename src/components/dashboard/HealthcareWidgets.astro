@@ -1,0 +1,448 @@
+---
+// Healthcare Provider Widgets - Industry-specific components for healthcare providers
+// Displays patient data, clinical metrics, revenue, and compliance alerts
+---
+
+<div class="healthcare-widgets">
+  <!-- Patient Overview -->
+  <div class="bg-white rounded-lg shadow p-6 mb-6">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-semibold text-gray-900">Patient Overview</h3>
+      <div class="flex items-center space-x-2">
+        <div class="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+        <span class="text-sm text-gray-500">Live Data</span>
+      </div>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <!-- Total Patients -->
+      <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-blue-600">Total Patients</p>
+            <p id="healthcare-total-patients" class="text-3xl font-bold text-blue-900">1,247</p>
+            <p class="text-xs text-blue-600">+89 this month</p>
+          </div>
+          <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- New Patients -->
+      <div class="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-green-600">New This Month</p>
+            <p id="healthcare-new-patients" class="text-3xl font-bold text-green-900">89</p>
+            <p class="text-xs text-green-600">+12% vs last month</p>
+          </div>
+          <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Today's Appointments -->
+      <div class="bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-purple-600">Today's Appointments</p>
+            <p id="healthcare-today-appointments" class="text-3xl font-bold text-purple-900">23</p>
+            <p class="text-xs text-purple-600">3 pending</p>
+          </div>
+          <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Active Cases -->
+      <div class="bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-orange-600">Active Cases</p>
+            <p id="healthcare-active-cases" class="text-3xl font-bold text-orange-900">156</p>
+            <p class="text-xs text-orange-600">12 critical</p>
+          </div>
+          <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Revenue & Clinical Metrics -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <!-- Revenue Dashboard -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Revenue Dashboard</h3>
+      
+      <!-- Monthly Revenue -->
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm font-medium text-gray-600">Monthly Revenue</span>
+          <span id="healthcare-monthly-revenue" class="text-2xl font-bold text-green-600">$45,230</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2">
+          <div class="bg-green-600 h-2 rounded-full" style="width: 75%"></div>
+        </div>
+        <p class="text-xs text-gray-500 mt-1">Target: $60,000</p>
+      </div>
+
+      <!-- Revenue Breakdown -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="text-center p-3 bg-blue-50 rounded-lg">
+          <p class="text-sm text-blue-600">Insurance Claims</p>
+          <p id="healthcare-insurance-claims" class="text-xl font-bold text-blue-900">156</p>
+          <p class="text-xs text-gray-500">Pending: 23</p>
+        </div>
+        <div class="text-center p-3 bg-purple-50 rounded-lg">
+          <p class="text-sm text-purple-600">Out-of-Pocket</p>
+          <p id="healthcare-out-of-pocket" class="text-xl font-bold text-purple-900">$8,420</p>
+          <p class="text-xs text-gray-500">18.6% of total</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Clinical Metrics -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Clinical Metrics</h3>
+      
+      <!-- Patient Satisfaction -->
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm font-medium text-gray-600">Patient Satisfaction</span>
+          <span id="healthcare-satisfaction" class="text-2xl font-bold text-yellow-600">4.8</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2">
+          <div class="bg-yellow-600 h-2 rounded-full" style="width: 96%"></div>
+        </div>
+        <p class="text-xs text-gray-500 mt-1">Based on 127 recent reviews</p>
+      </div>
+
+      <!-- Clinical Indicators -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="text-center p-3 bg-red-50 rounded-lg">
+          <p class="text-sm text-red-600">Readmission Rate</p>
+          <p id="healthcare-readmission-rate" class="text-xl font-bold text-red-900">3.2%</p>
+          <p class="text-xs text-gray-500">Target: <5%</p>
+        </div>
+        <div class="text-center p-3 bg-green-50 rounded-lg">
+          <p class="text-sm text-green-600">Treatment Success</p>
+          <p id="healthcare-treatment-success" class="text-xl font-bold text-green-900">94.7%</p>
+          <p class="text-xs text-gray-500">Last 30 days</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Appointments & Alerts -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <!-- Recent Appointments -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-900">Recent Appointments</h3>
+        <button id="refresh-appointments" class="p-1 text-gray-400 hover:text-gray-600 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+        </button>
+      </div>
+      
+      <div id="healthcare-appointments-list" class="space-y-3">
+        <!-- Appointments will be populated by JavaScript -->
+      </div>
+    </div>
+
+    <!-- Clinical Alerts -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-900">Clinical Alerts</h3>
+        <button id="refresh-alerts" class="p-1 text-gray-400 hover:text-gray-600 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+        </button>
+      </div>
+      
+      <div id="healthcare-alerts-list" class="space-y-3">
+        <!-- Alerts will be populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Compliance Dashboard -->
+  <div class="bg-white rounded-lg shadow p-6">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">Compliance Dashboard</h3>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- HIPAA Compliance -->
+      <div class="text-center p-4 bg-green-50 rounded-lg">
+        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+          <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <h4 class="font-medium text-gray-900">HIPAA Compliance</h4>
+        <p class="text-2xl font-bold text-green-600">100%</p>
+        <p class="text-xs text-gray-500">Last audit: 2 weeks ago</p>
+      </div>
+
+      <!-- Documentation -->
+      <div class="text-center p-4 bg-blue-50 rounded-lg">
+        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+          <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+        </div>
+        <h4 class="font-medium text-gray-900">Documentation</h4>
+        <p class="text-2xl font-bold text-blue-600">98.5%</p>
+        <p class="text-xs text-gray-500">Complete records</p>
+      </div>
+
+      <!-- Quality Metrics -->
+      <div class="text-center p-4 bg-purple-50 rounded-lg">
+        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+          <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+          </svg>
+        </div>
+        <h4 class="font-medium text-gray-900">Quality Score</h4>
+        <p class="text-2xl font-bold text-purple-600">4.7</p>
+        <p class="text-xs text-gray-500">Out of 5.0</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Healthcare Widgets Component
+  class HealthcareWidgets {
+    constructor() {
+      this.appointments = [];
+      this.alerts = [];
+      this.init();
+    }
+
+    async init() {
+      await this.loadHealthcareData();
+      this.setupEventListeners();
+      this.setupRealTimeUpdates();
+    }
+
+    setupEventListeners() {
+      // Refresh buttons
+      document.getElementById('refresh-appointments')?.addEventListener('click', () => {
+        this.loadHealthcareData();
+      });
+      
+      document.getElementById('refresh-alerts')?.addEventListener('click', () => {
+        this.loadHealthcareData();
+      });
+    }
+
+    async loadHealthcareData() {
+      try {
+        // In a real implementation, this would fetch from the healthcare API
+        const data = {
+          totalPatients: 1247,
+          newPatients: 89,
+          todayAppointments: 23,
+          activeCases: 156,
+          monthlyRevenue: 45230,
+          insuranceClaims: 156,
+          outOfPocket: 8420,
+          satisfaction: 4.8,
+          readmissionRate: 3.2,
+          treatmentSuccess: 94.7,
+          appointments: [
+            { 
+              patient: 'John Smith', 
+              time: '9:00 AM', 
+              type: 'Follow-up', 
+              status: 'completed',
+              provider: 'Dr. Johnson'
+            },
+            { 
+              patient: 'Sarah Davis', 
+              time: '10:30 AM', 
+              type: 'Consultation', 
+              status: 'in-progress',
+              provider: 'Dr. Wilson'
+            },
+            { 
+              patient: 'Mike Brown', 
+              time: '2:00 PM', 
+              type: 'Check-up', 
+              status: 'scheduled',
+              provider: 'Dr. Johnson'
+            },
+            { 
+              patient: 'Lisa Wilson', 
+              time: '3:30 PM', 
+              type: 'Procedure', 
+              status: 'scheduled',
+              provider: 'Dr. Smith'
+            }
+          ],
+          alerts: [
+            { 
+              type: 'appointment', 
+              message: 'Patient John Smith missed appointment', 
+              time: '1 hour ago', 
+              priority: 'medium',
+              patientId: 'PAT-123'
+            },
+            { 
+              type: 'lab_result', 
+              message: 'Critical lab results available for review', 
+              time: '3 hours ago', 
+              priority: 'high',
+              patientId: 'PAT-456'
+            },
+            { 
+              type: 'prescription', 
+              message: 'Prescription refill needed for Patient #789', 
+              time: '5 hours ago', 
+              priority: 'low',
+              patientId: 'PAT-789'
+            },
+            { 
+              type: 'insurance', 
+              message: 'Insurance claim rejected for Patient #321', 
+              time: '7 hours ago', 
+              priority: 'medium',
+              patientId: 'PAT-321'
+            }
+          ]
+        };
+
+        this.updateDisplay(data);
+      } catch (error) {
+        console.error('Failed to load healthcare data:', error);
+      }
+    }
+
+    updateDisplay(data) {
+      // Update patient overview
+      document.getElementById('healthcare-total-patients').textContent = data.totalPatients.toLocaleString();
+      document.getElementById('healthcare-new-patients').textContent = data.newPatients;
+      document.getElementById('healthcare-today-appointments').textContent = data.todayAppointments;
+      document.getElementById('healthcare-active-cases').textContent = data.activeCases;
+
+      // Update revenue metrics
+      document.getElementById('healthcare-monthly-revenue').textContent = `$${data.monthlyRevenue.toLocaleString()}`;
+      document.getElementById('healthcare-insurance-claims').textContent = data.insuranceClaims;
+      document.getElementById('healthcare-out-of-pocket').textContent = `$${data.outOfPocket.toLocaleString()}`;
+
+      // Update clinical metrics
+      document.getElementById('healthcare-satisfaction').textContent = data.satisfaction;
+      document.getElementById('healthcare-readmission-rate').textContent = `${data.readmissionRate}%`;
+      document.getElementById('healthcare-treatment-success').textContent = `${data.treatmentSuccess}%`;
+
+      // Update appointments and alerts
+      this.updateAppointments(data.appointments);
+      this.updateAlerts(data.alerts);
+    }
+
+    updateAppointments(appointments) {
+      const container = document.getElementById('healthcare-appointments-list');
+      if (!container) return;
+
+      this.appointments = appointments;
+      container.innerHTML = appointments.map(appointment => `
+        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+          <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 bg-${this.getStatusColor(appointment.status)}-100 rounded-full flex items-center justify-center">
+              <svg class="w-4 h-4 text-${this.getStatusColor(appointment.status)}-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-900">${appointment.patient}</p>
+              <p class="text-xs text-gray-500">${appointment.type} • ${appointment.provider}</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="text-sm font-medium text-gray-900">${appointment.time}</p>
+            <span class="px-2 py-1 text-xs font-medium rounded-full bg-${this.getStatusColor(appointment.status)}-100 text-${this.getStatusColor(appointment.status)}-800">
+              ${appointment.status.replace('-', ' ')}
+            </span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    updateAlerts(alerts) {
+      const container = document.getElementById('healthcare-alerts-list');
+      if (!container) return;
+
+      this.alerts = alerts;
+      container.innerHTML = alerts.map(alert => `
+        <div class="flex items-start space-x-3 p-3 bg-${this.getAlertColor(alert.priority)}-50 rounded-lg border-l-4 border-${this.getAlertColor(alert.priority)}-400">
+          <div class="flex-shrink-0">
+            <div class="w-6 h-6 bg-${this.getAlertColor(alert.priority)}-100 rounded-full flex items-center justify-center">
+              <svg class="w-3 h-3 text-${this.getAlertColor(alert.priority)}-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                ${this.getAlertIcon(alert.type)}
+              </svg>
+            </div>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-gray-900">${alert.message}</p>
+            <div class="mt-1 flex items-center space-x-2 text-xs text-gray-500">
+              <span>${alert.time}</span>
+              <span>•</span>
+              <span>${alert.patientId}</span>
+            </div>
+          </div>
+          <span class="px-2 py-1 text-xs font-medium rounded-full bg-${this.getAlertColor(alert.priority)}-100 text-${this.getAlertColor(alert.priority)}-800">
+            ${alert.priority}
+          </span>
+        </div>
+      `).join('');
+    }
+
+    getStatusColor(status) {
+      const colorMap = {
+        'completed': 'green',
+        'in-progress': 'blue',
+        'scheduled': 'yellow',
+        'cancelled': 'red'
+      };
+      return colorMap[status] || 'gray';
+    }
+
+    getAlertColor(priority) {
+      const colorMap = {
+        'high': 'red',
+        'medium': 'yellow',
+        'low': 'green'
+      };
+      return colorMap[priority] || 'gray';
+    }
+
+    getAlertIcon(type) {
+      const iconMap = {
+        'appointment': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>',
+        'lab_result': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>',
+        'prescription': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>',
+        'insurance': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>'
+      };
+      return iconMap[type] || '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
+    }
+
+    setupRealTimeUpdates() {
+      // Update data every 30 seconds
+      setInterval(() => {
+        this.loadHealthcareData();
+      }, 30000);
+    }
+  }
+
+  // Initialize when component loads
+  document.addEventListener('DOMContentLoaded', () => {
+    new HealthcareWidgets();
+  });
+</script>
