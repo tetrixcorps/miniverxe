@@ -52,6 +52,9 @@ export default defineConfig({
       'goldfish-app-yulr9.ondigitalocean.app', // DigitalOcean's default domain
       'tetrixcorp.com', // TETRIX main domain
       'joromi.ai', // JoRoMi domain
+      'api.tetrixcorp.com', // API subdomain
+      'iot.tetrixcorp.com', // IoT subdomain
+      'vpn.tetrixcorp.com', // VPN subdomain
       ...allowedHosts // Your custom domains from env vars
     ]
   },
@@ -63,6 +66,9 @@ export default defineConfig({
       'goldfish-app-yulr9.ondigitalocean.app',
       'tetrixcorp.com', // TETRIX main domain
       'joromi.ai', // JoRoMi domain
+      'api.tetrixcorp.com', // API subdomain
+      'iot.tetrixcorp.com', // IoT subdomain
+      'vpn.tetrixcorp.com', // VPN subdomain
       ...allowedHosts
     ]
   }

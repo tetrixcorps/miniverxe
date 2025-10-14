@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { shangoStorage } from '../../../../services/shangoStorage';
 
 // Mock SHANGO agents data
 const SHANGO_AGENTS = [
@@ -44,9 +45,7 @@ const SHANGO_AGENTS = [
   }
 ];
 
-// In-memory storage for sessions (in production, use a database)
-const sessions = new Map();
-const messages = new Map();
+// Use shared storage service
 
 // Helper function to generate AI response
 function generateAIResponse(message: string, agentId: string = 'shango-general'): string {
@@ -75,7 +74,7 @@ export const GET: APIRoute = async ({ url }) => {
     
     if (sessionId) {
       // Get specific session
-      const session = sessions.get(sessionId);
+      const session = shangoStorage.getSession(sessionId);
       if (!session) {
         return new Response(JSON.stringify({
           success: false,
@@ -147,8 +146,8 @@ export const POST: APIRoute = async ({ request }) => {
       shangoAgent: agent
     };
     
-    sessions.set(sessionId, session);
-    messages.set(sessionId, []);
+    // Create session in shared storage
+    shangoStorage.createSession(session);
     
     // Add greeting message
     if (agent) {
@@ -160,8 +159,7 @@ export const POST: APIRoute = async ({ request }) => {
         type: 'text'
       };
       
-      messages.get(sessionId)?.push(greetingMessage);
-      session.messages.push(greetingMessage);
+      shangoStorage.addMessage(sessionId, greetingMessage);
     }
     
     return new Response(JSON.stringify({

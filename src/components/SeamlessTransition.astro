@@ -73,7 +73,7 @@
         'joromi': {
           name: 'JoRoMi Platform',
           icon: '🤖',
-          url: 'https://joromi.ai',
+          url: this.getJoromiUrl(),
           color: 'text-green-600'
         },
         'dashboard': {
@@ -83,6 +83,19 @@
           color: 'text-purple-600'
         }
       };
+    }
+
+    getJoromiUrl() {
+      // Get environment-specific JoRoMi URL
+      const hostname = window.location.hostname;
+      
+      if (hostname.includes('tetrixcorp.com')) {
+        return 'https://joromi.ai';
+      } else if (hostname.includes('staging')) {
+        return 'https://staging-joromi.tetrixcorp.com';
+      } else {
+        return 'http://localhost:3000';
+      }
     }
 
     show(platform: string) {

@@ -150,15 +150,17 @@ import CodeAcademyModal from '../CodeAcademyModal.astro';
         const codeAcademyBtn = document.getElementById('open-code-academy-modal');
         const codeAcademyBtnMobile = document.getElementById('open-code-academy-modal-mobile');
 
-        // Code Academy button handlers - Seamless redirect to external domain
+        // Code Academy button handlers - 2FA Authentication first
         if (codeAcademyBtn) {
           codeAcademyBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            // Seamless redirect to Code Academy domain
-            if (window.redirectToExternal) {
-              window.redirectToExternal('code-academy');
+            // Set authentication context for Code Academy
+            (window as any).tetrixAuthContext = 'code-academy';
+            // Open 2FA modal for authentication
+            if ((window as any).open2FAModal) {
+              (window as any).open2FAModal();
             } else {
-              // Fallback to direct redirect
+              // Fallback to direct redirect if 2FA modal not available
               window.open('https://poisonedreligion.ai', '_blank');
             }
             // Close mobile menu if open
@@ -172,11 +174,13 @@ import CodeAcademyModal from '../CodeAcademyModal.astro';
         if (codeAcademyBtnMobile) {
           codeAcademyBtnMobile.addEventListener('click', function(e) {
             e.preventDefault();
-            // Seamless redirect to Code Academy domain
-            if (window.redirectToExternal) {
-              window.redirectToExternal('code-academy');
+            // Set authentication context for Code Academy
+            (window as any).tetrixAuthContext = 'code-academy';
+            // Open 2FA modal for authentication
+            if ((window as any).open2FAModal) {
+              (window as any).open2FAModal();
             } else {
-              // Fallback to direct redirect
+              // Fallback to direct redirect if 2FA modal not available
               window.open('https://poisonedreligion.ai', '_blank');
             }
             // Close mobile menu
@@ -193,16 +197,19 @@ import CodeAcademyModal from '../CodeAcademyModal.astro';
         const clientLoginBtn = document.getElementById('client-login-2fa-btn');
         const clientLoginBtnMobile = document.getElementById('client-login-2fa-btn-mobile');
 
-        // JoRoMi button handlers - Seamless redirect to external domain
+        // JoRoMi button handlers - Cross-platform management system
         if (joromiBtn) {
           joromiBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            // Seamless redirect to JoRoMi domain
+            // Use cross-platform management system to redirect to JoRoMi landing page
             if (window.redirectToExternal) {
               window.redirectToExternal('joromi');
             } else {
-              // Fallback to direct redirect
-              window.open('https://joromi.ai', '_blank');
+              // Fallback to direct redirect to JoRoMi landing page
+              const joromiUrl = window.location.hostname.includes('tetrixcorp.com') 
+                ? 'https://joromi.ai' 
+                : 'http://localhost:3000';
+              window.open(joromiUrl, '_blank');
             }
             // Close mobile menu if open
             if (menu) {
@@ -215,12 +222,15 @@ import CodeAcademyModal from '../CodeAcademyModal.astro';
         if (joromiBtnMobile) {
           joromiBtnMobile.addEventListener('click', function(e) {
             e.preventDefault();
-            // Seamless redirect to JoRoMi domain
+            // Use cross-platform management system to redirect to JoRoMi landing page
             if (window.redirectToExternal) {
               window.redirectToExternal('joromi');
             } else {
-              // Fallback to direct redirect
-              window.open('https://joromi.ai', '_blank');
+              // Fallback to direct redirect to JoRoMi landing page
+              const joromiUrl = window.location.hostname.includes('tetrixcorp.com') 
+                ? 'https://joromi.ai' 
+                : 'http://localhost:3000';
+              window.open(joromiUrl, '_blank');
             }
             // Close mobile menu
             if (menu) {

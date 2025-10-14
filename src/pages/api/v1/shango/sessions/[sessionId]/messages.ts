@@ -1,7 +1,5 @@
 import type { APIRoute } from 'astro';
-
-// In-memory storage for messages (in production, use a database)
-const messages = new Map();
+import { shangoStorage } from '../../../../../../services/shangoStorage';
 
 // Helper function to generate AI response
 function generateAIResponse(message: string, agentId: string = 'shango-general'): string {
@@ -37,7 +35,7 @@ export const GET: APIRoute = async ({ params }) => {
       });
     }
     
-    const sessionMessages = messages.get(sessionId) || [];
+    const sessionMessages = shangoStorage.getMessages(sessionId);
     
     return new Response(JSON.stringify({
       success: true,
@@ -87,9 +85,6 @@ export const POST: APIRoute = async ({ params, request }) => {
       });
     }
     
-    // Get existing messages for this session
-    const sessionMessages = messages.get(sessionId) || [];
-    
     // Add user message
     const userMessage = {
       id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -99,39 +94,28 @@ export const POST: APIRoute = async ({ params, request }) => {
       type: 'text'
     };
     
-    sessionMessages.push(userMessage);
-    messages.set(sessionId, sessionMessages);
+    shangoStorage.addMessage(sessionId, userMessage);
     
-    // Generate AI response
+    // Generate AI response immediately
     const aiResponse = generateAIResponse(message, agentId);
     
-    // Add AI response after a short delay to simulate processing
-    setTimeout(() => {
-      const aiMessage = {
-        id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        role: 'assistant',
-        content: aiResponse,
-        timestamp: new Date().toISOString(),
-        type: 'text',
-        agentId: agentId
-      };
-      
-      const currentMessages = messages.get(sessionId) || [];
-      currentMessages.push(aiMessage);
-      messages.set(sessionId, currentMessages);
-    }, 1000);
+    // Create AI message
+    const aiMessage = {
+      id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      role: 'assistant',
+      content: aiResponse,
+      timestamp: new Date().toISOString(),
+      type: 'text',
+      agentId: agentId
+    };
+    
+    // Add AI response to session messages immediately
+    shangoStorage.addMessage(sessionId, aiMessage);
     
     return new Response(JSON.stringify({
       success: true,
       message: userMessage,
-      aiResponse: {
-        id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        role: 'assistant',
-        content: aiResponse,
-        timestamp: new Date().toISOString(),
-        type: 'text',
-        agentId: agentId
-      }
+      aiResponse: aiMessage
     }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
