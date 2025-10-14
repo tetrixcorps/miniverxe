@@ -1,13 +1,13 @@
-name: joromi-production
+name: code-academy-production
 region: fra
 
 services:
-  - name: joromi-frontend
+  - name: code-academy-frontend
     github:
       repo: tetrixcorps/miniverxe
       branch: main
       deploy_on_push: true
-    source_dir: /joromi-frontend
+    source_dir: /code-academy-frontend
     http_port: 3000
     instance_count: 1
     instance_size_slug: basic-xxs
@@ -16,9 +16,9 @@ services:
       rm -f package-lock.json yarn.lock npm-shrinkwrap.json .yarnrc .yarnrc.yml
       # Install dependencies (pnpm already installed by buildpack)
       pnpm install --frozen-lockfile
-      # Build the JoRoMi application
-      pnpm run build:joromi
-    run_command: pnpm run start:joromi
+      # Build the Code Academy application
+      pnpm run build:code-academy
+    run_command: pnpm run start:code-academy
     envs:
       - key: NODE_ENV
         value: production
@@ -36,7 +36,7 @@ services:
         value: "https://tetrixcorp.com/api/v2/2fa"
         scope: RUN_AND_BUILD_TIME
       - key: CROSS_PLATFORM_SESSION_SECRET
-        value: "tetrix-joromi-session-secret-2024"
+        value: "tetrix-code-academy-session-secret-2024"
         scope: RUN_AND_BUILD_TIME
       - key: NEXT_PUBLIC_TETRIX_API_URL
         value: "https://tetrixcorp.com/api"
@@ -52,12 +52,12 @@ services:
       success_threshold: 1
       failure_threshold: 5
 
-  - name: joromi-backend
+  - name: code-academy-backend
     github:
       repo: tetrixcorps/miniverxe
       branch: main
       deploy_on_push: true
-    source_dir: /joromi-backend
+    source_dir: /code-academy-backend
     http_port: 3001
     instance_count: 1
     instance_size_slug: basic-xxs
@@ -74,7 +74,7 @@ services:
         value: "3001"
         scope: RUN_AND_BUILD_TIME
       - key: DATABASE_URL
-        value: "postgresql://tetrix_user:tetrix_password@tetrix-postgres-do-user-12345678-0.db.ondigitalocean.com:25060/tetrix_joromi?sslmode=require"
+        value: "postgresql://tetrix_user:tetrix_password@tetrix-postgres-do-user-12345678-0.db.ondigitalocean.com:25060/tetrix_code_academy?sslmode=require"
         scope: RUN_AND_BUILD_TIME
       - key: TETRIX_2FA_API_URL
         value: "https://tetrixcorp.com/api/v2/2fa"
@@ -83,7 +83,7 @@ services:
         value: "tetrix-2fa-api-key"
         scope: RUN_AND_BUILD_TIME
       - key: CORS_ORIGIN
-        value: "https://joromi.ai,https://tetrixcorp.com"
+        value: "https://poisonedreligion.ai,https://tetrixcorp.com"
         scope: RUN_AND_BUILD_TIME
     health_check:
       http_path: /api/health
@@ -94,9 +94,9 @@ services:
       failure_threshold: 3
 
 domains:
-  - domain: joromi.ai
+  - domain: poisonedreligion.ai
     type: PRIMARY
-  - domain: www.joromi.ai
+  - domain: www.poisonedreligion.ai
     type: ALIAS
 
 ingress:
@@ -105,12 +105,12 @@ ingress:
         path:
           prefix: /
       component:
-        name: joromi-frontend
+        name: code-academy-frontend
     - match:
         path:
           prefix: /api
       component:
-        name: joromi-backend
+        name: code-academy-backend
 
 alerts:
   - rule: DEPLOYMENT_FAILED

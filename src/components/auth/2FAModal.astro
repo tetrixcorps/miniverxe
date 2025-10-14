@@ -273,7 +273,7 @@
         // Redirect to Code Academy with authentication token
         const authToken = localStorage.getItem('tetrix_auth_token');
         const codeAcademyUrl = window.location.hostname.includes('tetrixcorp.com') 
-          ? 'https://poisonedreligion.ai' 
+          ? '/code-academy' 
           : 'http://localhost:3001';
         
         if (authToken) {
@@ -749,7 +749,7 @@
       const hostname = window.location.hostname;
       
       if (hostname.includes('tetrixcorp.com')) {
-        return 'https://joromi.ai';
+        return '/joromi';
       } else if (hostname.includes('staging')) {
         return 'https://staging-joromi.tetrixcorp.com';
       } else {
@@ -762,7 +762,7 @@
       const hostname = window.location.hostname;
       
       if (hostname.includes('tetrixcorp.com')) {
-        return 'https://poisonedreligion.ai';
+        return '/code-academy';
       } else if (hostname.includes('staging')) {
         return 'https://staging.poisonedreligion.ai';
       } else {

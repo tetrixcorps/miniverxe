@@ -228,6 +228,9 @@
             <button id="view-demo-btn" class="bg-blue-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-400 transition-colors border border-blue-400">
               View Demo
             </button>
+            <button id="open-ai-assistant-btn" class="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-colors shadow-lg">
+              Try AI Assistant
+            </button>
           </div>
         </div>
       </div>
@@ -243,6 +246,7 @@
   const closeCodeAcademyModal = document.getElementById('close-code-academy-modal');
   const startLearningBtn = document.getElementById('start-learning-btn');
   const viewDemoBtn = document.getElementById('view-demo-btn');
+  const openAIAssistantBtn = document.getElementById('open-ai-assistant-btn');
 
   // Open modal handlers
   if (openCodeAcademyModal) {
@@ -288,7 +292,7 @@
       if (authToken) {
         // User is authenticated, redirect to Code Academy domain
         const codeAcademyUrl = window.location.hostname.includes('tetrixcorp.com') 
-          ? 'https://poisonedreligion.ai' 
+          ? '/code-academy' 
           : 'http://localhost:3001';
         window.location.href = codeAcademyUrl;
       } else {
@@ -300,7 +304,7 @@
         } else {
           // Fallback to direct redirect if 2FA modal not available
           const codeAcademyUrl = window.location.hostname.includes('tetrixcorp.com') 
-            ? 'https://poisonedreligion.ai' 
+            ? '/code-academy' 
             : 'http://localhost:3001';
           window.location.href = codeAcademyUrl;
         }
@@ -312,6 +316,21 @@
     viewDemoBtn.addEventListener('click', function() {
       // Open demo in new tab
       window.open('/code-academy/demo', '_blank');
+    });
+  }
+
+  if (openAIAssistantBtn) {
+    openAIAssistantBtn.addEventListener('click', function() {
+      // Open AI Assistant modal
+      if (window.openAIAssistantModal) {
+        window.openAIAssistantModal('learning');
+      } else {
+        // Fallback: redirect to Code Academy with AI Assistant
+        const codeAcademyUrl = window.location.hostname.includes('tetrixcorp.com') 
+          ? '/code-academy?ai-assistant=true' 
+          : 'http://localhost:3001?ai-assistant=true';
+        window.location.href = codeAcademyUrl;
+      }
     });
   }
 

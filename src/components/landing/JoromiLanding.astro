@@ -1,0 +1,255 @@
+---
+// JoRoMi Landing Page Component
+// Rendered when accessing joromi.tetrixcorp.com
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JoRoMi - AI-Powered Communication Platform</title>
+    <meta name="description" content="Advanced AI communication tools for modern businesses. Voice, video, and messaging solutions powered by artificial intelligence.">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://joromi.tetrixcorp.com/">
+    <meta property="og:title" content="JoRoMi - AI-Powered Communication Platform">
+    <meta property="og:description" content="Advanced AI communication tools for modern businesses">
+    <meta property="og:image" content="https://tetrixcorp.com/images/joromi-og-image.jpg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://joromi.tetrixcorp.com/">
+    <meta property="twitter:title" content="JoRoMi - AI-Powered Communication Platform">
+    <meta property="twitter:description" content="Advanced AI communication tools for modern businesses">
+    <meta property="twitter:image" content="https://tetrixcorp.com/images/joromi-og-image.jpg">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold text-purple-600">JoRoMi</h1>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="initiateAuth('joromi')" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                        Get Started
+                    </button>
+                    <button onclick="initiateAuth('joromi')" class="text-purple-600 hover:text-purple-800 transition-colors">
+                        Sign In
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="gradient-bg text-white py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-5xl md:text-6xl font-bold mb-6">
+                AI-Powered Communication
+            </h1>
+            <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+                Transform your business communications with advanced AI technology. 
+                Voice, video, and messaging solutions that understand context and intent.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button onclick="initiateAuth('joromi')" class="bg-white text-purple-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors text-lg">
+                    Start Free Trial
+                </button>
+                <button onclick="scrollToFeatures()" class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors text-lg">
+                    Learn More
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">
+                    Powerful AI Communication Features
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Everything you need to revolutionize your business communications
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="glass-effect rounded-xl p-8 text-center">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-robot text-2xl text-purple-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">AI Voice Assistant</h3>
+                    <p class="text-gray-600">
+                        Natural language processing for voice calls with context awareness and intelligent responses.
+                    </p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="glass-effect rounded-xl p-8 text-center">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-video text-2xl text-blue-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Smart Video Calls</h3>
+                    <p class="text-gray-600">
+                        AI-enhanced video conferencing with real-time transcription and meeting insights.
+                    </p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="glass-effect rounded-xl p-8 text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-comments text-2xl text-green-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Intelligent Messaging</h3>
+                    <p class="text-gray-600">
+                        Context-aware messaging with auto-suggestions and smart reply capabilities.
+                    </p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="glass-effect rounded-xl p-8 text-center">
+                    <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-chart-line text-2xl text-yellow-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Analytics Dashboard</h3>
+                    <p class="text-gray-600">
+                        Comprehensive insights into communication patterns and performance metrics.
+                    </p>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="glass-effect rounded-xl p-8 text-center">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-shield-alt text-2xl text-red-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Enterprise Security</h3>
+                    <p class="text-gray-600">
+                        End-to-end encryption and compliance with enterprise security standards.
+                    </p>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="glass-effect rounded-xl p-8 text-center">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-plug text-2xl text-indigo-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Easy Integration</h3>
+                    <p class="text-gray-600">
+                        Seamless integration with your existing business tools and workflows.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="gradient-bg text-white py-20">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-4xl font-bold mb-6">
+                Ready to Transform Your Communications?
+            </h2>
+            <p class="text-xl mb-8">
+                Join thousands of businesses already using JoRoMi to enhance their communication capabilities.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button onclick="initiateAuth('joromi')" class="bg-white text-purple-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors text-lg">
+                    Start Your Free Trial
+                </button>
+                <button onclick="contactSales()" class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors text-lg">
+                    Contact Sales
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">JoRoMi</h3>
+                    <p class="text-gray-400">
+                        AI-powered communication platform for modern businesses.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Product</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Features</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Pricing</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">API</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Documentation</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Company</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="https://tetrixcorp.com" class="hover:text-white transition-colors">TETRIX</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">About</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Privacy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 TETRIX Corporation. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Authentication functions
+        function initiateAuth(context) {
+            // Open 2FA modal for JoRoMi authentication
+            if (typeof window.openAuthModal === 'function') {
+                window.openAuthModal(context);
+            } else {
+                // Fallback: redirect to main TETRIX auth
+                window.location.href = 'https://tetrixcorp.com#auth';
+            }
+        }
+
+        function scrollToFeatures() {
+            document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function contactSales() {
+            window.location.href = 'https://tetrixcorp.com/contact';
+        }
+
+        // Auto-redirect to external domain after 3 seconds (optional)
+        setTimeout(() => {
+            if (confirm('Would you like to visit the full JoRoMi platform at joromi.ai?')) {
+                window.location.href = '/joromi';
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

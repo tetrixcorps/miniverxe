@@ -621,7 +621,7 @@ import Button from '../components/shared/Button.astro';
       this.render();
 
       try {
-        // Send message to SHANGO API
+        // First try SHANGO API
         const response = await fetch(`/api/v1/shango/sessions/${this.currentSession.id}/messages`, {
           method: 'POST',
           headers: {
@@ -634,32 +634,87 @@ import Button from '../components/shared/Button.astro';
           })
         });
 
-        const result = await response.json();
-        
-        if (result.success) {
-          // Add AI response
-          this.addMessage({
-            id: result.aiResponse.id,
-            role: 'shango',
-            content: result.aiResponse.content,
-            timestamp: new Date(result.aiResponse.timestamp),
-            type: 'text'
-          });
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success) {
+            // Add AI response from SHANGO API
+            this.addMessage({
+              id: result.aiResponse.id,
+              role: 'shango',
+              content: result.aiResponse.content,
+              timestamp: new Date(result.aiResponse.timestamp),
+              type: 'text'
+            });
+          } else {
+            throw new Error(result.error || 'Failed to send message');
+          }
         } else {
-          throw new Error(result.error || 'Failed to send message');
+          // Fallback to direct Ollama integration
+          await this.sendToOllama(messageText);
         }
       } catch (error) {
-        console.error('Failed to send message:', error);
-        this.addMessage({
-          id: `error-${Date.now()}`,
-          role: 'system',
-          content: 'Sorry, I encountered an error. Please try again.',
-          timestamp: new Date(),
-          type: 'text'
-        });
+        console.error('Failed to send message via SHANGO API, trying Ollama:', error);
+        // Fallback to direct Ollama integration
+        await this.sendToOllama(messageText);
       } finally {
         this.isTyping = false;
         this.render();
+      }
+    }
+
+    async sendToOllama(messageText) {
+      try {
+        const currentAgent = this.getAgentInfo(this.selectedAgent);
+        const agentContext = currentAgent ? `${currentAgent.name}: ${currentAgent.description}` : 'SHANGO AI Super Agent';
+        
+        const prompt = `You are ${agentContext}. You are helping enterprise customers with their inquiries. 
+
+Context: Enterprise communication platform, technical support, sales, billing, and general assistance.
+
+User message: ${messageText}
+
+Please provide a helpful, professional response that addresses their inquiry. Be concise but informative.`;
+
+        const response = await fetch('http://localhost:11434/api/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: 'qwen3:latest',
+            prompt: prompt,
+            stream: false,
+            options: {
+              temperature: 0.7,
+              top_p: 0.9,
+              max_tokens: 500
+            }
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const aiResponse = data.response || 'I apologize, but I encountered an issue processing your request. Please try again.';
+          
+          this.addMessage({
+            id: `ollama-${Date.now()}`,
+            role: 'shango',
+            content: aiResponse,
+            timestamp: new Date(),
+            type: 'text'
+          });
+        } else {
+          throw new Error('Ollama API error');
+        }
+      } catch (error) {
+        console.error('Failed to send message to Ollama:', error);
+        this.addMessage({
+          id: `error-${Date.now()}`,
+          role: 'system',
+          content: 'Sorry, I encountered an error. Please try again or contact our support team directly.',
+          timestamp: new Date(),
+          type: 'text'
+        });
       }
     }
 
@@ -881,6 +936,7 @@ import Button from '../components/shared/Button.astro';
   function renderMessage(message) {
     const isUser = message.role === 'user';
     const isSHANGO = message.role === 'assistant';
+    const isStreaming = message.isStreaming;
     
     return `
       <div class="flex ${isUser ? 'justify-end' : 'justify-start'}">
@@ -892,7 +948,7 @@ import Button from '../components/shared/Button.astro';
             : 'bg-gray-100 text-gray-800'
         }">
           ${isSHANGO ? '<div class="flex items-center space-x-1 mb-1"><span class="text-xs font-semibold">⚡ SHANGO</span></div>' : ''}
-          <p class="text-sm">${message.content}</p>
+          <p class="text-sm">${message.content}${isStreaming ? '<span class="inline-block w-2 h-2 bg-purple-500 rounded-full animate-pulse ml-1"></span>' : ''}</p>
           <p class="text-xs opacity-70 mt-1">${new Date(message.timestamp).toLocaleTimeString()}</p>
         </div>
       </div>
@@ -958,7 +1014,7 @@ import Button from '../components/shared/Button.astro';
     updateMessagesDisplay();
     
     try {
-      // Send message to API
+      // First try SHANGO API
       const response = await fetch(`/api/v1/shango/sessions/${window.currentSession.id}/messages`, {
         method: 'POST',
         headers: {
@@ -987,16 +1043,120 @@ import Button from '../components/shared/Button.astro';
         window.messages.push(aiMessage);
         updateMessagesDisplay();
       } else {
-        throw new Error('Failed to send message');
+        // Fallback to Ollama
+        await sendToOllamaFallback(message);
       }
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('Error sending message via SHANGO API, trying Ollama:', error);
+      // Fallback to Ollama
+      await sendToOllamaFallback(message);
+    }
+  }
+
+  // Fallback Ollama integration with streaming
+  async function sendToOllamaFallback(message) {
+    try {
+      const prompt = `You are SHANGO, an AI Super Agent for enterprise communication platform support. You help customers with:
+
+- Technical support and troubleshooting
+- Sales inquiries and pricing information  
+- Billing and account management
+- General platform questions
+- Solution recommendations
+
+User message: ${message}
+
+Please provide a helpful, professional response that addresses their inquiry. Be concise but informative.`;
+
+      // Create a streaming AI message
+      const aiMessageId = `ollama-${Date.now()}`;
+      const aiMessage = {
+        id: aiMessageId,
+        role: 'assistant',
+        content: '',
+        timestamp: new Date().toISOString(),
+        type: 'text',
+        agentId: 'shango-general',
+        isStreaming: true
+      };
       
-      // Add error message
+      window.messages.push(aiMessage);
+      updateMessagesDisplay();
+
+      const response = await fetch('http://localhost:11434/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'qwen3:latest',
+          prompt: prompt,
+          stream: true,
+          options: {
+            temperature: 0.7,
+            top_p: 0.9,
+            max_tokens: 500
+          }
+        })
+      });
+
+      if (response.ok) {
+        const reader = response.body?.getReader();
+        if (!reader) {
+          throw new Error('No response body reader available');
+        }
+
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            if (line.trim()) {
+              try {
+                const data = JSON.parse(line);
+                if (data.response) {
+                  // Update the streaming message
+                  const messageIndex = window.messages.findIndex(msg => msg.id === aiMessageId);
+                  if (messageIndex !== -1) {
+                    window.messages[messageIndex].content += data.response;
+                    updateMessagesDisplay();
+                  }
+                }
+                if (data.done) {
+                  // Mark streaming as complete
+                  const messageIndex = window.messages.findIndex(msg => msg.id === aiMessageId);
+                  if (messageIndex !== -1) {
+                    window.messages[messageIndex].isStreaming = false;
+                    updateMessagesDisplay();
+                  }
+                  return;
+                }
+              } catch (e) {
+                // Skip invalid JSON lines
+              }
+            }
+          }
+        }
+      } else {
+        throw new Error('Ollama API error');
+      }
+    } catch (error) {
+      console.error('Error sending message to Ollama:', error);
+      
+      // Remove the streaming message and add error
+      window.messages = window.messages.filter(msg => msg.id !== `ollama-${Date.now()}`);
+      
       const errorMessage = {
         id: `error-${Date.now()}`,
         role: 'assistant',
-        content: 'Sorry, I encountered an error. Please try again.',
+        content: 'Sorry, I encountered an error. Please try again or contact our support team directly.',
         timestamp: new Date().toISOString(),
         type: 'text'
       };

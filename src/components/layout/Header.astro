@@ -150,19 +150,12 @@ import CodeAcademyModal from '../CodeAcademyModal.astro';
         const codeAcademyBtn = document.getElementById('open-code-academy-modal');
         const codeAcademyBtnMobile = document.getElementById('open-code-academy-modal-mobile');
 
-        // Code Academy button handlers - 2FA Authentication first
+        // Code Academy button handlers - Redirect to subdomain
         if (codeAcademyBtn) {
           codeAcademyBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            // Set authentication context for Code Academy
-            (window as any).tetrixAuthContext = 'code-academy';
-            // Open 2FA modal for authentication
-            if ((window as any).open2FAModal) {
-              (window as any).open2FAModal();
-            } else {
-              // Fallback to direct redirect if 2FA modal not available
-              window.open('https://poisonedreligion.ai', '_blank');
-            }
+            // Redirect to Code Academy subdomain
+            window.location.href = '/code-academy';
             // Close mobile menu if open
             if (menu) {
               menu.classList.add('hidden');
@@ -174,15 +167,8 @@ import CodeAcademyModal from '../CodeAcademyModal.astro';
         if (codeAcademyBtnMobile) {
           codeAcademyBtnMobile.addEventListener('click', function(e) {
             e.preventDefault();
-            // Set authentication context for Code Academy
-            (window as any).tetrixAuthContext = 'code-academy';
-            // Open 2FA modal for authentication
-            if ((window as any).open2FAModal) {
-              (window as any).open2FAModal();
-            } else {
-              // Fallback to direct redirect if 2FA modal not available
-              window.open('https://poisonedreligion.ai', '_blank');
-            }
+            // Redirect to Code Academy subdomain
+            window.location.href = '/code-academy';
             // Close mobile menu
             if (menu) {
               menu.classList.add('hidden');
@@ -197,20 +183,12 @@ import CodeAcademyModal from '../CodeAcademyModal.astro';
         const clientLoginBtn = document.getElementById('client-login-2fa-btn');
         const clientLoginBtnMobile = document.getElementById('client-login-2fa-btn-mobile');
 
-        // JoRoMi button handlers - Cross-platform management system
+        // JoRoMi button handlers - Redirect to subdomain
         if (joromiBtn) {
           joromiBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            // Use cross-platform management system to redirect to JoRoMi landing page
-            if (window.redirectToExternal) {
-              window.redirectToExternal('joromi');
-            } else {
-              // Fallback to direct redirect to JoRoMi landing page
-              const joromiUrl = window.location.hostname.includes('tetrixcorp.com') 
-                ? 'https://joromi.ai' 
-                : 'http://localhost:3000';
-              window.open(joromiUrl, '_blank');
-            }
+            // Redirect to JoRoMi subdomain
+            window.location.href = 'https://joromi.tetrixcorp.com';
             // Close mobile menu if open
             if (menu) {
               menu.classList.add('hidden');
@@ -222,16 +200,8 @@ import CodeAcademyModal from '../CodeAcademyModal.astro';
         if (joromiBtnMobile) {
           joromiBtnMobile.addEventListener('click', function(e) {
             e.preventDefault();
-            // Use cross-platform management system to redirect to JoRoMi landing page
-            if (window.redirectToExternal) {
-              window.redirectToExternal('joromi');
-            } else {
-              // Fallback to direct redirect to JoRoMi landing page
-              const joromiUrl = window.location.hostname.includes('tetrixcorp.com') 
-                ? 'https://joromi.ai' 
-                : 'http://localhost:3000';
-              window.open(joromiUrl, '_blank');
-            }
+            // Redirect to JoRoMi subdomain
+            window.location.href = 'https://joromi.tetrixcorp.com';
             // Close mobile menu
             if (menu) {
               menu.classList.add('hidden');
