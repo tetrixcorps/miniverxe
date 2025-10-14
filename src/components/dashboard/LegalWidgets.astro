@@ -1,0 +1,542 @@
+---
+// Legal Practice Widgets - Industry-specific components for attorneys
+// Displays case management, billing, client satisfaction, and legal alerts
+---
+
+<div class="legal-widgets">
+  <!-- Case Overview -->
+  <div class="bg-white rounded-lg shadow p-6 mb-6">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-semibold text-gray-900">Case Overview</h3>
+      <div class="flex items-center space-x-2">
+        <div class="w-2 h-2 bg-indigo-400 rounded-full animate-pulse"></div>
+        <span class="text-sm text-gray-500">Live Data</span>
+      </div>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <!-- Active Cases -->
+      <div class="bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-lg p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-indigo-600">Active Cases</p>
+            <p id="legal-active-cases" class="text-3xl font-bold text-indigo-900">47</p>
+            <p class="text-xs text-indigo-600">+3 this week</p>
+          </div>
+          <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Closed This Month -->
+      <div class="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-green-600">Closed This Month</p>
+            <p id="legal-closed-cases" class="text-3xl font-bold text-green-900">12</p>
+            <p class="text-xs text-green-600">+2 vs last month</p>
+          </div>
+          <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Upcoming Deadlines -->
+      <div class="bg-gradient-to-r from-red-50 to-red-100 rounded-lg p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-red-600">Upcoming Deadlines</p>
+            <p id="legal-deadlines" class="text-3xl font-bold text-red-900">8</p>
+            <p class="text-xs text-red-600">3 urgent</p>
+          </div>
+          <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- New Clients -->
+      <div class="bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-purple-600">New Clients</p>
+            <p id="legal-new-clients" class="text-3xl font-bold text-purple-900">5</p>
+            <p class="text-xs text-purple-600">This month</p>
+          </div>
+          <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Billing & Client Satisfaction -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <!-- Billing Dashboard -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Billing Dashboard</h3>
+      
+      <!-- Monthly Revenue -->
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm font-medium text-gray-600">Monthly Revenue</span>
+          <span id="legal-monthly-revenue" class="text-2xl font-bold text-green-600">$28,400</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2">
+          <div class="bg-green-600 h-2 rounded-full" style="width: 71%"></div>
+        </div>
+        <p class="text-xs text-gray-500 mt-1">Target: $40,000</p>
+      </div>
+
+      <!-- Billing Breakdown -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="text-center p-3 bg-blue-50 rounded-lg">
+          <p class="text-sm text-blue-600">Billable Hours</p>
+          <p id="legal-billable-hours" class="text-xl font-bold text-blue-900">142</p>
+          <p class="text-xs text-gray-500">This month</p>
+        </div>
+        <div class="text-center p-3 bg-yellow-50 rounded-lg">
+          <p class="text-sm text-yellow-600">Outstanding</p>
+          <p id="legal-outstanding" class="text-xl font-bold text-yellow-900">$12,500</p>
+          <p class="text-xs text-gray-500">Invoices pending</p>
+        </div>
+      </div>
+
+      <!-- Recent Invoices -->
+      <div class="mt-4">
+        <h4 class="text-sm font-medium text-gray-900 mb-2">Recent Invoices</h4>
+        <div id="legal-recent-invoices" class="space-y-2">
+          <!-- Invoices will be populated by JavaScript -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Client Satisfaction -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Client Satisfaction</h3>
+      
+      <!-- Average Rating -->
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm font-medium text-gray-600">Average Rating</span>
+          <span id="legal-avg-rating" class="text-2xl font-bold text-yellow-600">4.9</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2">
+          <div class="bg-yellow-600 h-2 rounded-full" style="width: 98%"></div>
+        </div>
+        <p class="text-xs text-gray-500 mt-1">Based on 15 recent reviews</p>
+      </div>
+
+      <!-- Satisfaction Metrics -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="text-center p-3 bg-green-50 rounded-lg">
+          <p class="text-sm text-green-600">Response Time</p>
+          <p id="legal-response-time" class="text-xl font-bold text-green-900">2.3h</p>
+          <p class="text-xs text-gray-500">Average</p>
+        </div>
+        <div class="text-center p-3 bg-blue-50 rounded-lg">
+          <p class="text-sm text-blue-600">Client Retention</p>
+          <p id="legal-retention" class="text-xl font-bold text-blue-900">94%</p>
+          <p class="text-xs text-gray-500">Last 12 months</p>
+        </div>
+      </div>
+
+      <!-- Recent Reviews -->
+      <div class="mt-4">
+        <h4 class="text-sm font-medium text-gray-900 mb-2">Recent Reviews</h4>
+        <div id="legal-recent-reviews" class="space-y-2">
+          <!-- Reviews will be populated by JavaScript -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Case Management & Alerts -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <!-- Active Cases -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-900">Active Cases</h3>
+        <button id="refresh-cases" class="p-1 text-gray-400 hover:text-gray-600 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+        </button>
+      </div>
+      
+      <div id="legal-active-cases-list" class="space-y-3">
+        <!-- Cases will be populated by JavaScript -->
+      </div>
+    </div>
+
+    <!-- Legal Alerts -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-900">Legal Alerts</h3>
+        <button id="refresh-alerts" class="p-1 text-gray-400 hover:text-gray-600 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+        </button>
+      </div>
+      
+      <div id="legal-alerts-list" class="space-y-3">
+        <!-- Alerts will be populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Practice Analytics -->
+  <div class="bg-white rounded-lg shadow p-6">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">Practice Analytics</h3>
+    
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <!-- Practice Areas -->
+      <div class="text-center p-4 bg-indigo-50 rounded-lg">
+        <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-3">
+          <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+          </svg>
+        </div>
+        <h4 class="font-medium text-gray-900">Practice Areas</h4>
+        <p class="text-2xl font-bold text-indigo-600">8</p>
+        <p class="text-xs text-gray-500">Active specializations</p>
+      </div>
+
+      <!-- Court Appearances -->
+      <div class="text-center p-4 bg-red-50 rounded-lg">
+        <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+          <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+          </svg>
+        </div>
+        <h4 class="font-medium text-gray-900">Court Appearances</h4>
+        <p class="text-2xl font-bold text-red-600">12</p>
+        <p class="text-xs text-gray-500">This month</p>
+      </div>
+
+      <!-- Document Review -->
+      <div class="text-center p-4 bg-green-50 rounded-lg">
+        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+          <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+        </div>
+        <h4 class="font-medium text-gray-900">Documents Reviewed</h4>
+        <p class="text-2xl font-bold text-green-600">247</p>
+        <p class="text-xs text-gray-500">This month</p>
+      </div>
+
+      <!-- Client Meetings -->
+      <div class="text-center p-4 bg-purple-50 rounded-lg">
+        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+          <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+          </svg>
+        </div>
+        <h4 class="font-medium text-gray-900">Client Meetings</h4>
+        <p class="text-2xl font-bold text-purple-600">28</p>
+        <p class="text-xs text-gray-500">This month</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Legal Widgets Component
+  class LegalWidgets {
+    constructor() {
+      this.cases = [];
+      this.alerts = [];
+      this.invoices = [];
+      this.reviews = [];
+      this.init();
+    }
+
+    async init() {
+      await this.loadLegalData();
+      this.setupEventListeners();
+      this.setupRealTimeUpdates();
+    }
+
+    setupEventListeners() {
+      // Refresh buttons
+      document.getElementById('refresh-cases')?.addEventListener('click', () => {
+        this.loadLegalData();
+      });
+      
+      document.getElementById('refresh-alerts')?.addEventListener('click', () => {
+        this.loadLegalData();
+      });
+    }
+
+    async loadLegalData() {
+      try {
+        // In a real implementation, this would fetch from the legal API
+        const data = {
+          activeCases: 47,
+          closedCases: 12,
+          deadlines: 8,
+          newClients: 5,
+          monthlyRevenue: 28400,
+          billableHours: 142,
+          outstanding: 12500,
+          avgRating: 4.9,
+          responseTime: '2.3h',
+          retention: 94,
+          cases: [
+            { 
+              name: 'Smith vs. Johnson', 
+              type: 'Personal Injury', 
+              status: 'active',
+              client: 'John Smith',
+              nextAction: 'Discovery',
+              deadline: '2024-02-15'
+            },
+            { 
+              name: 'ABC Corp Contract', 
+              type: 'Corporate', 
+              status: 'active',
+              client: 'ABC Corporation',
+              nextAction: 'Review',
+              deadline: '2024-02-20'
+            },
+            { 
+              name: 'Estate Planning', 
+              type: 'Estate', 
+              status: 'active',
+              client: 'Mary Wilson',
+              nextAction: 'Draft',
+              deadline: '2024-02-25'
+            },
+            { 
+              name: 'Employment Dispute', 
+              type: 'Employment', 
+              status: 'active',
+              client: 'Robert Davis',
+              nextAction: 'Mediation',
+              deadline: '2024-03-01'
+            }
+          ],
+          alerts: [
+            { 
+              type: 'deadline', 
+              message: 'Court filing deadline approaching for Case #2024-001', 
+              time: '2 hours ago', 
+              priority: 'high',
+              caseId: 'CASE-001'
+            },
+            { 
+              type: 'billing', 
+              message: 'Invoice #INV-456 overdue by 30 days', 
+              time: '4 hours ago', 
+              priority: 'medium',
+              clientId: 'CLI-456'
+            },
+            { 
+              type: 'client', 
+              message: 'New client inquiry received', 
+              time: '6 hours ago', 
+              priority: 'low',
+              clientId: 'CLI-789'
+            },
+            { 
+              type: 'court', 
+              message: 'Court hearing scheduled for next week', 
+              time: '8 hours ago', 
+              priority: 'medium',
+              caseId: 'CASE-002'
+            }
+          ],
+          invoices: [
+            { id: 'INV-001', client: 'John Smith', amount: 2500, status: 'paid', date: '2024-01-15' },
+            { id: 'INV-002', client: 'ABC Corp', amount: 5000, status: 'pending', date: '2024-01-20' },
+            { id: 'INV-003', client: 'Mary Wilson', amount: 1800, status: 'overdue', date: '2024-01-10' }
+          ],
+          reviews: [
+            { client: 'John Smith', rating: 5, comment: 'Excellent service, very professional', date: '2024-01-20' },
+            { client: 'ABC Corp', rating: 5, comment: 'Outstanding legal representation', date: '2024-01-18' },
+            { client: 'Mary Wilson', rating: 4, comment: 'Good communication and results', date: '2024-01-15' }
+          ]
+        };
+
+        this.updateDisplay(data);
+      } catch (error) {
+        console.error('Failed to load legal data:', error);
+      }
+    }
+
+    updateDisplay(data) {
+      // Update case overview
+      document.getElementById('legal-active-cases').textContent = data.activeCases;
+      document.getElementById('legal-closed-cases').textContent = data.closedCases;
+      document.getElementById('legal-deadlines').textContent = data.deadlines;
+      document.getElementById('legal-new-clients').textContent = data.newClients;
+
+      // Update billing metrics
+      document.getElementById('legal-monthly-revenue').textContent = `$${data.monthlyRevenue.toLocaleString()}`;
+      document.getElementById('legal-billable-hours').textContent = data.billableHours;
+      document.getElementById('legal-outstanding').textContent = `$${data.outstanding.toLocaleString()}`;
+
+      // Update satisfaction metrics
+      document.getElementById('legal-avg-rating').textContent = data.avgRating;
+      document.getElementById('legal-response-time').textContent = data.responseTime;
+      document.getElementById('legal-retention').textContent = `${data.retention}%`;
+
+      // Update lists
+      this.updateCases(data.cases);
+      this.updateAlerts(data.alerts);
+      this.updateInvoices(data.invoices);
+      this.updateReviews(data.reviews);
+    }
+
+    updateCases(cases) {
+      const container = document.getElementById('legal-active-cases-list');
+      if (!container) return;
+
+      this.cases = cases;
+      container.innerHTML = cases.map(caseItem => `
+        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+          <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 bg-${this.getCaseStatusColor(caseItem.status)}-100 rounded-full flex items-center justify-center">
+              <svg class="w-4 h-4 text-${this.getCaseStatusColor(caseItem.status)}-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-900">${caseItem.name}</p>
+              <p class="text-xs text-gray-500">${caseItem.type} • ${caseItem.client}</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="text-sm font-medium text-gray-900">${caseItem.nextAction}</p>
+            <p class="text-xs text-gray-500">Due: ${new Date(caseItem.deadline).toLocaleDateString()}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    updateAlerts(alerts) {
+      const container = document.getElementById('legal-alerts-list');
+      if (!container) return;
+
+      this.alerts = alerts;
+      container.innerHTML = alerts.map(alert => `
+        <div class="flex items-start space-x-3 p-3 bg-${this.getAlertColor(alert.priority)}-50 rounded-lg border-l-4 border-${this.getAlertColor(alert.priority)}-400">
+          <div class="flex-shrink-0">
+            <div class="w-6 h-6 bg-${this.getAlertColor(alert.priority)}-100 rounded-full flex items-center justify-center">
+              <svg class="w-3 h-3 text-${this.getAlertColor(alert.priority)}-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                ${this.getAlertIcon(alert.type)}
+              </svg>
+            </div>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-gray-900">${alert.message}</p>
+            <div class="mt-1 flex items-center space-x-2 text-xs text-gray-500">
+              <span>${alert.time}</span>
+              <span>•</span>
+              <span>${alert.caseId || alert.clientId}</span>
+            </div>
+          </div>
+          <span class="px-2 py-1 text-xs font-medium rounded-full bg-${this.getAlertColor(alert.priority)}-100 text-${this.getAlertColor(alert.priority)}-800">
+            ${alert.priority}
+          </span>
+        </div>
+      `).join('');
+    }
+
+    updateInvoices(invoices) {
+      const container = document.getElementById('legal-recent-invoices');
+      if (!container) return;
+
+      this.invoices = invoices;
+      container.innerHTML = invoices.map(invoice => `
+        <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+          <div>
+            <p class="text-sm font-medium text-gray-900">${invoice.id}</p>
+            <p class="text-xs text-gray-500">${invoice.client}</p>
+          </div>
+          <div class="text-right">
+            <p class="text-sm font-bold text-gray-900">$${invoice.amount.toLocaleString()}</p>
+            <span class="px-2 py-1 text-xs font-medium rounded-full bg-${this.getInvoiceStatusColor(invoice.status)}-100 text-${this.getInvoiceStatusColor(invoice.status)}-800">
+              ${invoice.status}
+            </span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    updateReviews(reviews) {
+      const container = document.getElementById('legal-recent-reviews');
+      if (!container) return;
+
+      this.reviews = reviews;
+      container.innerHTML = reviews.map(review => `
+        <div class="p-2 bg-gray-50 rounded">
+          <div class="flex items-center justify-between mb-1">
+            <p class="text-sm font-medium text-gray-900">${review.client}</p>
+            <div class="flex items-center">
+              <span class="text-yellow-400">★</span>
+              <span class="text-sm font-medium text-gray-900 ml-1">${review.rating}</span>
+            </div>
+          </div>
+          <p class="text-xs text-gray-600">${review.comment}</p>
+          <p class="text-xs text-gray-400 mt-1">${new Date(review.date).toLocaleDateString()}</p>
+        </div>
+      `).join('');
+    }
+
+    getCaseStatusColor(status) {
+      const colorMap = {
+        'active': 'blue',
+        'pending': 'yellow',
+        'closed': 'green',
+        'urgent': 'red'
+      };
+      return colorMap[status] || 'gray';
+    }
+
+    getAlertColor(priority) {
+      const colorMap = {
+        'high': 'red',
+        'medium': 'yellow',
+        'low': 'green'
+      };
+      return colorMap[priority] || 'gray';
+    }
+
+    getInvoiceStatusColor(status) {
+      const colorMap = {
+        'paid': 'green',
+        'pending': 'yellow',
+        'overdue': 'red'
+      };
+      return colorMap[status] || 'gray';
+    }
+
+    getAlertIcon(type) {
+      const iconMap = {
+        'deadline': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>',
+        'billing': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>',
+        'client': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>',
+        'court': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>'
+      };
+      return iconMap[type] || '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
+    }
+
+    setupRealTimeUpdates() {
+      // Update data every 30 seconds
+      setInterval(() => {
+        this.loadLegalData();
+      }, 30000);
+    }
+  }
+
+  // Initialize when component loads
+  document.addEventListener('DOMContentLoaded', () => {
+    new LegalWidgets();
+  });
+</script>
