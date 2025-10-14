@@ -54,16 +54,24 @@ test.describe('SHANGO Chat Functionality Tests', () => {
     const messageInput = page.locator('#shango-message-input');
     await messageInput.fill('Hello SHANGO, this is a test message');
 
-    // Click the send button
-    const sendButton = page.locator('button:has-text("Send")');
+    // Click the send button (specifically the SHANGO chat send button)
+    const sendButton = page.locator('#shango-send-message');
     await sendButton.click();
 
     // Wait for response
     await page.waitForTimeout(3000);
 
-    // Check if the message appears in the chat
+    // Check if the message appears in the chat (wait up to 10 seconds)
     const userMessage = page.locator('text=Hello SHANGO, this is a test message');
-    await expect(userMessage).toBeVisible();
+    await expect(userMessage).toBeVisible({ timeout: 10000 });
+
+    // Also check if there's any message in the chat area
+    const messagesContainer = page.locator('#shango-messages');
+    await expect(messagesContainer).toBeVisible();
+    
+    // Check if there are any messages displayed
+    const messageElements = page.locator('#shango-messages div');
+    await expect(messageElements).toHaveCount(2); // User message + AI response
 
     // Take a screenshot for debugging
     await page.screenshot({ path: 'test-results/shango-chat-message-sent.png' });
@@ -97,7 +105,7 @@ test.describe('SHANGO Chat Functionality Tests', () => {
     await page.waitForTimeout(2000);
 
     // Try to send a message with empty input
-    const sendButton = page.locator('button:has-text("Send")');
+    const sendButton = page.locator('#shango-send-message');
     await sendButton.click();
 
     // Check that no error state is shown
@@ -127,7 +135,7 @@ test.describe('SHANGO Chat Functionality Tests', () => {
     // Try to send a message
     const messageInput = page.locator('#shango-message-input');
     await messageInput.fill('Test message');
-    const sendButton = page.locator('button:has-text("Send")');
+    const sendButton = page.locator('#shango-send-message');
     await sendButton.click();
 
     // Wait for any async operations

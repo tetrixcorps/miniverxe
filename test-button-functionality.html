@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TETRIX Button Functionality Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">TETRIX Button Functionality Test</h1>
+        
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Authentication Buttons Test</h2>
+            <p class="text-gray-600 mb-6">Test the button functionality to ensure proper redirects and 2FA integration.</p>
+            
+            <div class="space-y-4">
+                <div class="flex items-center space-x-4">
+                    <button id="test-code-academy" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-300 shadow-lg text-sm min-w-[120px]">
+                        Code Academy
+                    </button>
+                    <span class="text-sm text-gray-600">Should trigger 2FA authentication first</span>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button id="test-joromi" class="bg-red-600 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-300 shadow-lg text-sm min-w-[100px]">
+                        JoRoMi
+                    </button>
+                    <span class="text-sm text-gray-600">Should redirect to JoRoMi landing page (localhost:3000)</span>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button id="test-client-login" class="bg-black text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 shadow-lg text-sm min-w-[110px]">
+                        Client Login
+                    </button>
+                    <span class="text-sm text-gray-600">Should trigger 2FA authentication for dashboard</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Test Results</h2>
+            <div id="test-results" class="space-y-2">
+                <p class="text-gray-600">Click the buttons above to test functionality...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock 2FA modal functions
+        window.open2FAModal = function() {
+            addTestResult('2FA Modal', '2FA modal would open for authentication', 'success');
+        };
+        
+        window.redirectToExternal = function(platform) {
+            addTestResult('External Redirect', `Redirecting to ${platform} platform`, 'info');
+        };
+        
+        window.redirectToInternal = function(platform) {
+            addTestResult('Internal Redirect', `Redirecting to ${platform} platform`, 'info');
+        };
+        
+        // Mock tetrixAuthContext
+        window.tetrixAuthContext = '';
+        
+        function addTestResult(action, message, type) {
+            const resultsDiv = document.getElementById('test-results');
+            const resultElement = document.createElement('div');
+            resultElement.className = `p-3 rounded-lg ${
+                type === 'success' ? 'bg-green-100 text-green-800' :
+                type === 'error' ? 'bg-red-100 text-red-800' :
+                type === 'info' ? 'bg-blue-100 text-blue-800' :
+                'bg-gray-100 text-gray-800'
+            }`;
+            resultElement.innerHTML = `<strong>${action}:</strong> ${message}`;
+            resultsDiv.appendChild(resultElement);
+        }
+        
+        // Test Code Academy button
+        document.getElementById('test-code-academy').addEventListener('click', function(e) {
+            e.preventDefault();
+            addTestResult('Code Academy Button', 'Button clicked', 'info');
+            
+            // Set authentication context for Code Academy
+            window.tetrixAuthContext = 'code-academy';
+            addTestResult('Auth Context', 'Set to code-academy', 'success');
+            
+            // Open 2FA modal for authentication
+            if (window.open2FAModal) {
+                window.open2FAModal();
+            } else {
+                addTestResult('2FA Modal', '2FA modal not available, using fallback', 'error');
+                window.open('https://poisonedreligion.ai', '_blank');
+            }
+        });
+        
+        // Test JoRoMi button
+        document.getElementById('test-joromi').addEventListener('click', function(e) {
+            e.preventDefault();
+            addTestResult('JoRoMi Button', 'Button clicked', 'info');
+            
+            // Use cross-platform management system to redirect to JoRoMi landing page
+            if (window.redirectToExternal) {
+                window.redirectToExternal('joromi');
+            } else {
+                addTestResult('Cross-Platform', 'Cross-platform system not available, using fallback', 'error');
+                const joromiUrl = window.location.hostname.includes('tetrixcorp.com') 
+                    ? 'https://joromi.ai' 
+                    : 'http://localhost:3000';
+                addTestResult('JoRoMi URL', `Would redirect to: ${joromiUrl}`, 'info');
+                window.open(joromiUrl, '_blank');
+            }
+        });
+        
+        // Test Client Login button
+        document.getElementById('test-client-login').addEventListener('click', function(e) {
+            e.preventDefault();
+            addTestResult('Client Login Button', 'Button clicked', 'info');
+            
+            // Seamless redirect to internal dashboard
+            if (window.redirectToInternal) {
+                window.redirectToInternal('dashboard');
+            } else {
+                addTestResult('Internal Redirect', 'Internal redirect not available, using 2FA fallback', 'error');
+                window.tetrixAuthContext = 'dashboard';
+                addTestResult('Auth Context', 'Set to dashboard', 'success');
+                if (window.open2FAModal) {
+                    window.open2FAModal();
+                } else {
+                    addTestResult('2FA Modal', '2FA modal not available', 'error');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
