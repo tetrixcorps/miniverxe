@@ -1,0 +1,333 @@
+---
+// AI Assistant Demo Page
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant Demo - TETRIX Code Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/framer-motion@10/dist/framer-motion.js"></script>
+    <script src="https://unpkg.com/lucide-react@latest/dist/umd/lucide-react.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">AI Assistant Demo</h1>
+            <p class="text-xl text-gray-600 mb-8">
+                Experience our AI-powered coding assistant powered by Ollama and Qwen3
+            </p>
+        </div>
+
+        <!-- Demo Controls -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Try the AI Assistant</h2>
+            <div class="grid md:grid-cols-3 gap-4">
+                <button 
+                    id="open-learning-modal"
+                    class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-colors"
+                >
+                    Learning Mode
+                </button>
+                <button 
+                    id="open-code-review-modal"
+                    class="bg-gradient-to-r from-green-600 to-teal-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-green-700 hover:to-teal-700 transition-colors"
+                >
+                    Code Review Mode
+                </button>
+                <button 
+                    id="open-general-modal"
+                    class="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-colors"
+                >
+                    General Chat
+                </button>
+            </div>
+        </div>
+
+        <!-- Sample Code for Review -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h3 class="text-xl font-bold text-gray-900 mb-4">Sample Code for Review</h3>
+            <div class="bg-gray-900 rounded-lg p-4 overflow-x-auto">
+                <pre class="text-green-400 text-sm"><code id="sample-code">// Sample JavaScript function
+function calculateFactorial(n) {
+    if (n < 0) {
+        return "Error: Factorial is not defined for negative numbers";
+    }
+    if (n === 0 || n === 1) {
+        return 1;
+    }
+    let result = 1;
+    for (let i = 2; i <= n; i++) {
+        result *= i;
+    }
+    return result;
+}
+
+// Test the function
+console.log(calculateFactorial(5)); // Should output 120
+console.log(calculateFactorial(0)); // Should output 1
+console.log(calculateFactorial(-1)); // Should output error message</code></pre>
+            </div>
+            <button 
+                id="analyze-sample-code"
+                class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+                Analyze This Code with AI
+            </button>
+        </div>
+
+        <!-- Features -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                    <span class="text-2xl">🤖</span>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">Real-time AI Chat</h3>
+                <p class="text-gray-600 text-sm">
+                    Chat with our AI assistant powered by Ollama and Qwen3 model for instant coding help.
+                </p>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                    <span class="text-2xl">📝</span>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">Code Analysis</h3>
+                <p class="text-gray-600 text-sm">
+                    Get detailed code analysis with suggestions, error detection, and best practices.
+                </p>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                    <span class="text-2xl">⚡</span>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">Streaming Responses</h3>
+                <p class="text-gray-600 text-sm">
+                    Experience real-time streaming responses for a more interactive learning experience.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Assistant Modal Container -->
+    <div id="ai-assistant-modal-container"></div>
+
+    <script>
+        // Simple AI Assistant Modal Implementation
+        class SimpleAIAssistantModal {
+            constructor() {
+                this.isOpen = false;
+                this.messages = [];
+                this.currentContext = 'general';
+                this.container = document.getElementById('ai-assistant-modal-container');
+            }
+
+            open(context = 'general', initialCode = '') {
+                this.currentContext = context;
+                this.isOpen = true;
+                this.render();
+            }
+
+            close() {
+                this.isOpen = false;
+                this.container.innerHTML = '';
+            }
+
+            async sendMessage(message) {
+                if (!message.trim()) return;
+
+                // Add user message
+                this.messages.push({
+                    id: Date.now(),
+                    role: 'user',
+                    content: message,
+                    timestamp: new Date()
+                });
+
+                this.render();
+
+                try {
+                    // Call Ollama API
+                    const response = await fetch('http://localhost:11434/api/generate', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            model: 'qwen3:latest',
+                            prompt: message,
+                            stream: false,
+                            options: {
+                                temperature: 0.7,
+                                top_p: 0.9
+                            }
+                        })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.messages.push({
+                            id: Date.now() + 1,
+                            role: 'assistant',
+                            content: data.response,
+                            timestamp: new Date()
+                        });
+                    } else {
+                        throw new Error('Failed to get AI response');
+                    }
+                } catch (error) {
+                    console.error('Error calling Ollama:', error);
+                    this.messages.push({
+                        id: Date.now() + 1,
+                        role: 'assistant',
+                        content: `I apologize, but I'm having trouble connecting to the AI service. Error: ${error.message}. Please make sure Ollama is running on localhost:11434.`,
+                        timestamp: new Date()
+                    });
+                }
+
+                this.render();
+            }
+
+            render() {
+                if (!this.isOpen) return;
+
+                const contextGreeting = {
+                    'learning': "Hello! I'm here to help you learn programming. What would you like to learn today?",
+                    'code-review': "Hello! I can help you review and improve your code. Paste your code and I'll analyze it for you.",
+                    'general': "Hello! I'm your AI assistant. How can I help you today?"
+                };
+
+                if (this.messages.length === 0) {
+                    this.messages.push({
+                        id: 1,
+                        role: 'assistant',
+                        content: contextGreeting[this.currentContext],
+                        timestamp: new Date()
+                    });
+                }
+
+                this.container.innerHTML = `
+                    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[80vh] flex flex-col">
+                            <!-- Header -->
+                            <div class="bg-gradient-to-r from-blue-600 to-purple-600 p-4 rounded-t-2xl">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                                            <span class="text-2xl">🤖</span>
+                                        </div>
+                                        <div>
+                                            <h2 class="text-xl font-bold text-white">AI Assistant</h2>
+                                            <p class="text-blue-100 text-sm">Powered by Ollama + Qwen3</p>
+                                        </div>
+                                    </div>
+                                    <button onclick="aiModal.close()" class="text-white hover:text-blue-200 transition-colors p-2">
+                                        <span class="text-2xl">×</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Messages -->
+                            <div class="flex-1 overflow-y-auto p-4 space-y-4" id="messages-container">
+                                ${this.messages.map(msg => `
+                                    <div class="flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}">
+                                        <div class="max-w-[80%] ${msg.role === 'user' ? 'order-2' : 'order-1'}">
+                                            <div class="flex items-start space-x-2 ${msg.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''}">
+                                                ${msg.role === 'assistant' ? `
+                                                    <div class="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+                                                        <span class="text-white text-sm">🤖</span>
+                                                    </div>
+                                                ` : ''}
+                                                <div class="rounded-lg px-4 py-2 ${
+                                                    msg.role === 'user' 
+                                                        ? 'bg-blue-600 text-white' 
+                                                        : 'bg-gray-100 text-gray-900'
+                                                }">
+                                                    <div class="whitespace-pre-wrap text-sm">${msg.content}</div>
+                                                    <div class="text-xs mt-1 ${msg.role === 'user' ? 'text-blue-100' : 'text-gray-500'}">
+                                                        ${msg.timestamp.toLocaleTimeString()}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+
+                            <!-- Input -->
+                            <div class="border-t border-gray-200 p-4">
+                                <div class="flex space-x-3">
+                                    <div class="flex-1">
+                                        <textarea
+                                            id="message-input"
+                                            placeholder="Type your message here..."
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                                            rows="2"
+                                        ></textarea>
+                                    </div>
+                                    <button
+                                        onclick="aiModal.sendMessage(document.getElementById('message-input').value); document.getElementById('message-input').value = '';"
+                                        class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-colors flex items-center space-x-2"
+                                    >
+                                        <span>Send</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Auto-scroll to bottom
+                const messagesContainer = document.getElementById('messages-container');
+                if (messagesContainer) {
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }
+
+                // Focus input
+                const input = document.getElementById('message-input');
+                if (input) {
+                    input.focus();
+                    input.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            this.sendMessage(input.value);
+                            input.value = '';
+                        }
+                    });
+                }
+            }
+        }
+
+        // Initialize AI Modal
+        const aiModal = new SimpleAIAssistantModal();
+
+        // Event listeners
+        document.getElementById('open-learning-modal').addEventListener('click', () => {
+            aiModal.open('learning');
+        });
+
+        document.getElementById('open-code-review-modal').addEventListener('click', () => {
+            aiModal.open('code-review');
+        });
+
+        document.getElementById('open-general-modal').addEventListener('click', () => {
+            aiModal.open('general');
+        });
+
+        document.getElementById('analyze-sample-code').addEventListener('click', () => {
+            const sampleCode = document.getElementById('sample-code').textContent;
+            aiModal.open('code-review');
+            setTimeout(() => {
+                aiModal.sendMessage(`Please analyze this JavaScript code and provide suggestions for improvement:\n\n\`\`\`javascript\n${sampleCode}\n\`\`\``);
+            }, 500);
+        });
+
+        // Make functions globally available
+        window.openAIAssistantModal = (context) => aiModal.open(context);
+    </script>
+</body>
+</html>

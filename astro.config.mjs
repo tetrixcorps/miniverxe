@@ -23,6 +23,14 @@ export default defineConfig({
     'import.meta.env.MAILGUN_DOMAIN': JSON.stringify(env.MAILGUN_DOMAIN),
     'import.meta.env.MAILGUN_WEBHOOK': JSON.stringify(env.MAILGUN_WEBHOOK),
     'import.meta.env.MAILGUN_WEBHOOK_SIGNING_KEY': JSON.stringify(env.MAILGUN_WEBHOOK_SIGNING_KEY),
+    // SinchChatLive environment variables
+    'import.meta.env.SINCH_PROJECT_ID': JSON.stringify(env.SINCH_PROJECT_ID),
+    'import.meta.env.SINCH_APP_ID': JSON.stringify(env.SINCH_APP_ID),
+    'import.meta.env.SINCH_CLIENT_ID': JSON.stringify(env.SINCH_CLIENT_ID),
+    'import.meta.env.SINCH_CLIENT_SECRET': JSON.stringify(env.SINCH_CLIENT_SECRET),
+    'import.meta.env.SINCH_VIRTUAL_NUMBER': JSON.stringify(env.SINCH_VIRTUAL_NUMBER),
+    'import.meta.env.NEXT_PUBLIC_SINCH_API_KEY': JSON.stringify(env.NEXT_PUBLIC_SINCH_API_KEY),
+    'import.meta.env.NEXT_PUBLIC_SINCH_WIDGET_ID': JSON.stringify(env.NEXT_PUBLIC_SINCH_WIDGET_ID),
   },
   vite: {
     build: {

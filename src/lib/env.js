@@ -11,13 +11,14 @@ export const env = {
   sinch: {
     apiKey: process.env.NEXT_PUBLIC_SINCH_API_KEY || '',
     widgetId: process.env.NEXT_PUBLIC_SINCH_WIDGET_ID || '',
-    servicePlanId: process.env.SINCH_SERVICE_PLAN_ID || '',
-    conversationProjectId: process.env.SINCH_CONVERSATION_PROJECT_ID || '',
+    projectId: process.env.SINCH_PROJECT_ID || '',
+    appId: process.env.SINCH_APP_ID || '',
+    clientId: process.env.SINCH_CLIENT_ID || '',
+    clientSecret: process.env.SINCH_CLIENT_SECRET || '',
     virtualNumber: process.env.SINCH_VIRTUAL_NUMBER || '',
     backupNumber1: process.env.SINCH_BACKUP_NUMBER_1 || '',
     backupNumber2: process.env.SINCH_BACKUP_NUMBER_2 || '',
-    backupNumber3: process.env.SINCH_BACKUP_NUMBER_3 || '',
-    apiToken: process.env.SINCH_API_TOKEN || ''
+    backupNumber3: process.env.SINCH_BACKUP_NUMBER_3 || ''
   },
   shango: {
     defaultAgent: process.env.SHANGO_DEFAULT_AGENT || 'shango-general',

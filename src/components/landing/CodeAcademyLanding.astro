@@ -1,0 +1,364 @@
+---
+// Code Academy Landing Page Component
+// Rendered when accessing code-academy.tetrixcorp.com
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Academy - Learn to Code</title>
+    <meta name="description" content="Master programming with our comprehensive courses. Learn Python, JavaScript, React, and more with hands-on projects and expert instruction.">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://code-academy.tetrixcorp.com/">
+    <meta property="og:title" content="Code Academy - Learn to Code">
+    <meta property="og:description" content="Master programming with our comprehensive courses">
+    <meta property="og:image" content="https://tetrixcorp.com/images/code-academy-og-image.jpg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://code-academy.tetrixcorp.com/">
+    <meta property="twitter:title" content="Code Academy - Learn to Code">
+    <meta property="twitter:description" content="Master programming with our comprehensive courses">
+    <meta property="twitter:image" content="https://tetrixcorp.com/images/code-academy-og-image.jpg">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .code-gradient {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .code-syntax {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #f8f8f2;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold text-blue-600">Code Academy</h1>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="initiateAuth('code-academy')" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        Start Learning
+                    </button>
+                    <button onclick="initiateAuth('code-academy')" class="text-blue-600 hover:text-blue-800 transition-colors">
+                        Sign In
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="code-gradient text-white py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-5xl md:text-6xl font-bold mb-6">
+                Learn to Code
+            </h1>
+            <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+                Master programming with our comprehensive courses. 
+                From beginner to advanced, we'll help you build real-world skills.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button onclick="initiateAuth('code-academy')" class="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors text-lg">
+                    Start Free Course
+                </button>
+                <button onclick="scrollToCourses()" class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors text-lg">
+                    Browse Courses
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Example Section -->
+    <section class="py-16 bg-gray-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-white mb-4">
+                    Learn by Building Real Projects
+                </h2>
+                <p class="text-xl text-gray-300">
+                    Our hands-on approach means you'll write code from day one
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="code-syntax">
+                    <div class="text-green-400 mb-2"># Python Web Scraper</div>
+                    <div class="text-blue-400">import requests</div>
+                    <div class="text-blue-400">from bs4 import BeautifulSoup</div>
+                    <div class="text-gray-400"># ...</div>
+                    <div class="text-yellow-400">def</div> <div class="text-white inline">scrape_website(url):</div>
+                    <div class="text-white ml-4">response = requests.get(url)</div>
+                    <div class="text-white ml-4">soup = BeautifulSoup(response.text, 'html.parser')</div>
+                    <div class="text-white ml-4">return soup.find_all('h1')</div>
+                </div>
+                
+                <div class="text-white">
+                    <h3 class="text-2xl font-bold mb-4">Project-Based Learning</h3>
+                    <ul class="space-y-3 text-lg">
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-400 mr-3"></i>
+                            Build 20+ real-world projects
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-400 mr-3"></i>
+                            Get feedback from expert instructors
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-400 mr-3"></i>
+                            Portfolio-ready code samples
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-400 mr-3"></i>
+                            Industry best practices
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Courses Section -->
+    <section id="courses" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">
+                    Comprehensive Course Catalog
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    From beginner to advanced, we have courses for every skill level
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Course 1 -->
+                <div class="glass-effect rounded-xl p-8 text-center">
+                    <div class="w-16 h-16 bg-python-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fab fa-python text-2xl text-python-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Python Fundamentals</h3>
+                    <p class="text-gray-600 mb-4">
+                        Learn Python from scratch with hands-on projects and real-world applications.
+                    </p>
+                    <div class="text-sm text-gray-500 mb-4">40 hours • Beginner</div>
+                    <button onclick="initiateAuth('code-academy')" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        Enroll Now
+                    </button>
+                </div>
+
+                <!-- Course 2 -->
+                <div class="glass-effect rounded-xl p-8 text-center">
+                    <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fab fa-js-square text-2xl text-yellow-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">JavaScript Mastery</h3>
+                    <p class="text-gray-600 mb-4">
+                        Master modern JavaScript, ES6+, and build interactive web applications.
+                    </p>
+                    <div class="text-sm text-gray-500 mb-4">50 hours • Intermediate</div>
+                    <button onclick="initiateAuth('code-academy')" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        Enroll Now
+                    </button>
+                </div>
+
+                <!-- Course 3 -->
+                <div class="glass-effect rounded-xl p-8 text-center">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fab fa-react text-2xl text-blue-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">React Development</h3>
+                    <p class="text-gray-600 mb-4">
+                        Build modern web applications with React, hooks, and state management.
+                    </p>
+                    <div class="text-sm text-gray-500 mb-4">45 hours • Intermediate</div>
+                    <button onclick="initiateAuth('code-academy')" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        Enroll Now
+                    </button>
+                </div>
+
+                <!-- Course 4 -->
+                <div class="glass-effect rounded-xl p-8 text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-database text-2xl text-green-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Database Design</h3>
+                    <p class="text-gray-600 mb-4">
+                        Learn SQL, database design, and data modeling for scalable applications.
+                    </p>
+                    <div class="text-sm text-gray-500 mb-4">30 hours • Beginner</div>
+                    <button onclick="initiateAuth('code-academy')" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        Enroll Now
+                    </button>
+                </div>
+
+                <!-- Course 5 -->
+                <div class="glass-effect rounded-xl p-8 text-center">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-cloud text-2xl text-purple-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Cloud Computing</h3>
+                    <p class="text-gray-600 mb-4">
+                        Deploy and scale applications using AWS, Azure, and Google Cloud.
+                    </p>
+                    <div class="text-sm text-gray-500 mb-4">60 hours • Advanced</div>
+                    <button onclick="initiateAuth('code-academy')" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        Enroll Now
+                    </button>
+                </div>
+
+                <!-- Course 6 -->
+                <div class="glass-effect rounded-xl p-8 text-center">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-shield-alt text-2xl text-red-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Cybersecurity</h3>
+                    <p class="text-gray-600 mb-4">
+                        Learn ethical hacking, penetration testing, and security best practices.
+                    </p>
+                    <div class="text-sm text-gray-500 mb-4">55 hours • Advanced</div>
+                    <button onclick="initiateAuth('code-academy')" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        Enroll Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="code-gradient text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8 text-center">
+                <div>
+                    <div class="text-4xl font-bold mb-2">10,000+</div>
+                    <div class="text-xl">Students Enrolled</div>
+                </div>
+                <div>
+                    <div class="text-4xl font-bold mb-2">50+</div>
+                    <div class="text-xl">Expert Instructors</div>
+                </div>
+                <div>
+                    <div class="text-4xl font-bold mb-2">200+</div>
+                    <div class="text-xl">Course Hours</div>
+                </div>
+                <div>
+                    <div class="text-4xl font-bold mb-2">95%</div>
+                    <div class="text-xl">Job Placement Rate</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="gradient-bg text-white py-20">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-4xl font-bold mb-6">
+                Ready to Start Your Coding Journey?
+            </h2>
+            <p class="text-xl mb-8">
+                Join thousands of students who have transformed their careers with our courses.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button onclick="initiateAuth('code-academy')" class="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors text-lg">
+                    Start Learning Today
+                </button>
+                <button onclick="contactAdmissions()" class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors text-lg">
+                    Speak to Admissions
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Code Academy</h3>
+                    <p class="text-gray-400">
+                        Learn to code with our comprehensive programming courses.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Courses</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Python</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">JavaScript</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">React</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">All Courses</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Community</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Company</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="https://tetrixcorp.com" class="hover:text-white transition-colors">TETRIX</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">About</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Privacy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 TETRIX Corporation. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Authentication functions
+        function initiateAuth(context) {
+            // Open 2FA modal for Code Academy authentication
+            if (typeof window.openAuthModal === 'function') {
+                window.openAuthModal(context);
+            } else {
+                // Fallback: redirect to main TETRIX auth
+                window.location.href = 'https://tetrixcorp.com#auth';
+            }
+        }
+
+        function scrollToCourses() {
+            document.getElementById('courses').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function contactAdmissions() {
+            window.location.href = 'https://tetrixcorp.com/contact';
+        }
+
+        // Auto-redirect to external domain after 3 seconds (optional)
+        setTimeout(() => {
+            if (confirm('Would you like to visit the full Code Academy platform at poisonedreligion.ai?')) {
+                window.location.href = '/code-academy';
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+---
+// Catch-all subdomain handler
+// This will handle any subdomain requests
+import { getSubdomainConfig, shouldRedirectToExternal, getExternalRedirectUrl } from '../middleware/subdomain-router';
+import JoromiLanding from '../components/landing/JoromiLanding.astro';
+import CodeAcademyLanding from '../components/landing/CodeAcademyLanding.astro';
+
+// Get the host from the request
+const host = Astro.request.headers.get('host') || '';
+const subdomainConfig = getSubdomainConfig(host);
+
+// Check if we should redirect to external domain
+if (subdomainConfig && shouldRedirectToExternal(subdomainConfig.subdomain)) {
+    const redirectUrl = getExternalRedirectUrl(subdomainConfig.subdomain);
+    if (redirectUrl) {
+        return Astro.redirect(redirectUrl, 302);
+    }
+}
+
+// If no subdomain config found, redirect to main site
+if (!subdomainConfig) {
+    return Astro.redirect('https://tetrixcorp.com', 302);
+}
+---
+
+<!-- Render the appropriate landing page based on subdomain -->
+{subdomainConfig.subdomain === 'joromi' && <JoromiLanding />}
+{subdomainConfig.subdomain === 'code-academy' && <CodeAcademyLanding />}

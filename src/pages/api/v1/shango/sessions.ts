@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { shangoStorage } from '../../../../services/shangoStorage';
+import { realSHANGOAIService } from '../../../../services/realSinchChatService';
 
 // Mock SHANGO agents data
 const SHANGO_AGENTS = [
@@ -131,35 +132,52 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
     
-    const sessionId = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    const agent = SHANGO_AGENTS.find(a => a.id === agentId);
-    
-    const session = {
-      id: sessionId,
-      userId,
-      agentId,
-      status: 'active',
-      channel,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      messages: [],
-      shangoAgent: agent
-    };
-    
-    // Create session in shared storage
-    shangoStorage.createSession(session);
-    
-    // Add greeting message
-    if (agent) {
-      const greetingMessage = {
-        id: `msg-${Date.now()}`,
-        role: 'assistant',
-        content: agent.greeting,
-        timestamp: new Date().toISOString(),
-        type: 'text'
+    // Try to create session using real SinchChatLive service
+    let session;
+    try {
+      // Initialize the service if not already done
+      await realSHANGOAIService.initialize();
+      
+      // Create session using SinchChatLive
+      session = await realSHANGOAIService.startSHANGOChat(userId, agentId);
+      
+      // Also create in local storage for compatibility
+      shangoStorage.createSession(session);
+      
+    } catch (sinchError) {
+      console.log('SinchChatLive session creation failed, using local storage:', sinchError);
+      
+      // Fallback to local storage
+      const sessionId = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      const agent = SHANGO_AGENTS.find(a => a.id === agentId);
+      
+      session = {
+        id: sessionId,
+        userId,
+        agentId,
+        status: 'active',
+        channel,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        messages: [],
+        shangoAgent: agent
       };
       
-      shangoStorage.addMessage(sessionId, greetingMessage);
+      // Create session in shared storage
+      shangoStorage.createSession(session);
+      
+      // Add greeting message
+      if (agent) {
+        const greetingMessage = {
+          id: `msg-${Date.now()}`,
+          role: 'assistant',
+          content: agent.greeting,
+          timestamp: new Date().toISOString(),
+          type: 'text'
+        };
+        
+        shangoStorage.addMessage(sessionId, greetingMessage);
+      }
     }
     
     return new Response(JSON.stringify({

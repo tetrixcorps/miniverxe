@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHANGO Chat Integration Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f0f2f5;
+            padding: 20px;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+        .test-button {
+            background: #4f46e5;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #4338ca;
+        }
+        .test-result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+        .info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1 class="text-3xl font-bold text-center mb-8">SHANGO Chat Integration Test</h1>
+        
+        <!-- Test 1: Contact Page Accessibility -->
+        <div class="test-section">
+            <h2 class="text-xl font-semibold mb-4">Test 1: Contact Page Accessibility</h2>
+            <button class="test-button" onclick="testContactPage()">Test Contact Page</button>
+            <div id="contact-result" class="test-result" style="display: none;"></div>
+        </div>
+
+        <!-- Test 2: SHANGO Widget Rendering -->
+        <div class="test-section">
+            <h2 class="text-xl font-semibold mb-4">Test 2: SHANGO Widget Rendering</h2>
+            <button class="test-button" onclick="testWidgetRendering()">Test Widget Rendering</button>
+            <div id="widget-result" class="test-result" style="display: none;"></div>
+        </div>
+
+        <!-- Test 3: Ollama Integration -->
+        <div class="test-section">
+            <h2 class="text-xl font-semibold mb-4">Test 3: Ollama Integration</h2>
+            <button class="test-button" onclick="testOllamaIntegration()">Test Ollama Connection</button>
+            <div id="ollama-result" class="test-result" style="display: none;"></div>
+        </div>
+
+        <!-- Test 4: SHANGO API Endpoints -->
+        <div class="test-section">
+            <h2 class="text-xl font-semibold mb-4">Test 4: SHANGO API Endpoints</h2>
+            <button class="test-button" onclick="testShangoAPI()">Test API Endpoints</button>
+            <div id="api-result" class="test-result" style="display: none;"></div>
+        </div>
+
+        <!-- Test 5: Chat Functionality -->
+        <div class="test-section">
+            <h2 class="text-xl font-semibold mb-4">Test 5: Chat Functionality</h2>
+            <button class="test-button" onclick="testChatFunctionality()">Test Chat Flow</button>
+            <div id="chat-result" class="test-result" style="display: none;"></div>
+        </div>
+
+        <!-- Test 6: Streaming Response -->
+        <div class="test-section">
+            <h2 class="text-xl font-semibold mb-4">Test 6: Streaming Response</h2>
+            <button class="test-button" onclick="testStreamingResponse()">Test Streaming</button>
+            <div id="streaming-result" class="test-result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Test 1: Contact Page Accessibility
+        async function testContactPage() {
+            const resultDiv = document.getElementById('contact-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'test-result info';
+            resultDiv.innerHTML = 'Testing contact page accessibility...';
+
+            try {
+                const response = await fetch('http://localhost:8080/contact');
+                if (response.ok) {
+                    const html = await response.text();
+                    if (html.includes('Start Chat with SHANGO')) {
+                        resultDiv.className = 'test-result success';
+                        resultDiv.innerHTML = '✅ Contact page is accessible and SHANGO button is present';
+                    } else {
+                        resultDiv.className = 'test-result error';
+                        resultDiv.innerHTML = '❌ SHANGO button not found on contact page';
+                    }
+                } else {
+                    resultDiv.className = 'test-result error';
+                    resultDiv.innerHTML = `❌ Contact page returned status: ${response.status}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'test-result error';
+                resultDiv.innerHTML = `❌ Error accessing contact page: ${error.message}`;
+            }
+        }
+
+        // Test 2: SHANGO Widget Rendering
+        async function testWidgetRendering() {
+            const resultDiv = document.getElementById('widget-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'test-result info';
+            resultDiv.innerHTML = 'Testing SHANGO widget rendering...';
+
+            try {
+                const response = await fetch('http://localhost:8080/contact');
+                const html = await response.text();
+                
+                // Check for key SHANGO widget elements
+                const checks = [
+                    { name: 'SHANGO Chat Widget Container', pattern: 'id="shango-chat-widget"' },
+                    { name: 'Start Chat Button', pattern: 'Start Chat with SHANGO' },
+                    { name: 'SHANGO AI Super Agent Text', pattern: 'SHANGO AI Super Agent' },
+                    { name: 'Chat Widget Script', pattern: 'SHANGOChatWidget' }
+                ];
+
+                let allPassed = true;
+                let results = [];
+
+                checks.forEach(check => {
+                    if (html.includes(check.pattern)) {
+                        results.push(`✅ ${check.name}: Found`);
+                    } else {
+                        results.push(`❌ ${check.name}: Not found`);
+                        allPassed = false;
+                    }
+                });
+
+                resultDiv.className = allPassed ? 'test-result success' : 'test-result error';
+                resultDiv.innerHTML = results.join('<br>');
+            } catch (error) {
+                resultDiv.className = 'test-result error';
+                resultDiv.innerHTML = `❌ Error testing widget rendering: ${error.message}`;
+            }
+        }
+
+        // Test 3: Ollama Integration
+        async function testOllamaIntegration() {
+            const resultDiv = document.getElementById('ollama-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'test-result info';
+            resultDiv.innerHTML = 'Testing Ollama integration...';
+
+            try {
+                const response = await fetch('http://localhost:11434/api/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'qwen3:latest',
+                        prompt: 'You are SHANGO, an AI Super Agent. Respond with "SHANGO is ready to help!"',
+                        stream: false
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.response && data.response.includes('SHANGO')) {
+                        resultDiv.className = 'test-result success';
+                        resultDiv.innerHTML = `✅ Ollama integration working: ${data.response.substring(0, 100)}...`;
+                    } else {
+                        resultDiv.className = 'test-result error';
+                        resultDiv.innerHTML = '❌ Ollama response does not contain expected SHANGO content';
+                    }
+                } else {
+                    resultDiv.className = 'test-result error';
+                    resultDiv.innerHTML = `❌ Ollama API returned status: ${response.status}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'test-result error';
+                resultDiv.innerHTML = `❌ Error testing Ollama integration: ${error.message}`;
+            }
+        }
+
+        // Test 4: SHANGO API Endpoints
+        async function testShangoAPI() {
+            const resultDiv = document.getElementById('api-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'test-result info';
+            resultDiv.innerHTML = 'Testing SHANGO API endpoints...';
+
+            try {
+                // Test session creation
+                const sessionResponse = await fetch('http://localhost:8080/api/v1/shango/sessions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: 'test-user-123',
+                        agentId: 'shango-general'
+                    })
+                });
+
+                if (sessionResponse.ok) {
+                    const sessionData = await sessionResponse.json();
+                    resultDiv.className = 'test-result success';
+                    resultDiv.innerHTML = `✅ SHANGO API endpoints working. Session created: ${sessionData.sessionId}`;
+                } else {
+                    resultDiv.className = 'test-result error';
+                    resultDiv.innerHTML = `❌ SHANGO API session creation failed: ${sessionResponse.status}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'test-result error';
+                resultDiv.innerHTML = `❌ Error testing SHANGO API: ${error.message}`;
+            }
+        }
+
+        // Test 5: Chat Functionality
+        async function testChatFunctionality() {
+            const resultDiv = document.getElementById('chat-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'test-result info';
+            resultDiv.innerHTML = 'Testing chat functionality...';
+
+            try {
+                // Create a session first
+                const sessionResponse = await fetch('http://localhost:8080/api/v1/shango/sessions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: 'test-user-456',
+                        agentId: 'shango-general'
+                    })
+                });
+
+                if (sessionResponse.ok) {
+                    const sessionData = await sessionResponse.json();
+                    
+                    // Send a test message
+                    const messageResponse = await fetch(`http://localhost:8080/api/v1/shango/sessions/${sessionData.sessionId}/messages`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: 'Hello SHANGO, can you help me with enterprise pricing?',
+                            role: 'user',
+                            agentId: 'shango-general'
+                        })
+                    });
+
+                    if (messageResponse.ok) {
+                        const messageData = await messageResponse.json();
+                        resultDiv.className = 'test-result success';
+                        resultDiv.innerHTML = `✅ Chat functionality working. AI Response: ${messageData.aiResponse.content.substring(0, 100)}...`;
+                    } else {
+                        resultDiv.className = 'test-result error';
+                        resultDiv.innerHTML = `❌ Message sending failed: ${messageResponse.status}`;
+                    }
+                } else {
+                    resultDiv.className = 'test-result error';
+                    resultDiv.innerHTML = `❌ Session creation failed: ${sessionResponse.status}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'test-result error';
+                resultDiv.innerHTML = `❌ Error testing chat functionality: ${error.message}`;
+            }
+        }
+
+        // Test 6: Streaming Response
+        async function testStreamingResponse() {
+            const resultDiv = document.getElementById('streaming-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'test-result info';
+            resultDiv.innerHTML = 'Testing streaming response...';
+
+            try {
+                const response = await fetch('http://localhost:11434/api/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'qwen3:latest',
+                        prompt: 'You are SHANGO. Explain enterprise communication solutions in 2 sentences.',
+                        stream: true
+                    })
+                });
+
+                if (response.ok) {
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder();
+                    let streamedContent = '';
+                    let chunkCount = 0;
+
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+
+                        chunkCount++;
+                        const chunk = decoder.decode(value, { stream: true });
+                        streamedContent += chunk;
+                    }
+
+                    resultDiv.className = 'test-result success';
+                    resultDiv.innerHTML = `✅ Streaming response working. Received ${chunkCount} chunks. Content: ${streamedContent.substring(0, 100)}...`;
+                } else {
+                    resultDiv.className = 'test-result error';
+                    resultDiv.innerHTML = `❌ Streaming test failed: ${response.status}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'test-result error';
+                resultDiv.innerHTML = `❌ Error testing streaming: ${error.message}`;
+            }
+        }
+
+        // Auto-run tests on page load
+        window.addEventListener('load', () => {
+            console.log('SHANGO Chat Integration Test Page Loaded');
+            console.log('Click the test buttons to run individual tests');
+        });
+    </script>
+</body>
+</html>
