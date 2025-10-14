@@ -96,6 +96,18 @@ services:
       - key: NODE_OPTIONS
         value: --max-old-space-size=512
         scope: RUN_AND_BUILD_TIME
+      - key: WEBHOOK_BASE_URL
+        value: https://tetrixcorp.com
+        scope: RUN_AND_BUILD_TIME
+      - key: ***REMOVED***
+        value: your_telnyx_api_key_here
+        scope: RUN_AND_BUILD_TIME
+      - key: TELNYX_WEBHOOK_SECRET
+        value: your_telnyx_webhook_secret_here
+        scope: RUN_AND_BUILD_TIME
+      - key: DEEPGRAM_API_KEY
+        value: eb197abcaaf966b07d11f14ad1ec08e27711e51b
+        scope: RUN_AND_BUILD_TIME
     instance_size_slug: basic-xxs
     instance_count: 1
     http_port: 8080
