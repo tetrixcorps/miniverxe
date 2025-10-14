@@ -1,0 +1,140 @@
+alerts:
+- rule: DEPLOYMENT_FAILED
+- rule: DOMAIN_FAILED
+domains:
+- domain: tetrixcorp.com
+  type: PRIMARY
+- domain: www.tetrixcorp.com
+  type: ALIAS
+- domain: api.tetrixcorp.com
+  type: ALIAS
+- domain: iot.tetrixcorp.com
+  type: ALIAS
+- domain: vpn.tetrixcorp.com
+  type: ALIAS
+- domain: joromi.ai
+  type: PRIMARY
+- domain: www.joromi.ai
+  type: ALIAS
+- domain: poisonedreligion.ai
+  type: PRIMARY
+- domain: www.poisonedreligion.ai
+  type: ALIAS
+features:
+- buildpack-stack=ubuntu-22
+ingress:
+  rules:
+  - component:
+      name: tetrix-frontend
+    match:
+      path:
+        prefix: /
+name: tetrix-production-fixed
+region: fra
+services:
+- build_command: |
+    # Clean up any conflicting lockfiles
+    rm -f package-lock.json yarn.lock npm-shrinkwrap.json .yarnrc .yarnrc.yml
+    # Install dependencies (pnpm already installed by buildpack)
+    pnpm install --frozen-lockfile
+    # Build the application
+    pnpm run build
+  envs:
+  - key: NODE_ENV
+    scope: RUN_AND_BUILD_TIME
+    value: production
+  - key: HOST
+    scope: RUN_AND_BUILD_TIME
+    value: 0.0.0.0
+  - key: PORT
+    scope: RUN_AND_BUILD_TIME
+    value: "8080"
+  - key: TETRIX_DOMAIN
+    scope: RUN_AND_BUILD_TIME
+    value: tetrixcorp.com
+  - key: JOROMI_DOMAIN
+    scope: RUN_AND_BUILD_TIME
+    value: joromi.ai
+  - key: POISONEDRELIGION_DOMAIN
+    scope: RUN_AND_BUILD_TIME
+    value: poisonedreligion.ai
+  - key: CROSS_PLATFORM_SESSION_SECRET
+    scope: RUN_AND_BUILD_TIME
+    value: tetrix-joromi-session-secret-2024
+  - key: SINCH_API_TOKEN
+    scope: RUN_AND_BUILD_TIME
+    value: 544cdba462974e05adc5140211c0311c
+  - key: SINCH_SERVICE_PLAN_ID
+    scope: RUN_AND_BUILD_TIME
+    value: 01K1GYEHZAXEZVGDA34V3873KM
+  - key: SINCH_VIRTUAL_NUMBER
+    scope: RUN_AND_BUILD_TIME
+    value: "+16465799770"
+  - key: SINCH_BACKUP_NUMBER_1
+    scope: RUN_AND_BUILD_TIME
+    value: "+18888046762"
+  - key: SINCH_BACKUP_NUMBER_2
+    scope: RUN_AND_BUILD_TIME
+    value: "+12082792555"
+  - key: SINCH_BACKUP_NUMBER_3
+    scope: RUN_AND_BUILD_TIME
+    value: "+12082792555"
+  - key: SINCH_CONVERSATION_PROJECT_ID
+    scope: RUN_AND_BUILD_TIME
+    value: 01K1GYEHZAXEZVGDA34V3873KM
+  - key: NEXT_PUBLIC_SINCH_API_KEY
+    scope: RUN_AND_BUILD_TIME
+    value: 544cdba462974e05adc5140211c0311c
+  - key: NEXT_PUBLIC_SINCH_WIDGET_ID
+    scope: RUN_AND_BUILD_TIME
+    value: shango-widget-2024
+  - key: SHANGO_SESSION_TIMEOUT
+    scope: RUN_AND_BUILD_TIME
+    value: "3600"
+  - key: SHANGO_MAX_MESSAGES
+    scope: RUN_AND_BUILD_TIME
+    value: "1000"
+  - key: SHANGO_DEFAULT_AGENT
+    scope: RUN_AND_BUILD_TIME
+    value: shango-general
+  - key: FIREBASE_API_KEY
+    scope: RUN_AND_BUILD_TIME
+    value: AIzaSyBvQjK8X9Y2Z3A4B5C6D7E8F9G0H1I2J3K
+  - key: FIREBASE_AUTH_DOMAIN
+    scope: RUN_AND_BUILD_TIME
+    value: fir-rtc-7b55d.firebaseapp.com
+  - key: FIREBASE_PROJECT_ID
+    scope: RUN_AND_BUILD_TIME
+    value: fir-rtc-7b55d
+  - key: FIREBASE_STORAGE_BUCKET
+    scope: RUN_AND_BUILD_TIME
+    value: fir-rtc-7b55d.appspot.com
+  - key: FIREBASE_MESSAGING_SENDER_ID
+    scope: RUN_AND_BUILD_TIME
+    value: "1073036366262"
+  - key: FIREBASE_APP_ID
+    scope: RUN_AND_BUILD_TIME
+    value: 1:1073036366262:web:a76a0e270753f3e9497117
+  - key: HOSTNAME
+    scope: RUN_AND_BUILD_TIME
+    value: 0.0.0.0
+  - key: NODE_OPTIONS
+    scope: RUN_AND_BUILD_TIME
+    value: --max-old-space-size=512
+  github:
+    branch: main
+    deploy_on_push: true
+    repo: tetrixcorps/miniverxe
+  health_check:
+    failure_threshold: 5
+    http_path: /api/health
+    initial_delay_seconds: 60
+    period_seconds: 15
+    success_threshold: 1
+    timeout_seconds: 10
+  http_port: 8080
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  name: tetrix-frontend
+  run_command: pnpm run start
+  source_dir: /
