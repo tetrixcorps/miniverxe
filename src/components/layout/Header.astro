@@ -183,12 +183,19 @@ import CodeAcademyModal from '../CodeAcademyModal.astro';
         const clientLoginBtn = document.getElementById('client-login-2fa-btn');
         const clientLoginBtnMobile = document.getElementById('client-login-2fa-btn-mobile');
 
-        // JoRoMi button handlers - Redirect to subdomain
+        // JoRoMi button handlers - Use 2FA authentication like Code Academy
         if (joromiBtn) {
           joromiBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            // Redirect to JoRoMi subdomain
-            window.location.href = 'https://joromi.tetrixcorp.com';
+            // Set authentication context for JoRoMi
+            window.tetrixAuthContext = 'joromi';
+            // Open 2FA modal for authentication
+            if (window.open2FAModal) {
+              window.open2FAModal();
+            } else {
+              // Fallback to direct redirect
+              window.location.href = '/joromi';
+            }
             // Close mobile menu if open
             if (menu) {
               menu.classList.add('hidden');
@@ -200,8 +207,15 @@ import CodeAcademyModal from '../CodeAcademyModal.astro';
         if (joromiBtnMobile) {
           joromiBtnMobile.addEventListener('click', function(e) {
             e.preventDefault();
-            // Redirect to JoRoMi subdomain
-            window.location.href = 'https://joromi.tetrixcorp.com';
+            // Set authentication context for JoRoMi
+            window.tetrixAuthContext = 'joromi';
+            // Open 2FA modal for authentication
+            if (window.open2FAModal) {
+              window.open2FAModal();
+            } else {
+              // Fallback to direct redirect
+              window.location.href = '/joromi';
+            }
             // Close mobile menu
             if (menu) {
               menu.classList.add('hidden');
