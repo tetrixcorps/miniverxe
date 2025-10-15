@@ -81,6 +81,18 @@ export const GET: APIRoute = async ({ params }) => {
       });
     }
     
+    // Check if session exists
+    const session = shangoStorage.getSession(sessionId);
+    if (!session) {
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'Session not found'
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
     const sessionMessages = shangoStorage.getMessages(sessionId);
     
     return new Response(JSON.stringify({
@@ -125,6 +137,18 @@ export const POST: APIRoute = async ({ params, request }) => {
       return new Response(JSON.stringify({
         success: false,
         error: 'Message content is required'
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // Check if session exists
+    const session = shangoStorage.getSession(sessionId);
+    if (!session) {
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'Session not found'
       }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
