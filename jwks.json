@@ -1,0 +1,12 @@
+{
+  "keys": [
+    {
+      "kty": "RSA",
+      "kid": "tetrix-epic-key-2025",
+      "use": "sig",
+      "alg": "RS256",
+      "n": "yiuUj33tQVKqk0rCdRafyCvavGgJZOKzNENq9JCOfevILcHiqL9nSuYQ1L0qIDSoTqS8Gxe3HBG9KuYhm5Jv1OtvYMfcFRk2gw7sikulsAWn2gPhoqPTGTC_xKl3aR8SGdd8sQgma0mUL4Tcnf7A-V_YAQQaOA5MEA7Jri9fAqCk0HzzEgscDE8nceqSdvU6ODAzGglPVoZz0ofdUdTMRtNTywudK2AjvDZX0e4HbN34xwXhAFlSjmL_KV92S1pcxWMHHWCbCywUliiCbif7aFwRhXjuuYQe71GNxkKPMo6NNq-4pp8OBhiicltCOVbLNVVCvxcQ9wBx7dj_9Ysj5w",
+      "e": "AQAB"
+    }
+  ]
+}

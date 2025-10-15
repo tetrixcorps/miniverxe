@@ -1,0 +1,394 @@
+---
+// TETRIX Salesforce Integration Component
+// Provides Salesforce CRM integration for industry dashboards
+
+import { TETRIXSalesforceIntegration } from '../../services/integrations/UniversalCRMIntegration';
+
+// Initialize Salesforce integration
+const salesforceConfig = {
+  apiKey: process.env.SALESFORCE_API_KEY || '',
+  accessToken: process.env.SALESFORCE_ACCESS_TOKEN || '',
+  baseUrl: process.env.SALESFORCE_BASE_URL || 'https://your-instance.salesforce.com',
+  version: '58.0'
+};
+
+const salesforce = new TETRIXSalesforceIntegration({
+  provider: 'salesforce',
+  ...salesforceConfig
+});
+
+// Connect to Salesforce
+await salesforce.connect();
+---
+
+<div class="salesforce-integration bg-white rounded-lg shadow-md p-6">
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center">
+      <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
+        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+        </svg>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold text-gray-900">Salesforce CRM</h3>
+        <p class="text-sm text-gray-600">Connected to your Salesforce instance</p>
+      </div>
+    </div>
+    <div class="flex items-center space-x-2">
+      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+        Connected
+      </span>
+      <button class="text-gray-400 hover:text-gray-600">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Quick Stats -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div class="bg-blue-50 rounded-lg p-4">
+      <div class="flex items-center">
+        <div class="text-2xl text-blue-600">👥</div>
+        <div class="ml-3">
+          <p class="text-sm font-medium text-blue-600">Contacts</p>
+          <p class="text-2xl font-semibold text-blue-900" id="salesforce-contacts-count">-</p>
+        </div>
+      </div>
+    </div>
+    <div class="bg-green-50 rounded-lg p-4">
+      <div class="flex items-center">
+        <div class="text-2xl text-green-600">🏢</div>
+        <div class="ml-3">
+          <p class="text-sm font-medium text-green-600">Companies</p>
+          <p class="text-2xl font-semibold text-green-900" id="salesforce-companies-count">-</p>
+        </div>
+      </div>
+    </div>
+    <div class="bg-yellow-50 rounded-lg p-4">
+      <div class="flex items-center">
+        <div class="text-2xl text-yellow-600">💼</div>
+        <div class="ml-3">
+          <p class="text-sm font-medium text-yellow-600">Opportunities</p>
+          <p class="text-2xl font-semibold text-yellow-900" id="salesforce-opportunities-count">-</p>
+        </div>
+      </div>
+    </div>
+    <div class="bg-purple-50 rounded-lg p-4">
+      <div class="flex items-center">
+        <div class="text-2xl text-purple-600">📋</div>
+        <div class="ml-3">
+          <p class="text-sm font-medium text-purple-600">Tasks</p>
+          <p class="text-2xl font-semibold text-purple-900" id="salesforce-tasks-count">-</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="mb-6">
+    <h4 class="text-md font-semibold text-gray-900 mb-3">Recent Activity</h4>
+    <div class="bg-gray-50 rounded-lg p-4">
+      <div id="salesforce-recent-activity" class="space-y-3">
+        <!-- Activity items will be loaded here -->
+        <div class="flex items-center justify-center py-8">
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="bg-white border border-gray-200 rounded-lg p-4">
+      <h5 class="font-medium text-gray-900 mb-3">Quick Actions</h5>
+      <div class="space-y-2">
+        <button 
+          class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+          onclick="openSalesforceModal('contact')"
+        >
+          ➕ Create New Contact
+        </button>
+        <button 
+          class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+          onclick="openSalesforceModal('company')"
+        >
+          ➕ Create New Company
+        </button>
+        <button 
+          class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+          onclick="openSalesforceModal('opportunity')"
+        >
+          ➕ Create New Opportunity
+        </button>
+        <button 
+          class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+          onclick="openSalesforceModal('task')"
+        >
+          ➕ Create New Task
+        </button>
+      </div>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-lg p-4">
+      <h5 class="font-medium text-gray-900 mb-3">Sync Status</h5>
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-gray-600">Last Sync</span>
+          <span class="text-sm font-medium text-gray-900" id="salesforce-last-sync">-</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-gray-600">Sync Status</span>
+          <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+            Active
+          </span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-gray-600">Records Synced</span>
+          <span class="text-sm font-medium text-gray-900" id="salesforce-synced-records">-</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Salesforce Modal -->
+<div id="salesforce-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+  <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-gray-900" id="salesforce-modal-title">Salesforce</h3>
+          <button 
+            id="close-salesforce-modal" 
+            class="text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="p-6">
+        <div id="salesforce-modal-content">
+          <!-- Modal content will be loaded here -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Salesforce Integration JavaScript
+  class SalesforceIntegration {
+    constructor() {
+      this.modal = document.getElementById('salesforce-modal');
+      this.init();
+    }
+
+    async init() {
+      await this.loadSalesforceData();
+      this.bindEvents();
+    }
+
+    bindEvents() {
+      // Close modal
+      document.getElementById('close-salesforce-modal')?.addEventListener('click', () => {
+        this.closeModal();
+      });
+
+      // Close on backdrop click
+      this.modal?.addEventListener('click', (e) => {
+        if (e.target === this.modal) {
+          this.closeModal();
+        }
+      });
+    }
+
+    async loadSalesforceData() {
+      try {
+        // Load counts
+        await this.loadCounts();
+        
+        // Load recent activity
+        await this.loadRecentActivity();
+        
+        // Update sync status
+        this.updateSyncStatus();
+      } catch (error) {
+        console.error('Failed to load Salesforce data:', error);
+      }
+    }
+
+    async loadCounts() {
+      try {
+        // Simulate API calls to Salesforce
+        const counts = {
+          contacts: Math.floor(Math.random() * 1000) + 500,
+          companies: Math.floor(Math.random() * 200) + 100,
+          opportunities: Math.floor(Math.random() * 150) + 50,
+          tasks: Math.floor(Math.random() * 300) + 100
+        };
+
+        document.getElementById('salesforce-contacts-count').textContent = counts.contacts.toLocaleString();
+        document.getElementById('salesforce-companies-count').textContent = counts.companies.toLocaleString();
+        document.getElementById('salesforce-opportunities-count').textContent = counts.opportunities.toLocaleString();
+        document.getElementById('salesforce-tasks-count').textContent = counts.tasks.toLocaleString();
+      } catch (error) {
+        console.error('Failed to load Salesforce counts:', error);
+      }
+    }
+
+    async loadRecentActivity() {
+      try {
+        const activityContainer = document.getElementById('salesforce-recent-activity');
+        
+        // Simulate recent activity data
+        const activities = [
+          { type: 'contact', action: 'Created', name: 'John Smith', time: '2 hours ago' },
+          { type: 'opportunity', action: 'Updated', name: 'Enterprise Deal', time: '4 hours ago' },
+          { type: 'task', action: 'Completed', name: 'Follow up call', time: '6 hours ago' },
+          { type: 'company', action: 'Created', name: 'Acme Corp', time: '1 day ago' }
+        ];
+
+        activityContainer.innerHTML = activities.map(activity => `
+          <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+              <span class="text-blue-600 text-sm">${this.getActivityIcon(activity.type)}</span>
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-medium text-gray-900">${activity.action} ${activity.name}</p>
+              <p class="text-xs text-gray-500">${activity.time}</p>
+            </div>
+          </div>
+        `).join('');
+      } catch (error) {
+        console.error('Failed to load recent activity:', error);
+      }
+    }
+
+    getActivityIcon(type) {
+      const icons = {
+        contact: '👤',
+        opportunity: '💼',
+        task: '📋',
+        company: '🏢'
+      };
+      return icons[type] || '📄';
+    }
+
+    updateSyncStatus() {
+      const now = new Date();
+      document.getElementById('salesforce-last-sync').textContent = now.toLocaleTimeString();
+      document.getElementById('salesforce-synced-records').textContent = '1,247';
+    }
+
+    openModal(type) {
+      const titles = {
+        contact: 'Create New Contact',
+        company: 'Create New Company',
+        opportunity: 'Create New Opportunity',
+        task: 'Create New Task'
+      };
+
+      document.getElementById('salesforce-modal-title').textContent = titles[type] || 'Salesforce';
+      document.getElementById('salesforce-modal-content').innerHTML = this.getModalContent(type);
+      this.modal.classList.remove('hidden');
+    }
+
+    getModalContent(type) {
+      const forms = {
+        contact: `
+          <form class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <input type="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+              <input type="tel" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Company</label>
+              <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="flex justify-end space-x-3">
+              <button type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200" onclick="closeSalesforceModal()">
+                Cancel
+              </button>
+              <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                Create Contact
+              </button>
+            </div>
+          </form>
+        `,
+        company: `
+          <form class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+              <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Industry</label>
+              <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option>Technology</option>
+                <option>Healthcare</option>
+                <option>Finance</option>
+                <option>Manufacturing</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Website</label>
+              <input type="url" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+              <input type="tel" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="flex justify-end space-x-3">
+              <button type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200" onclick="closeSalesforceModal()">
+                Cancel
+              </button>
+              <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                Create Company
+              </button>
+            </div>
+          </form>
+        `
+      };
+
+      return forms[type] || '<p>Form not available</p>';
+    }
+
+    closeModal() {
+      this.modal.classList.add('hidden');
+    }
+  }
+
+  // Initialize Salesforce integration
+  document.addEventListener('DOMContentLoaded', () => {
+    window.salesforceIntegration = new SalesforceIntegration();
+  });
+
+  // Global functions
+  window.openSalesforceModal = (type) => {
+    window.salesforceIntegration?.openModal(type);
+  };
+
+  window.closeSalesforceModal = () => {
+    window.salesforceIntegration?.closeModal();
+  };
+</script>
