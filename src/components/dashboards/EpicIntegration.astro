@@ -1,0 +1,369 @@
+---
+// TETRIX Epic MyChart Integration Component
+// Provides Epic OAuth 2.0 authentication and FHIR data access
+
+import { createEpicOAuthService, DEFAULT_EPIC_CONFIG } from '../../services/integrations/EpicOAuthService';
+
+// Initialize Epic OAuth service
+const epicOAuth = createEpicOAuthService(DEFAULT_EPIC_CONFIG);
+
+// Check if user is already authenticated
+const isAuthenticated = epicOAuth.isAuthenticated();
+const tokenInfo = epicOAuth.getTokenInfo();
+---
+
+<div class="epic-integration bg-white rounded-lg shadow-md p-6">
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center">
+      <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
+        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+        </svg>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold text-gray-900">Epic MyChart</h3>
+        <p class="text-sm text-gray-600">Connect to your Epic MyChart account</p>
+      </div>
+    </div>
+    <div class="flex items-center space-x-2">
+      {isAuthenticated ? (
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+          Connected
+        </span>
+      ) : (
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+          Not Connected
+        </span>
+      )}
+      <button class="text-gray-400 hover:text-gray-600">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  {isAuthenticated ? (
+    <!-- Connected State -->
+    <div>
+      <!-- Patient Information -->
+      <div class="mb-6">
+        <h4 class="text-md font-semibold text-gray-900 mb-3">Patient Information</h4>
+        <div class="bg-blue-50 rounded-lg p-4">
+          <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+              <span class="text-blue-600 text-lg">👤</span>
+            </div>
+            <div>
+              <p class="font-medium text-gray-900" id="epic-patient-name">Loading...</p>
+              <p class="text-sm text-gray-600" id="epic-patient-details">Loading patient details...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Encounters -->
+      <div class="mb-6">
+        <h4 class="text-md font-semibold text-gray-900 mb-3">Recent Encounters</h4>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <div id="epic-recent-encounters" class="space-y-3">
+            <div class="flex items-center justify-center py-8">
+              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vital Signs -->
+      <div class="mb-6">
+        <h4 class="text-md font-semibold text-gray-900 mb-3">Latest Vital Signs</h4>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-white border border-gray-200 rounded-lg p-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-gray-600">Blood Pressure</p>
+                <p class="text-2xl font-semibold text-gray-900" id="epic-bp">-</p>
+              </div>
+              <div class="text-2xl text-red-600">🩸</div>
+            </div>
+          </div>
+          <div class="bg-white border border-gray-200 rounded-lg p-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-gray-600">Heart Rate</p>
+                <p class="text-2xl font-semibold text-gray-900" id="epic-hr">-</p>
+              </div>
+              <div class="text-2xl text-red-600">❤️</div>
+            </div>
+          </div>
+          <div class="bg-white border border-gray-200 rounded-lg p-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-gray-600">Temperature</p>
+                <p class="text-2xl font-semibold text-gray-900" id="epic-temp">-</p>
+              </div>
+              <div class="text-2xl text-blue-600">🌡️</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Medications -->
+      <div class="mb-6">
+        <h4 class="text-md font-semibold text-gray-900 mb-3">Current Medications</h4>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <div id="epic-medications" class="space-y-2">
+            <div class="flex items-center justify-center py-4">
+              <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Connection Status -->
+      <div class="bg-white border border-gray-200 rounded-lg p-4">
+        <h5 class="font-medium text-gray-900 mb-3">Connection Status</h5>
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-sm text-gray-600">Status</span>
+            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+              Connected
+            </span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-sm text-gray-600">Token Expires</span>
+            <span class="text-sm font-medium text-gray-900" id="epic-token-expiry">-</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-sm text-gray-600">Last Sync</span>
+            <span class="text-sm font-medium text-gray-900" id="epic-last-sync">-</span>
+          </div>
+        </div>
+        <div class="mt-4">
+          <button 
+            id="epic-disconnect-btn"
+            class="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
+          >
+            Disconnect from Epic MyChart
+          </button>
+        </div>
+      </div>
+    </div>
+  ) : (
+    <!-- Not Connected State -->
+    <div>
+      <div class="text-center py-8">
+        <div class="text-4xl mb-4">🏥</div>
+        <h4 class="text-lg font-semibold text-gray-900 mb-2">Connect to Epic MyChart</h4>
+        <p class="text-gray-600 mb-6">Access your patient data securely through Epic MyChart integration</p>
+        
+        <button 
+          id="epic-connect-btn"
+          class="bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors font-medium"
+        >
+          Connect to Epic MyChart
+        </button>
+        
+        <div class="mt-4 text-sm text-gray-500">
+          <p>• Secure OAuth 2.0 authentication</p>
+          <p>• HIPAA-compliant data access</p>
+          <p>• SMART on FHIR integration</p>
+        </div>
+      </div>
+    </div>
+  )}
+</div>
+
+<script>
+  // Epic Integration JavaScript
+  class EpicIntegration {
+    constructor() {
+      this.isAuthenticated = {isAuthenticated};
+      this.tokenInfo = {tokenInfo};
+      this.init();
+    }
+
+    async init() {
+      this.bindEvents();
+      
+      if (this.isAuthenticated) {
+        await this.loadEpicData();
+        this.updateConnectionStatus();
+      }
+    }
+
+    bindEvents() {
+      // Connect button
+      document.getElementById('epic-connect-btn')?.addEventListener('click', () => {
+        this.connectToEpic();
+      });
+
+      // Disconnect button
+      document.getElementById('epic-disconnect-btn')?.addEventListener('click', () => {
+        this.disconnectFromEpic();
+      });
+    }
+
+    connectToEpic() {
+      // Generate Epic OAuth authorization URL
+      const authUrl = this.generateEpicAuthUrl();
+      
+      // Open Epic OAuth in popup window
+      const popup = window.open(
+        authUrl,
+        'epic-oauth',
+        'width=600,height=700,scrollbars=yes,resizable=yes'
+      );
+
+      // Listen for popup completion
+      const checkClosed = setInterval(() => {
+        if (popup.closed) {
+          clearInterval(checkClosed);
+          this.checkAuthResult();
+        }
+      }, 1000);
+    }
+
+    generateEpicAuthUrl() {
+      // This would normally be generated server-side
+      const baseUrl = 'https://fhir.epic.com/interconnect-fhir-oauth';
+      const params = new URLSearchParams({
+        response_type: 'code',
+        client_id: 'your-epic-client-id',
+        redirect_uri: 'https://tetrixcorp.com/auth/epic/callback',
+        scope: 'launch/patient patient/*.read openid fhirUser',
+        state: this.generateState(),
+        aud: 'https://fhir.epic.com/interconnect-fhir-oauth'
+      });
+
+      return `${baseUrl}/oauth2/authorize?${params.toString()}`;
+    }
+
+    generateState() {
+      return Math.random().toString(36).substring(2, 15) + 
+             Math.random().toString(36).substring(2, 15);
+    }
+
+    checkAuthResult() {
+      // Check for authentication result in localStorage
+      const authSuccess = localStorage.getItem('epic_auth_success');
+      const authData = localStorage.getItem('epic_auth_data');
+      const authError = localStorage.getItem('epic_auth_error');
+
+      if (authSuccess === 'true' && authData) {
+        console.log('Epic authentication successful');
+        localStorage.removeItem('epic_auth_success');
+        localStorage.removeItem('epic_auth_data');
+        // Reload page to show connected state
+        window.location.reload();
+      } else if (authError) {
+        console.error('Epic authentication failed:', authError);
+        localStorage.removeItem('epic_auth_error');
+        alert('Epic authentication failed: ' + authError);
+      }
+    }
+
+    async loadEpicData() {
+      try {
+        // Simulate loading Epic data
+        await this.loadPatientInfo();
+        await this.loadRecentEncounters();
+        await this.loadVitalSigns();
+        await this.loadMedications();
+      } catch (error) {
+        console.error('Failed to load Epic data:', error);
+      }
+    }
+
+    async loadPatientInfo() {
+      // Simulate patient data loading
+      setTimeout(() => {
+        document.getElementById('epic-patient-name').textContent = 'John Smith';
+        document.getElementById('epic-patient-details').textContent = 'DOB: 01/15/1985 • Male • Patient ID: 12345';
+      }, 1000);
+    }
+
+    async loadRecentEncounters() {
+      const encountersContainer = document.getElementById('epic-recent-encounters');
+      
+      // Simulate encounters data
+      setTimeout(() => {
+        const encounters = [
+          { date: '2024-01-15', type: 'Office Visit', provider: 'Dr. Johnson' },
+          { date: '2024-01-10', type: 'Lab Results', provider: 'Lab Corp' },
+          { date: '2024-01-05', type: 'Follow-up', provider: 'Dr. Smith' }
+        ];
+
+        encountersContainer.innerHTML = encounters.map(encounter => `
+          <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+              <span class="text-blue-600 text-sm">📅</span>
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-medium text-gray-900">${encounter.type}</p>
+              <p class="text-xs text-gray-500">${encounter.date} • ${encounter.provider}</p>
+            </div>
+          </div>
+        `).join('');
+      }, 1500);
+    }
+
+    async loadVitalSigns() {
+      // Simulate vital signs data
+      setTimeout(() => {
+        document.getElementById('epic-bp').textContent = '120/80';
+        document.getElementById('epic-hr').textContent = '72 bpm';
+        document.getElementById('epic-temp').textContent = '98.6°F';
+      }, 2000);
+    }
+
+    async loadMedications() {
+      const medicationsContainer = document.getElementById('epic-medications');
+      
+      // Simulate medications data
+      setTimeout(() => {
+        const medications = [
+          { name: 'Lisinopril 10mg', dosage: 'Once daily', prescribed: 'Dr. Johnson' },
+          { name: 'Metformin 500mg', dosage: 'Twice daily', prescribed: 'Dr. Smith' }
+        ];
+
+        medicationsContainer.innerHTML = medications.map(med => `
+          <div class="flex items-center justify-between p-2 bg-white rounded border">
+            <div>
+              <p class="text-sm font-medium text-gray-900">${med.name}</p>
+              <p class="text-xs text-gray-500">${med.dosage}</p>
+            </div>
+            <div class="text-xs text-gray-500">${med.prescribed}</div>
+          </div>
+        `).join('');
+      }, 2500);
+    }
+
+    updateConnectionStatus() {
+      if (this.tokenInfo.expiresAt) {
+        const expiryDate = new Date(this.tokenInfo.expiresAt);
+        document.getElementById('epic-token-expiry').textContent = expiryDate.toLocaleString();
+      }
+      
+      const now = new Date();
+      document.getElementById('epic-last-sync').textContent = now.toLocaleString();
+    }
+
+    disconnectFromEpic() {
+      if (confirm('Are you sure you want to disconnect from Epic MyChart?')) {
+        // Clear authentication data
+        localStorage.removeItem('epic_auth_success');
+        localStorage.removeItem('epic_auth_data');
+        
+        // Reload page to show disconnected state
+        window.location.reload();
+      }
+    }
+  }
+
+  // Initialize Epic integration
+  document.addEventListener('DOMContentLoaded', () => {
+    window.epicIntegration = new EpicIntegration();
+  });
+</script>

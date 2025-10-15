@@ -1,0 +1,666 @@
+---
+// TETRIX Enhanced RPA Dashboard with Axiom.ai Integration
+// Industry-specific RPA management with browser automation capabilities
+import MainLayout from '../../components/layout/MainLayout.astro';
+import { TETRIXRPAEngine } from '../services/rpaEngine';
+import { TETRIXAxiomIntegrationService } from '../services/axiomIntegrationService';
+import { TETRIXEnhancedWorkflowEngine } from '../services/enhancedWorkflowEngine';
+---
+
+<MainLayout>
+  <div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white shadow-sm border-b">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-6">
+          <div class="flex items-center">
+            <div class="text-3xl mr-3">🤖</div>
+            <div>
+              <h1 class="text-2xl font-bold text-gray-900">Enhanced RPA Dashboard</h1>
+              <p class="text-sm text-gray-600">RPA + Browser Automation with Axiom.ai Integration</p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-4">
+            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+              Create Enhanced Bot
+            </button>
+            <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+              Deploy Workflow
+            </button>
+            <button class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+              Browser Automation
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Industry Selection -->
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Select Your Industry</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <button class="industry-tab bg-white p-4 rounded-lg shadow-sm border hover:border-blue-500 hover:shadow-md transition-all" data-industry="healthcare">
+            <div class="text-2xl mb-2">🏥</div>
+            <div class="text-sm font-medium">Healthcare</div>
+            <div class="text-xs text-gray-500">HIPAA + Browser</div>
+          </button>
+          <button class="industry-tab bg-white p-4 rounded-lg shadow-sm border hover:border-blue-500 hover:shadow-md transition-all" data-industry="financial">
+            <div class="text-2xl mb-2">🏦</div>
+            <div class="text-sm font-medium">Financial</div>
+            <div class="text-xs text-gray-500">SOX + Browser</div>
+          </button>
+          <button class="industry-tab bg-white p-4 rounded-lg shadow-sm border hover:border-blue-500 hover:shadow-md transition-all" data-industry="legal">
+            <div class="text-2xl mb-2">⚖️</div>
+            <div class="text-sm font-medium">Legal</div>
+            <div class="text-xs text-gray-500">Privilege + Browser</div>
+          </button>
+          <button class="industry-tab bg-white p-4 rounded-lg shadow-sm border hover:border-blue-500 hover:shadow-md transition-all" data-industry="government">
+            <div class="text-2xl mb-2">🏛️</div>
+            <div class="text-sm font-medium">Government</div>
+            <div class="text-xs text-gray-500">FedRAMP + Browser</div>
+          </button>
+          <button class="industry-tab bg-white p-4 rounded-lg shadow-sm border hover:border-blue-500 hover:shadow-md transition-all" data-industry="manufacturing">
+            <div class="text-2xl mb-2">🏭</div>
+            <div class="text-sm font-medium">Manufacturing</div>
+            <div class="text-xs text-gray-500">Quality + Browser</div>
+          </button>
+          <button class="industry-tab bg-white p-4 rounded-lg shadow-sm border hover:border-blue-500 hover:shadow-md transition-all" data-industry="retail">
+            <div class="text-2xl mb-2">🛒</div>
+            <div class="text-sm font-medium">Retail</div>
+            <div class="text-xs text-gray-500">E-commerce + Browser</div>
+          </button>
+          <button class="industry-tab bg-white p-4 rounded-lg shadow-sm border hover:border-blue-500 hover:shadow-md transition-all" data-industry="education">
+            <div class="text-2xl mb-2">🎓</div>
+            <div class="text-sm font-medium">Education</div>
+            <div class="text-xs text-gray-500">Student + Browser</div>
+          </button>
+          <button class="industry-tab bg-white p-4 rounded-lg shadow-sm border hover:border-blue-500 hover:shadow-md transition-all" data-industry="construction">
+            <div class="text-2xl mb-2">🏗️</div>
+            <div class="text-sm font-medium">Construction</div>
+            <div class="text-xs text-gray-500">Safety + Browser</div>
+          </button>
+          <button class="industry-tab bg-white p-4 rounded-lg shadow-sm border hover:border-blue-500 hover:shadow-md transition-all" data-industry="logistics">
+            <div class="text-2xl mb-2">🚛</div>
+            <div class="text-sm font-medium">Logistics</div>
+            <div class="text-xs text-gray-500">Route + Browser</div>
+          </button>
+          <button class="industry-tab bg-white p-4 rounded-lg shadow-sm border hover:border-blue-500 hover:shadow-md transition-all" data-industry="hospitality">
+            <div class="text-2xl mb-2">🏨</div>
+            <div class="text-sm font-medium">Hospitality</div>
+            <div class="text-xs text-gray-500">Guest + Browser</div>
+          </button>
+          <button class="industry-tab bg-white p-4 rounded-lg shadow-sm border hover:border-blue-500 hover:shadow-md transition-all" data-industry="wellness">
+            <div class="text-2xl mb-2">💪</div>
+            <div class="text-sm font-medium">Wellness</div>
+            <div class="text-xs text-gray-500">Health + Browser</div>
+          </button>
+          <button class="industry-tab bg-white p-4 rounded-lg shadow-sm border hover:border-blue-500 hover:shadow-md transition-all" data-industry="beauty">
+            <div class="text-2xl mb-2">💄</div>
+            <div class="text-sm font-medium">Beauty</div>
+            <div class="text-xs text-gray-500">Service + Browser</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Industry Content -->
+      <div id="industry-content" class="hidden">
+        <!-- Enhanced Bots Section -->
+        <div class="mb-8">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-gray-900">Enhanced RPA Bots</h2>
+            <div class="flex space-x-2">
+              <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                Create RPA Bot
+              </button>
+              <button class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                Create Browser Bot
+              </button>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Enhanced Bot Cards -->
+            <div class="bot-card bg-white p-6 rounded-lg shadow-sm border">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                  <div class="text-2xl mr-3">🤖</div>
+                  <div>
+                    <h3 class="font-semibold text-gray-900">Patient Intake Bot</h3>
+                    <p class="text-sm text-gray-600">Healthcare + Browser</p>
+                  </div>
+                </div>
+                <div class="flex space-x-1">
+                  <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">RPA</span>
+                  <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">Browser</span>
+                </div>
+              </div>
+              <div class="space-y-2 mb-4">
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Executions:</span>
+                  <span class="font-medium">1,247</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Success Rate:</span>
+                  <span class="font-medium text-green-600">98.5%</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Browser Runtime:</span>
+                  <span class="font-medium">45.2h</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Last Run:</span>
+                  <span class="font-medium">2 hours ago</span>
+                </div>
+              </div>
+              <div class="flex space-x-2">
+                <button class="flex-1 bg-blue-100 text-blue-700 px-3 py-2 rounded text-sm hover:bg-blue-200 transition-colors">
+                  View Details
+                </button>
+                <button class="flex-1 bg-gray-100 text-gray-700 px-3 py-2 rounded text-sm hover:bg-gray-200 transition-colors">
+                  Configure
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Browser Automation Section -->
+        <div class="mb-8">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-gray-900">Browser Automation</h2>
+            <button class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+              Create Browser Automation
+            </button>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Browser Automation Cards -->
+            <div class="browser-automation-card bg-white p-6 rounded-lg shadow-sm border">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                  <div class="text-2xl mr-3">🌐</div>
+                  <div>
+                    <h3 class="font-semibold text-gray-900">EHR System Automation</h3>
+                    <p class="text-sm text-gray-600">Healthcare Browser Bot</p>
+                  </div>
+                </div>
+                <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">Active</span>
+              </div>
+              <div class="space-y-2 mb-4">
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Target URL:</span>
+                  <span class="font-medium text-blue-600">ehr.system.com</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Actions:</span>
+                  <span class="font-medium">12</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Success Rate:</span>
+                  <span class="font-medium text-green-600">96.8%</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Runtime:</span>
+                  <span class="font-medium">23.5h</span>
+                </div>
+              </div>
+              <div class="flex space-x-2">
+                <button class="flex-1 bg-purple-100 text-purple-700 px-3 py-2 rounded text-sm hover:bg-purple-200 transition-colors">
+                  Run Now
+                </button>
+                <button class="flex-1 bg-gray-100 text-gray-700 px-3 py-2 rounded text-sm hover:bg-gray-200 transition-colors">
+                  Edit
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Web Scraping Section -->
+        <div class="mb-8">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-gray-900">Web Scraping Jobs</h2>
+            <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+              Create Scraping Job
+            </button>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Web Scraping Cards -->
+            <div class="scraping-job-card bg-white p-6 rounded-lg shadow-sm border">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                  <div class="text-2xl mr-3">📊</div>
+                  <div>
+                    <h3 class="font-semibold text-gray-900">Insurance Data Scraping</h3>
+                    <p class="text-sm text-gray-600">Healthcare Data Extraction</p>
+                  </div>
+                </div>
+                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Completed</span>
+              </div>
+              <div class="space-y-2 mb-4">
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Records Scraped:</span>
+                  <span class="font-medium">2,847</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Success Rate:</span>
+                  <span class="font-medium text-green-600">94.2%</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Data Quality:</span>
+                  <span class="font-medium text-blue-600">98.5%</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Last Run:</span>
+                  <span class="font-medium">1 hour ago</span>
+                </div>
+              </div>
+              <div class="flex space-x-2">
+                <button class="flex-1 bg-green-100 text-green-700 px-3 py-2 rounded text-sm hover:bg-green-200 transition-colors">
+                  View Data
+                </button>
+                <button class="flex-1 bg-gray-100 text-gray-700 px-3 py-2 rounded text-sm hover:bg-gray-200 transition-colors">
+                  Schedule
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Filling Section -->
+        <div class="mb-8">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-gray-900">Form Filling Tasks</h2>
+            <button class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors">
+              Create Form Task
+            </button>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Form Filling Cards -->
+            <div class="form-filling-card bg-white p-6 rounded-lg shadow-sm border">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                  <div class="text-2xl mr-3">📝</div>
+                  <div>
+                    <h3 class="font-semibold text-gray-900">Patient Registration Forms</h3>
+                    <p class="text-sm text-gray-600">Healthcare Form Automation</p>
+                  </div>
+                </div>
+                <span class="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full">Running</span>
+              </div>
+              <div class="space-y-2 mb-4">
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Forms Processed:</span>
+                  <span class="font-medium">156</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Success Rate:</span>
+                  <span class="font-medium text-green-600">97.4%</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Fields per Form:</span>
+                  <span class="font-medium">23</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Last Update:</span>
+                  <span class="font-medium">5 minutes ago</span>
+                </div>
+              </div>
+              <div class="flex space-x-2">
+                <button class="flex-1 bg-orange-100 text-orange-700 px-3 py-2 rounded text-sm hover:bg-orange-200 transition-colors">
+                  Monitor
+                </button>
+                <button class="flex-1 bg-gray-100 text-gray-700 px-3 py-2 rounded text-sm hover:bg-gray-200 transition-colors">
+                  Configure
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Enhanced Analytics Section -->
+        <div class="mb-8">
+          <h2 class="text-xl font-semibold text-gray-900 mb-6">Enhanced Analytics</h2>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-lg shadow-sm border">
+              <h3 class="font-semibold text-gray-900 mb-4">RPA + Browser Performance</h3>
+              <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-gray-600">Total Executions</span>
+                  <span class="font-semibold text-lg">24,847</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-gray-600">RPA Success Rate</span>
+                  <span class="font-semibold text-lg text-green-600">97.8%</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-gray-600">Browser Success Rate</span>
+                  <span class="font-semibold text-lg text-purple-600">95.2%</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-gray-600">Combined Efficiency</span>
+                  <span class="font-semibold text-lg text-blue-600">96.5%</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-gray-600">Cost Savings</span>
+                  <span class="font-semibold text-lg text-green-600">$78,230</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow-sm border">
+              <h3 class="font-semibold text-gray-900 mb-4">Browser Automation Metrics</h3>
+              <div class="space-y-4">
+                <div>
+                  <div class="flex justify-between text-sm mb-1">
+                    <span class="text-gray-600">Browser Runtime</span>
+                    <span class="font-medium">245.7h</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-purple-600 h-2 rounded-full" style="width: 78%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between text-sm mb-1">
+                    <span class="text-gray-600">Web Scraping Success</span>
+                    <span class="font-medium">94.2%</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-green-600 h-2 rounded-full" style="width: 94%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between text-sm mb-1">
+                    <span class="text-gray-600">Form Filling Success</span>
+                    <span class="font-medium">97.4%</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-orange-600 h-2 rounded-full" style="width: 97%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between text-sm mb-1">
+                    <span class="text-gray-600">Data Quality Score</span>
+                    <span class="font-medium">98.5%</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-blue-600 h-2 rounded-full" style="width: 98%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Compliance & Security Section -->
+        <div class="mb-8">
+          <h2 class="text-xl font-semibold text-gray-900 mb-6">Enhanced Compliance & Security</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-white p-6 rounded-lg shadow-sm border">
+              <div class="flex items-center justify-between mb-4">
+                <div class="text-2xl">🔐</div>
+                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Compliant</span>
+              </div>
+              <h3 class="font-semibold text-gray-900 mb-2">ISO 27001</h3>
+              <p class="text-sm text-gray-600 mb-4">Information Security Management</p>
+              <div class="text-sm">
+                <div class="flex justify-between mb-1">
+                  <span>Compliance Score:</span>
+                  <span class="font-medium text-green-600">95%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-green-600 h-2 rounded-full" style="width: 95%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow-sm border">
+              <div class="flex items-center justify-between mb-4">
+                <div class="text-2xl">🌐</div>
+                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Compliant</span>
+              </div>
+              <h3 class="font-semibold text-gray-900 mb-2">Browser Security</h3>
+              <p class="text-sm text-gray-600 mb-4">Web Automation Security</p>
+              <div class="text-sm">
+                <div class="flex justify-between mb-1">
+                  <span>Security Score:</span>
+                  <span class="font-medium text-green-600">98%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-green-600 h-2 rounded-full" style="width: 98%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow-sm border">
+              <div class="flex items-center justify-between mb-4">
+                <div class="text-2xl">🏥</div>
+                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Compliant</span>
+              </div>
+              <h3 class="font-semibold text-gray-900 mb-2">HIPAA</h3>
+              <p class="text-sm text-gray-600 mb-4">Healthcare Data Protection</p>
+              <div class="text-sm">
+                <div class="flex justify-between mb-1">
+                  <span>Compliance Score:</span>
+                  <span class="font-medium text-green-600">97%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-green-600 h-2 rounded-full" style="width: 97%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow-sm border">
+              <div class="flex items-center justify-between mb-4">
+                <div class="text-2xl">🔒</div>
+                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Compliant</span>
+              </div>
+              <h3 class="font-semibold text-gray-900 mb-2">Data Privacy</h3>
+              <p class="text-sm text-gray-600 mb-4">GDPR & Privacy Protection</p>
+              <div class="text-sm">
+                <div class="flex justify-between mb-1">
+                  <span>Privacy Score:</span>
+                  <span class="font-medium text-green-600">96%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-green-600 h-2 rounded-full" style="width: 96%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Enhanced RPA Dashboard JavaScript
+    class EnhancedRPADashboard {
+      constructor() {
+        this.currentIndustry = null;
+        this.rpaEngine = null;
+        this.axiomService = null;
+        this.enhancedWorkflowEngine = null;
+        this.initializeDashboard();
+      }
+
+      async initializeDashboard() {
+        console.log('🚀 Initializing TETRIX Enhanced RPA Dashboard...');
+        
+        // Initialize services
+        this.rpaEngine = new TETRIXRPAEngine();
+        this.axiomService = new TETRIXAxiomIntegrationService('your-axiom-api-key');
+        this.enhancedWorkflowEngine = new TETRIXEnhancedWorkflowEngine(this.rpaEngine, this.axiomService);
+        
+        // Setup event listeners
+        this.setupEventListeners();
+        
+        console.log('✅ Enhanced RPA Dashboard initialized successfully');
+      }
+
+      setupEventListeners() {
+        // Industry tab selection
+        document.querySelectorAll('.industry-tab').forEach(tab => {
+          tab.addEventListener('click', (e) => {
+            const industry = e.currentTarget.dataset.industry;
+            this.selectIndustry(industry);
+          });
+        });
+
+        // Bot creation buttons
+        document.querySelectorAll('button').forEach(button => {
+          if (button.textContent.includes('Create Enhanced Bot')) {
+            button.addEventListener('click', () => this.createEnhancedBot());
+          }
+          if (button.textContent.includes('Create Browser Bot')) {
+            button.addEventListener('click', () => this.createBrowserBot());
+          }
+          if (button.textContent.includes('Create Browser Automation')) {
+            button.addEventListener('click', () => this.createBrowserAutomation());
+          }
+          if (button.textContent.includes('Create Scraping Job')) {
+            button.addEventListener('click', () => this.createScrapingJob());
+          }
+          if (button.textContent.includes('Create Form Task')) {
+            button.addEventListener('click', () => this.createFormTask());
+          }
+        });
+      }
+
+      async selectIndustry(industry) {
+        console.log(`🏭 Selecting industry: ${industry}`);
+        
+        // Update UI
+        document.querySelectorAll('.industry-tab').forEach(tab => {
+          tab.classList.remove('border-blue-500', 'bg-blue-50');
+          tab.classList.add('border-gray-200');
+        });
+        
+        document.querySelector(`[data-industry="${industry}"]`).classList.add('border-blue-500', 'bg-blue-50');
+        document.querySelector(`[data-industry="${industry}"]`).classList.remove('border-gray-200');
+        
+        this.currentIndustry = industry;
+        
+        // Show industry content
+        const industryContent = document.getElementById('industry-content');
+        industryContent.classList.remove('hidden');
+        
+        // Load industry-specific data
+        await this.loadIndustryData(industry);
+      }
+
+      async loadIndustryData(industry) {
+        try {
+          // Load enhanced workflows
+          const enhancedWorkflows = await this.enhancedWorkflowEngine.getIndustryWorkflows(industry);
+          console.log(`📋 Loaded ${enhancedWorkflows.length} enhanced workflows for ${industry}`);
+          
+          // Load Axiom.ai bots
+          const axiomBots = await this.axiomService.getIndustryBots(industry);
+          console.log(`🤖 Loaded ${axiomBots.length} Axiom.ai bots for ${industry}`);
+          
+          // Load browser automation data
+          const browserAutomations = await this.loadBrowserAutomations(industry);
+          console.log(`🌐 Loaded browser automations for ${industry}`);
+          
+          // Update UI with loaded data
+          this.updateIndustryContent(industry, enhancedWorkflows, axiomBots, browserAutomations);
+          
+        } catch (error) {
+          console.error(`❌ Failed to load data for ${industry}:`, error);
+        }
+      }
+
+      async loadBrowserAutomations(industry) {
+        // Load browser automation data for industry
+        return {
+          active: 12,
+          completed: 156,
+          failed: 3,
+          runtime: 245.7
+        };
+      }
+
+      updateIndustryContent(industry, enhancedWorkflows, axiomBots, browserAutomations) {
+        // Update enhanced bot cards
+        this.updateEnhancedBotCards(enhancedWorkflows, axiomBots);
+        
+        // Update browser automation cards
+        this.updateBrowserAutomationCards(browserAutomations);
+        
+        // Update analytics
+        this.updateAnalytics(browserAutomations);
+      }
+
+      updateEnhancedBotCards(enhancedWorkflows, axiomBots) {
+        // Update enhanced bot cards with real data
+        console.log('🤖 Updating enhanced bot cards:', enhancedWorkflows, axiomBots);
+      }
+
+      updateBrowserAutomationCards(browserAutomations) {
+        // Update browser automation cards with real data
+        console.log('🌐 Updating browser automation cards:', browserAutomations);
+      }
+
+      updateAnalytics(browserAutomations) {
+        // Update analytics with real data
+        console.log('📊 Updating analytics:', browserAutomations);
+      }
+
+      async createEnhancedBot() {
+        if (!this.currentIndustry) {
+          alert('Please select an industry first');
+          return;
+        }
+        
+        console.log(`🤖 Creating enhanced bot for ${this.currentIndustry}`);
+        // Implementation would open enhanced bot creation modal
+      }
+
+      async createBrowserBot() {
+        if (!this.currentIndustry) {
+          alert('Please select an industry first');
+          return;
+        }
+        
+        console.log(`🌐 Creating browser bot for ${this.currentIndustry}`);
+        // Implementation would open browser bot creation modal
+      }
+
+      async createBrowserAutomation() {
+        if (!this.currentIndustry) {
+          alert('Please select an industry first');
+          return;
+        }
+        
+        console.log(`🌐 Creating browser automation for ${this.currentIndustry}`);
+        // Implementation would open browser automation creation modal
+      }
+
+      async createScrapingJob() {
+        if (!this.currentIndustry) {
+          alert('Please select an industry first');
+          return;
+        }
+        
+        console.log(`📊 Creating scraping job for ${this.currentIndustry}`);
+        // Implementation would open scraping job creation modal
+      }
+
+      async createFormTask() {
+        if (!this.currentIndustry) {
+          alert('Please select an industry first');
+          return;
+        }
+        
+        console.log(`📝 Creating form task for ${this.currentIndustry}`);
+        // Implementation would open form task creation modal
+      }
+    }
+
+    // Initialize dashboard when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      new EnhancedRPADashboard();
+    });
+  </script>
+</MainLayout>
