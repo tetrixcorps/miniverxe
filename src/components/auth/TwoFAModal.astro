@@ -1,0 +1,570 @@
+---
+// TETRIX Two-Factor Authentication Modal Component
+// Provides 2FA authentication with TOTP, SMS, and WebAuthn support
+---
+
+<div id="twofa-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+  <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full">
+      <!-- Header -->
+      <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-bold text-gray-900">Two-Factor Authentication</h2>
+            <p class="text-gray-600 text-sm mt-1">Secure your account with 2FA</p>
+          </div>
+          <button 
+            id="close-twofa-modal" 
+            class="text-gray-400 hover:text-gray-600 transition-colors"
+            aria-label="Close modal"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="p-6">
+        <!-- 2FA Methods Selection -->
+        <div id="twofa-methods" class="space-y-3">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Choose Authentication Method</h3>
+          
+          <!-- TOTP (Authenticator App) -->
+          <button 
+            class="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left"
+            data-method="totp"
+          >
+            <div class="flex items-center">
+              <div class="text-2xl mr-3">📱</div>
+              <div>
+                <div class="font-medium text-gray-900">Authenticator App</div>
+                <div class="text-sm text-gray-600">Use Google Authenticator, Authy, or similar</div>
+              </div>
+            </div>
+          </button>
+
+          <!-- SMS -->
+          <button 
+            class="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left"
+            data-method="sms"
+          >
+            <div class="flex items-center">
+              <div class="text-2xl mr-3">📲</div>
+              <div>
+                <div class="font-medium text-gray-900">SMS Code</div>
+                <div class="text-sm text-gray-600">Receive code via text message</div>
+              </div>
+            </div>
+          </button>
+
+          <!-- WebAuthn (Biometric) -->
+          <button 
+            class="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left"
+            data-method="webauthn"
+          >
+            <div class="flex items-center">
+              <div class="text-2xl mr-3">👆</div>
+              <div>
+                <div class="font-medium text-gray-900">Biometric</div>
+                <div class="text-sm text-gray-600">Use fingerprint or face recognition</div>
+              </div>
+            </div>
+          </button>
+
+          <!-- Backup Codes -->
+          <button 
+            class="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left"
+            data-method="backup"
+          >
+            <div class="flex items-center">
+              <div class="text-2xl mr-3">🔑</div>
+              <div>
+                <div class="font-medium text-gray-900">Backup Code</div>
+                <div class="text-sm text-gray-600">Use a one-time backup code</div>
+              </div>
+            </div>
+          </button>
+        </div>
+
+        <!-- TOTP Form -->
+        <div id="totp-form" class="hidden">
+          <div class="text-center mb-6">
+            <div class="text-4xl mb-2">📱</div>
+            <h3 class="text-lg font-semibold text-gray-900">Authenticator App</h3>
+            <p class="text-gray-600 text-sm">Enter the 6-digit code from your authenticator app</p>
+          </div>
+          
+          <form class="space-y-4">
+            <div>
+              <label for="totp-code" class="block text-sm font-medium text-gray-700 mb-1">Verification Code</label>
+              <input 
+                type="text" 
+                id="totp-code" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-lg tracking-widest"
+                placeholder="000000"
+                maxlength="6"
+                required
+              >
+            </div>
+            <button 
+              type="submit" 
+              class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+            >
+              Verify Code
+            </button>
+          </form>
+        </div>
+
+        <!-- SMS Form -->
+        <div id="sms-form" class="hidden">
+          <div class="text-center mb-6">
+            <div class="text-4xl mb-2">📲</div>
+            <h3 class="text-lg font-semibold text-gray-900">SMS Verification</h3>
+            <p class="text-gray-600 text-sm">We'll send a code to your registered phone number</p>
+          </div>
+          
+          <form class="space-y-4">
+            <div>
+              <label for="sms-phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+              <input 
+                type="tel" 
+                id="sms-phone" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="+1 (555) 123-4567"
+                required
+              >
+            </div>
+            <button 
+              type="button" 
+              id="send-sms-code"
+              class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+            >
+              Send Code
+            </button>
+          </form>
+
+          <!-- SMS Code Input (shown after sending) -->
+          <div id="sms-code-input" class="hidden mt-4">
+            <div>
+              <label for="sms-code" class="block text-sm font-medium text-gray-700 mb-1">Enter SMS Code</label>
+              <input 
+                type="text" 
+                id="sms-code" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-lg tracking-widest"
+                placeholder="000000"
+                maxlength="6"
+              >
+            </div>
+            <button 
+              type="button" 
+              id="verify-sms-code"
+              class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors mt-3"
+            >
+              Verify Code
+            </button>
+            <div class="text-center mt-3">
+              <button 
+                type="button" 
+                id="resend-sms-code"
+                class="text-sm text-blue-600 hover:text-blue-500"
+              >
+                Resend code
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- WebAuthn Form -->
+        <div id="webauthn-form" class="hidden">
+          <div class="text-center mb-6">
+            <div class="text-4xl mb-2">👆</div>
+            <h3 class="text-lg font-semibold text-gray-900">Biometric Authentication</h3>
+            <p class="text-gray-600 text-sm">Use your device's biometric authentication</p>
+          </div>
+          
+          <button 
+            id="webauthn-button"
+            class="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+          >
+            Authenticate with Biometrics
+          </button>
+        </div>
+
+        <!-- Backup Code Form -->
+        <div id="backup-form" class="hidden">
+          <div class="text-center mb-6">
+            <div class="text-4xl mb-2">🔑</div>
+            <h3 class="text-lg font-semibold text-gray-900">Backup Code</h3>
+            <p class="text-gray-600 text-sm">Enter one of your backup codes</p>
+          </div>
+          
+          <form class="space-y-4">
+            <div>
+              <label for="backup-code" class="block text-sm font-medium text-gray-700 mb-1">Backup Code</label>
+              <input 
+                type="text" 
+                id="backup-code" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+                placeholder="Enter backup code"
+                required
+              >
+            </div>
+            <button 
+              type="submit" 
+              class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+            >
+              Verify Backup Code
+            </button>
+          </form>
+        </div>
+
+        <!-- Loading State -->
+        <div id="twofa-loading" class="hidden text-center py-8">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p class="text-gray-600">Verifying...</p>
+        </div>
+
+        <!-- Success State -->
+        <div id="twofa-success" class="hidden text-center py-8">
+          <div class="text-4xl mb-4">✅</div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Authentication Successful</h3>
+          <p class="text-gray-600 mb-4">Redirecting to your dashboard...</p>
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto"></div>
+        </div>
+
+        <!-- Error State -->
+        <div id="twofa-error" class="hidden text-center py-8">
+          <div class="text-4xl mb-4">❌</div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Authentication Failed</h3>
+          <p class="text-gray-600 mb-4" id="twofa-error-message">Please try again</p>
+          <button 
+            id="retry-twofa" 
+            class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+
+        <!-- Back Button -->
+        <div class="mt-6">
+          <button 
+            id="back-to-twofa-methods" 
+            class="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
+          >
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Back to Methods
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Two-Factor Authentication Modal JavaScript
+  class TwoFAModal {
+    constructor() {
+      this.modal = document.getElementById('twofa-modal');
+      this.methods = document.getElementById('twofa-methods');
+      this.totpForm = document.getElementById('totp-form');
+      this.smsForm = document.getElementById('sms-form');
+      this.webauthnForm = document.getElementById('webauthn-form');
+      this.backupForm = document.getElementById('backup-form');
+      this.loading = document.getElementById('twofa-loading');
+      this.success = document.getElementById('twofa-success');
+      this.error = document.getElementById('twofa-error');
+      
+      this.selectedMethod = null;
+      
+      this.init();
+    }
+
+    init() {
+      this.bindEvents();
+    }
+
+    bindEvents() {
+      // Close modal
+      document.getElementById('close-twofa-modal')?.addEventListener('click', () => {
+        this.closeModal();
+      });
+
+      // Method selection
+      document.querySelectorAll('#twofa-methods button').forEach(button => {
+        button.addEventListener('click', (e) => {
+          this.selectMethod(e.currentTarget.dataset.method);
+        });
+      });
+
+      // Form submissions
+      document.getElementById('totp-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleTOTP();
+      });
+
+      document.getElementById('backup-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleBackupCode();
+      });
+
+      // SMS events
+      document.getElementById('send-sms-code')?.addEventListener('click', () => {
+        this.sendSMSCode();
+      });
+
+      document.getElementById('verify-sms-code')?.addEventListener('click', () => {
+        this.verifySMSCode();
+      });
+
+      document.getElementById('resend-sms-code')?.addEventListener('click', () => {
+        this.resendSMSCode();
+      });
+
+      // WebAuthn
+      document.getElementById('webauthn-button')?.addEventListener('click', () => {
+        this.handleWebAuthn();
+      });
+
+      // Back button
+      document.getElementById('back-to-twofa-methods')?.addEventListener('click', () => {
+        this.showMethods();
+      });
+
+      // Retry button
+      document.getElementById('retry-twofa')?.addEventListener('click', () => {
+        this.showMethods();
+      });
+
+      // Close on backdrop click
+      this.modal?.addEventListener('click', (e) => {
+        if (e.target === this.modal) {
+          this.closeModal();
+        }
+      });
+    }
+
+    selectMethod(method) {
+      this.selectedMethod = method;
+      
+      // Update UI
+      document.querySelectorAll('#twofa-methods button').forEach(button => {
+        button.classList.remove('border-blue-500', 'bg-blue-50');
+        button.classList.add('border-gray-200');
+      });
+      
+      document.querySelector(`[data-method="${method}"]`).classList.add('border-blue-500', 'bg-blue-50');
+      document.querySelector(`[data-method="${method}"]`).classList.remove('border-gray-200');
+
+      // Show appropriate form
+      this.showMethodForm(method);
+    }
+
+    showMethodForm(method) {
+      // Hide all forms
+      this.methods.classList.add('hidden');
+      this.totpForm.classList.add('hidden');
+      this.smsForm.classList.add('hidden');
+      this.webauthnForm.classList.add('hidden');
+      this.backupForm.classList.add('hidden');
+      this.loading.classList.add('hidden');
+      this.success.classList.add('hidden');
+      this.error.classList.add('hidden');
+
+      // Show appropriate form
+      switch (method) {
+        case 'totp':
+          this.totpForm.classList.remove('hidden');
+          break;
+        case 'sms':
+          this.smsForm.classList.remove('hidden');
+          break;
+        case 'webauthn':
+          this.webauthnForm.classList.remove('hidden');
+          break;
+        case 'backup':
+          this.backupForm.classList.remove('hidden');
+          break;
+      }
+    }
+
+    handleTOTP() {
+      const code = document.getElementById('totp-code').value;
+
+      if (!code || code.length !== 6) {
+        this.showError('Please enter a valid 6-digit code');
+        return;
+      }
+
+      this.showLoading();
+      
+      // Simulate TOTP verification
+      setTimeout(() => {
+        this.handleAuthResponse({ success: true });
+      }, 1500);
+    }
+
+    sendSMSCode() {
+      const phone = document.getElementById('sms-phone').value;
+
+      if (!phone) {
+        this.showError('Please enter a phone number');
+        return;
+      }
+
+      this.showLoading();
+      
+      // Simulate SMS sending
+      setTimeout(() => {
+        this.hideLoading();
+        document.getElementById('sms-code-input').classList.remove('hidden');
+      }, 2000);
+    }
+
+    verifySMSCode() {
+      const code = document.getElementById('sms-code').value;
+
+      if (!code || code.length !== 6) {
+        this.showError('Please enter a valid 6-digit code');
+        return;
+      }
+
+      this.showLoading();
+      
+      // Simulate SMS verification
+      setTimeout(() => {
+        this.handleAuthResponse({ success: true });
+      }, 1500);
+    }
+
+    resendSMSCode() {
+      this.showLoading();
+      
+      // Simulate resending SMS
+      setTimeout(() => {
+        this.hideLoading();
+      }, 1000);
+    }
+
+    handleWebAuthn() {
+      this.showLoading();
+      
+      // Simulate WebAuthn authentication
+      setTimeout(() => {
+        this.handleAuthResponse({ success: true });
+      }, 2000);
+    }
+
+    handleBackupCode() {
+      const code = document.getElementById('backup-code').value;
+
+      if (!code) {
+        this.showError('Please enter a backup code');
+        return;
+      }
+
+      this.showLoading();
+      
+      // Simulate backup code verification
+      setTimeout(() => {
+        this.handleAuthResponse({ success: true });
+      }, 1500);
+    }
+
+    handleAuthResponse(response) {
+      if (response.success) {
+        this.showSuccess();
+        // Redirect after success
+        setTimeout(() => {
+          this.redirectToDashboard();
+        }, 2000);
+      } else {
+        this.showError(response.message || 'Authentication failed');
+      }
+    }
+
+    showLoading() {
+      this.methods.classList.add('hidden');
+      this.totpForm.classList.add('hidden');
+      this.smsForm.classList.add('hidden');
+      this.webauthnForm.classList.add('hidden');
+      this.backupForm.classList.add('hidden');
+      this.loading.classList.remove('hidden');
+      this.success.classList.add('hidden');
+      this.error.classList.add('hidden');
+    }
+
+    hideLoading() {
+      this.loading.classList.add('hidden');
+    }
+
+    showSuccess() {
+      this.methods.classList.add('hidden');
+      this.totpForm.classList.add('hidden');
+      this.smsForm.classList.add('hidden');
+      this.webauthnForm.classList.add('hidden');
+      this.backupForm.classList.add('hidden');
+      this.loading.classList.add('hidden');
+      this.success.classList.remove('hidden');
+      this.error.classList.add('hidden');
+    }
+
+    showError(message) {
+      this.methods.classList.add('hidden');
+      this.totpForm.classList.add('hidden');
+      this.smsForm.classList.add('hidden');
+      this.webauthnForm.classList.add('hidden');
+      this.backupForm.classList.add('hidden');
+      this.loading.classList.add('hidden');
+      this.success.classList.add('hidden');
+      this.error.classList.remove('hidden');
+      
+      document.getElementById('twofa-error-message').textContent = message;
+    }
+
+    showMethods() {
+      this.methods.classList.remove('hidden');
+      this.totpForm.classList.add('hidden');
+      this.smsForm.classList.add('hidden');
+      this.webauthnForm.classList.add('hidden');
+      this.backupForm.classList.add('hidden');
+      this.loading.classList.add('hidden');
+      this.success.classList.add('hidden');
+      this.error.classList.add('hidden');
+      
+      // Reset forms
+      document.getElementById('totp-code').value = '';
+      document.getElementById('sms-code').value = '';
+      document.getElementById('backup-code').value = '';
+      document.getElementById('sms-code-input').classList.add('hidden');
+    }
+
+    redirectToDashboard() {
+      // Redirect to dashboard
+      window.location.href = '/dashboards/client';
+    }
+
+    closeModal() {
+      this.modal.classList.add('hidden');
+      this.showMethods();
+    }
+
+    open() {
+      this.modal.classList.remove('hidden');
+      this.showMethods();
+    }
+  }
+
+  // Initialize modal when DOM is loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    window.twoFAModal = new TwoFAModal();
+  });
+
+  // Global function to open modal
+  window.open2FAModal = () => {
+    window.twoFAModal?.open();
+  };
+</script>

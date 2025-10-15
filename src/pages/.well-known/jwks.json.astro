@@ -1,0 +1,33 @@
+---
+// TETRIX JWKS (JSON Web Key Set) Endpoint
+// Serves public keys for JWT token verification in OAuth 2.0 and OpenID Connect flows
+// Accessible at: https://tetrixcorp.com/.well-known/jwks.json
+
+import { generateJWKS } from '../../services/auth/jwksService';
+
+// Generate JWKS for the current environment
+const jwks = await generateJWKS();
+
+// Set proper headers for JWKS endpoint
+const headers = {
+  'Content-Type': 'application/json',
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+  'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'X-XSS-Protection': '1; mode=block'
+};
+
+// Set response headers
+Object.entries(headers).forEach(([key, value]) => {
+  Astro.response.headers.set(key, value);
+});
+
+// Return JWKS as JSON
+return new Response(JSON.stringify(jwks, null, 2), {
+  status: 200,
+  headers: Astro.response.headers
+});
+---

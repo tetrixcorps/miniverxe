@@ -1,0 +1,272 @@
+---
+// Legal Practice Dashboard
+// Case management, client communication, billing
+
+import SalesforceIntegration from '../../components/dashboards/SalesforceIntegration.astro';
+import HubSpotIntegration from '../../components/dashboards/HubSpotIntegration.astro';
+---
+
+<div class="min-h-screen bg-gray-50">
+  <!-- Header -->
+  <div class="bg-white shadow-sm border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4">
+        <div class="flex items-center">
+          <h1 class="text-2xl font-bold text-gray-900">Legal Practice Dashboard</h1>
+          <span class="ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+            ⚖️ Legal
+          </span>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="flex items-center text-sm text-gray-500">
+            <div class="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+            System Online
+          </div>
+          <button id="refresh-btn" class="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Key Metrics -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+              <span class="text-blue-600 text-lg">📋</span>
+            </div>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-500">Active Cases</p>
+            <p class="text-2xl font-semibold text-gray-900">24</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+              <span class="text-green-600 text-lg">👥</span>
+            </div>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-500">Clients</p>
+            <p class="text-2xl font-semibold text-gray-900">156</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+              <span class="text-yellow-600 text-lg">💰</span>
+            </div>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-500">Billable Hours</p>
+            <p class="text-2xl font-semibold text-gray-900">1,247</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+              <span class="text-purple-600 text-lg">📅</span>
+            </div>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-500">Appointments</p>
+            <p class="text-2xl font-semibold text-gray-900">12</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Case Management -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-medium text-gray-900">Active Cases</h3>
+        </div>
+        <div class="p-6">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div>
+                <h4 class="font-medium text-gray-900">Smith vs. Corporation</h4>
+                <p class="text-sm text-gray-600">Personal Injury</p>
+              </div>
+              <div class="text-right">
+                <p class="text-sm font-medium text-gray-900">$50,000</p>
+                <p class="text-xs text-gray-500">Settlement</p>
+              </div>
+            </div>
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div>
+                <h4 class="font-medium text-gray-900">Johnson Estate</h4>
+                <p class="text-sm text-gray-600">Estate Planning</p>
+              </div>
+              <div class="text-right">
+                <p class="text-sm font-medium text-gray-900">$2.5M</p>
+                <p class="text-xs text-gray-500">Estate Value</p>
+              </div>
+            </div>
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div>
+                <h4 class="font-medium text-gray-900">ABC Corp Contract</h4>
+                <p class="text-sm text-gray-600">Business Law</p>
+              </div>
+              <div class="text-right">
+                <p class="text-sm font-medium text-gray-900">$15,000</p>
+                <p class="text-xs text-gray-500">Monthly Retainer</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-medium text-gray-900">Upcoming Deadlines</h3>
+        </div>
+        <div class="p-6">
+          <div class="space-y-4">
+            <div class="flex items-center space-x-3">
+              <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-gray-900">Motion to Dismiss - Smith Case</p>
+                <p class="text-xs text-gray-500">Due: Tomorrow, 5:00 PM</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-3">
+              <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-gray-900">Discovery Response - Johnson Estate</p>
+                <p class="text-xs text-gray-500">Due: Friday, 12:00 PM</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-3">
+              <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-gray-900">Contract Review - ABC Corp</p>
+                <p class="text-xs text-gray-500">Due: Next Monday</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Client Communication -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h3 class="text-lg font-medium text-gray-900">Client Communication</h3>
+      </div>
+      <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="text-center">
+            <div class="text-3xl font-bold text-blue-600 mb-2">89%</div>
+            <p class="text-sm text-gray-600">Response Rate</p>
+            <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+              <div class="bg-blue-600 h-2 rounded-full" style="width: 89%"></div>
+            </div>
+          </div>
+          
+          <div class="text-center">
+            <div class="text-3xl font-bold text-green-600 mb-2">24</div>
+            <p class="text-sm text-gray-600">Client Calls Today</p>
+            <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+              <div class="bg-green-600 h-2 rounded-full" style="width: 75%"></div>
+            </div>
+          </div>
+          
+          <div class="text-center">
+            <div class="text-3xl font-bold text-purple-600 mb-2">156</div>
+            <p class="text-sm text-gray-600">Emails Sent</p>
+            <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+              <div class="bg-purple-600 h-2 rounded-full" style="width: 60%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h3 class="text-lg font-medium text-gray-900">Recent Activity</h3>
+      </div>
+      <div class="p-6">
+        <div class="space-y-4">
+          <div class="flex items-center space-x-4">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                <span class="text-green-600 text-sm">✅</span>
+              </div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm text-gray-900">Case closed: Smith vs. Corporation - Settlement reached</p>
+              <p class="text-xs text-gray-500">$50,000 settlement - 2 hours ago</p>
+            </div>
+          </div>
+          
+          <div class="flex items-center space-x-4">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                <span class="text-blue-600 text-sm">📞</span>
+              </div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm text-gray-900">Client call completed: Johnson Estate consultation</p>
+              <p class="text-xs text-gray-500">45 minutes - 1 hour ago</p>
+            </div>
+          </div>
+          
+          <div class="flex items-center space-x-4">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                <span class="text-yellow-600 text-sm">📋</span>
+              </div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm text-gray-900">Document filed: Motion to Dismiss - ABC Corp</p>
+              <p class="text-xs text-gray-500">Case ID: 2024-001 - 3 hours ago</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CRM Integrations -->
+    <div class="mt-8">
+      <h2 class="text-xl font-semibold text-gray-900 mb-6">CRM Integrations</h2>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <SalesforceIntegration />
+        <HubSpotIntegration />
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Auto-refresh functionality
+  setInterval(() => {
+    // Simulate data refresh
+    console.log('Refreshing legal dashboard data...');
+  }, 30000);
+
+  // Refresh button functionality
+  document.getElementById('refresh-btn')?.addEventListener('click', () => {
+    location.reload();
+  });
+</script>

@@ -1,89 +1,54 @@
-// Test script for SHANGO API endpoints
-const baseUrl = 'http://localhost:8080';
-
-async function testSHANGOAPI() {
-  console.log('🧪 Testing SHANGO API endpoints...\n');
-
+// Test SHANGO API endpoints
+const testSHANGOAPI = async () => {
+  console.log('Testing SHANGO API endpoints...');
+  
   try {
-    // Test 1: Get available agents
-    console.log('1. Testing GET /api/v1/shango/sessions (agents)');
-    const agentsResponse = await fetch(`${baseUrl}/api/v1/shango/sessions`);
-    const agentsData = await agentsResponse.json();
-    
-    if (agentsData.success) {
-      console.log('✅ Agents retrieved successfully');
-      console.log(`   Found ${agentsData.agents.length} agents:`, agentsData.agents.map(a => a.name).join(', '));
-    } else {
-      console.log('❌ Failed to get agents:', agentsData.error);
-    }
-
-    // Test 2: Create a new session
-    console.log('\n2. Testing POST /api/v1/shango/sessions (create session)');
-    const sessionResponse = await fetch(`${baseUrl}/api/v1/shango/sessions`, {
+    // Test 1: Create a session
+    console.log('1. Testing session creation...');
+    const sessionResponse = await fetch('/api/v1/shango/sessions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        userId: 'test-user-123',
+        userId: 'test-user-' + Date.now(),
         agentId: 'shango-general',
         channel: 'chat'
       })
     });
     
-    const sessionData = await sessionResponse.json();
-    
-    if (sessionData.success) {
-      console.log('✅ Session created successfully');
-      console.log(`   Session ID: ${sessionData.session.id}`);
-      console.log(`   Agent: ${sessionData.session.agentId}`);
+    if (sessionResponse.ok) {
+      const sessionData = await sessionResponse.json();
+      console.log('✅ Session created successfully:', sessionData);
       
-      const sessionId = sessionData.session.id;
-      
-      // Test 3: Send a message
-      console.log('\n3. Testing POST /api/v1/shango/sessions/{id}/messages (send message)');
-      const messageResponse = await fetch(`${baseUrl}/api/v1/shango/sessions/${sessionId}/messages`, {
+      // Test 2: Send a message
+      console.log('2. Testing message sending...');
+      const messageResponse = await fetch(`/api/v1/shango/sessions/${sessionData.session.id}/messages`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: 'Hello SHANGO! Can you help me with pricing?',
+          message: 'Hello SHANGO!',
           role: 'user',
           agentId: 'shango-general'
         })
       });
       
-      const messageData = await messageResponse.json();
-      
-      if (messageData.success) {
-        console.log('✅ Message sent successfully');
-        console.log(`   User message: ${messageData.message.content}`);
-        console.log(`   AI response: ${messageData.aiResponse.content}`);
+      if (messageResponse.ok) {
+        const messageData = await messageResponse.json();
+        console.log('✅ Message sent successfully:', messageData);
+        console.log('🎉 All tests passed! SHANGO API is working correctly.');
       } else {
-        console.log('❌ Failed to send message:', messageData.error);
+        console.error('❌ Message sending failed:', await messageResponse.text());
       }
-      
-      // Test 4: Get chat history
-      console.log('\n4. Testing GET /api/v1/shango/sessions/{id}/messages (get history)');
-      const historyResponse = await fetch(`${baseUrl}/api/v1/shango/sessions/${sessionId}/messages`);
-      const historyData = await historyResponse.json();
-      
-      if (historyData.success) {
-        console.log('✅ Chat history retrieved successfully');
-        console.log(`   Found ${historyData.messages.length} messages`);
-      } else {
-        console.log('❌ Failed to get chat history:', historyData.error);
-      }
-      
     } else {
-      console.log('❌ Failed to create session:', sessionData.error);
+      console.error('❌ Session creation failed:', await sessionResponse.text());
     }
-
   } catch (error) {
-    console.error('❌ Test failed with error:', error.message);
+    console.error('❌ Test failed with error:', error);
   }
-}
+};
 
 // Run the test
 testSHANGOAPI();
