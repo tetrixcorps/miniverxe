@@ -1,0 +1,338 @@
+---
+// Industry-Specific Authentication Component
+// Handles authentication for different industries with role-based access
+---
+
+<div id="industry-auth-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+  <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8">
+      <!-- Header -->
+      <div class="text-center mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">Industry Authentication</h2>
+        <p class="text-gray-600">Select your industry and role to access your dashboard</p>
+      </div>
+
+      <!-- Industry Selection -->
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-3">Select Industry</label>
+        <select id="industry-select" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent">
+          <option value="">Choose your industry...</option>
+          <option value="healthcare">🏥 Healthcare</option>
+          <option value="construction">🏗️ Construction</option>
+          <option value="logistics">🚛 Logistics & Fleet</option>
+          <option value="government">🏛️ Government</option>
+          <option value="education">🎓 Education</option>
+          <option value="retail">🛒 Retail</option>
+          <option value="hospitality">🏨 Hospitality</option>
+          <option value="wellness">💪 Wellness</option>
+          <option value="beauty">💄 Beauty</option>
+          <option value="legal">⚖️ Legal</option>
+        </select>
+      </div>
+
+      <!-- Role Selection -->
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-3">Select Role</label>
+        <select id="role-select" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent" disabled>
+          <option value="">Choose your role...</option>
+        </select>
+      </div>
+
+      <!-- Organization -->
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-3">Organization</label>
+        <input 
+          type="text" 
+          id="organization-input" 
+          placeholder="Enter your organization name"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent"
+        />
+      </div>
+
+      <!-- Authentication Method -->
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-3">Authentication Method</label>
+        <div class="space-y-3">
+          <label class="flex items-center">
+            <input type="radio" name="auth-method" value="email" class="mr-3" checked>
+            <span class="text-sm text-gray-700">Email & Password</span>
+          </label>
+          <label class="flex items-center">
+            <input type="radio" name="auth-method" value="2fa" class="mr-3">
+            <span class="text-sm text-gray-700">Two-Factor Authentication</span>
+          </label>
+          <label class="flex items-center">
+            <input type="radio" name="auth-method" value="sso" class="mr-3">
+            <span class="text-sm text-gray-700">Single Sign-On (SSO)</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Login Form -->
+      <div id="email-auth" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+          <input 
+            type="email" 
+            id="email-input" 
+            placeholder="your.email@organization.com"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+          <input 
+            type="password" 
+            id="password-input" 
+            placeholder="Enter your password"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent"
+          />
+        </div>
+      </div>
+
+      <!-- 2FA Form -->
+      <div id="2fa-auth" class="space-y-4 hidden">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Verification Code</label>
+          <input 
+            type="text" 
+            id="2fa-code" 
+            placeholder="Enter 6-digit code"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent"
+            maxlength="6"
+          />
+        </div>
+      </div>
+
+      <!-- SSO Form -->
+      <div id="sso-auth" class="space-y-4 hidden">
+        <div class="text-center">
+          <p class="text-sm text-gray-600 mb-4">Choose your SSO provider</p>
+          <div class="space-y-2">
+            <button class="w-full px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center justify-center">
+              <span class="mr-2">🔐</span>
+              Microsoft Azure AD
+            </button>
+            <button class="w-full px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center justify-center">
+              <span class="mr-2">🔑</span>
+              Google Workspace
+            </button>
+            <button class="w-full px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center justify-center">
+              <span class="mr-2">🏢</span>
+              Okta
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex space-x-4 mt-8">
+        <button 
+          id="cancel-auth" 
+          class="flex-1 px-4 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+        >
+          Cancel
+        </button>
+        <button 
+          id="login-btn" 
+          class="flex-1 px-4 py-3 bg-brand-red text-white rounded-lg hover:bg-red-700 transition-colors"
+        >
+          Access Dashboard
+        </button>
+      </div>
+
+      <!-- Loading State -->
+      <div id="auth-loading" class="hidden text-center py-4">
+        <div class="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-brand-red"></div>
+        <p class="text-sm text-gray-600 mt-2">Authenticating...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Industry-specific roles mapping
+  const industryRoles = {
+    healthcare: [
+      { value: 'doctor', label: 'Doctor' },
+      { value: 'nurse', label: 'Nurse' },
+      { value: 'admin', label: 'Administrator' },
+      { value: 'receptionist', label: 'Receptionist' }
+    ],
+    construction: [
+      { value: 'project_manager', label: 'Project Manager' },
+      { value: 'site_supervisor', label: 'Site Supervisor' },
+      { value: 'safety_officer', label: 'Safety Officer' },
+      { value: 'foreman', label: 'Foreman' }
+    ],
+    logistics: [
+      { value: 'fleet_manager', label: 'Fleet Manager' },
+      { value: 'dispatcher', label: 'Dispatcher' },
+      { value: 'driver', label: 'Driver' },
+      { value: 'operations', label: 'Operations Manager' }
+    ],
+    government: [
+      { value: 'department_head', label: 'Department Head' },
+      { value: 'citizen_services', label: 'Citizen Services' },
+      { value: 'emergency_services', label: 'Emergency Services' },
+      { value: 'permit_office', label: 'Permit Office' }
+    ],
+    education: [
+      { value: 'principal', label: 'Principal' },
+      { value: 'teacher', label: 'Teacher' },
+      { value: 'admin', label: 'Administrator' },
+      { value: 'parent', label: 'Parent' }
+    ],
+    retail: [
+      { value: 'store_manager', label: 'Store Manager' },
+      { value: 'sales_associate', label: 'Sales Associate' },
+      { value: 'inventory', label: 'Inventory Manager' },
+      { value: 'customer_service', label: 'Customer Service' }
+    ],
+    hospitality: [
+      { value: 'general_manager', label: 'General Manager' },
+      { value: 'front_desk', label: 'Front Desk' },
+      { value: 'concierge', label: 'Concierge' },
+      { value: 'guest_services', label: 'Guest Services' }
+    ],
+    wellness: [
+      { value: 'facility_manager', label: 'Facility Manager' },
+      { value: 'trainer', label: 'Trainer' },
+      { value: 'nutritionist', label: 'Nutritionist' },
+      { value: 'reception', label: 'Reception' }
+    ],
+    beauty: [
+      { value: 'salon_manager', label: 'Salon Manager' },
+      { value: 'stylist', label: 'Stylist' },
+      { value: 'esthetician', label: 'Esthetician' },
+      { value: 'reception', label: 'Reception' }
+    ],
+    legal: [
+      { value: 'partner', label: 'Partner' },
+      { value: 'associate', label: 'Associate' },
+      { value: 'paralegal', label: 'Paralegal' },
+      { value: 'admin', label: 'Administrator' }
+    ]
+  };
+
+  // Industry dashboard mappings
+  const industryDashboards = {
+    healthcare: '/dashboards/healthcare',
+    construction: '/dashboards/construction',
+    logistics: '/dashboards/logistics',
+    government: '/dashboards/government',
+    education: '/dashboards/education',
+    retail: '/dashboards/retail',
+    hospitality: '/dashboards/hospitality',
+    wellness: '/dashboards/wellness',
+    beauty: '/dashboards/beauty',
+    legal: '/dashboards/legal'
+  };
+
+  // Initialize authentication modal
+  function initIndustryAuth() {
+    const modal = document.getElementById('industry-auth-modal');
+    const industrySelect = document.getElementById('industry-select');
+    const roleSelect = document.getElementById('role-select');
+    const authMethods = document.querySelectorAll('input[name="auth-method"]');
+    const loginBtn = document.getElementById('login-btn');
+    const cancelBtn = document.getElementById('cancel-auth');
+
+    // Industry selection handler
+    industrySelect.addEventListener('change', (e) => {
+      const industry = e.target.value;
+      roleSelect.innerHTML = '<option value="">Choose your role...</option>';
+      
+      if (industry && industryRoles[industry]) {
+        roleSelect.disabled = false;
+        industryRoles[industry].forEach(role => {
+          const option = document.createElement('option');
+          option.value = role.value;
+          option.textContent = role.label;
+          roleSelect.appendChild(option);
+        });
+      } else {
+        roleSelect.disabled = true;
+      }
+    });
+
+    // Authentication method handler
+    authMethods.forEach(method => {
+      method.addEventListener('change', (e) => {
+        const method = e.target.value;
+        document.getElementById('email-auth').classList.toggle('hidden', method !== 'email');
+        document.getElementById('2fa-auth').classList.toggle('hidden', method !== '2fa');
+        document.getElementById('sso-auth').classList.toggle('hidden', method !== 'sso');
+      });
+    });
+
+    // Login handler
+    loginBtn.addEventListener('click', async () => {
+      const industry = industrySelect.value;
+      const role = roleSelect.value;
+      const organization = document.getElementById('organization-input').value;
+      const selectedAuthMethod = document.querySelector('input[name="auth-method"]:checked').value;
+
+      if (!industry || !role || !organization) {
+        alert('Please fill in all required fields');
+        return;
+      }
+
+      // Show loading state
+      document.getElementById('auth-loading').classList.remove('hidden');
+      loginBtn.disabled = true;
+
+      try {
+        // Simulate authentication process
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        // Store authentication data
+        const authData = {
+          industry,
+          role,
+          organization,
+          authMethod: selectedAuthMethod,
+          timestamp: Date.now()
+        };
+
+        localStorage.setItem('tetrixAuth', JSON.stringify(authData));
+
+        // Redirect to appropriate dashboard
+        const dashboardUrl = industryDashboards[industry];
+        if (dashboardUrl) {
+          window.location.href = dashboardUrl;
+        } else {
+          window.location.href = '/dashboards/client';
+        }
+
+      } catch (error) {
+        console.error('Authentication error:', error);
+        alert('Authentication failed. Please try again.');
+      } finally {
+        document.getElementById('auth-loading').classList.add('hidden');
+        loginBtn.disabled = false;
+      }
+    });
+
+    // Cancel handler
+    cancelBtn.addEventListener('click', () => {
+      modal.classList.add('hidden');
+    });
+
+    // Close modal on outside click
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.add('hidden');
+      }
+    });
+  }
+
+  // Global function to open industry auth modal
+  window.openIndustryAuth = function() {
+    const modal = document.getElementById('industry-auth-modal');
+    modal.classList.remove('hidden');
+  };
+
+  // Initialize when DOM is loaded
+  document.addEventListener('DOMContentLoaded', initIndustryAuth);
+</script>

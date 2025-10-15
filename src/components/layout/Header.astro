@@ -224,13 +224,13 @@ import CodeAcademyModal from '../CodeAcademyModal.astro';
           });
         }
 
-        // Client Login button handlers - Seamless internal redirect
+        // Client Login button handlers - Industry-specific authentication
         if (clientLoginBtn) {
           clientLoginBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            // Seamless redirect to internal dashboard
-            if (window.redirectToInternal) {
-              window.redirectToInternal('dashboard');
+            // Open industry authentication modal
+            if (window.openIndustryAuth) {
+              window.openIndustryAuth();
             } else {
               // Fallback to 2FA modal
               (window as any).tetrixAuthContext = 'dashboard';
@@ -247,9 +247,9 @@ import CodeAcademyModal from '../CodeAcademyModal.astro';
         if (clientLoginBtnMobile) {
           clientLoginBtnMobile.addEventListener('click', function(e) {
             e.preventDefault();
-            // Seamless redirect to internal dashboard
-            if (window.redirectToInternal) {
-              window.redirectToInternal('dashboard');
+            // Open industry authentication modal
+            if (window.openIndustryAuth) {
+              window.openIndustryAuth();
             } else {
               // Fallback to 2FA modal
               (window as any).tetrixAuthContext = 'dashboard';
