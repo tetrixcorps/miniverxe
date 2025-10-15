@@ -4,9 +4,6 @@
 
 import { EnterpriseWorkflowEngine, WorkflowTemplate, WorkflowExecution } from './EnterpriseWorkflowEngine';
 import { CRMIntegrationService } from '../crmIntegrationService';
-import { EpicOAuthService } from '../integrations/EpicOAuthService';
-import { SalesforceIntegrationService } from '../integrations/SalesforceIntegrationService';
-import { HubSpotIntegrationService } from '../integrations/HubSpotIntegrationService';
 
 export interface IndustryWorkflowMapping {
   industry: string;
