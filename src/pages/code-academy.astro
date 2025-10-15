@@ -1,6 +1,7 @@
 ---
 // Code Academy Landing Page
 // Dedicated route for Code Academy dashboard
+import TwoFAModal from '../components/auth/2FAModal.astro';
 ---
 
 <!DOCTYPE html>
@@ -300,6 +301,9 @@
         </div>
     </footer>
 
+    <!-- 2FA Modal -->
+    <TwoFAModal />
+
     <!-- JavaScript for interactivity -->
     <script>
         // Initialize Code Academy functionality
@@ -315,42 +319,26 @@
             const enrollNowBtn = document.getElementById('enroll-now-btn');
             const scheduleDemoBtn = document.getElementById('schedule-demo-btn');
 
-            // Start learning session with SinchChatLive
-            function startLearningSession() {
-                console.log('Starting learning session...');
+            // Trigger 2FA authentication for Code Academy access
+            function triggerCodeAcademyAuth() {
+                console.log('Triggering 2FA authentication for Code Academy...');
                 
-                // Create a session with SHANGO AI
-                fetch('/api/v1/shango/sessions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        userId: 'code-academy-user-' + Date.now(),
-                        agentId: 'shango-technical'
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        console.log('Learning session started:', data.session);
-                        alert('Welcome to Code Academy! Your AI learning session has started. You can now ask questions and get personalized help.');
-                        
-                        // Open a modal or redirect to learning interface
-                        // For now, we'll show an alert
-                        showLearningInterface(data.session);
-                    } else {
-                        console.error('Failed to start learning session:', data);
-                        alert('Failed to start learning session. Please try again.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error starting learning session:', error);
-                    alert('Error starting learning session. Please try again.');
-                });
+                // Set authentication context for Code Academy
+                window.tetrixAuthContext = 'code-academy';
+                
+                // Open 2FA modal
+                if (window.open2FAModal) {
+                    window.open2FAModal();
+                } else {
+                    console.error('2FA modal not available');
+                    alert('Authentication system not available. Please try again later.');
+                }
             }
 
             // Show learning interface (placeholder)
+            /**
+             * @param {any} session
+             */
             function showLearningInterface(session) {
                 // This would open a modal or redirect to the learning interface
                 console.log('Learning interface for session:', session.id);
@@ -380,25 +368,25 @@
                 }
             }
 
-            // Add event listeners
+            // Add event listeners - all CTA buttons now trigger 2FA authentication
             if (startLearningBtn) {
-                startLearningBtn.addEventListener('click', startLearningSession);
+                startLearningBtn.addEventListener('click', triggerCodeAcademyAuth);
             }
             
             if (getStartedBtn) {
-                getStartedBtn.addEventListener('click', startLearningSession);
+                getStartedBtn.addEventListener('click', triggerCodeAcademyAuth);
             }
             
             if (tryAiBtn) {
-                tryAiBtn.addEventListener('click', startLearningSession);
+                tryAiBtn.addEventListener('click', triggerCodeAcademyAuth);
             }
             
             if (startSessionBtn) {
-                startSessionBtn.addEventListener('click', startLearningSession);
+                startSessionBtn.addEventListener('click', triggerCodeAcademyAuth);
             }
             
             if (enrollNowBtn) {
-                enrollNowBtn.addEventListener('click', startLearningSession);
+                enrollNowBtn.addEventListener('click', triggerCodeAcademyAuth);
             }
 
             // Placeholder for other buttons
@@ -409,9 +397,7 @@
             }
             
             if (scheduleDemoBtn) {
-                scheduleDemoBtn.addEventListener('click', () => {
-                    alert('Demo scheduling coming soon!');
-                });
+                scheduleDemoBtn.addEventListener('click', triggerCodeAcademyAuth);
             }
         });
     </script>
