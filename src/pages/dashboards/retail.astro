@@ -1,0 +1,275 @@
+---
+// Retail Dashboard
+// Customer service, order management, inventory inquiries
+---
+
+<div class="min-h-screen bg-gray-50">
+  <!-- Header -->
+  <div class="bg-white shadow-sm border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4">
+        <div class="flex items-center">
+          <h1 class="text-2xl font-bold text-gray-900">Retail Dashboard</h1>
+          <span class="ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-800">
+            🛒 Retail
+          </span>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="flex items-center text-sm text-gray-500">
+            <div class="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+            System Online
+          </div>
+          <button id="refresh-btn" class="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Key Metrics -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+              <span class="text-blue-600 text-lg">🛍️</span>
+            </div>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-500">Orders Today</p>
+            <p class="text-2xl font-semibold text-gray-900">247</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+              <span class="text-green-600 text-lg">💰</span>
+            </div>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-500">Revenue Today</p>
+            <p class="text-2xl font-semibold text-gray-900">$12,450</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+              <span class="text-yellow-600 text-lg">📦</span>
+            </div>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-500">Inventory Alerts</p>
+            <p class="text-2xl font-semibold text-gray-900">8</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+              <span class="text-purple-600 text-lg">⭐</span>
+            </div>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-500">Customer Rating</p>
+            <p class="text-2xl font-semibold text-gray-900">4.7/5</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Management & Customer Service -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <!-- Order Management -->
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-medium text-gray-900">Order Management</h3>
+        </div>
+        <div class="p-6">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+              <div class="flex items-center">
+                <div class="w-3 h-3 bg-blue-400 rounded-full mr-3"></div>
+                <div>
+                  <p class="text-sm font-medium text-gray-900">Order #12345</p>
+                  <p class="text-sm text-gray-500">Processing - 2 items</p>
+                </div>
+              </div>
+              <span class="text-sm text-blue-600 font-medium">Processing</span>
+            </div>
+            
+            <div class="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+              <div class="flex items-center">
+                <div class="w-3 h-3 bg-green-400 rounded-full mr-3"></div>
+                <div>
+                  <p class="text-sm font-medium text-gray-900">Order #12344</p>
+                  <p class="text-sm text-gray-500">Shipped - 1 item</p>
+                </div>
+              </div>
+              <span class="text-sm text-green-600 font-medium">Shipped</span>
+            </div>
+            
+            <div class="flex items-center justify-between p-4 bg-yellow-50 rounded-lg">
+              <div class="flex items-center">
+                <div class="w-3 h-3 bg-yellow-400 rounded-full mr-3"></div>
+                <div>
+                  <p class="text-sm font-medium text-gray-900">Order #12343</p>
+                  <p class="text-sm text-gray-500">Pending payment</p>
+                </div>
+              </div>
+              <span class="text-sm text-yellow-600 font-medium">Pending</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Customer Service -->
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-medium text-gray-900">Customer Service</h3>
+        </div>
+        <div class="p-6">
+          <div class="space-y-4">
+            <div class="flex items-start p-4 bg-blue-50 rounded-lg">
+              <div class="flex-shrink-0">
+                <span class="text-blue-600 text-lg">📞</span>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm font-medium text-blue-800">Product Inquiry</p>
+                <p class="text-sm text-blue-700">Customer asking about product availability</p>
+                <p class="text-xs text-blue-600 mt-1">5 minutes ago</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start p-4 bg-green-50 rounded-lg">
+              <div class="flex-shrink-0">
+                <span class="text-green-600 text-lg">✅</span>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm font-medium text-green-800">Return Processed</p>
+                <p class="text-sm text-green-700">Refund issued for returned item</p>
+                <p class="text-xs text-green-600 mt-1">15 minutes ago</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start p-4 bg-yellow-50 rounded-lg">
+              <div class="flex-shrink-0">
+                <span class="text-yellow-600 text-lg">⚠️</span>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm font-medium text-yellow-800">Complaint Received</p>
+                <p class="text-sm text-yellow-700">Customer service issue reported</p>
+                <p class="text-xs text-yellow-600 mt-1">30 minutes ago</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inventory Management -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h3 class="text-lg font-medium text-gray-900">Inventory Management</h3>
+      </div>
+      <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="text-center">
+            <div class="text-3xl font-bold text-red-600 mb-2">8</div>
+            <p class="text-sm text-gray-600">Low Stock Items</p>
+            <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+              <div class="bg-red-600 h-2 rounded-full" style="width: 100%"></div>
+            </div>
+          </div>
+          
+          <div class="text-center">
+            <div class="text-3xl font-bold text-green-600 mb-2">94%</div>
+            <p class="text-sm text-gray-600">Inventory Accuracy</p>
+            <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+              <div class="bg-green-600 h-2 rounded-full" style="width: 94%"></div>
+            </div>
+          </div>
+          
+          <div class="text-center">
+            <div class="text-3xl font-bold text-blue-600 mb-2">156</div>
+            <p class="text-sm text-gray-600">Total SKUs</p>
+            <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+              <div class="bg-blue-600 h-2 rounded-full" style="width: 78%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h3 class="text-lg font-medium text-gray-900">Recent Activity</h3>
+      </div>
+      <div class="p-6">
+        <div class="space-y-4">
+          <div class="flex items-center space-x-4">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                <span class="text-green-600 text-sm">✅</span>
+              </div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm text-gray-900">Order completed: #12344 shipped successfully</p>
+              <p class="text-xs text-gray-500">Customer: John Smith - 1 hour ago</p>
+            </div>
+          </div>
+          
+          <div class="flex items-center space-x-4">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                <span class="text-blue-600 text-sm">📦</span>
+              </div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm text-gray-900">Inventory restocked: Electronics section</p>
+              <p class="text-xs text-gray-500">45 new items added - 2 hours ago</p>
+            </div>
+          </div>
+          
+          <div class="flex items-center space-x-4">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                <span class="text-yellow-600 text-sm">⚠️</span>
+              </div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm text-gray-900">Low stock alert: Product XYZ running low</p>
+              <p class="text-xs text-gray-500">Only 3 units remaining - 3 hours ago</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Auto-refresh functionality
+  setInterval(() => {
+    // Simulate data refresh
+    console.log('Refreshing retail dashboard data...');
+  }, 30000);
+
+  // Refresh button functionality
+  document.getElementById('refresh-btn')?.addEventListener('click', () => {
+    location.reload();
+  });
+</script>
