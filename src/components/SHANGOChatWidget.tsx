@@ -318,19 +318,19 @@ export const SHANGOChatWidget: React.FC<SHANGOChatWidgetProps> = ({
                 onClick={() => setInput('Help me with...')}
                 className="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded transition-colors"
               >
-                &#128161; Get Help
+                &#128161;#128161; Get Help
               </button>
               <button
                 onClick={() => setInput('Show me pricing...')}
                 className="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded transition-colors"
               >
-                &#128176; Pricing
+                &#128176;#128176; Pricing
               </button>
               <button
                 onClick={() => setInput('Technical support...')}
                 className="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded transition-colors"
               >
-                &#128295; Tech Support
+                &#128295;#128295; Tech Support
               </button>
             </div>
           </div>

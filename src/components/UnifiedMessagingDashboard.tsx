@@ -386,7 +386,7 @@ const UnifiedMessagingDashboard: React.FC<UnifiedMessagingDashboardProps> = ({
         {trialStatus.status === 'active' && (
           <div className="p-4 bg-green-50 border-b border-green-200">
             <div className="flex items-center">
-              <div className="text-green-600 mr-2">&#127881;</div>
+              <div className="text-green-600 mr-2">&#127881;#127881;</div>
               <div className="text-sm text-green-800">
                 <strong>Free Trial:</strong> {trialStatus.daysRemaining} days remaining
               </div>
@@ -571,7 +571,7 @@ const UnifiedMessagingDashboard: React.FC<UnifiedMessagingDashboardProps> = ({
         ) : (
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
-              <div className="text-6xl text-gray-300 mb-4">&#128172;</div>
+              <div className="text-6xl text-gray-300 mb-4">&#128172;#128172;</div>
               <h2 className="text-xl font-medium text-gray-900 mb-2">Select a conversation</h2>
               <p className="text-gray-500">Choose a conversation from the sidebar to start messaging</p>
             </div>

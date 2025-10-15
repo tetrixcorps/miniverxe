@@ -72,9 +72,9 @@ const getStatusColor = (status: string) => {
 
 const getStatusIcon = (status: string) => {
   switch (status) {
-    case 'online': return '&#128994;';
-    case 'configuring': return '&#128993;';
-    case 'offline': return '&#128308;';
+    case 'online': return '&#128994;#128994;';
+    case 'configuring': return '&#128993;#128993;';
+    case 'offline': return '&#128308;#128308;';
     default: return '&#9898;';
   }
 };
@@ -196,7 +196,7 @@ const getStatusIcon = (status: string) => {
           <div class="bg-white p-8 rounded-xl shadow-lg">
             <div class="flex items-center mb-6">
               <div class="w-12 h-12 bg-brand-red rounded-lg flex items-center justify-center mr-4">
-                <span class="text-white text-xl">&#128222;</span>
+                <span class="text-white text-xl">&#128222;#128222;</span>
               </div>
               <div>
                 <h3 class="text-xl font-bold text-gray-900">TETRIX Platform</h3>
@@ -227,7 +227,7 @@ const getStatusIcon = (status: string) => {
           <div class="bg-white p-8 rounded-xl shadow-lg">
             <div class="flex items-center mb-6">
               <div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mr-4">
-                <span class="text-white text-xl">&#129302;</span>
+                <span class="text-white text-xl">&#129302;#129302;</span>
               </div>
               <div>
                 <h3 class="text-xl font-bold text-gray-900">JoRoMi Platform</h3>
@@ -258,7 +258,7 @@ const getStatusIcon = (status: string) => {
           <div class="bg-white p-8 rounded-xl shadow-lg">
             <div class="flex items-center mb-6">
               <div class="w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center mr-4">
-                <span class="text-white text-xl">&#127959;</span>
+                <span class="text-white text-xl">&#127959;#127959;</span>
               </div>
               <div>
                 <h3 class="text-xl font-bold text-gray-900">Infrastructure</h3>
@@ -297,7 +297,7 @@ const getStatusIcon = (status: string) => {
         
         <div class="bg-white rounded-2xl shadow-xl p-8">
           <div class="text-center text-gray-500">
-            <div class="text-6xl mb-4">&#127881;</div>
+            <div class="text-6xl mb-4">&#127881;#127881;</div>
             <h3 class="text-2xl font-bold text-gray-900 mb-4">No Recent Incidents</h3>
             <p class="text-lg text-gray-600 mb-6">
               All systems are operating normally. No incidents reported in the last 30 days.
