@@ -133,7 +133,7 @@ export const VoiceCallInterface: React.FC<VoiceCallInterfaceProps> = ({
   return (
     <div className="voice-call-interface p-6 bg-white rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold mb-6 text-gray-800">
-        &#127908; SHANGO Voice Assistant
+        &#127908;#127908; SHANGO Voice Assistant
       </h2>
 
       {/* Call Initiation */}
@@ -159,7 +159,7 @@ export const VoiceCallInterface: React.FC<VoiceCallInterfaceProps> = ({
               </>
             ) : (
               <>
-                &#128222; Call
+                &#128222;#128222; Call
               </>
             )}
           </button>

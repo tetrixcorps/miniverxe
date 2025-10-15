@@ -183,12 +183,19 @@ import CodeAcademyModal from '../CodeAcademyModal.astro';
         const clientLoginBtn = document.getElementById('client-login-2fa-btn');
         const clientLoginBtnMobile = document.getElementById('client-login-2fa-btn-mobile');
 
-        // JoRoMi button handlers - Redirect to subdomain
+        // JoRoMi button handlers - Use 2FA authentication like Code Academy
         if (joromiBtn) {
           joromiBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            // Redirect to JoRoMi subdomain
-            window.location.href = 'https://joromi.tetrixcorp.com';
+            // Set authentication context for JoRoMi
+            window.tetrixAuthContext = 'joromi';
+            // Open 2FA modal for authentication
+            if (window.open2FAModal) {
+              window.open2FAModal();
+            } else {
+              // Fallback to direct redirect
+              window.location.href = '/joromi';
+            }
             // Close mobile menu if open
             if (menu) {
               menu.classList.add('hidden');
@@ -200,8 +207,15 @@ import CodeAcademyModal from '../CodeAcademyModal.astro';
         if (joromiBtnMobile) {
           joromiBtnMobile.addEventListener('click', function(e) {
             e.preventDefault();
-            // Redirect to JoRoMi subdomain
-            window.location.href = 'https://joromi.tetrixcorp.com';
+            // Set authentication context for JoRoMi
+            window.tetrixAuthContext = 'joromi';
+            // Open 2FA modal for authentication
+            if (window.open2FAModal) {
+              window.open2FAModal();
+            } else {
+              // Fallback to direct redirect
+              window.location.href = '/joromi';
+            }
             // Close mobile menu
             if (menu) {
               menu.classList.add('hidden');
@@ -210,13 +224,13 @@ import CodeAcademyModal from '../CodeAcademyModal.astro';
           });
         }
 
-        // Client Login button handlers - Seamless internal redirect
+        // Client Login button handlers - Industry-specific authentication
         if (clientLoginBtn) {
           clientLoginBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            // Seamless redirect to internal dashboard
-            if (window.redirectToInternal) {
-              window.redirectToInternal('dashboard');
+            // Open industry authentication modal
+            if (window.openIndustryAuth) {
+              window.openIndustryAuth();
             } else {
               // Fallback to 2FA modal
               (window as any).tetrixAuthContext = 'dashboard';
@@ -233,9 +247,9 @@ import CodeAcademyModal from '../CodeAcademyModal.astro';
         if (clientLoginBtnMobile) {
           clientLoginBtnMobile.addEventListener('click', function(e) {
             e.preventDefault();
-            // Seamless redirect to internal dashboard
-            if (window.redirectToInternal) {
-              window.redirectToInternal('dashboard');
+            // Open industry authentication modal
+            if (window.openIndustryAuth) {
+              window.openIndustryAuth();
             } else {
               // Fallback to 2FA modal
               (window as any).tetrixAuthContext = 'dashboard';

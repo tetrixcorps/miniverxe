@@ -214,7 +214,7 @@ export const PUT: APIRoute = async ({ request, url }) => {
       });
     }
     
-    const session = sessions.get(sessionId);
+    const session = shangoStorage.getSession(sessionId);
     if (!session) {
       return new Response(JSON.stringify({
         success: false,
@@ -236,7 +236,7 @@ export const PUT: APIRoute = async ({ request, url }) => {
     }
     
     session.updatedAt = new Date().toISOString();
-    sessions.set(sessionId, session);
+    shangoStorage.updateSession(sessionId, session);
     
     return new Response(JSON.stringify({
       success: true,
@@ -272,7 +272,7 @@ export const DELETE: APIRoute = async ({ url }) => {
       });
     }
     
-    const session = sessions.get(sessionId);
+    const session = shangoStorage.getSession(sessionId);
     if (!session) {
       return new Response(JSON.stringify({
         success: false,
@@ -285,7 +285,7 @@ export const DELETE: APIRoute = async ({ url }) => {
     
     session.status = 'ended';
     session.updatedAt = new Date().toISOString();
-    sessions.set(sessionId, session);
+    shangoStorage.updateSession(sessionId, session);
     
     return new Response(JSON.stringify({
       success: true,

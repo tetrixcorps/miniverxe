@@ -132,7 +132,7 @@ export const CrossPlatformIntegrationUI: React.FC = () => {
     return (
       <div className="bg-white rounded-lg shadow-lg p-6">
         <div className="text-center py-8">
-          <div className="text-gray-400 text-4xl mb-4">&#128225;</div>
+          <div className="text-gray-400 text-4xl mb-4">&#128225;#128225;</div>
           <h3 className="text-lg font-semibold text-gray-800 mb-2">No Integration Data</h3>
           <p className="text-gray-600">Integration status data is not available.</p>
         </div>
@@ -144,7 +144,7 @@ export const CrossPlatformIntegrationUI: React.FC = () => {
     <div className="bg-white rounded-lg shadow-lg p-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-800">
-          &#128279; Cross-Platform Integration Status
+          &#128279;#128279; Cross-Platform Integration Status
         </h2>
         <button
           onClick={fetchIntegrationStatus}
