@@ -1,0 +1,410 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+---
+
+<MainLayout title="TETRIX Healthcare Documentation - Epic FHIR Integration">
+  <div class="min-h-screen bg-gray-50">
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-20">
+      <div class="container mx-auto px-4">
+        <div class="text-center">
+          <h1 class="text-4xl md:text-6xl font-bold mb-6">TETRIX Healthcare Documentation</h1>
+          <p class="text-xl md:text-2xl mb-8">Epic FHIR Integration & Healthcare Communication Platform</p>
+          <div class="flex flex-col md:flex-row gap-4 justify-center">
+            <div class="flex items-center justify-center space-x-2">
+              <span class="text-2xl">🏥</span>
+              <span>Epic FHIR Integration</span>
+            </div>
+            <div class="flex items-center justify-center space-x-2">
+              <span class="text-2xl">🔒</span>
+              <span>HIPAA Compliant</span>
+            </div>
+            <div class="flex items-center justify-center space-x-2">
+              <span class="text-2xl">⚡</span>
+              <span>SMART on FHIR</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Documentation Content -->
+    <section class="py-16">
+      <div class="container mx-auto px-4">
+        <div class="max-w-6xl mx-auto">
+          <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Table of Contents -->
+            <div class="lg:col-span-1">
+              <div class="bg-white rounded-lg shadow-md p-6 sticky top-8">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Table of Contents</h3>
+                <nav class="space-y-2">
+                  <a href="#overview" class="block text-blue-600 hover:text-blue-800">Overview</a>
+                  <a href="#epic-integration" class="block text-blue-600 hover:text-blue-800">Epic FHIR Integration</a>
+                  <a href="#authentication" class="block text-blue-600 hover:text-blue-800">Authentication</a>
+                  <a href="#api-endpoints" class="block text-blue-600 hover:text-blue-800">API Endpoints</a>
+                  <a href="#security" class="block text-blue-600 hover:text-blue-800">Security & Compliance</a>
+                  <a href="#implementation" class="block text-blue-600 hover:text-blue-800">Implementation Guide</a>
+                  <a href="#support" class="block text-blue-600 hover:text-blue-800">Support</a>
+                </nav>
+              </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="lg:col-span-3">
+              <div class="bg-white rounded-lg shadow-md p-8">
+                
+                <!-- Overview -->
+                <section id="overview" class="mb-12">
+                  <h2 class="text-3xl font-bold text-gray-900 mb-6">Overview</h2>
+                  <div class="prose max-w-none">
+                    <p class="text-lg text-gray-700 mb-6">
+                      TETRIX Healthcare is a comprehensive communication platform designed for healthcare organizations, 
+                      featuring seamless Epic FHIR integration, HIPAA-compliant data handling, and advanced workflow automation.
+                    </p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                      <div class="bg-blue-50 p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold text-blue-900 mb-3">🏥 Epic Integration</h3>
+                        <ul class="text-blue-800 space-y-2">
+                          <li>• SMART on FHIR OAuth 2.0</li>
+                          <li>• Patient data access</li>
+                          <li>• Clinical workflows</li>
+                          <li>• CDS Hooks support</li>
+                        </ul>
+                      </div>
+                      <div class="bg-green-50 p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold text-green-900 mb-3">🔒 Security & Compliance</h3>
+                        <ul class="text-green-800 space-y-2">
+                          <li>• HIPAA compliant</li>
+                          <li>• SOC 2 Type II certified</li>
+                          <li>• End-to-end encryption</li>
+                          <li>• Audit logging</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Epic FHIR Integration -->
+                <section id="epic-integration" class="mb-12">
+                  <h2 class="text-3xl font-bold text-gray-900 mb-6">Epic FHIR Integration</h2>
+                  
+                  <div class="bg-gray-50 p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Application Registration Details</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <h4 class="font-semibold text-gray-700 mb-2">Application Audience</h4>
+                        <p class="text-gray-600">Clinicians</p>
+                      </div>
+                      <div>
+                        <h4 class="font-semibold text-gray-700 mb-2">Redirect URI</h4>
+                        <p class="text-gray-600 font-mono text-sm">https://tetrixcorp.com/auth/epic/callback</p>
+                      </div>
+                      <div>
+                        <h4 class="font-semibold text-gray-700 mb-2">Production JWKS URL</h4>
+                        <p class="text-gray-600 font-mono text-sm">https://tetrixcorp.com/api/jwks</p>
+                      </div>
+                      <div>
+                        <h4 class="font-semibold text-gray-700 mb-2">Non-Production JWKS URL</h4>
+                        <p class="text-gray-600 font-mono text-sm">https://dev.tetrixcorp.com/api/jwks</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mb-6">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Supported FHIR Resources</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div class="bg-white border border-gray-200 p-4 rounded-lg">
+                        <h4 class="font-semibold text-gray-900 mb-2">Patient Resources</h4>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                          <li>• Patient.read</li>
+                          <li>• Patient.search</li>
+                          <li>• Patient.create</li>
+                          <li>• Patient.update</li>
+                        </ul>
+                      </div>
+                      <div class="bg-white border border-gray-200 p-4 rounded-lg">
+                        <h4 class="font-semibold text-gray-900 mb-2">Clinical Resources</h4>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                          <li>• Observation.read</li>
+                          <li>• Encounter.read</li>
+                          <li>• MedicationRequest.read</li>
+                          <li>• DiagnosticReport.read</li>
+                        </ul>
+                      </div>
+                      <div class="bg-white border border-gray-200 p-4 rounded-lg">
+                        <h4 class="font-semibold text-gray-900 mb-2">System Resources</h4>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                          <li>• CapabilityStatement</li>
+                          <li>• OperationDefinition</li>
+                          <li>• StructureDefinition</li>
+                          <li>• ValueSet</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Authentication -->
+                <section id="authentication" class="mb-12">
+                  <h2 class="text-3xl font-bold text-gray-900 mb-6">Authentication</h2>
+                  
+                  <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-semibold text-blue-900 mb-4">OAuth 2.0 Configuration</h3>
+                    <div class="space-y-4">
+                      <div>
+                        <h4 class="font-semibold text-blue-800 mb-2">Authorization Endpoint</h4>
+                        <p class="text-blue-700 font-mono text-sm">https://fhir.epic.com/interconnect-fhir-oauth/oauth2/authorize</p>
+                      </div>
+                      <div>
+                        <h4 class="font-semibold text-blue-800 mb-2">Token Endpoint</h4>
+                        <p class="text-blue-700 font-mono text-sm">https://fhir.epic.com/interconnect-fhir-oauth/oauth2/token</p>
+                      </div>
+                      <div>
+                        <h4 class="font-semibold text-blue-800 mb-2">JWKS Endpoint</h4>
+                        <p class="text-blue-700 font-mono text-sm">https://fhir.epic.com/interconnect-fhir-oauth/oauth2/jwks</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mb-6">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">JWT Configuration</h3>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                      <pre class="text-sm text-gray-700"><code>{
+  "kty": "RSA",
+  "kid": "tetrix-epic-key-2025",
+  "use": "sig",
+  "alg": "RS256",
+  "n": "yiuUj33tQVKqk0rCdRafyCvavGgJZOKzNENq9JCOfevILcHiqL9nSuYQ1L0qIDSoTqS8Gxe3HBG9KuYhm5Jv1OtvYMfcFRk2gw7sikulsAWn2gPhoqPTGTC_xKl3aR8SGdd8sQgma0mUL4Tcnf7A-V_YAQQaOA5MEA7Jri9fAqCk0HzzEgscDE8nceqSdvU6ODAzGglPVoZz0ofdUdTMRtNTywudK2AjvDZX0e4HbN34xwXhAFlSjmL_KV92S1pcxWMHHWCbCywUliiCbif7aFwRhXjuuYQe71GNxkKPMo6NNq-4pp8OBhiicltCOVbLNVVCvxcQ9wBx7dj_9Ysj5w",
+  "e": "AQAB"
+}</code></pre>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- API Endpoints -->
+                <section id="api-endpoints" class="mb-12">
+                  <h2 class="text-3xl font-bold text-gray-900 mb-6">API Endpoints</h2>
+                  
+                  <div class="space-y-6">
+                    <div class="bg-white border border-gray-200 p-6 rounded-lg">
+                      <h3 class="text-lg font-semibold text-gray-900 mb-3">JWKS Endpoints</h3>
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <h4 class="font-semibold text-gray-700 mb-2">Production</h4>
+                          <p class="text-gray-600 font-mono text-sm">https://tetrixcorp.com/api/jwks</p>
+                        </div>
+                        <div>
+                          <h4 class="font-semibold text-gray-700 mb-2">Development</h4>
+                          <p class="text-gray-600 font-mono text-sm">https://dev.tetrixcorp.com/api/jwks</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="bg-white border border-gray-200 p-6 rounded-lg">
+                      <h3 class="text-lg font-semibold text-gray-900 mb-3">Epic OAuth Endpoints</h3>
+                      <div class="space-y-3">
+                        <div>
+                          <h4 class="font-semibold text-gray-700 mb-1">Authorization</h4>
+                          <p class="text-gray-600 font-mono text-sm">https://tetrixcorp.com/auth/epic/authorize</p>
+                        </div>
+                        <div>
+                          <h4 class="font-semibold text-gray-700 mb-1">Callback</h4>
+                          <p class="text-gray-600 font-mono text-sm">https://tetrixcorp.com/auth/epic/callback</p>
+                        </div>
+                        <div>
+                          <h4 class="font-semibold text-gray-700 mb-1">Token Refresh</h4>
+                          <p class="text-gray-600 font-mono text-sm">https://tetrixcorp.com/auth/epic/refresh</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Security & Compliance -->
+                <section id="security" class="mb-12">
+                  <h2 class="text-3xl font-bold text-gray-900 mb-6">Security & Compliance</h2>
+                  
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-green-50 p-6 rounded-lg">
+                      <h3 class="text-xl font-semibold text-green-900 mb-4">HIPAA Compliance</h3>
+                      <ul class="text-green-800 space-y-2">
+                        <li>• Administrative safeguards</li>
+                        <li>• Physical safeguards</li>
+                        <li>• Technical safeguards</li>
+                        <li>• Business associate agreements</li>
+                        <li>• Risk assessments</li>
+                      </ul>
+                    </div>
+                    <div class="bg-blue-50 p-6 rounded-lg">
+                      <h3 class="text-xl font-semibold text-blue-900 mb-4">SOC 2 Type II</h3>
+                      <ul class="text-blue-800 space-y-2">
+                        <li>• Security controls</li>
+                        <li>• Availability controls</li>
+                        <li>• Processing integrity</li>
+                        <li>• Confidentiality controls</li>
+                        <li>• Privacy controls</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div class="bg-gray-50 p-6 rounded-lg">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Security Features</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div class="text-center">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                          <span class="text-2xl">🔐</span>
+                        </div>
+                        <h4 class="font-semibold text-gray-900 mb-2">Encryption</h4>
+                        <p class="text-sm text-gray-600">End-to-end encryption for all data transmission</p>
+                      </div>
+                      <div class="text-center">
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                          <span class="text-2xl">🛡️</span>
+                        </div>
+                        <h4 class="font-semibold text-gray-900 mb-2">Access Control</h4>
+                        <p class="text-sm text-gray-600">Role-based access control and multi-factor authentication</p>
+                      </div>
+                      <div class="text-center">
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                          <span class="text-2xl">📊</span>
+                        </div>
+                        <h4 class="font-semibold text-gray-900 mb-2">Audit Logging</h4>
+                        <p class="text-sm text-gray-600">Comprehensive audit trails for all system activities</p>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Implementation Guide -->
+                <section id="implementation" class="mb-12">
+                  <h2 class="text-3xl font-bold text-gray-900 mb-6">Implementation Guide</h2>
+                  
+                  <div class="space-y-6">
+                    <div class="bg-white border border-gray-200 p-6 rounded-lg">
+                      <h3 class="text-lg font-semibold text-gray-900 mb-4">Step 1: Epic App Registration</h3>
+                      <ol class="list-decimal list-inside space-y-2 text-gray-700">
+                        <li>Register your application with Epic</li>
+                        <li>Upload the X.509 certificate (certificate.pem)</li>
+                        <li>Configure redirect URI: <code class="bg-gray-100 px-2 py-1 rounded">https://tetrixcorp.com/auth/epic/callback</code></li>
+                        <li>Set JWKS URL: <code class="bg-gray-100 px-2 py-1 rounded">https://tetrixcorp.com/api/jwks</code></li>
+                        <li>Select application audience: <strong>Clinicians</strong></li>
+                      </ol>
+                    </div>
+
+                    <div class="bg-white border border-gray-200 p-6 rounded-lg">
+                      <h3 class="text-lg font-semibold text-gray-900 mb-4">Step 2: OAuth 2.0 Configuration</h3>
+                      <div class="bg-gray-50 p-4 rounded-lg">
+                        <pre class="text-sm text-gray-700"><code>// Epic OAuth Configuration
+const epicConfig = {
+  clientId: 'your-epic-client-id',
+  redirectUri: 'https://tetrixcorp.com/auth/epic/callback',
+  scope: 'patient/Patient.read patient/Observation.read launch/patient',
+  baseUrl: 'https://fhir.epic.com/interconnect-fhir-oauth',
+  environment: 'production'
+};</code></pre>
+                      </div>
+                    </div>
+
+                    <div class="bg-white border border-gray-200 p-6 rounded-lg">
+                      <h3 class="text-lg font-semibold text-gray-900 mb-4">Step 3: JWT Signing</h3>
+                      <div class="bg-gray-50 p-4 rounded-lg">
+                        <pre class="text-sm text-gray-700"><code>// Create JWT for Epic authentication
+import { createEpicJwt } from './services/auth/epicJwtService';
+
+const jwt = createEpicJwt(
+  'your-client-id',
+  'https://fhir.epic.com/interconnect-fhir-oauth/oauth2/token',
+  5 // expires in 5 minutes
+);</code></pre>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Support -->
+                <section id="support" class="mb-12">
+                  <h2 class="text-3xl font-bold text-gray-900 mb-6">Support & Resources</h2>
+                  
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white border border-gray-200 p-6 rounded-lg">
+                      <h3 class="text-lg font-semibold text-gray-900 mb-4">Technical Support</h3>
+                      <div class="space-y-3">
+                        <div>
+                          <h4 class="font-semibold text-gray-700 mb-1">Email Support</h4>
+                          <p class="text-gray-600">healthcare-support@tetrixcorp.com</p>
+                        </div>
+                        <div>
+                          <h4 class="font-semibold text-gray-700 mb-1">Phone Support</h4>
+                          <p class="text-gray-600">+1 (555) 123-4567</p>
+                        </div>
+                        <div>
+                          <h4 class="font-semibold text-gray-700 mb-1">Emergency Support</h4>
+                          <p class="text-gray-600">24/7 for critical issues</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="bg-white border border-gray-200 p-6 rounded-lg">
+                      <h3 class="text-lg font-semibold text-gray-900 mb-4">Documentation Resources</h3>
+                      <div class="space-y-3">
+                        <div>
+                          <h4 class="font-semibold text-gray-700 mb-1">Epic FHIR Documentation</h4>
+                          <p class="text-gray-600">https://fhir.epic.com/Documentation</p>
+                        </div>
+                        <div>
+                          <h4 class="font-semibold text-gray-700 mb-1">SMART on FHIR</h4>
+                          <p class="text-gray-600">https://smarthealthit.org/</p>
+                        </div>
+                        <div>
+                          <h4 class="font-semibold text-gray-700 mb-1">TETRIX API Docs</h4>
+                          <p class="text-gray-600">https://tetrixcorp.com/api/docs</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Footer -->
+                <div class="border-t border-gray-200 pt-8 mt-12">
+                  <div class="text-center">
+                    <p class="text-gray-600 mb-4">
+                      TETRIX Healthcare Platform - Epic FHIR Integration Documentation
+                    </p>
+                    <div class="flex justify-center space-x-6">
+                      <a href="/healthcare" class="text-blue-600 hover:text-blue-800">Healthcare Dashboard</a>
+                      <a href="/contact" class="text-blue-600 hover:text-blue-800">Contact Support</a>
+                      <a href="/api/docs" class="text-blue-600 hover:text-blue-800">API Documentation</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</MainLayout>
+
+<script>
+  // Smooth scrolling for table of contents links
+  document.addEventListener('DOMContentLoaded', function() {
+    const links = document.querySelectorAll('a[href^="#"]');
+    
+    links.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+        
+        if (targetElement) {
+          targetElement.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+  });
+</script>
