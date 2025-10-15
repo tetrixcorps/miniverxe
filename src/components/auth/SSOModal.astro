@@ -1,0 +1,554 @@
+---
+// TETRIX Single Sign-On Modal Component
+// Provides SSO authentication with SAML, OIDC, and OAuth support
+---
+
+<div id="sso-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+  <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full">
+      <!-- Header -->
+      <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-bold text-gray-900">Single Sign-On</h2>
+            <p class="text-gray-600 text-sm mt-1">Sign in with your organization's SSO</p>
+          </div>
+          <button 
+            id="close-sso-modal" 
+            class="text-gray-400 hover:text-gray-600 transition-colors"
+            aria-label="Close modal"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="p-6">
+        <!-- SSO Providers -->
+        <div id="sso-providers" class="space-y-3">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Select Your Organization</h3>
+          
+          <!-- Microsoft Azure AD -->
+          <button 
+            class="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left"
+            data-provider="azure_ad"
+          >
+            <div class="flex items-center">
+              <div class="w-8 h-8 mr-3 bg-blue-600 rounded flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M11.4 24H0V12.6h11.4V24zM24 24H12.6V12.6H24V24zM11.4 11.4H0V0h11.4v11.4zM24 11.4H12.6V0H24v11.4z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="font-medium text-gray-900">Microsoft Azure AD</div>
+                <div class="text-sm text-gray-600">Sign in with your Microsoft account</div>
+              </div>
+            </div>
+          </button>
+
+          <!-- Google Workspace -->
+          <button 
+            class="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left"
+            data-provider="google_workspace"
+          >
+            <div class="flex items-center">
+              <div class="w-8 h-8 mr-3 bg-red-500 rounded flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="font-medium text-gray-900">Google Workspace</div>
+                <div class="text-sm text-gray-600">Sign in with your Google account</div>
+              </div>
+            </div>
+          </button>
+
+          <!-- Okta -->
+          <button 
+            class="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left"
+            data-provider="okta"
+          >
+            <div class="flex items-center">
+              <div class="w-8 h-8 mr-3 bg-blue-500 rounded flex items-center justify-center">
+                <div class="w-5 h-5 bg-white rounded-sm"></div>
+              </div>
+              <div>
+                <div class="font-medium text-gray-900">Okta</div>
+                <div class="text-sm text-gray-600">Sign in with your Okta account</div>
+              </div>
+            </div>
+          </button>
+
+          <!-- Auth0 -->
+          <button 
+            class="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left"
+            data-provider="auth0"
+          >
+            <div class="flex items-center">
+              <div class="w-8 h-8 mr-3 bg-purple-600 rounded flex items-center justify-center">
+                <div class="w-5 h-5 bg-white rounded-sm"></div>
+              </div>
+              <div>
+                <div class="font-medium text-gray-900">Auth0</div>
+                <div class="text-sm text-gray-600">Sign in with your Auth0 account</div>
+              </div>
+            </div>
+          </button>
+
+          <!-- Custom SAML -->
+          <button 
+            class="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left"
+            data-provider="custom_saml"
+          >
+            <div class="flex items-center">
+              <div class="w-8 h-8 mr-3 bg-gray-600 rounded flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="font-medium text-gray-900">Custom SAML</div>
+                <div class="text-sm text-gray-600">Sign in with your organization's SAML</div>
+              </div>
+            </div>
+          </button>
+
+          <!-- Custom OIDC -->
+          <button 
+            class="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left"
+            data-provider="custom_oidc"
+          >
+            <div class="flex items-center">
+              <div class="w-8 h-8 mr-3 bg-indigo-600 rounded flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="font-medium text-gray-900">Custom OIDC</div>
+                <div class="text-sm text-gray-600">Sign in with your organization's OIDC</div>
+              </div>
+            </div>
+          </button>
+        </div>
+
+        <!-- Custom SAML Form -->
+        <div id="custom-saml-form" class="hidden">
+          <div class="text-center mb-6">
+            <div class="text-4xl mb-2">🔐</div>
+            <h3 class="text-lg font-semibold text-gray-900">Custom SAML Configuration</h3>
+            <p class="text-gray-600 text-sm">Enter your SAML provider details</p>
+          </div>
+          
+          <form class="space-y-4">
+            <div>
+              <label for="saml-entity-id" class="block text-sm font-medium text-gray-700 mb-1">Entity ID</label>
+              <input 
+                type="text" 
+                id="saml-entity-id" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="https://your-idp.com/saml"
+                required
+              >
+            </div>
+            <div>
+              <label for="saml-sso-url" class="block text-sm font-medium text-gray-700 mb-1">SSO URL</label>
+              <input 
+                type="url" 
+                id="saml-sso-url" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="https://your-idp.com/sso"
+                required
+              >
+            </div>
+            <div>
+              <label for="saml-certificate" class="block text-sm font-medium text-gray-700 mb-1">Certificate</label>
+              <textarea 
+                id="saml-certificate" 
+                rows="4"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Paste your SAML certificate here"
+                required
+              ></textarea>
+            </div>
+            <button 
+              type="submit" 
+              class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+            >
+              Configure SAML
+            </button>
+          </form>
+        </div>
+
+        <!-- Custom OIDC Form -->
+        <div id="custom-oidc-form" class="hidden">
+          <div class="text-center mb-6">
+            <div class="text-4xl mb-2">🔑</div>
+            <h3 class="text-lg font-semibold text-gray-900">Custom OIDC Configuration</h3>
+            <p class="text-gray-600 text-sm">Enter your OIDC provider details</p>
+          </div>
+          
+          <form class="space-y-4">
+            <div>
+              <label for="oidc-issuer" class="block text-sm font-medium text-gray-700 mb-1">Issuer URL</label>
+              <input 
+                type="url" 
+                id="oidc-issuer" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="https://your-oidc-provider.com"
+                required
+              >
+            </div>
+            <div>
+              <label for="oidc-client-id" class="block text-sm font-medium text-gray-700 mb-1">Client ID</label>
+              <input 
+                type="text" 
+                id="oidc-client-id" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Your OIDC client ID"
+                required
+              >
+            </div>
+            <div>
+              <label for="oidc-client-secret" class="block text-sm font-medium text-gray-700 mb-1">Client Secret</label>
+              <input 
+                type="password" 
+                id="oidc-client-secret" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Your OIDC client secret"
+                required
+              >
+            </div>
+            <button 
+              type="submit" 
+              class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+            >
+              Configure OIDC
+            </button>
+          </form>
+        </div>
+
+        <!-- Loading State -->
+        <div id="sso-loading" class="hidden text-center py-8">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p class="text-gray-600">Redirecting to SSO provider...</p>
+        </div>
+
+        <!-- Success State -->
+        <div id="sso-success" class="hidden text-center py-8">
+          <div class="text-4xl mb-4">✅</div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Authentication Successful</h3>
+          <p class="text-gray-600 mb-4">Redirecting to your dashboard...</p>
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto"></div>
+        </div>
+
+        <!-- Error State -->
+        <div id="sso-error" class="hidden text-center py-8">
+          <div class="text-4xl mb-4">❌</div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Authentication Failed</h3>
+          <p class="text-gray-600 mb-4" id="sso-error-message">Please try again</p>
+          <button 
+            id="retry-sso" 
+            class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+
+        <!-- Back Button -->
+        <div class="mt-6">
+          <button 
+            id="back-to-sso-providers" 
+            class="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
+          >
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Back to Providers
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Single Sign-On Modal JavaScript
+  class SSOModal {
+    constructor() {
+      this.modal = document.getElementById('sso-modal');
+      this.providers = document.getElementById('sso-providers');
+      this.customSamlForm = document.getElementById('custom-saml-form');
+      this.customOidcForm = document.getElementById('custom-oidc-form');
+      this.loading = document.getElementById('sso-loading');
+      this.success = document.getElementById('sso-success');
+      this.error = document.getElementById('sso-error');
+      
+      this.selectedProvider = null;
+      
+      this.init();
+    }
+
+    init() {
+      this.bindEvents();
+    }
+
+    bindEvents() {
+      // Close modal
+      document.getElementById('close-sso-modal')?.addEventListener('click', () => {
+        this.closeModal();
+      });
+
+      // Provider selection
+      document.querySelectorAll('#sso-providers button').forEach(button => {
+        button.addEventListener('click', (e) => {
+          this.selectProvider(e.currentTarget.dataset.provider);
+        });
+      });
+
+      // Form submissions
+      document.getElementById('custom-saml-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleCustomSAML();
+      });
+
+      document.getElementById('custom-oidc-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleCustomOIDC();
+      });
+
+      // Back button
+      document.getElementById('back-to-sso-providers')?.addEventListener('click', () => {
+        this.showProviders();
+      });
+
+      // Retry button
+      document.getElementById('retry-sso')?.addEventListener('click', () => {
+        this.showProviders();
+      });
+
+      // Close on backdrop click
+      this.modal?.addEventListener('click', (e) => {
+        if (e.target === this.modal) {
+          this.closeModal();
+        }
+      });
+    }
+
+    selectProvider(provider) {
+      this.selectedProvider = provider;
+      
+      // Update UI
+      document.querySelectorAll('#sso-providers button').forEach(button => {
+        button.classList.remove('border-blue-500', 'bg-blue-50');
+        button.classList.add('border-gray-200');
+      });
+      
+      document.querySelector(`[data-provider="${provider}"]`).classList.add('border-blue-500', 'bg-blue-50');
+      document.querySelector(`[data-provider="${provider}"]`).classList.remove('border-gray-200');
+
+      // Handle provider
+      this.handleProvider(provider);
+    }
+
+    handleProvider(provider) {
+      switch (provider) {
+        case 'azure_ad':
+          this.handleAzureAD();
+          break;
+        case 'google_workspace':
+          this.handleGoogleWorkspace();
+          break;
+        case 'okta':
+          this.handleOkta();
+          break;
+        case 'auth0':
+          this.handleAuth0();
+          break;
+        case 'custom_saml':
+          this.showCustomSAMLForm();
+          break;
+        case 'custom_oidc':
+          this.showCustomOIDCForm();
+          break;
+      }
+    }
+
+    handleAzureAD() {
+      this.showLoading();
+      
+      // Simulate Azure AD redirect
+      setTimeout(() => {
+        this.handleAuthResponse({ success: true });
+      }, 3000);
+    }
+
+    handleGoogleWorkspace() {
+      this.showLoading();
+      
+      // Simulate Google Workspace redirect
+      setTimeout(() => {
+        this.handleAuthResponse({ success: true });
+      }, 3000);
+    }
+
+    handleOkta() {
+      this.showLoading();
+      
+      // Simulate Okta redirect
+      setTimeout(() => {
+        this.handleAuthResponse({ success: true });
+      }, 3000);
+    }
+
+    handleAuth0() {
+      this.showLoading();
+      
+      // Simulate Auth0 redirect
+      setTimeout(() => {
+        this.handleAuthResponse({ success: true });
+      }, 3000);
+    }
+
+    showCustomSAMLForm() {
+      this.providers.classList.add('hidden');
+      this.customSamlForm.classList.remove('hidden');
+      this.customOidcForm.classList.add('hidden');
+      this.loading.classList.add('hidden');
+      this.success.classList.add('hidden');
+      this.error.classList.add('hidden');
+    }
+
+    showCustomOIDCForm() {
+      this.providers.classList.add('hidden');
+      this.customSamlForm.classList.add('hidden');
+      this.customOidcForm.classList.remove('hidden');
+      this.loading.classList.add('hidden');
+      this.success.classList.add('hidden');
+      this.error.classList.add('hidden');
+    }
+
+    handleCustomSAML() {
+      const entityId = document.getElementById('saml-entity-id').value;
+      const ssoUrl = document.getElementById('saml-sso-url').value;
+      const certificate = document.getElementById('saml-certificate').value;
+
+      if (!entityId || !ssoUrl || !certificate) {
+        this.showError('Please fill in all SAML configuration fields');
+        return;
+      }
+
+      this.showLoading();
+      
+      // Simulate SAML configuration
+      setTimeout(() => {
+        this.handleAuthResponse({ success: true });
+      }, 2000);
+    }
+
+    handleCustomOIDC() {
+      const issuer = document.getElementById('oidc-issuer').value;
+      const clientId = document.getElementById('oidc-client-id').value;
+      const clientSecret = document.getElementById('oidc-client-secret').value;
+
+      if (!issuer || !clientId || !clientSecret) {
+        this.showError('Please fill in all OIDC configuration fields');
+        return;
+      }
+
+      this.showLoading();
+      
+      // Simulate OIDC configuration
+      setTimeout(() => {
+        this.handleAuthResponse({ success: true });
+      }, 2000);
+    }
+
+    handleAuthResponse(response) {
+      if (response.success) {
+        this.showSuccess();
+        // Redirect after success
+        setTimeout(() => {
+          this.redirectToDashboard();
+        }, 2000);
+      } else {
+        this.showError(response.message || 'Authentication failed');
+      }
+    }
+
+    showLoading() {
+      this.providers.classList.add('hidden');
+      this.customSamlForm.classList.add('hidden');
+      this.customOidcForm.classList.add('hidden');
+      this.loading.classList.remove('hidden');
+      this.success.classList.add('hidden');
+      this.error.classList.add('hidden');
+    }
+
+    showSuccess() {
+      this.providers.classList.add('hidden');
+      this.customSamlForm.classList.add('hidden');
+      this.customOidcForm.classList.add('hidden');
+      this.loading.classList.add('hidden');
+      this.success.classList.remove('hidden');
+      this.error.classList.add('hidden');
+    }
+
+    showError(message) {
+      this.providers.classList.add('hidden');
+      this.customSamlForm.classList.add('hidden');
+      this.customOidcForm.classList.add('hidden');
+      this.loading.classList.add('hidden');
+      this.success.classList.add('hidden');
+      this.error.classList.remove('hidden');
+      
+      document.getElementById('sso-error-message').textContent = message;
+    }
+
+    showProviders() {
+      this.providers.classList.remove('hidden');
+      this.customSamlForm.classList.add('hidden');
+      this.customOidcForm.classList.add('hidden');
+      this.loading.classList.add('hidden');
+      this.success.classList.add('hidden');
+      this.error.classList.add('hidden');
+      
+      // Reset forms
+      document.getElementById('saml-entity-id').value = '';
+      document.getElementById('saml-sso-url').value = '';
+      document.getElementById('saml-certificate').value = '';
+      document.getElementById('oidc-issuer').value = '';
+      document.getElementById('oidc-client-id').value = '';
+      document.getElementById('oidc-client-secret').value = '';
+    }
+
+    redirectToDashboard() {
+      // Redirect to dashboard
+      window.location.href = '/dashboards/client';
+    }
+
+    closeModal() {
+      this.modal.classList.add('hidden');
+      this.showProviders();
+    }
+
+    open() {
+      this.modal.classList.remove('hidden');
+      this.showProviders();
+    }
+  }
+
+  // Initialize modal when DOM is loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    window.ssoModal = new SSOModal();
+  });
+
+  // Global function to open modal
+  window.openSSOModal = () => {
+    window.ssoModal?.open();
+  };
+</script>

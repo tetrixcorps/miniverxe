@@ -1,6 +1,11 @@
 ---
 // Healthcare Dashboard
 // Appointment scheduling, patient communication, emergency triage
+
+import SalesforceIntegration from '../../components/dashboards/SalesforceIntegration.astro';
+import HubSpotIntegration from '../../components/dashboards/HubSpotIntegration.astro';
+import EpicIntegration from '../../components/dashboards/EpicIntegration.astro';
+import WorkflowAutomation from '../../components/dashboards/WorkflowAutomation.astro';
 ---
 
 <div class="min-h-screen bg-gray-50">
@@ -257,6 +262,21 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- Healthcare Integrations -->
+    <div class="mt-8">
+      <h2 class="text-xl font-semibold text-gray-900 mb-6">Healthcare Integrations</h2>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <EpicIntegration />
+        <SalesforceIntegration />
+        <HubSpotIntegration />
+      </div>
+    </div>
+
+    <!-- Workflow Automation -->
+    <div class="mt-8">
+      <WorkflowAutomation industry="healthcare" />
     </div>
   </div>
 </div>
