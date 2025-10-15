@@ -1,0 +1,588 @@
+---
+// TETRIX RPA Dashboard - Industry-Specific RPA Management Interface
+import MainLayout from '../../components/layout/MainLayout.astro';
+import { TETRIXRPAEngine } from '../services/rpaEngine';
+import { IndustryWorkflowManager } from '../services/industryWorkflows';
+import { TETRIXComplianceFramework } from '../services/complianceFramework';
+import { TETRIXRPAPricingService } from '../services/rpaPricingService';
+---
+
+<MainLayout>
+  <div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white shadow-sm border-b">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-6">
+          <div class="flex items-center">
+            <div class="text-3xl mr-3">🤖</div>
+            <div>
+              <h1 class="text-2xl font-bold text-gray-900">TETRIX RPA Dashboard</h1>
+              <p class="text-sm text-gray-600">Robotic Process Automation Management</p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-4">
+            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+              Create Bot
+            </button>
+            <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+              Deploy Workflow
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Industry Selection -->
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Select Your Industry</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <button class="industry-tab bg-white p-4 rounded-lg shadow-sm border hover:border-blue-500 hover:shadow-md transition-all" data-industry="healthcare">
+            <div class="text-2xl mb-2">🏥</div>
+            <div class="text-sm font-medium">Healthcare</div>
+          </button>
+          <button class="industry-tab bg-white p-4 rounded-lg shadow-sm border hover:border-blue-500 hover:shadow-md transition-all" data-industry="financial">
+            <div class="text-2xl mb-2">🏦</div>
+            <div class="text-sm font-medium">Financial</div>
+          </button>
+          <button class="industry-tab bg-white p-4 rounded-lg shadow-sm border hover:border-blue-500 hover:shadow-md transition-all" data-industry="legal">
+            <div class="text-2xl mb-2">⚖️</div>
+            <div class="text-sm font-medium">Legal</div>
+          </button>
+          <button class="industry-tab bg-white p-4 rounded-lg shadow-sm border hover:border-blue-500 hover:shadow-md transition-all" data-industry="government">
+            <div class="text-2xl mb-2">🏛️</div>
+            <div class="text-sm font-medium">Government</div>
+          </button>
+          <button class="industry-tab bg-white p-4 rounded-lg shadow-sm border hover:border-blue-500 hover:shadow-md transition-all" data-industry="manufacturing">
+            <div class="text-2xl mb-2">🏭</div>
+            <div class="text-sm font-medium">Manufacturing</div>
+          </button>
+          <button class="industry-tab bg-white p-4 rounded-lg shadow-sm border hover:border-blue-500 hover:shadow-md transition-all" data-industry="retail">
+            <div class="text-2xl mb-2">🛒</div>
+            <div class="text-sm font-medium">Retail</div>
+          </button>
+          <button class="industry-tab bg-white p-4 rounded-lg shadow-sm border hover:border-blue-500 hover:shadow-md transition-all" data-industry="education">
+            <div class="text-2xl mb-2">🎓</div>
+            <div class="text-sm font-medium">Education</div>
+          </button>
+          <button class="industry-tab bg-white p-4 rounded-lg shadow-sm border hover:border-blue-500 hover:shadow-md transition-all" data-industry="construction">
+            <div class="text-2xl mb-2">🏗️</div>
+            <div class="text-sm font-medium">Construction</div>
+          </button>
+          <button class="industry-tab bg-white p-4 rounded-lg shadow-sm border hover:border-blue-500 hover:shadow-md transition-all" data-industry="logistics">
+            <div class="text-2xl mb-2">🚛</div>
+            <div class="text-sm font-medium">Logistics</div>
+          </button>
+          <button class="industry-tab bg-white p-4 rounded-lg shadow-sm border hover:border-blue-500 hover:shadow-md transition-all" data-industry="hospitality">
+            <div class="text-2xl mb-2">🏨</div>
+            <div class="text-sm font-medium">Hospitality</div>
+          </button>
+          <button class="industry-tab bg-white p-4 rounded-lg shadow-sm border hover:border-blue-500 hover:shadow-md transition-all" data-industry="wellness">
+            <div class="text-2xl mb-2">💪</div>
+            <div class="text-sm font-medium">Wellness</div>
+          </button>
+          <button class="industry-tab bg-white p-4 rounded-lg shadow-sm border hover:border-blue-500 hover:shadow-md transition-all" data-industry="beauty">
+            <div class="text-2xl mb-2">💄</div>
+            <div class="text-sm font-medium">Beauty</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Industry Content -->
+      <div id="industry-content" class="hidden">
+        <!-- RPA Bots Section -->
+        <div class="mb-8">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-gray-900">RPA Bots</h2>
+            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+              Create New Bot
+            </button>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Bot Cards will be populated by JavaScript -->
+            <div class="bot-card bg-white p-6 rounded-lg shadow-sm border">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                  <div class="text-2xl mr-3">🤖</div>
+                  <div>
+                    <h3 class="font-semibold text-gray-900">Patient Intake Bot</h3>
+                    <p class="text-sm text-gray-600">Healthcare</p>
+                  </div>
+                </div>
+                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Active</span>
+              </div>
+              <div class="space-y-2 mb-4">
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Executions:</span>
+                  <span class="font-medium">1,247</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Success Rate:</span>
+                  <span class="font-medium text-green-600">98.5%</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Last Run:</span>
+                  <span class="font-medium">2 hours ago</span>
+                </div>
+              </div>
+              <div class="flex space-x-2">
+                <button class="flex-1 bg-blue-100 text-blue-700 px-3 py-2 rounded text-sm hover:bg-blue-200 transition-colors">
+                  View Details
+                </button>
+                <button class="flex-1 bg-gray-100 text-gray-700 px-3 py-2 rounded text-sm hover:bg-gray-200 transition-colors">
+                  Configure
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Workflows Section -->
+        <div class="mb-8">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-gray-900">Workflows</h2>
+            <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+              Create Workflow
+            </button>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Workflow Cards will be populated by JavaScript -->
+            <div class="workflow-card bg-white p-6 rounded-lg shadow-sm border">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                  <div class="text-2xl mr-3">⚡</div>
+                  <div>
+                    <h3 class="font-semibold text-gray-900">Patient Intake Automation</h3>
+                    <p class="text-sm text-gray-600">Healthcare</p>
+                  </div>
+                </div>
+                <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Deployed</span>
+              </div>
+              <p class="text-sm text-gray-600 mb-4">
+                Automates patient registration, insurance verification, and appointment scheduling
+              </p>
+              <div class="space-y-2 mb-4">
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Steps:</span>
+                  <span class="font-medium">8</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Execution Time:</span>
+                  <span class="font-medium">2.3 min</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Compliance:</span>
+                  <span class="font-medium text-green-600">HIPAA ✓</span>
+                </div>
+              </div>
+              <div class="flex space-x-2">
+                <button class="flex-1 bg-blue-100 text-blue-700 px-3 py-2 rounded text-sm hover:bg-blue-200 transition-colors">
+                  View Details
+                </button>
+                <button class="flex-1 bg-gray-100 text-gray-700 px-3 py-2 rounded text-sm hover:bg-gray-200 transition-colors">
+                  Edit
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Compliance Section -->
+        <div class="mb-8">
+          <h2 class="text-xl font-semibold text-gray-900 mb-6">Compliance Status</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-white p-6 rounded-lg shadow-sm border">
+              <div class="flex items-center justify-between mb-4">
+                <div class="text-2xl">🔐</div>
+                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Compliant</span>
+              </div>
+              <h3 class="font-semibold text-gray-900 mb-2">ISO 27001</h3>
+              <p class="text-sm text-gray-600 mb-4">Information Security Management</p>
+              <div class="text-sm">
+                <div class="flex justify-between mb-1">
+                  <span>Compliance Score:</span>
+                  <span class="font-medium text-green-600">95%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-green-600 h-2 rounded-full" style="width: 95%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow-sm border">
+              <div class="flex items-center justify-between mb-4">
+                <div class="text-2xl">🛡️</div>
+                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Compliant</span>
+              </div>
+              <h3 class="font-semibold text-gray-900 mb-2">SOC 2 Type 2</h3>
+              <p class="text-sm text-gray-600 mb-4">Security & Availability</p>
+              <div class="text-sm">
+                <div class="flex justify-between mb-1">
+                  <span>Compliance Score:</span>
+                  <span class="font-medium text-green-600">98%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-green-600 h-2 rounded-full" style="width: 98%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow-sm border">
+              <div class="flex items-center justify-between mb-4">
+                <div class="text-2xl">🏥</div>
+                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Compliant</span>
+              </div>
+              <h3 class="font-semibold text-gray-900 mb-2">HIPAA</h3>
+              <p class="text-sm text-gray-600 mb-4">Healthcare Data Protection</p>
+              <div class="text-sm">
+                <div class="flex justify-between mb-1">
+                  <span>Compliance Score:</span>
+                  <span class="font-medium text-green-600">97%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-green-600 h-2 rounded-full" style="width: 97%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow-sm border">
+              <div class="flex items-center justify-between mb-4">
+                <div class="text-2xl">💰</div>
+                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Compliant</span>
+              </div>
+              <h3 class="font-semibold text-gray-900 mb-2">SOX</h3>
+              <p class="text-sm text-gray-600 mb-4">Financial Reporting Controls</p>
+              <div class="text-sm">
+                <div class="flex justify-between mb-1">
+                  <span>Compliance Score:</span>
+                  <span class="font-medium text-green-600">96%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-green-600 h-2 rounded-full" style="width: 96%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analytics Section -->
+        <div class="mb-8">
+          <h2 class="text-xl font-semibold text-gray-900 mb-6">Analytics & Performance</h2>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-lg shadow-sm border">
+              <h3 class="font-semibold text-gray-900 mb-4">Bot Performance</h3>
+              <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-gray-600">Total Executions</span>
+                  <span class="font-semibold text-lg">12,847</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-gray-600">Success Rate</span>
+                  <span class="font-semibold text-lg text-green-600">97.8%</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-gray-600">Average Execution Time</span>
+                  <span class="font-semibold text-lg">2.3 min</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-gray-600">Cost Savings</span>
+                  <span class="font-semibold text-lg text-blue-600">$45,230</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow-sm border">
+              <h3 class="font-semibold text-gray-900 mb-4">Resource Utilization</h3>
+              <div class="space-y-4">
+                <div>
+                  <div class="flex justify-between text-sm mb-1">
+                    <span class="text-gray-600">CPU Usage</span>
+                    <span class="font-medium">65%</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-blue-600 h-2 rounded-full" style="width: 65%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between text-sm mb-1">
+                    <span class="text-gray-600">Memory Usage</span>
+                    <span class="font-medium">78%</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-green-600 h-2 rounded-full" style="width: 78%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between text-sm mb-1">
+                    <span class="text-gray-600">Storage Usage</span>
+                    <span class="font-medium">45%</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-yellow-600 h-2 rounded-full" style="width: 45%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between text-sm mb-1">
+                    <span class="text-gray-600">Network Usage</span>
+                    <span class="font-medium">32%</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-purple-600 h-2 rounded-full" style="width: 32%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pricing Section -->
+        <div class="mb-8">
+          <h2 class="text-xl font-semibold text-gray-900 mb-6">Pricing & Billing</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-lg shadow-sm border">
+              <div class="text-center mb-4">
+                <h3 class="font-semibold text-gray-900 mb-2">Starter</h3>
+                <div class="text-3xl font-bold text-blue-600">$299</div>
+                <div class="text-sm text-gray-600">per month</div>
+              </div>
+              <ul class="space-y-2 text-sm text-gray-600 mb-6">
+                <li>• 5 RPA bots</li>
+                <li>• 10 workflows</li>
+                <li>• 1,000 executions/month</li>
+                <li>• Email support</li>
+                <li>• Basic compliance</li>
+              </ul>
+              <button class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                Select Plan
+              </button>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-blue-500 relative">
+              <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                <span class="bg-blue-500 text-white px-3 py-1 rounded-full text-xs">Most Popular</span>
+              </div>
+              <div class="text-center mb-4">
+                <h3 class="font-semibold text-gray-900 mb-2">Professional</h3>
+                <div class="text-3xl font-bold text-blue-600">$799</div>
+                <div class="text-sm text-gray-600">per month</div>
+              </div>
+              <ul class="space-y-2 text-sm text-gray-600 mb-6">
+                <li>• 20 RPA bots</li>
+                <li>• 50 workflows</li>
+                <li>• 5,000 executions/month</li>
+                <li>• Phone & email support</li>
+                <li>• Enhanced compliance</li>
+              </ul>
+              <button class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                Select Plan
+              </button>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow-sm border">
+              <div class="text-center mb-4">
+                <h3 class="font-semibold text-gray-900 mb-2">Enterprise</h3>
+                <div class="text-3xl font-bold text-blue-600">$2,499</div>
+                <div class="text-sm text-gray-600">per month</div>
+              </div>
+              <ul class="space-y-2 text-sm text-gray-600 mb-6">
+                <li>• Unlimited bots</li>
+                <li>• Unlimited workflows</li>
+                <li>• Unlimited executions</li>
+                <li>• Dedicated support</li>
+                <li>• Full compliance suite</li>
+              </ul>
+              <button class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                Select Plan
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // RPA Dashboard JavaScript
+    class RPADashboard {
+      constructor() {
+        this.currentIndustry = null;
+        this.rpaEngine = null;
+        this.workflowManager = null;
+        this.complianceFramework = null;
+        this.pricingService = null;
+        this.initializeDashboard();
+      }
+
+      async initializeDashboard() {
+        console.log('🤖 Initializing TETRIX RPA Dashboard...');
+        
+        // Initialize services
+        this.rpaEngine = new TETRIXRPAEngine();
+        this.workflowManager = new IndustryWorkflowManager();
+        this.complianceFramework = new TETRIXComplianceFramework();
+        this.pricingService = new TETRIXRPAPricingService();
+        
+        // Setup event listeners
+        this.setupEventListeners();
+        
+        console.log('✅ RPA Dashboard initialized successfully');
+      }
+
+      setupEventListeners() {
+        // Industry tab selection
+        document.querySelectorAll('.industry-tab').forEach(tab => {
+          tab.addEventListener('click', (e) => {
+            const industry = e.currentTarget.dataset.industry;
+            this.selectIndustry(industry);
+          });
+        });
+
+        // Bot creation
+        document.querySelectorAll('button').forEach(button => {
+          if (button.textContent.includes('Create Bot')) {
+            button.addEventListener('click', () => this.createBot());
+          }
+          if (button.textContent.includes('Create Workflow')) {
+            button.addEventListener('click', () => this.createWorkflow());
+          }
+        });
+      }
+
+      async selectIndustry(industry) {
+        console.log(`🏭 Selecting industry: ${industry}`);
+        
+        // Update UI
+        document.querySelectorAll('.industry-tab').forEach(tab => {
+          tab.classList.remove('border-blue-500', 'bg-blue-50');
+          tab.classList.add('border-gray-200');
+        });
+        
+        document.querySelector(`[data-industry="${industry}"]`).classList.add('border-blue-500', 'bg-blue-50');
+        document.querySelector(`[data-industry="${industry}"]`).classList.remove('border-gray-200');
+        
+        this.currentIndustry = industry;
+        
+        // Show industry content
+        const industryContent = document.getElementById('industry-content');
+        industryContent.classList.remove('hidden');
+        
+        // Load industry-specific data
+        await this.loadIndustryData(industry);
+      }
+
+      async loadIndustryData(industry) {
+        try {
+          // Load industry workflows
+          const workflows = this.workflowManager.getIndustryWorkflows(industry);
+          console.log(`📋 Loaded ${workflows.length} workflows for ${industry}`);
+          
+          // Load compliance data
+          const complianceData = this.complianceFramework.getComplianceDashboard(industry);
+          console.log(`🔐 Loaded compliance data for ${industry}`);
+          
+          // Load pricing data
+          const pricingData = this.pricingService.getIndustryPricing(industry);
+          console.log(`💰 Loaded pricing data for ${industry}`);
+          
+          // Update UI with loaded data
+          this.updateIndustryContent(industry, workflows, complianceData, pricingData);
+          
+        } catch (error) {
+          console.error(`❌ Failed to load data for ${industry}:`, error);
+        }
+      }
+
+      updateIndustryContent(industry, workflows, complianceData, pricingData) {
+        // Update workflow cards
+        this.updateWorkflowCards(workflows);
+        
+        // Update compliance status
+        this.updateComplianceStatus(complianceData);
+        
+        // Update pricing
+        this.updatePricing(pricingData);
+      }
+
+      updateWorkflowCards(workflows) {
+        const workflowContainer = document.querySelector('.workflow-card').parentElement;
+        
+        workflows.forEach(workflow => {
+          const workflowCard = document.createElement('div');
+          workflowCard.className = 'workflow-card bg-white p-6 rounded-lg shadow-sm border';
+          workflowCard.innerHTML = `
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center">
+                <div class="text-2xl mr-3">⚡</div>
+                <div>
+                  <h3 class="font-semibold text-gray-900">${workflow.name}</h3>
+                  <p class="text-sm text-gray-600">${workflow.industry}</p>
+                </div>
+              </div>
+              <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Available</span>
+            </div>
+            <p class="text-sm text-gray-600 mb-4">${workflow.description}</p>
+            <div class="space-y-2 mb-4">
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600">Steps:</span>
+                <span class="font-medium">${workflow.steps.length}</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600">Category:</span>
+                <span class="font-medium">${workflow.category}</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600">Compliance:</span>
+                <span class="font-medium text-green-600">${Object.keys(workflow.compliance).filter(key => workflow.compliance[key]).join(', ')}</span>
+              </div>
+            </div>
+            <div class="flex space-x-2">
+              <button class="flex-1 bg-blue-100 text-blue-700 px-3 py-2 rounded text-sm hover:bg-blue-200 transition-colors">
+                Deploy
+              </button>
+              <button class="flex-1 bg-gray-100 text-gray-700 px-3 py-2 rounded text-sm hover:bg-gray-200 transition-colors">
+                Preview
+              </button>
+            </div>
+          `;
+          workflowContainer.appendChild(workflowCard);
+        });
+      }
+
+      updateComplianceStatus(complianceData) {
+        // Update compliance cards with real data
+        console.log('🔐 Updating compliance status:', complianceData);
+      }
+
+      updatePricing(pricingData) {
+        // Update pricing cards with industry-specific pricing
+        console.log('💰 Updating pricing:', pricingData);
+      }
+
+      async createBot() {
+        if (!this.currentIndustry) {
+          alert('Please select an industry first');
+          return;
+        }
+        
+        console.log(`🤖 Creating bot for ${this.currentIndustry}`);
+        // Implementation would open bot creation modal
+      }
+
+      async createWorkflow() {
+        if (!this.currentIndustry) {
+          alert('Please select an industry first');
+          return;
+        }
+        
+        console.log(`⚡ Creating workflow for ${this.currentIndustry}`);
+        // Implementation would open workflow creation modal
+      }
+    }
+
+    // Initialize dashboard when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      new RPADashboard();
+    });
+  </script>
+</MainLayout>
