@@ -180,19 +180,15 @@ import TwoFAModal from '../auth/2FAModal.astro';
         const clientLoginBtn = document.getElementById('client-login-2fa-btn');
         const clientLoginBtnMobile = document.getElementById('client-login-2fa-btn-mobile');
 
-        // JoRoMi button handlers - Use 2FA authentication like Code Academy
+        // JoRoMi button handlers - Redirect to JoRoMi platform (has its own auth system)
         if (joromiBtn) {
           joromiBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            // Set authentication context for JoRoMi
-            window.tetrixAuthContext = 'joromi';
-            // Open 2FA modal for authentication
-            if (window.open2FAModal) {
-              window.open2FAModal();
-            } else {
-              // Fallback to direct redirect
-              window.location.href = '/joromi';
-            }
+            // Redirect to JoRoMi platform - it has its own authentication system
+            const joromiUrl = window.location.hostname.includes('tetrixcorp.com') 
+              ? 'https://joromi.tetrixcorp.com' 
+              : 'http://localhost:3000';
+            window.open(joromiUrl, '_blank');
             // Close mobile menu if open
             if (menu) {
               menu.classList.add('hidden');
@@ -204,15 +200,11 @@ import TwoFAModal from '../auth/2FAModal.astro';
         if (joromiBtnMobile) {
           joromiBtnMobile.addEventListener('click', function(e) {
             e.preventDefault();
-            // Set authentication context for JoRoMi
-            window.tetrixAuthContext = 'joromi';
-            // Open 2FA modal for authentication
-            if (window.open2FAModal) {
-              window.open2FAModal();
-            } else {
-              // Fallback to direct redirect
-              window.location.href = '/joromi';
-            }
+            // Redirect to JoRoMi platform - it has its own authentication system
+            const joromiUrl = window.location.hostname.includes('tetrixcorp.com') 
+              ? 'https://joromi.tetrixcorp.com' 
+              : 'http://localhost:3000';
+            window.open(joromiUrl, '_blank');
             // Close mobile menu
             if (menu) {
               menu.classList.add('hidden');
