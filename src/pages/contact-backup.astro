@@ -264,6 +264,7 @@ import Button from '../components/shared/Button.astro';
 
 <script>
   // Simplified SHANGO Chat Integration (removed complex widget class)
+  class SHANGOChatWidget {
     constructor(containerId, options = {}) {
       this.containerId = containerId;
       this.userId = options.userId || `user-${Date.now()}`;
@@ -920,7 +921,7 @@ Please provide a helpful, professional response that addresses their inquiry. Be
 
         <!-- Messages -->
         <div id="shango-messages" class="flex-1 overflow-y-auto p-4 space-y-2 bg-gray-50">
-          ${window.messages.map(message => renderMessage(message)).join('')}
+          <!-- Messages will be populated by JavaScript -->
         </div>
 
         <!-- Input -->
