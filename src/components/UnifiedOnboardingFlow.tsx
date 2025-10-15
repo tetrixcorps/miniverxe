@@ -475,7 +475,7 @@ const UnifiedOnboardingFlow: React.FC<UnifiedOnboardingFlowProps> = ({
             <div className="space-y-4">
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <div className="flex items-center">
-                  <div className="text-blue-600 mr-3">&#128241;</div>
+                  <div className="text-blue-600 mr-3">&#128241;#128241;</div>
                   <div className="text-sm text-blue-800">
                     <strong>WhatsApp Business Account:</strong> Being reviewed by Meta
                   </div>
@@ -513,7 +513,7 @@ const UnifiedOnboardingFlow: React.FC<UnifiedOnboardingFlowProps> = ({
             <div className="space-y-4">
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                 <div className="flex items-center">
-                  <div className="text-green-600 mr-3">&#127881;</div>
+                  <div className="text-green-600 mr-3">&#127881;#127881;</div>
                   <div className="text-sm text-green-800">
                     <strong>Free Trial Active:</strong> {trialStatus.daysRemaining} days remaining
                   </div>
@@ -542,7 +542,7 @@ const UnifiedOnboardingFlow: React.FC<UnifiedOnboardingFlowProps> = ({
       case 'completed':
         return (
           <div className="max-w-md mx-auto text-center">
-            <div className="text-green-600 text-6xl mb-4">&#127881;</div>
+            <div className="text-green-600 text-6xl mb-4">&#127881;#127881;</div>
             <h2 className="text-2xl font-bold mb-6">Setup Complete!</h2>
             <p className="text-gray-600 mb-6">
               Your WhatsApp Business Account is ready and your free trial is active.
