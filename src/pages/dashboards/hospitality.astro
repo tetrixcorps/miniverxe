@@ -1,0 +1,275 @@
+---
+// Hospitality Dashboard
+// Reservation management, guest services, concierge services
+---
+
+<div class="min-h-screen bg-gray-50">
+  <!-- Header -->
+  <div class="bg-white shadow-sm border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4">
+        <div class="flex items-center">
+          <h1 class="text-2xl font-bold text-gray-900">Hospitality Dashboard</h1>
+          <span class="ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+            🏨 Hospitality
+          </span>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="flex items-center text-sm text-gray-500">
+            <div class="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+            System Online
+          </div>
+          <button id="refresh-btn" class="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Key Metrics -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+              <span class="text-blue-600 text-lg">🏨</span>
+            </div>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-500">Occupancy Rate</p>
+            <p class="text-2xl font-semibold text-gray-900">87%</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+              <span class="text-green-600 text-lg">📅</span>
+            </div>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-500">Check-ins Today</p>
+            <p class="text-2xl font-semibold text-gray-900">45</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+              <span class="text-yellow-600 text-lg">🎯</span>
+            </div>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-500">Guest Requests</p>
+            <p class="text-2xl font-semibold text-gray-900">23</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+              <span class="text-purple-600 text-lg">⭐</span>
+            </div>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-500">Guest Rating</p>
+            <p class="text-2xl font-semibold text-gray-900">4.8/5</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reservation Management & Guest Services -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <!-- Reservation Management -->
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-medium text-gray-900">Reservation Management</h3>
+        </div>
+        <div class="p-6">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+              <div class="flex items-center">
+                <div class="w-3 h-3 bg-blue-400 rounded-full mr-3"></div>
+                <div>
+                  <p class="text-sm font-medium text-gray-900">Room 205 - John Smith</p>
+                  <p class="text-sm text-gray-500">Check-in: 2:00 PM</p>
+                </div>
+              </div>
+              <span class="text-sm text-blue-600 font-medium">Arriving</span>
+            </div>
+            
+            <div class="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+              <div class="flex items-center">
+                <div class="w-3 h-3 bg-green-400 rounded-full mr-3"></div>
+                <div>
+                  <p class="text-sm font-medium text-gray-900">Room 301 - Sarah Johnson</p>
+                  <p class="text-sm text-gray-500">Checked in: 1:30 PM</p>
+                </div>
+              </div>
+              <span class="text-sm text-green-600 font-medium">Checked In</span>
+            </div>
+            
+            <div class="flex items-center justify-between p-4 bg-yellow-50 rounded-lg">
+              <div class="flex items-center">
+                <div class="w-3 h-3 bg-yellow-400 rounded-full mr-3"></div>
+                <div>
+                  <p class="text-sm font-medium text-gray-900">Room 102 - Mike Davis</p>
+                  <p class="text-sm text-gray-500">Check-out: 11:00 AM</p>
+                </div>
+              </div>
+              <span class="text-sm text-yellow-600 font-medium">Departing</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Guest Services -->
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-medium text-gray-900">Guest Services</h3>
+        </div>
+        <div class="p-6">
+          <div class="space-y-4">
+            <div class="flex items-start p-4 bg-blue-50 rounded-lg">
+              <div class="flex-shrink-0">
+                <span class="text-blue-600 text-lg">🛎️</span>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm font-medium text-blue-800">Room Service</p>
+                <p class="text-sm text-blue-700">Guest requested extra towels</p>
+                <p class="text-xs text-blue-600 mt-1">5 minutes ago</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start p-4 bg-green-50 rounded-lg">
+              <div class="flex-shrink-0">
+                <span class="text-green-600 text-lg">✅</span>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm font-medium text-green-800">Concierge Service</p>
+                <p class="text-sm text-green-700">Restaurant reservation confirmed</p>
+                <p class="text-xs text-green-600 mt-1">15 minutes ago</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start p-4 bg-yellow-50 rounded-lg">
+              <div class="flex-shrink-0">
+                <span class="text-yellow-600 text-lg">⚠️</span>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm font-medium text-yellow-800">Maintenance Request</p>
+                <p class="text-sm text-yellow-700">AC unit not working in Room 205</p>
+                <p class="text-xs text-yellow-600 mt-1">30 minutes ago</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Concierge Services -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h3 class="text-lg font-medium text-gray-900">Concierge Services</h3>
+      </div>
+      <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="text-center">
+            <div class="text-3xl font-bold text-green-600 mb-2">23</div>
+            <p class="text-sm text-gray-600">Active Requests</p>
+            <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+              <div class="bg-green-600 h-2 rounded-full" style="width: 100%"></div>
+            </div>
+          </div>
+          
+          <div class="text-center">
+            <div class="text-3xl font-bold text-blue-600 mb-2">96%</div>
+            <p class="text-sm text-gray-600">Service Completion Rate</p>
+            <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+              <div class="bg-blue-600 h-2 rounded-full" style="width: 96%"></div>
+            </div>
+          </div>
+          
+          <div class="text-center">
+            <div class="text-3xl font-bold text-purple-600 mb-2">4.9</div>
+            <p class="text-sm text-gray-600">Concierge Rating</p>
+            <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+              <div class="bg-purple-600 h-2 rounded-full" style="width: 98%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h3 class="text-lg font-medium text-gray-900">Recent Activity</h3>
+      </div>
+      <div class="p-6">
+        <div class="space-y-4">
+          <div class="flex items-center space-x-4">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                <span class="text-green-600 text-sm">✅</span>
+              </div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm text-gray-900">Guest checked in: Room 301 - Sarah Johnson</p>
+              <p class="text-xs text-gray-500">Welcome package delivered - 1 hour ago</p>
+            </div>
+          </div>
+          
+          <div class="flex items-center space-x-4">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                <span class="text-blue-600 text-sm">🛎️</span>
+              </div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm text-gray-900">Concierge service completed: Restaurant booking</p>
+              <p class="text-xs text-gray-500">Table reserved for 7:00 PM - 2 hours ago</p>
+            </div>
+          </div>
+          
+          <div class="flex items-center space-x-4">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                <span class="text-yellow-600 text-sm">⚠️</span>
+              </div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm text-gray-900">Maintenance request: AC repair needed</p>
+              <p class="text-xs text-gray-500">Room 205 - Technician dispatched - 3 hours ago</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Auto-refresh functionality
+  setInterval(() => {
+    // Simulate data refresh
+    console.log('Refreshing hospitality dashboard data...');
+  }, 30000);
+
+  // Refresh button functionality
+  document.getElementById('refresh-btn')?.addEventListener('click', () => {
+    location.reload();
+  });
+</script>
