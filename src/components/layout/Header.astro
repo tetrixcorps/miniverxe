@@ -185,10 +185,7 @@ import TwoFAModal from '../auth/2FAModal.astro';
           joromiBtn.addEventListener('click', function(e) {
             e.preventDefault();
             // Redirect to JoRoMi platform - it has its own authentication system
-            const joromiUrl = window.location.hostname.includes('tetrixcorp.com') 
-              ? 'https://joromi.tetrixcorp.com' 
-              : 'http://localhost:3000';
-            window.open(joromiUrl, '_blank');
+            window.open('https://joromi.ai', '_blank');
             // Close mobile menu if open
             if (menu) {
               menu.classList.add('hidden');
@@ -201,10 +198,7 @@ import TwoFAModal from '../auth/2FAModal.astro';
           joromiBtnMobile.addEventListener('click', function(e) {
             e.preventDefault();
             // Redirect to JoRoMi platform - it has its own authentication system
-            const joromiUrl = window.location.hostname.includes('tetrixcorp.com') 
-              ? 'https://joromi.tetrixcorp.com' 
-              : 'http://localhost:3000';
-            window.open(joromiUrl, '_blank');
+            window.open('https://joromi.ai', '_blank');
             // Close mobile menu
             if (menu) {
               menu.classList.add('hidden');
