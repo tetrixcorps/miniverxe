@@ -41,21 +41,23 @@ export const GET: APIRoute = async ({ request }) => {
       });
       
     } catch (staticError) {
-      console.log('⚠️ Static JWKS not found, falling back to error response');
+      console.log('⚠️ Static JWKS not found, falling back to dynamic generation');
       
-      // Return error if static file not found
-      return new Response(JSON.stringify({
-        error: 'JWKS not available',
-        message: 'Static JWKS file not found and dynamic generation not available'
-      }), {
-        status: 503,
-        headers: {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache',
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET',
-          'Access-Control-Allow-Headers': 'Content-Type',
-        }
+      // Fallback to dynamic generation
+      const { generateJWKS } = await import('../../../services/auth/jwksService');
+      const jwks = await generateJWKS();
+      
+      const headers = new Headers({
+        'Content-Type': 'application/json',
+        'Cache-Control': 'public, max-age=3600',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      });
+
+      return new Response(JSON.stringify(jwks, null, 2), {
+        status: 200,
+        headers
       });
     }
 
