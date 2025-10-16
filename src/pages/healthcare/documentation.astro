@@ -1,8 +1,16 @@
 ---
-import MainLayout from '../../layouts/MainLayout.astro';
+// import MainLayout from '../../components/layout/MainLayout.astro';
 ---
 
-<MainLayout title="TETRIX Healthcare Documentation - Epic FHIR Integration">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TETRIX Healthcare Documentation - Epic FHIR Integration</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
   <div class="min-h-screen bg-gray-50">
     <!-- Hero Section -->
     <section class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-20">
@@ -170,14 +178,14 @@ import MainLayout from '../../layouts/MainLayout.astro';
                   <div class="mb-6">
                     <h3 class="text-xl font-semibold text-gray-900 mb-4">JWT Configuration</h3>
                     <div class="bg-gray-50 p-4 rounded-lg">
-                      <pre class="text-sm text-gray-700"><code>{
+                      <pre class="text-sm text-gray-700"><code>{{
   "kty": "RSA",
   "kid": "tetrix-epic-key-2025",
   "use": "sig",
   "alg": "RS256",
   "n": "yiuUj33tQVKqk0rCdRafyCvavGgJZOKzNENq9JCOfevILcHiqL9nSuYQ1L0qIDSoTqS8Gxe3HBG9KuYhm5Jv1OtvYMfcFRk2gw7sikulsAWn2gPhoqPTGTC_xKl3aR8SGdd8sQgma0mUL4Tcnf7A-V_YAQQaOA5MEA7Jri9fAqCk0HzzEgscDE8nceqSdvU6ODAzGglPVoZz0ofdUdTMRtNTywudK2AjvDZX0e4HbN34xwXhAFlSjmL_KV92S1pcxWMHHWCbCywUliiCbif7aFwRhXjuuYQe71GNxkKPMo6NNq-4pp8OBhiicltCOVbLNVVCvxcQ9wBx7dj_9Ysj5w",
   "e": "AQAB"
-}</code></pre>
+}}</code></pre>
                     </div>
                   </div>
                 </section>
@@ -296,13 +304,13 @@ import MainLayout from '../../layouts/MainLayout.astro';
                       <h3 class="text-lg font-semibold text-gray-900 mb-4">Step 2: OAuth 2.0 Configuration</h3>
                       <div class="bg-gray-50 p-4 rounded-lg">
                         <pre class="text-sm text-gray-700"><code>// Epic OAuth Configuration
-const epicConfig = {
+const epicConfig = {{
   clientId: 'your-epic-client-id',
   redirectUri: 'https://tetrixcorp.com/auth/epic/callback',
   scope: 'patient/Patient.read patient/Observation.read launch/patient',
   baseUrl: 'https://fhir.epic.com/interconnect-fhir-oauth',
   environment: 'production'
-};</code></pre>
+}};</code></pre>
                       </div>
                     </div>
 
@@ -408,3 +416,5 @@ const jwt = createEpicJwt(
     });
   });
 </script>
+</body>
+</html>

@@ -44,7 +44,7 @@ export const GET: APIRoute = async ({ request }) => {
       console.log('⚠️ Static JWKS not found, falling back to dynamic generation');
       
       // Fallback to dynamic generation
-      const { generateJWKS } = await import('../../services/auth/jwksService');
+      const { generateJWKS } = await import('../../../services/auth/jwksService');
       const jwks = await generateJWKS();
       
       const headers = new Headers({

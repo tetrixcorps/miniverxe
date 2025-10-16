@@ -29,7 +29,7 @@
         <div id="2fa-step-1" class="space-y-4">
           <div class="text-center mb-6">
             <div class="w-16 h-16 bg-brand-red/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span class="text-2xl">&#128222;#128222;</span>
+              <span class="text-2xl">&#128222;</span>
             </div>
             <h3 class="text-xl font-semibold text-gray-900 mb-2">Enter Your Phone Number</h3>
             <p class="text-gray-600 text-sm">We'll send you a verification code via SMS or Voice call</p>
@@ -85,7 +85,7 @@
         <div id="2fa-step-2" class="space-y-4 hidden">
           <div class="text-center mb-6">
             <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span class="text-2xl">&#128222;#128222;</span>
+              <span class="text-2xl">&#128222;</span>
             </div>
             <h3 class="text-xl font-semibold text-gray-900 mb-2">Enter Verification Code</h3>
             <p class="text-gray-600 text-sm">
@@ -149,13 +149,7 @@
               Continue to Code Academy
             </button>
             
-            <!-- JoRoMi Button -->
-            <button
-              id="redirect-joromi"
-              class="w-full bg-gradient-to-r from-red-600 to-red-700 text-white py-3 px-4 rounded-lg font-semibold hover:from-red-700 hover:to-red-800 transition-all duration-200 shadow-lg hidden"
-            >
-              Continue to JoRoMi Platform
-            </button>
+            <!-- JoRoMi Button - Removed: JoRoMi has its own authentication system -->
             
             <!-- Client Dashboard Button -->
             <button
@@ -232,11 +226,7 @@
             modalTitle.textContent = 'Code Academy Access';
             modalSubtitle.textContent = 'Verify your identity to access Code Academy';
             break;
-          case 'joromi':
-            contextBadge.textContent = 'JoRoMi Platform';
-            modalTitle.textContent = 'JoRoMi Authentication';
-            modalSubtitle.textContent = 'Secure access to JoRoMi platform';
-            break;
+          // JoRoMi context removed - JoRoMi has its own authentication system
           case 'dashboard':
             contextBadge.textContent = 'Client Dashboard';
             modalTitle.textContent = 'Client Dashboard Access';
@@ -286,20 +276,7 @@
         this.closeModal();
       });
 
-      document.getElementById('redirect-joromi')?.addEventListener('click', () => {
-        // Pass the authentication token to JoRoMi
-        const authToken = localStorage.getItem('tetrix_auth_token');
-        const joromiUrl = this.getJoromiUrl();
-        
-        if (authToken) {
-          // Open JoRoMi with authentication token
-          window.open(`${joromiUrl}/tetrix-auth?redirect=joromi-dashboard&token=${authToken}`, '_blank');
-        } else {
-          // Fallback to regular JoRoMi page
-          window.open(joromiUrl, '_blank');
-        }
-        this.closeModal();
-      });
+      // JoRoMi redirect removed - JoRoMi has its own authentication system
 
       document.getElementById('redirect-dashboard')?.addEventListener('click', () => {
         window.location.href = '/dashboard';
@@ -577,7 +554,6 @@
     showContextButton() {
       // Hide all redirect buttons
       document.getElementById('redirect-code-academy')?.classList.add('hidden');
-      document.getElementById('redirect-joromi')?.classList.add('hidden');
       document.getElementById('redirect-dashboard')?.classList.add('hidden');
       document.getElementById('redirect-custom')?.classList.add('hidden');
 
@@ -585,9 +561,6 @@
       switch (this.authContext) {
         case 'code-academy':
           document.getElementById('redirect-code-academy')?.classList.remove('hidden');
-          break;
-        case 'joromi':
-          document.getElementById('redirect-joromi')?.classList.remove('hidden');
           break;
         case 'dashboard':
           document.getElementById('redirect-dashboard')?.classList.remove('hidden');
@@ -709,53 +682,31 @@
       
       const modalTitle = document.getElementById('modal-title');
       const modalSubtitle = document.getElementById('modal-subtitle');
-      const redirectJoromi = document.getElementById('redirect-joromi');
       const redirectDashboard = document.getElementById('redirect-dashboard');
       const redirectCustom = document.getElementById('redirect-custom');
 
       switch (this.authContext) {
-        case 'joromi':
-          if (modalTitle) modalTitle.textContent = 'JoRoMi Platform Access';
-          if (modalSubtitle) modalSubtitle.textContent = 'Authenticate to access JoRoMi VoIP platform';
-          if (redirectJoromi) redirectJoromi.classList.remove('hidden');
-          if (redirectDashboard) redirectDashboard.classList.add('hidden');
-          if (redirectCustom) redirectCustom.classList.add('hidden');
-          break;
         case 'dashboard':
           if (modalTitle) modalTitle.textContent = 'Client Dashboard Access';
           if (modalSubtitle) modalSubtitle.textContent = 'Authenticate to access your enterprise dashboard';
-          if (redirectJoromi) redirectJoromi.classList.add('hidden');
           if (redirectDashboard) redirectDashboard.classList.remove('hidden');
           if (redirectCustom) redirectCustom.classList.add('hidden');
           break;
         case 'code-academy':
           if (modalTitle) modalTitle.textContent = 'Code Academy Access';
           if (modalSubtitle) modalSubtitle.textContent = 'Authenticate to access TETRIX Code Academy';
-          if (redirectJoromi) redirectJoromi.classList.add('hidden');
           if (redirectDashboard) redirectDashboard.classList.add('hidden');
           if (redirectCustom) redirectCustom.classList.remove('hidden');
           break;
         default:
           if (modalTitle) modalTitle.textContent = 'Enterprise Authentication';
           if (modalSubtitle) modalSubtitle.textContent = 'Secure 2FA verification required';
-          if (redirectJoromi) redirectJoromi.classList.remove('hidden');
           if (redirectDashboard) redirectDashboard.classList.remove('hidden');
           if (redirectCustom) redirectCustom.classList.add('hidden');
       }
     }
 
-    getJoromiUrl() {
-      // Get environment-specific JoRoMi URL
-      const hostname = window.location.hostname;
-      
-      if (hostname.includes('tetrixcorp.com')) {
-        return '/joromi';
-      } else if (hostname.includes('staging')) {
-        return 'https://staging-joromi.tetrixcorp.com';
-      } else {
-        return 'http://localhost:3000';
-      }
-    }
+    // getJoromiUrl method removed - JoRoMi has its own authentication system
 
     getCodeAcademyUrl() {
       // Get environment-specific Code Academy URL
@@ -773,17 +724,6 @@
     handleCustomRedirect() {
       // Handle custom redirects based on context
       switch (this.authContext) {
-        case 'joromi':
-          // Pass the authentication token to JoRoMi
-          const authToken = localStorage.getItem('tetrix_auth_token');
-          const joromiUrl = this.getJoromiUrl();
-          
-          if (authToken) {
-            window.open(`${joromiUrl}/tetrix-auth?redirect=joromi-dashboard&token=${authToken}`, '_blank');
-          } else {
-            window.open(joromiUrl, '_blank');
-          }
-          break;
         case 'dashboard':
           window.location.href = '/dashboard';
           break;
