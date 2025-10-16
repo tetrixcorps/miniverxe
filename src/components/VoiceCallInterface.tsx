@@ -159,7 +159,7 @@ export const VoiceCallInterface: React.FC<VoiceCallInterfaceProps> = ({
               </>
             ) : (
               <>
-                &#128222;#128222; Call
+                &#128222; Call
               </>
             )}
           </button>

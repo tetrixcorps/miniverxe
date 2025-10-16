@@ -1,93 +1,274 @@
 ---
-import MainLayout from '../layouts/MainLayout.astro';
+import MainLayout from '../components/layout/MainLayout.astro';
 ---
 
 <MainLayout title="Contact Us - TETRIX">
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gradient-to-br from-brand-red via-brand-orange to-brand-yellow">
     <!-- Hero Section -->
-    <section class="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-20">
-      <div class="container mx-auto px-4">
-        <div class="text-center">
-          <h1 class="text-4xl md:text-6xl font-bold mb-6">Contact Us</h1>
-          <p class="text-xl md:text-2xl mb-8">Get in touch with our team for enterprise solutions</p>
-          <div class="flex flex-col md:flex-row gap-4 justify-center">
-            <div class="flex items-center justify-center space-x-2">
-              <span class="text-2xl text-white">📞</span>
-              <span>+1 (555) 123-4567</span>
-            </div>
-            <div class="flex items-center justify-center space-x-2">
-              <span class="text-2xl text-brand-dark">🚨</span>
-              <span>24/7 Emergency Support</span>
-            </div>
+    <section class="py-20 px-4 relative overflow-hidden">
+      <!-- Background Pattern -->
+      <div class="absolute inset-0 bg-gradient-to-br from-brand-red/90 via-brand-orange/90 to-brand-yellow/90"></div>
+      <div class="absolute inset-0 opacity-30">
+        <div class="absolute inset-0 bg-white/10"></div>
+      </div>
+      
+      <div class="max-w-7xl mx-auto text-center relative z-10">
+        <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">
+          Enterprise
+          <span class="text-brand-yellow">Contact Center</span>
+        </h1>
+        <p class="text-xl text-white/90 mb-8 max-w-3xl mx-auto">
+          Connect with our enterprise team. Chat with SHANGO, our AI Super Agent, or reach out directly for mission-critical support and solutions.
+        </p>
+        
+        <!-- Contact Statistics -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 max-w-4xl mx-auto">
+          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/30">
+            <div class="text-2xl font-bold text-white">24/7</div>
+            <div class="text-sm text-white/80">Enterprise Support</div>
+          </div>
+          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/30">
+            <div class="text-2xl font-bold text-white">Under 1hr</div>
+            <div class="text-sm text-white/80">Response Time</div>
+          </div>
+          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/30">
+            <div class="text-2xl font-bold text-white">99.9%</div>
+            <div class="text-sm text-white/80">Uptime SLA</div>
+          </div>
+          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/30">
+            <div class="text-2xl font-bold text-white">SOC II</div>
+            <div class="text-sm text-white/80">Compliant</div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Contact Form Section -->
-    <section class="py-16">
-      <div class="container mx-auto px-4">
-        <div class="max-w-4xl mx-auto">
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <!-- Contact Form -->
-            <div class="bg-white rounded-lg shadow-lg p-8">
-              <h2 class="text-2xl font-bold text-gray-900 mb-6">Send us a message</h2>
-              <form id="contact-form" class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-                    <input type="text" id="firstName" name="firstName" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                  </div>
-                  <div>
-                    <label for="lastName" class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-                    <input type="text" id="lastName" name="lastName" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                  </div>
-                </div>
-                <div>
-                  <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                  <input type="email" id="email" name="email" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                </div>
-                <div>
-                  <label for="company" class="block text-sm font-medium text-gray-700 mb-2">Company</label>
-                  <input type="text" id="company" name="company" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                </div>
-                <div>
-                  <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">Subject</label>
-                  <select id="subject" name="subject" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                    <option value="">Select a subject</option>
-                    <option value="sales">Sales Inquiry</option>
-                    <option value="support">Technical Support</option>
-                    <option value="billing">Billing Question</option>
-                    <option value="demo">Request Demo</option>
-                    <option value="partnership">Partnership</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-                <div>
-                  <label for="message" class="block text-sm font-medium text-gray-700 mb-2">Message</label>
-                  <textarea id="message" name="message" rows="4" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"></textarea>
-                </div>
-                <button type="submit" id="submit-btn" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-colors">
-                  <span id="submit-text">Send Message</span>
-                  <span id="loading-text" class="hidden">Sending...</span>
-                </button>
-              </form>
-              <div id="success-message" class="hidden mt-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
-                <p>Thank you for your message! We'll get back to you within 24 hours.</p>
+    <section class="py-20 px-4 bg-white">
+      <div class="max-w-7xl mx-auto">
+        <!-- Success Message -->
+        <div id="success-message" class="max-w-xl mx-auto bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6 hidden">
+          <p class="font-semibold">Thank you for your message!</p>
+          <p>We'll get back to you within 24 hours.</p>
+        </div>
+
+        <!-- Error Message -->
+        <div id="error-message" class="max-w-xl mx-auto bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6 hidden">
+          <p class="font-semibold">Oops! Something went wrong.</p>
+          <p id="error-text">Please try again or contact us directly.</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-12">
+          <!-- Contact Form -->
+          <div class="bg-gradient-to-br from-brand-red/5 to-brand-orange/5 rounded-xl p-8 shadow-lg border border-brand-red/20">
+            <h2 class="text-3xl font-bold mb-6 text-gray-900">Send us a Message</h2>
+            <form id="contact-form" class="space-y-6" aria-label="Contact form">
+              <div>
+                <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+                  Full Name
+                </label>
+                <input 
+                  type="text" 
+                  name="name" 
+                  id="name" 
+                  required 
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors"
+                  placeholder="Enter your full name"
+                />
               </div>
-              <div id="error-message" class="hidden mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-                <p id="error-text">There was an error sending your message. Please try again.</p>
+              <div>
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                  Email Address
+                </label>
+                <input 
+                  type="email" 
+                  name="email" 
+                  id="email" 
+                  required 
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors"
+                  placeholder="Enter your email address"
+                />
+              </div>
+              <div>
+                <label for="company" class="block text-sm font-medium text-gray-700 mb-2">
+                  Company (Optional)
+                </label>
+                <input 
+                  type="text" 
+                  name="company" 
+                  id="company" 
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors"
+                  placeholder="Enter your company name"
+                />
+              </div>
+              <div>
+                <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">
+                  Subject
+                </label>
+                <input 
+                  type="text" 
+                  name="subject" 
+                  id="subject" 
+                  required 
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors"
+                  placeholder="What is this regarding?"
+                />
+              </div>
+              <div>
+                <label for="message" class="block text-sm font-medium text-gray-700 mb-2">
+                  Message
+                </label>
+                <textarea 
+                  name="message" 
+                  id="message" 
+                  required 
+                  rows="4" 
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors"
+                  placeholder="Tell us about your enterprise needs..."
+                ></textarea>
+              </div>
+              <button 
+                type="submit" 
+                id="submit-btn" 
+                class="w-full bg-brand-red text-white px-6 py-4 rounded-lg font-semibold hover:bg-brand-red/90 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-red shadow-lg"
+              >
+                <span id="submit-text">Send Message</span>
+                <span id="loading-text" class="hidden">Sending...</span>
+              </button>
+            </form>
+          </div>
+          
+          <!-- SHANGO Live Chat Section -->
+          <div class="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-8 shadow-lg border border-purple-200">
+            <div class="text-center mb-8">
+              <div class="w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="text-2xl text-white">🤖</span>
+              </div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-4">Chat with SHANGO</h2>
+              <p class="text-gray-600 mb-6">
+                Our AI Super Agent is available 24/7 to help with enterprise inquiries, technical support, and solution recommendations.
+              </p>
+            </div>
+            
+            <!-- SHANGO Features -->
+            <div class="space-y-4 mb-8">
+              <div class="flex items-center">
+                <span class="text-green-600 mr-3">&check;</span>
+                <span class="text-gray-700">Instant responses to enterprise queries</span>
+              </div>
+              <div class="flex items-center">
+                <span class="text-green-600 mr-3">&check;</span>
+                <span class="text-gray-700">Technical support and troubleshooting</span>
+              </div>
+              <div class="flex items-center">
+                <span class="text-green-600 mr-3">&check;</span>
+                <span class="text-gray-700">Solution recommendations and pricing</span>
+              </div>
+              <div class="flex items-center">
+                <span class="text-green-600 mr-3">&check;</span>
+                <span class="text-gray-700">Escalation to human experts when needed</span>
               </div>
             </div>
 
             <!-- SHANGO Chat Widget -->
-            <div class="bg-white rounded-lg shadow-lg p-8">
-              <h2 class="text-2xl font-bold text-gray-900 mb-6">Chat with SHANGO</h2>
-              <div id="shango-chat-widget" class="h-96 border border-gray-200 rounded-lg">
-                <!-- Chat interface will be rendered here -->
+            <div class="bg-white rounded-lg p-4 border border-purple-200">
+              <div id="shango-chat-widget" class="min-h-[400px]">
+                <div class="flex flex-col items-center justify-center h-full min-h-[400px] text-center">
+                  <div class="w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center mb-4">
+                    <span class="text-2xl text-white">⚡</span>
+                  </div>
+                  <h3 class="text-xl font-bold text-gray-900 mb-2">SHANGO AI Super Agent</h3>
+                  <p class="text-gray-600 mb-4">Our AI Super Agent is ready to help you with enterprise inquiries and technical support.</p>
+                  <div class="space-y-2 text-sm text-gray-500 mb-6">
+                    <p>• Instant responses to enterprise queries</p>
+                    <p>• Technical support and troubleshooting</p>
+                    <p>• Solution recommendations and pricing</p>
+                    <p>• Escalation to human experts when needed</p>
+                  </div>
+                  <button 
+                    onclick="startSHANGOChat()"
+                    class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-colors"
+                  >
+                    Start Chat with SHANGO
+                  </button>
+                </div>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Enterprise Contact Information -->
+    <section class="py-20 px-4 bg-gray-50">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl font-bold text-center text-gray-900 mb-16">
+          Enterprise Contact Information
+        </h2>
+        <div class="grid md:grid-cols-3 gap-8">
+          <!-- Phone Support -->
+          <div class="bg-white p-8 rounded-xl shadow-lg text-center">
+            <div class="w-16 h-16 bg-brand-red rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl text-white">📞</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Phone Support</h3>
+            <p class="text-gray-600 mb-4">24/7 Enterprise Support</p>
+            <p class="text-brand-red font-semibold">+1-888-804-6762</p>
+          </div>
+
+          <!-- Email Support -->
+          <div class="bg-white p-8 rounded-xl shadow-lg text-center">
+            <div class="w-16 h-16 bg-brand-orange rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl text-white">✉️</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Email Support</h3>
+            <p class="text-gray-600 mb-4">Enterprise Inquiries</p>
+            <p class="text-brand-orange font-semibold">support@tetrixcorp.com</p>
+          </div>
+
+          <!-- Emergency Support -->
+          <div class="bg-white p-8 rounded-xl shadow-lg text-center">
+            <div class="w-16 h-16 bg-brand-yellow rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl text-brand-dark">🚨</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Emergency Support</h3>
+            <p class="text-gray-600 mb-4">Critical Issues Only</p>
+            <p class="text-brand-yellow font-semibold">emergency@tetrixcorp.com</p>
+          </div>
+        </div>
+
+        <!-- Office Address -->
+        <div class="mt-16 bg-white p-8 rounded-xl shadow-lg text-center">
+          <div class="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span class="text-2xl text-white">🏢</span>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-2">TETRIX Corporation</h3>
+          <p class="text-gray-600 mb-2">Enterprise Communications & AI Solutions</p>
+          <p class="text-gray-700 font-semibold">
+            4330 Hazelton Street<br>
+            Houston, TX 77035<br>
+            United States of America
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 px-4 bg-gradient-to-br from-brand-red via-brand-orange to-brand-yellow">
+      <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-4xl font-bold text-white mb-8">
+          Ready to Transform Your Enterprise?
+        </h2>
+        <p class="text-xl text-white/90 mb-8">
+          Join 500+ enterprise companies already using TETRIX for mission-critical operations.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="/solutions" class="bg-white text-brand-red px-8 py-4 rounded-lg font-semibold hover:bg-white/90 transition-colors shadow-lg">
+            View Solutions
+          </a>
+          <a href="/pricing" class="bg-white/20 text-white px-8 py-4 rounded-lg font-semibold border-2 border-white/30 hover:bg-white/30 transition-colors">
+            View Pricing
+          </a>
         </div>
       </div>
     </section>
@@ -95,9 +276,9 @@ import MainLayout from '../layouts/MainLayout.astro';
 </MainLayout>
 
 <script>
-  // Simplified SHANGO Chat Integration (based on working Code Academy implementation)
+  // Enhanced SHANGO Chat Integration with Backend Service Knowledge
   function initializeSHANGOChatWidget() {
-    console.log('Initializing simplified SHANGO Chat...');
+    console.log('Initializing enhanced SHANGO Chat...');
     
     const chatContainer = document.getElementById('shango-chat-widget');
     if (!chatContainer) {
@@ -109,7 +290,7 @@ import MainLayout from '../layouts/MainLayout.astro';
     renderInitialChatInterface();
   }
 
-  // Render initial chat interface (simplified version)
+  // Render initial chat interface
   function renderInitialChatInterface() {
     const chatContainer = document.getElementById('shango-chat-widget');
     if (!chatContainer) return;
@@ -301,7 +482,7 @@ import MainLayout from '../layouts/MainLayout.astro';
     }
   }
 
-  // Send message
+  // Send message with enhanced backend service knowledge
   async function sendSHANGOMessage() {
     const input = document.getElementById('shango-message-input');
     const message = input.value.trim();
@@ -351,33 +532,47 @@ import MainLayout from '../layouts/MainLayout.astro';
         window.messages.push(aiMessage);
         updateMessagesDisplay();
       } else {
-        // Fallback to Ollama
-        await sendToOllamaFallback(message);
+        // Fallback to enhanced responses
+        await sendToEnhancedFallback(message);
       }
     } catch (error) {
-      console.error('Error sending message via SHANGO API, trying Ollama:', error);
-      // Fallback to Ollama
-      await sendToOllamaFallback(message);
+      console.error('Error sending message via SHANGO API, trying enhanced fallback:', error);
+      // Fallback to enhanced responses
+      await sendToEnhancedFallback(message);
     }
   }
 
-  // Fallback Ollama integration with streaming
-  async function sendToOllamaFallback(message) {
+  // Enhanced fallback with TETRIX backend service knowledge
+  async function sendToEnhancedFallback(message) {
     try {
-      const prompt = `You are SHANGO, an AI Super Agent for enterprise communication platform support. You help customers with:
+      const prompt = `You are SHANGO, an AI Super Agent for TETRIX enterprise communication platform. You help customers with:
 
-- Technical support and troubleshooting
-- Sales inquiries and pricing information  
-- Billing and account management
-- General platform questions
-- Solution recommendations
+TETRIX Backend Services:
+- IVR System: Interactive Voice Response with TeXML integration, voice recognition, intelligent call routing
+- Unified Messaging: Multi-channel communication (SMS, email, voice, chat) across all channels
+- Marketing Campaigns: AI-powered marketing automation with 3x higher engagement and 450% average ROI
+- IoT Telematics: Real-time tracking, driver communication, delivery management for fleet operations
+- Voice API: Enterprise voice calling with global coverage, TeXML integration, real-time transcription
+- 2FA Service: Secure two-factor authentication via SMS and voice calls
+- Phone Provisioning: Phone number provisioning, porting, and management with global coverage
+- Data Labeling: Human-in-the-loop data annotation and quality assurance for ML models
+- AI Engine: Enterprise AI with machine learning models, NLP, and computer vision
+- SHANGO AI: Multi-agent AI system with specialized capabilities for sales, support, technical assistance
+- RPA Services: Robotic Process Automation for business workflow automation
+- Epic FHIR Integration: Healthcare data integration with Epic EHR systems
+- CRM Integrations: Salesforce, HubSpot, Clio, MyCase integrations
+- Enterprise Workflows: Automated business processes across multiple industries
+
+Pricing: Starter ($2,999/month), Growth ($7,999/month), Enterprise ($19,999/month)
+Support: 24/7 enterprise support, under 1hr response time, 99.9% uptime SLA, SOC II compliant
+Contact: +1-888-804-6762, support@tetrixcorp.com, emergency@tetrixcorp.com
 
 User message: ${message}
 
-Please provide a helpful, professional response that addresses their inquiry. Be concise but informative.`;
+Please provide a helpful, professional response that addresses their inquiry with specific information about our services. Be concise but informative.`;
 
       // Create a streaming AI message
-      const aiMessageId = `ollama-${Date.now()}`;
+      const aiMessageId = `enhanced-${Date.now()}`;
       const aiMessage = {
         id: aiMessageId,
         role: 'assistant',
@@ -391,14 +586,14 @@ Please provide a helpful, professional response that addresses their inquiry. Be
       window.messages.push(aiMessage);
       updateMessagesDisplay();
 
-      // Simulate streaming response
+      // Simulate streaming response with enhanced knowledge
       const responses = [
-        "I understand your inquiry. Let me help you with that.",
-        "Based on your question, here's what I can tell you:",
-        "For enterprise communication solutions, we offer:",
-        "Our platform provides:",
+        "I understand your inquiry about our enterprise services. Let me help you with that.",
+        "Based on your question, here's what I can tell you about TETRIX:",
+        "Our enterprise communication platform offers several solutions:",
+        "For your specific needs, I recommend:",
         "I can connect you with our team for:",
-        "Here's how we can help:"
+        "Here's how TETRIX can help your enterprise:"
       ];
       
       const randomResponse = responses[Math.floor(Math.random() * responses.length)];
@@ -413,13 +608,13 @@ Please provide a helpful, professional response that addresses their inquiry. Be
       aiMessage.isStreaming = false;
       updateMessagesDisplay();
     } catch (error) {
-      console.error('Error with Ollama fallback:', error);
+      console.error('Error with enhanced fallback:', error);
       
-      // Final fallback - hardcoded response
+      // Final fallback - enhanced response
       const fallbackMessage = {
         id: `fallback-${Date.now()}`,
         role: 'assistant',
-        content: "Thank you for your message! I'm SHANGO, your AI Super Agent. I can help you with information about our enterprise communication platform, technical support, pricing, demos, or any other questions you might have. What would you like to know more about?",
+        content: "Thank you for your message! I'm SHANGO, your AI Super Agent for TETRIX enterprise communication platform. I can help you with information about our IVR systems, unified messaging, marketing campaigns, IoT telematics, voice APIs, 2FA services, and more. Our enterprise solutions start at $2,999/month with 24/7 support. What specific service would you like to know more about?",
         timestamp: new Date().toISOString(),
         type: 'text',
         agentId: 'shango-general'
