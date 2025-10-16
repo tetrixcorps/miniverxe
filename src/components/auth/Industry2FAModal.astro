@@ -1,0 +1,776 @@
+---
+// TETRIX Industry-Specific 2FA Authentication Modal Component
+// Integrates with existing 2FA system and RBAC for industry dashboards
+---
+
+<div id="industry-2fa-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden">
+  <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden border-2 border-gray-200">
+      <!-- Modal Header -->
+      <div class="bg-gradient-to-r from-brand-red via-brand-orange to-brand-yellow p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-2xl font-bold text-white mb-2" id="industry-modal-title">Industry Authentication</h2>
+            <p class="text-white/90 text-sm" id="industry-modal-subtitle">Secure 2FA access to your industry dashboard</p>
+            <div id="industry-context-badge" class="mt-2">
+              <span id="industry-badge" class="inline-block bg-white/20 text-white px-3 py-1 rounded-full text-xs font-semibold"></span>
+            </div>
+          </div>
+          <button id="close-industry-2fa-modal" class="text-white hover:text-white/80 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Content -->
+      <div class="p-6">
+        <!-- Step 1: Industry Selection -->
+        <div id="industry-step-1" class="space-y-6">
+          <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-brand-red/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl">🏢</span>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Select Your Industry</h3>
+            <p class="text-gray-600 text-sm">Choose your industry to access the appropriate dashboard</p>
+          </div>
+
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <!-- Healthcare -->
+            <button 
+              class="industry-option p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left group"
+              data-industry="healthcare"
+            >
+              <div class="text-2xl mb-2 group-hover:scale-110 transition-transform">🏥</div>
+              <div class="font-medium text-gray-900">Healthcare</div>
+              <div class="text-sm text-gray-600">Patient care & HIPAA compliance</div>
+            </button>
+
+            <!-- Legal -->
+            <button 
+              class="industry-option p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left group"
+              data-industry="legal"
+            >
+              <div class="text-2xl mb-2 group-hover:scale-110 transition-transform">⚖️</div>
+              <div class="font-medium text-gray-900">Legal</div>
+              <div class="text-sm text-gray-600">Case management & attorney privilege</div>
+            </button>
+
+            <!-- Real Estate -->
+            <button 
+              class="industry-option p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left group"
+              data-industry="real_estate"
+            >
+              <div class="text-2xl mb-2 group-hover:scale-110 transition-transform">🏠</div>
+              <div class="font-medium text-gray-900">Real Estate</div>
+              <div class="text-sm text-gray-600">MLS integration & property management</div>
+            </button>
+
+            <!-- E-commerce -->
+            <button 
+              class="industry-option p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left group"
+              data-industry="ecommerce"
+            >
+              <div class="text-2xl mb-2 group-hover:scale-110 transition-transform">🛒</div>
+              <div class="font-medium text-gray-900">E-commerce</div>
+              <div class="text-sm text-gray-600">Shopify, Wix, WooCommerce</div>
+            </button>
+
+            <!-- Construction -->
+            <button 
+              class="industry-option p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left group"
+              data-industry="construction"
+            >
+              <div class="text-2xl mb-2 group-hover:scale-110 transition-transform">🏗️</div>
+              <div class="font-medium text-gray-900">Construction</div>
+              <div class="text-sm text-gray-600">Project management & safety</div>
+            </button>
+
+            <!-- Logistics -->
+            <button 
+              class="industry-option p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left group"
+              data-industry="logistics"
+            >
+              <div class="text-2xl mb-2 group-hover:scale-110 transition-transform">🚛</div>
+              <div class="font-medium text-gray-900">Logistics</div>
+              <div class="text-sm text-gray-600">Fleet management & tracking</div>
+            </button>
+
+            <!-- Government -->
+            <button 
+              class="industry-option p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left group"
+              data-industry="government"
+            >
+              <div class="text-2xl mb-2 group-hover:scale-110 transition-transform">🏛️</div>
+              <div class="font-medium text-gray-900">Government</div>
+              <div class="text-sm text-gray-600">Public sector & compliance</div>
+            </button>
+
+            <!-- Education -->
+            <button 
+              class="industry-option p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left group"
+              data-industry="education"
+            >
+              <div class="text-2xl mb-2 group-hover:scale-110 transition-transform">🎓</div>
+              <div class="font-medium text-gray-900">Education</div>
+              <div class="text-sm text-gray-600">Schools & universities</div>
+            </button>
+
+            <!-- Retail -->
+            <button 
+              class="industry-option p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left group"
+              data-industry="retail"
+            >
+              <div class="text-2xl mb-2 group-hover:scale-110 transition-transform">🛍️</div>
+              <div class="font-medium text-gray-900">Retail</div>
+              <div class="text-sm text-gray-600">Stores & customer service</div>
+            </button>
+
+            <!-- Hospitality -->
+            <button 
+              class="industry-option p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left group"
+              data-industry="hospitality"
+            >
+              <div class="text-2xl mb-2 group-hover:scale-110 transition-transform">🏨</div>
+              <div class="font-medium text-gray-900">Hospitality</div>
+              <div class="text-sm text-gray-600">Hotels & restaurants</div>
+            </button>
+
+            <!-- Wellness -->
+            <button 
+              class="industry-option p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left group"
+              data-industry="wellness"
+            >
+              <div class="text-2xl mb-2 group-hover:scale-110 transition-transform">🧘</div>
+              <div class="font-medium text-gray-900">Wellness</div>
+              <div class="text-sm text-gray-600">Fitness & wellness centers</div>
+            </button>
+
+            <!-- Beauty -->
+            <button 
+              class="industry-option p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left group"
+              data-industry="beauty"
+            >
+              <div class="text-2xl mb-2 group-hover:scale-110 transition-transform">💄</div>
+              <div class="font-medium text-gray-900">Beauty</div>
+              <div class="text-sm text-gray-600">Salons & beauty services</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: Phone Number Input -->
+        <div id="industry-step-2" class="space-y-4 hidden">
+          <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-brand-red/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl">📱</span>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Enter Your Phone Number</h3>
+            <p class="text-gray-600 text-sm">We'll send you a verification code via SMS or Voice call</p>
+            <div id="selected-industry-display" class="mt-2">
+              <span class="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium"></span>
+            </div>
+          </div>
+
+          <form id="industry-phone-form" class="space-y-4">
+            <div>
+              <label for="industry-phone-number" class="block text-sm font-medium text-gray-700 mb-2">
+                Phone Number
+              </label>
+              <input
+                type="tel"
+                id="industry-phone-number"
+                name="phoneNumber"
+                placeholder="+1 (555) 123-4567 or +44 20 7946 0958"
+                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors text-lg font-medium bg-white shadow-sm text-gray-900 placeholder-gray-500"
+                required
+              >
+              <p class="text-xs text-gray-500 mt-1">Include country code (e.g., +1 for US, +44 for UK, +33 for France)</p>
+            </div>
+
+            <div>
+              <label for="industry-verification-method" class="block text-sm font-medium text-gray-700 mb-2">
+                Verification Method
+              </label>
+              <select
+                id="industry-verification-method"
+                name="method"
+                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors text-lg font-medium bg-white shadow-sm text-gray-900"
+              >
+                <option value="sms">SMS Text Message</option>
+                <option value="voice">Voice Call</option>
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              id="industry-send-code-btn"
+              class="w-full bg-gradient-to-r from-brand-red to-brand-orange text-white py-3 px-4 rounded-lg font-semibold hover:from-brand-red/90 hover:to-brand-orange/90 transition-all duration-200 shadow-lg"
+            >
+              <span id="industry-send-code-text">Send Verification Code</span>
+              <div id="industry-send-code-spinner" class="hidden">
+                <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white mx-auto"></div>
+              </div>
+            </button>
+          </form>
+        </div>
+
+        <!-- Step 3: Code Verification -->
+        <div id="industry-step-3" class="space-y-4 hidden">
+          <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl">📱</span>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Enter Verification Code</h3>
+            <p class="text-gray-600 text-sm">
+              We sent a 6-digit code to <span id="industry-phone-display" class="font-semibold text-gray-900"></span>
+            </p>
+            <p class="text-xs text-gray-500 mt-2">
+              Using Telnyx SMS/Voice with Sinch fallback for reliable delivery
+            </p>
+            <button
+              id="industry-resend-code-btn"
+              class="text-brand-red text-sm hover:underline mt-2"
+              disabled
+            >
+              Resend code in <span id="industry-resend-timer">60</span>s
+            </button>
+          </div>
+
+          <form id="industry-code-form" class="space-y-4">
+            <div>
+              <label for="industry-verification-code" class="block text-sm font-medium text-gray-700 mb-2">
+                Verification Code
+              </label>
+              <input
+                type="text"
+                id="industry-verification-code"
+                name="code"
+                placeholder="123456"
+                maxlength="6"
+                class="w-full px-4 py-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors text-center text-3xl font-mono tracking-widest bg-white shadow-sm text-gray-900 placeholder-gray-500"
+                required
+              >
+            </div>
+
+            <button
+              type="submit"
+              id="industry-verify-code-btn"
+              class="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-4 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-lg"
+            >
+              <span id="industry-verify-code-text">Verify Code</span>
+              <div id="industry-verify-code-spinner" class="hidden">
+                <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white mx-auto"></div>
+              </div>
+            </button>
+          </form>
+        </div>
+
+        <!-- Step 4: Organization Selection (if multiple) -->
+        <div id="industry-step-4" class="space-y-4 hidden">
+          <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl">🏢</span>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Select Organization</h3>
+            <p class="text-gray-600 text-sm">You have access to multiple organizations. Please select one:</p>
+          </div>
+
+          <div id="organization-list" class="space-y-3">
+            <!-- Organizations will be populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Step 5: Success -->
+        <div id="industry-step-5" class="space-y-4 hidden">
+          <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl">✅</span>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Authentication Successful!</h3>
+            <p class="text-gray-600 text-sm">Redirecting to your industry dashboard...</p>
+          </div>
+
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <div class="text-sm text-gray-800">
+              <p><strong>Industry:</strong> <span id="success-industry"></span></p>
+              <p><strong>Organization:</strong> <span id="success-organization"></span></p>
+              <p><strong>Roles:</strong> <span id="success-roles"></span></p>
+            </div>
+          </div>
+
+          <button
+            id="industry-redirect-btn"
+            class="w-full bg-gradient-to-r from-brand-red to-brand-orange text-white py-3 px-4 rounded-lg font-semibold hover:from-brand-red/90 hover:to-brand-orange/90 transition-all duration-200 shadow-lg"
+          >
+            Continue to Dashboard
+          </button>
+        </div>
+
+        <!-- Error Messages -->
+        <div id="industry-error" class="hidden bg-red-50 border-2 border-red-200 rounded-lg p-4 mt-4 shadow-sm">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-semibold text-red-800">Authentication Error</h3>
+              <p id="industry-error-message" class="text-sm text-red-700 mt-1 font-medium"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Industry 2FA Authentication Modal JavaScript
+  class Industry2FAModal {
+    constructor() {
+      this.currentStep = 1;
+      this.selectedIndustry = null;
+      this.sessionId = null;
+      this.verificationId = null;
+      this.phoneNumber = null;
+      this.method = 'sms';
+      this.resendCountdown = 0;
+      this.resendTimer = null;
+      
+      this.init();
+    }
+
+    init() {
+      this.setupEventListeners();
+    }
+
+    setupEventListeners() {
+      // Industry selection
+      document.querySelectorAll('.industry-option').forEach(option => {
+        option.addEventListener('click', (e) => {
+          this.selectIndustry(e.currentTarget.dataset.industry);
+        });
+      });
+
+      // Phone form submission
+      document.getElementById('industry-phone-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handlePhoneSubmit();
+      });
+
+      // Code form submission
+      document.getElementById('industry-code-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleCodeSubmit();
+      });
+
+      // Resend code button
+      document.getElementById('industry-resend-code-btn')?.addEventListener('click', () => {
+        this.resendCode();
+      });
+
+      // Redirect button
+      document.getElementById('industry-redirect-btn')?.addEventListener('click', () => {
+        this.redirectToDashboard();
+      });
+
+      // Close modal
+      document.getElementById('close-industry-2fa-modal')?.addEventListener('click', () => {
+        this.closeModal();
+      });
+
+      // Auto-format phone number
+      document.getElementById('industry-phone-number')?.addEventListener('input', (e) => {
+        this.formatPhoneNumber(e.target);
+      });
+
+      // Auto-submit on 6 digits
+      document.getElementById('industry-verification-code')?.addEventListener('input', (e) => {
+        if (e.target.value.length === 6) {
+          this.handleCodeSubmit();
+        }
+      });
+    }
+
+    selectIndustry(industry) {
+      this.selectedIndustry = industry;
+      
+      // Update UI
+      document.querySelectorAll('.industry-option').forEach(option => {
+        option.classList.remove('border-blue-500', 'bg-blue-50');
+        option.classList.add('border-gray-200');
+      });
+      
+      document.querySelector(`[data-industry="${industry}"]`).classList.add('border-blue-500', 'bg-blue-50');
+      
+      // Update display
+      const industryNames = {
+        healthcare: 'Healthcare',
+        legal: 'Legal',
+        real_estate: 'Real Estate',
+        ecommerce: 'E-commerce',
+        construction: 'Construction',
+        logistics: 'Logistics',
+        government: 'Government',
+        education: 'Education',
+        retail: 'Retail',
+        hospitality: 'Hospitality',
+        wellness: 'Wellness',
+        beauty: 'Beauty'
+      };
+      
+      document.getElementById('selected-industry-display').innerHTML = 
+        `<span class="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">${industryNames[industry]}</span>`;
+      
+      // Move to next step
+      this.showStep(2);
+    }
+
+    async handlePhoneSubmit() {
+      const phoneInput = document.getElementById('industry-phone-number');
+      const methodSelect = document.getElementById('industry-verification-method');
+      
+      this.phoneNumber = phoneInput.value.trim();
+      this.method = methodSelect.value;
+
+      if (!this.isValidPhoneNumber(this.phoneNumber)) {
+        this.showError('Please enter a valid phone number with country code (e.g., +1234567890)');
+        return;
+      }
+
+      this.setLoading('industry-send-code', true);
+      this.hideError();
+
+      try {
+        const response = await fetch('/api/v2/industry-auth/initiate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phoneNumber: this.phoneNumber,
+            industry: this.selectedIndustry,
+            method: this.method
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          this.sessionId = result.sessionId;
+          this.verificationId = result.verificationId;
+          
+          if (result.requiresOrganizationSelection) {
+            this.showOrganizationSelection(result.availableOrganizations);
+          } else {
+            this.showStep(3);
+            this.startResendTimer();
+          }
+        } else {
+          this.showError(result.error || 'Failed to send verification code');
+        }
+      } catch (error) {
+        this.showError('Network error. Please try again.');
+      } finally {
+        this.setLoading('industry-send-code', false);
+      }
+    }
+
+    async handleCodeSubmit() {
+      const codeInput = document.getElementById('industry-verification-code');
+      const code = codeInput.value.trim();
+
+      if (!code || code.length !== 6) {
+        this.showError('Please enter a valid 6-digit code');
+        return;
+      }
+
+      this.setLoading('industry-verify-code', true);
+      this.hideError();
+
+      try {
+        const response = await fetch('/api/v2/industry-auth/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sessionId: this.sessionId,
+            code: code
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.success && result.verified) {
+          this.showSuccess(result);
+        } else {
+          this.showError(result.error || 'Invalid verification code');
+        }
+      } catch (error) {
+        this.showError('Network error. Please try again.');
+      } finally {
+        this.setLoading('industry-verify-code', false);
+      }
+    }
+
+    showOrganizationSelection(organizations) {
+      const container = document.getElementById('organization-list');
+      container.innerHTML = '';
+
+      organizations.forEach(org => {
+        const orgElement = document.createElement('button');
+        orgElement.className = 'w-full p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left';
+        orgElement.innerHTML = `
+          <div class="font-medium text-gray-900">${org.name}</div>
+          <div class="text-sm text-gray-600">${org.industry}</div>
+        `;
+        orgElement.addEventListener('click', () => {
+          this.selectOrganization(org.id);
+        });
+        container.appendChild(orgElement);
+      });
+
+      this.showStep(4);
+    }
+
+    async selectOrganization(organizationId) {
+      // Re-initiate with organization ID
+      try {
+        const response = await fetch('/api/v2/industry-auth/initiate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phoneNumber: this.phoneNumber,
+            industry: this.selectedIndustry,
+            organizationId: organizationId,
+            method: this.method
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          this.sessionId = result.sessionId;
+          this.verificationId = result.verificationId;
+          this.showStep(3);
+          this.startResendTimer();
+        } else {
+          this.showError(result.error || 'Failed to send verification code');
+        }
+      } catch (error) {
+        this.showError('Network error. Please try again.');
+      }
+    }
+
+    showSuccess(result) {
+      // Update success display
+      document.getElementById('success-industry').textContent = result.organization?.industry || this.selectedIndustry;
+      document.getElementById('success-organization').textContent = result.organization?.name || 'N/A';
+      document.getElementById('success-roles').textContent = result.roles?.join(', ') || 'N/A';
+
+      this.showStep(5);
+
+      // Auto-redirect after 2 seconds
+      setTimeout(() => {
+        this.redirectToDashboard(result.dashboardUrl);
+      }, 2000);
+    }
+
+    redirectToDashboard(dashboardUrl) {
+      if (dashboardUrl) {
+        window.location.href = dashboardUrl;
+      } else {
+        // Fallback to industry dashboard
+        const baseUrl = window.location.origin;
+        window.location.href = `${baseUrl}/dashboards/${this.selectedIndustry}`;
+      }
+    }
+
+    showStep(step) {
+      // Hide all steps
+      for (let i = 1; i <= 5; i++) {
+        document.getElementById(`industry-step-${i}`)?.classList.add('hidden');
+      }
+      
+      // Show current step
+      document.getElementById(`industry-step-${step}`)?.classList.remove('hidden');
+      this.currentStep = step;
+    }
+
+    setLoading(buttonId, loading) {
+      const button = document.getElementById(buttonId);
+      const text = document.getElementById(buttonId.replace('-btn', '-text'));
+      const spinner = document.getElementById(buttonId.replace('-btn', '-spinner'));
+
+      if (loading) {
+        button.disabled = true;
+        text?.classList.add('hidden');
+        spinner?.classList.remove('hidden');
+      } else {
+        button.disabled = false;
+        text?.classList.remove('hidden');
+        spinner?.classList.add('hidden');
+      }
+    }
+
+    showError(message) {
+      const errorDiv = document.getElementById('industry-error');
+      const errorMessage = document.getElementById('industry-error-message');
+      
+      errorMessage.textContent = message;
+      errorDiv.classList.remove('hidden');
+    }
+
+    hideError() {
+      document.getElementById('industry-error')?.classList.add('hidden');
+    }
+
+    startResendTimer() {
+      this.resendCountdown = 60;
+      const timerElement = document.getElementById('industry-resend-timer');
+      const resendBtn = document.getElementById('industry-resend-code-btn');
+      
+      resendBtn.disabled = true;
+      
+      this.resendTimer = setInterval(() => {
+        this.resendCountdown--;
+        timerElement.textContent = this.resendCountdown;
+        
+        if (this.resendCountdown <= 0) {
+          clearInterval(this.resendTimer);
+          resendBtn.disabled = false;
+          resendBtn.textContent = 'Resend Code';
+        }
+      }, 1000);
+    }
+
+    async resendCode() {
+      if (this.resendCountdown > 0) return;
+      
+      this.setLoading('industry-send-code', true);
+      
+      try {
+        const response = await fetch('/api/v2/industry-auth/initiate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phoneNumber: this.phoneNumber,
+            industry: this.selectedIndustry,
+            method: this.method
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          this.sessionId = result.sessionId;
+          this.verificationId = result.verificationId;
+          this.startResendTimer();
+          this.hideError();
+        } else {
+          this.showError(result.error || 'Failed to resend verification code');
+        }
+      } catch (error) {
+        this.showError('Network error. Please try again.');
+      } finally {
+        this.setLoading('industry-send-code', false);
+      }
+    }
+
+    formatPhoneNumber(input) {
+      let value = input.value;
+      
+      // Allow + at the beginning
+      if (value.startsWith('+')) {
+        let digits = value.slice(1).replace(/\D/g, '');
+        if (digits.length > 0) {
+          if (digits.length <= 3) {
+            value = `+${digits}`;
+          } else if (digits.length <= 6) {
+            value = `+${digits.slice(0, 1)} (${digits.slice(1, 4)}) ${digits.slice(4)}`;
+          } else if (digits.length <= 10) {
+            value = `+${digits.slice(0, 1)} (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
+          } else {
+            value = `+${digits.slice(0, 1)} (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7, 11)}`;
+          }
+        } else {
+          value = '+';
+        }
+      } else {
+        let digits = value.replace(/\D/g, '');
+        if (digits.length > 0) {
+          if (digits.length === 10) {
+            value = `+1 (${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+          } else if (digits.length === 11 && digits.startsWith('1')) {
+            value = `+1 (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
+          } else if (digits.length <= 3) {
+            value = `+${digits}`;
+          } else if (digits.length <= 6) {
+            value = `+${digits.slice(0, 1)} (${digits.slice(1, 4)}) ${digits.slice(4)}`;
+          } else if (digits.length <= 10) {
+            value = `+${digits.slice(0, 1)} (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
+          } else {
+            value = `+${digits.slice(0, 1)} (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7, 11)}`;
+          }
+        } else {
+          value = '';
+        }
+      }
+      
+      input.value = value;
+    }
+
+    isValidPhoneNumber(phone) {
+      const phoneRegex = /^\+[1-9]\d{1,14}$/;
+      return phoneRegex.test(phone);
+    }
+
+    open() {
+      document.getElementById('industry-2fa-modal')?.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      this.reset();
+    }
+
+    close() {
+      document.getElementById('industry-2fa-modal')?.classList.add('hidden');
+      document.body.style.overflow = '';
+      this.reset();
+    }
+
+    reset() {
+      this.currentStep = 1;
+      this.selectedIndustry = null;
+      this.sessionId = null;
+      this.verificationId = null;
+      this.phoneNumber = null;
+      this.method = 'sms';
+      
+      if (this.resendTimer) {
+        clearInterval(this.resendTimer);
+        this.resendTimer = null;
+      }
+      
+      this.showStep(1);
+      this.hideError();
+      
+      // Reset forms
+      document.getElementById('industry-phone-form')?.reset();
+      document.getElementById('industry-code-form')?.reset();
+      
+      // Reset industry selection
+      document.querySelectorAll('.industry-option').forEach(option => {
+        option.classList.remove('border-blue-500', 'bg-blue-50');
+        option.classList.add('border-gray-200');
+      });
+    }
+  }
+
+  // Initialize modal
+  document.addEventListener('DOMContentLoaded', () => {
+    window.industry2FAModal = new Industry2FAModal();
+  });
+
+  // Global function to open industry auth modal
+  window.openIndustryAuth = () => {
+    window.industry2FAModal?.open();
+  };
+</script>
