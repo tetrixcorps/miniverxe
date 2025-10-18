@@ -3,6 +3,7 @@ import Logo from './Logo.astro';
 import DynamicTetrix from '../shared/DynamicTetrix.astro';
 import ProductsModal from '../ProductsModal.astro';
 import TwoFAModal from '../auth/2FAModal.astro';
+import IndustryAuth from '../auth/IndustryAuth.astro';
 import JoRoMiIntegration from '../integration/JoRoMiIntegration.astro';
 ---
 <header class="w-full bg-gradient-to-r from-brand-red via-brand-orange to-brand-yellow text-white shadow relative">
@@ -184,17 +185,17 @@ import JoRoMiIntegration from '../integration/JoRoMiIntegration.astro';
         // JoRoMi button handlers are now handled by JoRoMiIntegration component
         // This ensures proper environment detection and fallback handling
 
-        // Client Login button handlers - Industry-specific authentication
+        // Client Login button handlers - 2FA authentication with industry selection
         if (clientLoginBtn) {
           clientLoginBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            // Open industry authentication modal
-            if (window.openIndustryAuth) {
-              window.openIndustryAuth();
-            } else {
-              // Fallback to 2FA modal
-              (window as any).tetrixAuthContext = 'dashboard';
+            // Set authentication context for dashboard
+            (window as any).tetrixAuthContext = 'dashboard';
+            // Open 2FA modal
+            if ((window as any).open2FAModal) {
               (window as any).open2FAModal();
+            } else {
+              console.error('2FA modal not available');
             }
             // Close mobile menu if open
             if (menu) {
@@ -207,13 +208,13 @@ import JoRoMiIntegration from '../integration/JoRoMiIntegration.astro';
         if (clientLoginBtnMobile) {
           clientLoginBtnMobile.addEventListener('click', function(e) {
             e.preventDefault();
-            // Open industry authentication modal
-            if (window.openIndustryAuth) {
-              window.openIndustryAuth();
-            } else {
-              // Fallback to 2FA modal
-              (window as any).tetrixAuthContext = 'dashboard';
+            // Set authentication context for dashboard
+            (window as any).tetrixAuthContext = 'dashboard';
+            // Open 2FA modal
+            if ((window as any).open2FAModal) {
               (window as any).open2FAModal();
+            } else {
+              console.error('2FA modal not available');
             }
             // Close mobile menu
             if (menu) {
@@ -387,6 +388,10 @@ import JoRoMiIntegration from '../integration/JoRoMiIntegration.astro';
     }
   }
 </style>
+
+<!-- Authentication Modals -->
+<TwoFAModal />
+<IndustryAuth />
 
 <!-- JoRoMi Integration Component -->
 <JoRoMiIntegration /> 
