@@ -293,7 +293,7 @@ export const notificationService = new NotificationService({
     domain: process.env.MAILGUN_DOMAIN || 'mg.tetrixcorp.com',
   },
   telnyx: {
-    apiKey: process.env.***REMOVED*** || '',
+    apiKey: process.env.TELNYX_API_KEY || '',
     messagingProfileId: process.env.TELNYX_MESSAGING_PROFILE_ID || process.env.TELNYX_PROFILE_ID || '',
   },
   sinch: {
