@@ -1,0 +1,6 @@
+# Allow build scripts for essential packages
+enable-pre-post-scripts=true
+# Allow scripts for specific packages
+scripts-prepend-node-path=true
+# Disable strict peer dependencies for better compatibility
+strict-peer-dependencies=false
