@@ -5,6 +5,8 @@
 import SalesforceIntegration from '../../components/dashboards/SalesforceIntegration.astro';
 import HubSpotIntegration from '../../components/dashboards/HubSpotIntegration.astro';
 import WorkflowAutomation from '../../components/dashboards/WorkflowAutomation.astro';
+import PricingCard from '../../components/stripe/PricingCard.astro';
+import StripeCheckoutModal from '../../components/stripe/StripeCheckoutModal.astro';
 ---
 
 <div class="min-h-screen bg-gray-50">
@@ -276,8 +278,90 @@ import WorkflowAutomation from '../../components/dashboards/WorkflowAutomation.a
     <div class="mt-8">
       <WorkflowAutomation industry="construction" />
     </div>
+
+    <!-- Pricing Section -->
+    <div class="mt-12">
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">Choose Your Construction Plan</h2>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+          Start with a 7-day free trial. No charges during trial period. Payment method required to begin.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <PricingCard 
+          serviceType="construction" 
+          tier="individual" 
+          successUrl="/dashboards/construction?trial=success"
+          cancelUrl="/dashboards/construction?trial=cancelled"
+        />
+        <PricingCard 
+          serviceType="construction" 
+          tier="small" 
+          isPopular={true}
+          successUrl="/dashboards/construction?trial=success"
+          cancelUrl="/dashboards/construction?trial=cancelled"
+        />
+        <PricingCard 
+          serviceType="construction" 
+          tier="professional" 
+          successUrl="/dashboards/construction?trial=success"
+          cancelUrl="/dashboards/construction?trial=cancelled"
+        />
+        <PricingCard 
+          serviceType="construction" 
+          tier="enterprise" 
+          showTrialButton={false}
+          successUrl="/dashboards/construction?trial=success"
+          cancelUrl="/dashboards/construction?trial=cancelled"
+        />
+      </div>
+
+      <!-- Trial Information -->
+      <div class="mt-8 bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl p-6 border border-orange-200">
+        <div class="flex items-center space-x-4">
+          <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+            <span class="text-2xl">🎉</span>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">7-Day Free Trial</h3>
+            <p class="text-gray-600 mb-3">
+              Experience the full power of our construction management platform at no cost. 
+              No charges during your trial period.
+            </p>
+            <ul class="text-sm text-gray-600 space-y-1">
+              <li>• Full access to all features during trial</li>
+              <li>• No setup fees or hidden costs</li>
+              <li>• Cancel anytime during trial period</li>
+              <li>• Payment method required to start (no charges until trial ends)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
+
+<!-- Stripe Checkout Modal -->
+<StripeCheckoutModal 
+  priceId="price_construction_individual"
+  serviceType="construction"
+  planName="Individual Contractor"
+  basePrice={150}
+  period="per contractor/month"
+  features={[
+    "2,000 AI voice sessions/month",
+    "Project status updates",
+    "Safety alerts and notifications",
+    "Resource management",
+    "Basic reporting",
+    "Mobile app access",
+    "Email support"
+  ]}
+  trialDays={7}
+  successUrl="/dashboards/construction?trial=success"
+  cancelUrl="/dashboards/construction?trial=cancelled"
+/>
 
 <script>
   // Auto-refresh functionality

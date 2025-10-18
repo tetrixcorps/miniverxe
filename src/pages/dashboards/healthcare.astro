@@ -6,6 +6,8 @@ import SalesforceIntegration from '../../components/dashboards/SalesforceIntegra
 import HubSpotIntegration from '../../components/dashboards/HubSpotIntegration.astro';
 import EpicIntegration from '../../components/dashboards/EpicIntegration.astro';
 import WorkflowAutomation from '../../components/dashboards/WorkflowAutomation.astro';
+import PricingCard from '../../components/stripe/PricingCard.astro';
+import StripeCheckoutModal from '../../components/stripe/StripeCheckoutModal.astro';
 ---
 
 <div class="min-h-screen bg-gray-50">
@@ -278,8 +280,90 @@ import WorkflowAutomation from '../../components/dashboards/WorkflowAutomation.a
     <div class="mt-8">
       <WorkflowAutomation industry="healthcare" />
     </div>
+
+    <!-- Pricing Section -->
+    <div class="mt-12">
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">Choose Your Healthcare Plan</h2>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+          Start with a 7-day free trial. No charges during trial period. Payment method required to begin.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <PricingCard 
+          serviceType="healthcare" 
+          tier="individual" 
+          successUrl="/dashboards/healthcare?trial=success"
+          cancelUrl="/dashboards/healthcare?trial=cancelled"
+        />
+        <PricingCard 
+          serviceType="healthcare" 
+          tier="small" 
+          isPopular={true}
+          successUrl="/dashboards/healthcare?trial=success"
+          cancelUrl="/dashboards/healthcare?trial=cancelled"
+        />
+        <PricingCard 
+          serviceType="healthcare" 
+          tier="professional" 
+          successUrl="/dashboards/healthcare?trial=success"
+          cancelUrl="/dashboards/healthcare?trial=cancelled"
+        />
+        <PricingCard 
+          serviceType="healthcare" 
+          tier="enterprise" 
+          showTrialButton={false}
+          successUrl="/dashboards/healthcare?trial=success"
+          cancelUrl="/dashboards/healthcare?trial=cancelled"
+        />
+      </div>
+
+      <!-- Trial Information -->
+      <div class="mt-8 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200">
+        <div class="flex items-center space-x-4">
+          <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+            <span class="text-2xl">🎉</span>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">7-Day Free Trial</h3>
+            <p class="text-gray-600 mb-3">
+              Experience the full power of our healthcare communication platform at no cost. 
+              No charges during your trial period.
+            </p>
+            <ul class="text-sm text-gray-600 space-y-1">
+              <li>• Full access to all features during trial</li>
+              <li>• No setup fees or hidden costs</li>
+              <li>• Cancel anytime during trial period</li>
+              <li>• Payment method required to start (no charges until trial ends)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
+
+<!-- Stripe Checkout Modal -->
+<StripeCheckoutModal 
+  priceId="price_healthcare_individual"
+  serviceType="healthcare"
+  planName="Individual Practice"
+  basePrice={150}
+  period="per provider/month"
+  features={[
+    "2,000 AI voice sessions/month",
+    "Basic benefit verification",
+    "Appointment scheduling",
+    "Patient communication",
+    "Basic EHR integration",
+    "HIPAA compliance",
+    "Email support"
+  ]}
+  trialDays={7}
+  successUrl="/dashboards/healthcare?trial=success"
+  cancelUrl="/dashboards/healthcare?trial=cancelled"
+/>
 
 <script>
   // Auto-refresh functionality

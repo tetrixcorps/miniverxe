@@ -1,0 +1,414 @@
+---
+// Dashboard Cart Component
+// Handles product selection and cart management for industry dashboards
+
+export interface Props {
+  industry: 'healthcare' | 'construction' | 'logistics';
+  customerId: string;
+  showTrialOptions?: boolean;
+}
+
+const { industry, customerId, showTrialOptions = true } = Astro.props;
+
+const industryIcons = {
+  healthcare: '🏥',
+  construction: '🏗️',
+  logistics: '🚛'
+};
+
+const industryColors = {
+  healthcare: 'from-green-500 to-emerald-600',
+  construction: 'from-orange-500 to-amber-600',
+  logistics: 'from-blue-500 to-indigo-600'
+};
+---
+
+<div id="dashboard-cart" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden">
+  <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+      <!-- Cart Header -->
+      <div class={`bg-gradient-to-r ${industryColors[industry]} p-6 text-white`}>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+              <span class="text-2xl">{industryIcons[industry]}</span>
+            </div>
+            <div>
+              <h2 class="text-2xl font-bold">Configure Your {industry.charAt(0).toUpperCase() + industry.slice(1)} Platform</h2>
+              <p class="text-white/90 text-sm">Select the services and add-ons you need</p>
+            </div>
+          </div>
+          <button id="close-cart" class="text-white hover:text-white/80 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Cart Content -->
+      <div class="p-6">
+        <!-- Required Products Section -->
+        <div class="mb-8">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Required Services</h3>
+          <div id="required-products" class="space-y-4">
+            <!-- Required products will be populated here -->
+          </div>
+        </div>
+
+        <!-- Optional Add-ons Section -->
+        <div class="mb-8">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Optional Add-ons</h3>
+          <div id="optional-products" class="space-y-4">
+            <!-- Optional products will be populated here -->
+          </div>
+        </div>
+
+        <!-- Cart Summary -->
+        <div class="bg-gray-50 rounded-lg p-4 mb-6">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-sm font-medium text-gray-600">Subtotal</span>
+            <span id="cart-subtotal" class="text-sm font-medium text-gray-900">$0.00</span>
+          </div>
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-sm font-medium text-gray-600">Tax</span>
+            <span id="cart-tax" class="text-sm font-medium text-gray-900">$0.00</span>
+          </div>
+          <div class="border-t border-gray-200 pt-2">
+            <div class="flex justify-between items-center">
+              <span class="text-lg font-semibold text-gray-900">Total</span>
+              <span id="cart-total" class="text-lg font-semibold text-gray-900">$0.00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trial Information (if applicable) -->
+        {showTrialOptions && (
+          <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 mb-6">
+            <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                <span class="text-blue-600 text-lg">🎉</span>
+              </div>
+              <div>
+                <h4 class="font-semibold text-gray-900">7-Day Free Trial</h4>
+                <p class="text-sm text-gray-600">
+                  Start with a free trial. No charges during trial period. Payment method required to begin.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <!-- Action Buttons -->
+        <div class="flex space-x-4">
+          <button 
+            id="proceed-checkout" 
+            class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span id="checkout-btn-text">Proceed to Checkout</span>
+            <div id="checkout-btn-spinner" class="hidden">
+              <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white mx-auto"></div>
+            </div>
+          </button>
+          <button 
+            id="save-cart" 
+            class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            Save for Later
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  class DashboardCart {
+    cartId: string;
+    industry: string;
+    customerId: string;
+    products: any[] = [];
+    cart: any = null;
+
+    constructor(industry: string, customerId: string) {
+      this.industry = industry;
+      this.customerId = customerId;
+      this.cartId = '';
+      this.initializeCart();
+    }
+
+    async initializeCart() {
+      try {
+        // Create or get existing cart
+        const response = await fetch('/api/dashboard/cart', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            customerId: this.customerId,
+            industry: this.industry
+          })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          this.cartId = result.cartId;
+          this.cart = result.cart;
+          await this.loadProducts();
+          this.renderCart();
+        }
+      } catch (error) {
+        console.error('Failed to initialize cart:', error);
+      }
+    }
+
+    async loadProducts() {
+      try {
+        const response = await fetch(`/api/dashboard/products/${this.industry}`);
+        const result = await response.json();
+        if (result.success) {
+          this.products = result.products;
+        }
+      } catch (error) {
+        console.error('Failed to load products:', error);
+      }
+    }
+
+    renderCart() {
+      this.renderRequiredProducts();
+      this.renderOptionalProducts();
+      this.updateCartSummary();
+    }
+
+    renderRequiredProducts() {
+      const container = document.getElementById('required-products');
+      if (!container) return;
+
+      const requiredProducts = this.products.filter(p => p.required);
+      
+      container.innerHTML = requiredProducts.map(product => `
+        <div class="bg-white border border-gray-200 rounded-lg p-4">
+          <div class="flex items-center justify-between">
+            <div class="flex-1">
+              <h4 class="font-semibold text-gray-900">${product.name}</h4>
+              <p class="text-sm text-gray-600 mt-1">${product.description}</p>
+              <div class="flex flex-wrap gap-2 mt-2">
+                ${product.features.map((feature: string) => `
+                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    ${feature}
+                  </span>
+                `).join('')}
+              </div>
+            </div>
+            <div class="ml-4 text-right">
+              <div class="text-lg font-semibold text-gray-900">
+                ${product.price === 0 ? 'Free Trial' : `$${product.price}/${product.billingCycle}`}
+              </div>
+              <div class="text-sm text-gray-500">Required</div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    renderOptionalProducts() {
+      const container = document.getElementById('optional-products');
+      if (!container) return;
+
+      const optionalProducts = this.products.filter(p => !p.required);
+      
+      container.innerHTML = optionalProducts.map(product => `
+        <div class="bg-white border border-gray-200 rounded-lg p-4">
+          <div class="flex items-center justify-between">
+            <div class="flex-1">
+              <div class="flex items-center space-x-3">
+                <input 
+                  type="checkbox" 
+                  id="product-${product.id}" 
+                  class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  data-product-id="${product.id}"
+                  data-price="${product.price}"
+                >
+                <div class="flex-1">
+                  <h4 class="font-semibold text-gray-900">${product.name}</h4>
+                  <p class="text-sm text-gray-600 mt-1">${product.description}</p>
+                  <div class="flex flex-wrap gap-2 mt-2">
+                    ${product.features.map((feature: string) => `
+                      <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                        ${feature}
+                      </span>
+                    `).join('')}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="ml-4 text-right">
+              <div class="text-lg font-semibold text-gray-900">
+                $${product.price}/${product.billingCycle}
+              </div>
+              <div class="text-sm text-gray-500">Optional</div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      // Add event listeners for checkboxes
+      container.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', (e) => {
+          const target = e.target as HTMLInputElement;
+          const productId = target.dataset.productId;
+          const price = parseFloat(target.dataset.price || '0');
+          
+          if (target.checked) {
+            this.addToCart(productId!, 1);
+          } else {
+            this.removeFromCart(productId!);
+          }
+        });
+      });
+    }
+
+    async addToCart(productId: string, quantity: number = 1) {
+      try {
+        const response = await fetch('/api/dashboard/cart/add', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            cartId: this.cartId,
+            productId,
+            quantity
+          })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          this.cart = result.cart;
+          this.updateCartSummary();
+        }
+      } catch (error) {
+        console.error('Failed to add to cart:', error);
+      }
+    }
+
+    async removeFromCart(productId: string) {
+      try {
+        const response = await fetch('/api/dashboard/cart/remove', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            cartId: this.cartId,
+            productId
+          })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          this.cart = result.cart;
+          this.updateCartSummary();
+        }
+      } catch (error) {
+        console.error('Failed to remove from cart:', error);
+      }
+    }
+
+    updateCartSummary() {
+      if (!this.cart) return;
+
+      document.getElementById('cart-subtotal')!.textContent = `$${this.cart.subtotal.toFixed(2)}`;
+      document.getElementById('cart-tax')!.textContent = `$${this.cart.tax.toFixed(2)}`;
+      document.getElementById('cart-total')!.textContent = `$${this.cart.total.toFixed(2)}`;
+    }
+
+    async proceedToCheckout() {
+      try {
+        this.setLoading(true);
+        
+        const response = await fetch('/api/dashboard/checkout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            cartId: this.cartId
+          })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          // Redirect to Stripe Checkout
+          window.location.href = result.checkoutUrl;
+        } else {
+          alert('Checkout failed: ' + result.error);
+        }
+      } catch (error) {
+        console.error('Checkout error:', error);
+        alert('An error occurred during checkout');
+      } finally {
+        this.setLoading(false);
+      }
+    }
+
+    setLoading(loading: boolean) {
+      const btn = document.getElementById('proceed-checkout') as HTMLButtonElement;
+      const text = document.getElementById('checkout-btn-text');
+      const spinner = document.getElementById('checkout-btn-spinner');
+      
+      if (loading) {
+        btn.disabled = true;
+        text!.classList.add('hidden');
+        spinner!.classList.remove('hidden');
+      } else {
+        btn.disabled = false;
+        text!.classList.remove('hidden');
+        spinner!.classList.add('hidden');
+      }
+    }
+
+    openCart() {
+      document.getElementById('dashboard-cart')!.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    closeCart() {
+      document.getElementById('dashboard-cart')!.classList.add('hidden');
+      document.body.style.overflow = 'auto';
+    }
+  }
+
+  // Initialize cart when DOM is loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    const cart = new DashboardCart('${industry}', '${customerId}');
+    
+    // Event listeners
+    document.getElementById('close-cart')?.addEventListener('click', () => cart.closeCart());
+    document.getElementById('proceed-checkout')?.addEventListener('click', () => cart.proceedToCheckout());
+    
+    // Expose cart globally
+    (window as any).dashboardCart = cart;
+  });
+
+  // Global function to open cart
+  (window as any).openDashboardCart = function() {
+    (window as any).dashboardCart.openCart();
+  };
+</script>
+
+<style>
+  .animate-spin {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>

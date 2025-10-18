@@ -276,6 +276,184 @@ const STRIPE_PRICE_MAPPINGS: Record<string, PriceMapping> = {
     ],
     requiresESIM: true,
     isTrialEligible: false
+  },
+
+  // Construction Service Prices
+  'price_construction_individual': {
+    priceId: 'price_construction_individual',
+    serviceType: 'construction',
+    tier: 'individual',
+    planName: 'Individual Contractor',
+    basePrice: 150,
+    period: 'per contractor/month',
+    description: '1-4 Contractors',
+    features: [
+      '2,000 AI voice sessions/month',
+      'Project status updates',
+      'Safety alerts and notifications',
+      'Resource management',
+      'Basic reporting',
+      'Mobile app access',
+      'Email support'
+    ],
+    requiresESIM: false,
+    isTrialEligible: true
+  },
+  
+  'price_construction_small': {
+    priceId: 'price_construction_small',
+    serviceType: 'construction',
+    tier: 'small',
+    planName: 'Small Construction',
+    basePrice: 200,
+    perUnitPrice: 100,
+    period: 'base + $100/contractor',
+    description: '5-24 Contractors',
+    features: [
+      '5,000 AI voice sessions/month',
+      'Project management automation',
+      'Safety compliance tracking',
+      'Resource optimization',
+      'Advanced reporting',
+      'Team collaboration tools',
+      'Priority support'
+    ],
+    requiresESIM: false,
+    isTrialEligible: true
+  },
+  
+  'price_construction_professional': {
+    priceId: 'price_construction_professional',
+    serviceType: 'construction',
+    tier: 'professional',
+    planName: 'Professional Construction',
+    basePrice: 500,
+    perUnitPrice: 75,
+    period: 'base + $75/contractor',
+    description: '25-99 Contractors',
+    features: [
+      '10,000 AI voice sessions/month',
+      'Advanced project management',
+      'Safety compliance automation',
+      'Resource optimization AI',
+      'Advanced analytics & reporting',
+      'Integration with construction software',
+      'Priority support + phone'
+    ],
+    requiresESIM: true,
+    isTrialEligible: true
+  },
+  
+  'price_construction_enterprise': {
+    priceId: 'price_construction_enterprise',
+    serviceType: 'construction',
+    tier: 'enterprise',
+    planName: 'Enterprise Construction',
+    basePrice: 2000,
+    perUnitPrice: 50,
+    period: 'base + $50/contractor',
+    description: '100+ Contractors',
+    features: [
+      'Unlimited AI voice sessions',
+      'Enterprise project management',
+      'Advanced safety compliance',
+      'AI-powered resource optimization',
+      'Custom analytics & reporting',
+      'White-label options',
+      '24/7 dedicated support',
+      'Dedicated account manager'
+    ],
+    requiresESIM: true,
+    isTrialEligible: false
+  },
+
+  // Logistics Service Prices
+  'price_logistics_individual': {
+    priceId: 'price_logistics_individual',
+    serviceType: 'logistics',
+    tier: 'individual',
+    planName: 'Individual Fleet',
+    basePrice: 150,
+    period: 'per vehicle/month',
+    description: '1-4 Vehicles',
+    features: [
+      '2,000 AI voice sessions/month',
+      'Real-time vehicle tracking',
+      'Driver communication',
+      'Delivery management',
+      'Basic reporting',
+      'Mobile app access',
+      'Email support'
+    ],
+    requiresESIM: false,
+    isTrialEligible: true
+  },
+  
+  'price_logistics_small': {
+    priceId: 'price_logistics_small',
+    serviceType: 'logistics',
+    tier: 'small',
+    planName: 'Small Fleet',
+    basePrice: 200,
+    perUnitPrice: 100,
+    period: 'base + $100/vehicle',
+    description: '5-24 Vehicles',
+    features: [
+      '5,000 AI voice sessions/month',
+      'Advanced fleet tracking',
+      'Route optimization',
+      'Driver performance analytics',
+      'Delivery automation',
+      'Team management tools',
+      'Priority support'
+    ],
+    requiresESIM: false,
+    isTrialEligible: true
+  },
+  
+  'price_logistics_professional': {
+    priceId: 'price_logistics_professional',
+    serviceType: 'logistics',
+    tier: 'professional',
+    planName: 'Professional Fleet',
+    basePrice: 500,
+    perUnitPrice: 75,
+    period: 'base + $75/vehicle',
+    description: '25-99 Vehicles',
+    features: [
+      '10,000 AI voice sessions/month',
+      'Advanced fleet management',
+      'AI-powered route optimization',
+      'Predictive maintenance',
+      'Advanced analytics & reporting',
+      'Integration with logistics software',
+      'Priority support + phone'
+    ],
+    requiresESIM: true,
+    isTrialEligible: true
+  },
+  
+  'price_logistics_enterprise': {
+    priceId: 'price_logistics_enterprise',
+    serviceType: 'logistics',
+    tier: 'enterprise',
+    planName: 'Enterprise Fleet',
+    basePrice: 2000,
+    perUnitPrice: 50,
+    period: 'base + $50/vehicle',
+    description: '100+ Vehicles',
+    features: [
+      'Unlimited AI voice sessions',
+      'Enterprise fleet management',
+      'AI-powered logistics optimization',
+      'Predictive analytics',
+      'Custom reporting & dashboards',
+      'White-label options',
+      '24/7 dedicated support',
+      'Dedicated account manager'
+    ],
+    requiresESIM: true,
+    isTrialEligible: false
   }
 };
 

@@ -1,0 +1,433 @@
+---
+// Fleet Contact Management Component
+// Specialized contact management for driver and vehicle information
+
+export interface Props {
+  industry: 'logistics';
+  customerId: string;
+  showESIMIntegration?: boolean;
+}
+
+const { industry, customerId, showESIMIntegration = true } = Astro.props;
+---
+
+<div id="fleet-contact-management" class="bg-white rounded-lg shadow-sm border border-gray-200">
+  <div class="px-6 py-4 border-b border-gray-200">
+    <div class="flex items-center justify-between">
+      <h3 class="text-lg font-medium text-gray-900">Fleet Management</h3>
+      <div class="flex space-x-2">
+        <button 
+          id="add-driver-btn" 
+          class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+        >
+          Add Driver
+        </button>
+        <button 
+          id="add-vehicle-btn" 
+          class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors"
+        >
+          Add Vehicle
+        </button>
+        {showESIMIntegration && (
+          <button 
+            id="order-esim-btn" 
+            class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors"
+          >
+            Order eSIM
+          </button>
+        )}
+      </div>
+    </div>
+  </div>
+
+  <div class="p-6">
+    <!-- Driver Management Section -->
+    <div class="mb-8">
+      <h4 class="text-md font-semibold text-gray-900 mb-4">Drivers</h4>
+      <div id="drivers-list" class="space-y-3">
+        <!-- Drivers will be populated here -->
+      </div>
+    </div>
+
+    <!-- Vehicle Management Section -->
+    <div class="mb-8">
+      <h4 class="text-md font-semibold text-gray-900 mb-4">Vehicles</h4>
+      <div id="vehicles-list" class="space-y-3">
+        <!-- Vehicles will be populated here -->
+      </div>
+    </div>
+
+    <!-- eSIM Management Section -->
+    {showESIMIntegration && (
+      <div class="mb-8">
+        <h4 class="text-md font-semibold text-gray-900 mb-4">eSIM Devices</h4>
+        <div id="esim-list" class="space-y-3">
+          <!-- eSIM devices will be populated here -->
+        </div>
+      </div>
+    )}
+
+    <!-- Analytics Summary -->
+    <div class="bg-gray-50 rounded-lg p-4">
+      <h4 class="text-md font-semibold text-gray-900 mb-3">Fleet Analytics</h4>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="text-center">
+          <div class="text-2xl font-bold text-blue-600" id="total-drivers">0</div>
+          <div class="text-sm text-gray-600">Total Drivers</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-green-600" id="total-vehicles">0</div>
+          <div class="text-sm text-gray-600">Total Vehicles</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-purple-600" id="total-esims">0</div>
+          <div class="text-sm text-gray-600">eSIM Devices</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Driver Modal -->
+<div id="driver-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden">
+  <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900">Add Driver</h3>
+      </div>
+      <form id="driver-form" class="p-6 space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+          <input type="text" name="fullName" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+          <input type="tel" name="phoneNumber" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input type="email" name="email" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">License Number *</label>
+          <input type="text" name="licenseNumber" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">License Expiry</label>
+          <input type="date" name="licenseExpiry" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Emergency Contact</label>
+          <input type="text" name="emergencyContact" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        <div class="flex space-x-3 pt-4">
+          <button type="submit" class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+            Add Driver
+          </button>
+          <button type="button" id="cancel-driver" class="flex-1 border border-gray-300 text-gray-700 py-2 px-4 rounded-lg font-medium hover:bg-gray-50 transition-colors">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Vehicle Modal -->
+<div id="vehicle-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden">
+  <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900">Add Vehicle</h3>
+      </div>
+      <form id="vehicle-form" class="p-6 space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Vehicle Make *</label>
+          <input type="text" name="make" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Vehicle Model *</label>
+          <input type="text" name="model" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Year *</label>
+          <input type="number" name="year" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">License Plate *</label>
+          <input type="text" name="licensePlate" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">VIN</label>
+          <input type="text" name="vin" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Assigned Driver</label>
+          <select name="assignedDriver" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+            <option value="">Select Driver</option>
+            <!-- Options will be populated dynamically -->
+          </select>
+        </div>
+        <div class="flex space-x-3 pt-4">
+          <button type="submit" class="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-green-700 transition-colors">
+            Add Vehicle
+          </button>
+          <button type="button" id="cancel-vehicle" class="flex-1 border border-gray-300 text-gray-700 py-2 px-4 rounded-lg font-medium hover:bg-gray-50 transition-colors">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  class FleetContactManagement {
+    drivers: any[] = [];
+    vehicles: any[] = [];
+    esimDevices: any[] = [];
+
+    constructor() {
+      this.loadData();
+      this.initializeEventListeners();
+    }
+
+    async loadData() {
+      // Load drivers, vehicles, and eSIM devices
+      await this.loadDrivers();
+      await this.loadVehicles();
+      await this.loadESIMDevices();
+      this.updateAnalytics();
+    }
+
+    async loadDrivers() {
+      try {
+        const response = await fetch(`/api/fleet/drivers?customerId=${this.customerId}`);
+        const result = await response.json();
+        if (result.success) {
+          this.drivers = result.drivers;
+          this.renderDrivers();
+        }
+      } catch (error) {
+        console.error('Failed to load drivers:', error);
+      }
+    }
+
+    async loadVehicles() {
+      try {
+        const response = await fetch(`/api/fleet/vehicles?customerId=${this.customerId}`);
+        const result = await response.json();
+        if (result.success) {
+          this.vehicles = result.vehicles;
+          this.renderVehicles();
+        }
+      } catch (error) {
+        console.error('Failed to load vehicles:', error);
+      }
+    }
+
+    async loadESIMDevices() {
+      try {
+        const response = await fetch(`/api/fleet/esim?customerId=${this.customerId}`);
+        const result = await response.json();
+        if (result.success) {
+          this.esimDevices = result.devices;
+          this.renderESIMDevices();
+        }
+      } catch (error) {
+        console.error('Failed to load eSIM devices:', error);
+      }
+    }
+
+    renderDrivers() {
+      const container = document.getElementById('drivers-list');
+      if (!container) return;
+
+      container.innerHTML = this.drivers.map(driver => `
+        <div class="bg-gray-50 rounded-lg p-4 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+              <span class="text-blue-600 font-semibold">${driver.fullName.charAt(0)}</span>
+            </div>
+            <div>
+              <h5 class="font-medium text-gray-900">${driver.fullName}</h5>
+              <p class="text-sm text-gray-600">${driver.phoneNumber} • License: ${driver.licenseNumber}</p>
+            </div>
+          </div>
+          <div class="flex space-x-2">
+            <button class="text-blue-600 hover:text-blue-800 text-sm">Edit</button>
+            <button class="text-red-600 hover:text-red-800 text-sm">Remove</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    renderVehicles() {
+      const container = document.getElementById('vehicles-list');
+      if (!container) return;
+
+      container.innerHTML = this.vehicles.map(vehicle => `
+        <div class="bg-gray-50 rounded-lg p-4 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+              <span class="text-green-600 font-semibold">🚛</span>
+            </div>
+            <div>
+              <h5 class="font-medium text-gray-900">${vehicle.make} ${vehicle.model} (${vehicle.year})</h5>
+              <p class="text-sm text-gray-600">Plate: ${vehicle.licensePlate} • Driver: ${vehicle.assignedDriver || 'Unassigned'}</p>
+            </div>
+          </div>
+          <div class="flex space-x-2">
+            <button class="text-green-600 hover:text-green-800 text-sm">Edit</button>
+            <button class="text-red-600 hover:text-red-800 text-sm">Remove</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    renderESIMDevices() {
+      const container = document.getElementById('esim-list');
+      if (!container) return;
+
+      container.innerHTML = this.esimDevices.map(device => `
+        <div class="bg-gray-50 rounded-lg p-4 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+              <span class="text-purple-600 font-semibold">📱</span>
+            </div>
+            <div>
+              <h5 class="font-medium text-gray-900">eSIM ${device.deviceId}</h5>
+              <p class="text-sm text-gray-600">Status: ${device.status} • Data: ${device.dataUsage}/${device.dataLimit}</p>
+            </div>
+          </div>
+          <div class="flex space-x-2">
+            <button class="text-purple-600 hover:text-purple-800 text-sm">Manage</button>
+            <button class="text-red-600 hover:text-red-800 text-sm">Remove</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    updateAnalytics() {
+      document.getElementById('total-drivers')!.textContent = this.drivers.length.toString();
+      document.getElementById('total-vehicles')!.textContent = this.vehicles.length.toString();
+      document.getElementById('total-esims')!.textContent = this.esimDevices.length.toString();
+    }
+
+    initializeEventListeners() {
+      // Driver modal
+      document.getElementById('add-driver-btn')?.addEventListener('click', () => {
+        document.getElementById('driver-modal')!.classList.remove('hidden');
+      });
+
+      document.getElementById('cancel-driver')?.addEventListener('click', () => {
+        document.getElementById('driver-modal')!.classList.add('hidden');
+      });
+
+      document.getElementById('driver-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.addDriver(new FormData(e.target as HTMLFormElement));
+      });
+
+      // Vehicle modal
+      document.getElementById('add-vehicle-btn')?.addEventListener('click', () => {
+        document.getElementById('vehicle-modal')!.classList.remove('hidden');
+        this.populateDriverOptions();
+      });
+
+      document.getElementById('cancel-vehicle')?.addEventListener('click', () => {
+        document.getElementById('vehicle-modal')!.classList.add('hidden');
+      });
+
+      document.getElementById('vehicle-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.addVehicle(new FormData(e.target as HTMLFormElement));
+      });
+
+      // eSIM ordering
+      document.getElementById('order-esim-btn')?.addEventListener('click', () => {
+        this.orderESIM();
+      });
+    }
+
+    populateDriverOptions() {
+      const select = document.querySelector('#vehicle-form select[name="assignedDriver"]') as HTMLSelectElement;
+      if (select) {
+        select.innerHTML = '<option value="">Select Driver</option>' + 
+          this.drivers.map(driver => 
+            `<option value="${driver.id}">${driver.fullName}</option>`
+          ).join('');
+      }
+    }
+
+    async addDriver(formData: FormData) {
+      try {
+        const response = await fetch('/api/fleet/drivers', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            customerId: this.customerId,
+            fullName: formData.get('fullName'),
+            phoneNumber: formData.get('phoneNumber'),
+            email: formData.get('email'),
+            licenseNumber: formData.get('licenseNumber'),
+            licenseExpiry: formData.get('licenseExpiry'),
+            emergencyContact: formData.get('emergencyContact')
+          })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          this.loadData();
+          document.getElementById('driver-modal')!.classList.add('hidden');
+          (document.getElementById('driver-form') as HTMLFormElement).reset();
+        }
+      } catch (error) {
+        console.error('Failed to add driver:', error);
+      }
+    }
+
+    async addVehicle(formData: FormData) {
+      try {
+        const response = await fetch('/api/fleet/vehicles', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            customerId: this.customerId,
+            make: formData.get('make'),
+            model: formData.get('model'),
+            year: parseInt(formData.get('year') as string),
+            licensePlate: formData.get('licensePlate'),
+            vin: formData.get('vin'),
+            assignedDriver: formData.get('assignedDriver')
+          })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          this.loadData();
+          document.getElementById('vehicle-modal')!.classList.add('hidden');
+          (document.getElementById('vehicle-form') as HTMLFormElement).reset();
+        }
+      } catch (error) {
+        console.error('Failed to add vehicle:', error);
+      }
+    }
+
+    async orderESIM() {
+      // Open dashboard cart with eSIM products
+      if ((window as any).openDashboardCart) {
+        (window as any).openDashboardCart();
+      }
+    }
+  }
+
+  // Initialize when DOM is loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    new FleetContactManagement();
+  });
+</script>

@@ -1,6 +1,11 @@
 ---
 // Logistics & Fleet Management Dashboard
 // Real-time tracking, driver communication, delivery management
+
+import PricingCard from '../../components/stripe/PricingCard.astro';
+import StripeCheckoutModal from '../../components/stripe/StripeCheckoutModal.astro';
+import DashboardCart from '../../components/dashboard/DashboardCart.astro';
+import FleetContactManagement from '../../components/dashboard/FleetContactManagement.astro';
 ---
 
 <div class="min-h-screen bg-gray-50">
@@ -19,6 +24,12 @@
             <div class="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
             System Online
           </div>
+          <button 
+            id="configure-services-btn" 
+            class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+          >
+            Configure Services
+          </button>
           <button id="refresh-btn" class="p-2 text-gray-400 hover:text-gray-600 transition-colors">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
@@ -88,6 +99,15 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- Fleet Management Section -->
+    <div class="mb-8">
+      <FleetContactManagement 
+        industry="logistics" 
+        customerId="customer_123" 
+        showESIMIntegration={true}
+      />
     </div>
 
     <!-- Real-time Tracking & Driver Communication -->
@@ -258,8 +278,97 @@
         </div>
       </div>
     </div>
+
+    <!-- Pricing Section -->
+    <div class="mt-12">
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">Choose Your Fleet Management Plan</h2>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+          Start with a 7-day free trial. No charges during trial period. Payment method required to begin.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <PricingCard 
+          serviceType="logistics" 
+          tier="individual" 
+          successUrl="/dashboards/logistics?trial=success"
+          cancelUrl="/dashboards/logistics?trial=cancelled"
+        />
+        <PricingCard 
+          serviceType="logistics" 
+          tier="small" 
+          isPopular={true}
+          successUrl="/dashboards/logistics?trial=success"
+          cancelUrl="/dashboards/logistics?trial=cancelled"
+        />
+        <PricingCard 
+          serviceType="logistics" 
+          tier="professional" 
+          successUrl="/dashboards/logistics?trial=success"
+          cancelUrl="/dashboards/logistics?trial=cancelled"
+        />
+        <PricingCard 
+          serviceType="logistics" 
+          tier="enterprise" 
+          showTrialButton={false}
+          successUrl="/dashboards/logistics?trial=success"
+          cancelUrl="/dashboards/logistics?trial=cancelled"
+        />
+      </div>
+
+      <!-- Trial Information -->
+      <div class="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
+        <div class="flex items-center space-x-4">
+          <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+            <span class="text-2xl">🎉</span>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">7-Day Free Trial</h3>
+            <p class="text-gray-600 mb-3">
+              Experience the full power of our fleet management platform at no cost. 
+              No charges during your trial period.
+            </p>
+            <ul class="text-sm text-gray-600 space-y-1">
+              <li>• Full access to all features during trial</li>
+              <li>• No setup fees or hidden costs</li>
+              <li>• Cancel anytime during trial period</li>
+              <li>• Payment method required to start (no charges until trial ends)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
+
+<!-- Dashboard Cart -->
+<DashboardCart 
+  industry="logistics" 
+  customerId="customer_123" 
+  showTrialOptions={true}
+/>
+
+<!-- Stripe Checkout Modal -->
+<StripeCheckoutModal 
+  priceId="price_logistics_individual"
+  serviceType="logistics"
+  planName="Individual Fleet"
+  basePrice={150}
+  period="per vehicle/month"
+  features={[
+    "2,000 AI voice sessions/month",
+    "Real-time vehicle tracking",
+    "Driver communication",
+    "Delivery management",
+    "Basic reporting",
+    "Mobile app access",
+    "Email support"
+  ]}
+  trialDays={7}
+  successUrl="/dashboards/logistics?trial=success"
+  cancelUrl="/dashboards/logistics?trial=cancelled"
+/>
 
 <script>
   // Auto-refresh functionality
@@ -271,5 +380,14 @@
   // Refresh button functionality
   document.getElementById('refresh-btn')?.addEventListener('click', () => {
     location.reload();
+  });
+
+  // Configure services button functionality
+  document.getElementById('configure-services-btn')?.addEventListener('click', () => {
+    if (window.openDashboardCart) {
+      window.openDashboardCart();
+    } else {
+      console.error('Dashboard cart not available');
+    }
   });
 </script>
