@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHANGO Debug Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        #log { background: #f8f9fa; padding: 10px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <h1>SHANGO AI Debug Test</h1>
+    
+    <div class="test-section info">
+        <h3>Test 1: API Endpoints</h3>
+        <button onclick="testAgentsAPI()">Test Agents API</button>
+        <button onclick="testSessionAPI()">Test Session Creation</button>
+        <button onclick="testMessageAPI()">Test Message Sending</button>
+    </div>
+    
+    <div class="test-section info">
+        <h3>Test 2: Frontend Functions</h3>
+        <button onclick="testFrontendFunctions()">Test Frontend Functions</button>
+        <button onclick="testChatWidget()">Test Chat Widget</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test Log</h3>
+        <div id="log"></div>
+    </div>
+
+    <script>
+        let testSessionId = null;
+        
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : 'info';
+            logDiv.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        async function testAgentsAPI() {
+            try {
+                log('Testing agents API...');
+                const response = await fetch('/api/v1/shango/sessions');
+                const data = await response.json();
+                
+                if (data.success && data.agents) {
+                    log(`✅ Agents API working! Found ${data.agents.length} agents`, 'success');
+                    log(`Agents: ${data.agents.map(a => a.name).join(', ')}`);
+                } else {
+                    log(`❌ Agents API failed: ${JSON.stringify(data)}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Agents API error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testSessionAPI() {
+            try {
+                log('Testing session creation...');
+                const response = await fetch('/api/v1/shango/sessions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: 'debug-test-user',
+                        agentId: 'shango-general',
+                        channel: 'chat'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.session) {
+                    testSessionId = data.session.id;
+                    log(`✅ Session created successfully! ID: ${testSessionId}`, 'success');
+                    log(`Session has ${data.session.messages.length} initial messages`);
+                } else {
+                    log(`❌ Session creation failed: ${JSON.stringify(data)}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Session creation error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testMessageAPI() {
+            if (!testSessionId) {
+                log('❌ No session ID available. Create a session first.', 'error');
+                return;
+            }
+            
+            try {
+                log('Testing message sending...');
+                const response = await fetch(`/api/v1/shango/sessions/${testSessionId}/messages`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: 'Hello SHANGO! This is a test message.',
+                        role: 'user',
+                        agentId: 'shango-general'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.aiResponse) {
+                    log(`✅ Message sent successfully!`, 'success');
+                    log(`AI Response: ${data.aiResponse.content.substring(0, 100)}...`);
+                } else {
+                    log(`❌ Message sending failed: ${JSON.stringify(data)}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Message sending error: ${error.message}`, 'error');
+            }
+        }
+        
+        function testFrontendFunctions() {
+            try {
+                log('Testing frontend functions...');
+                
+                // Test if functions exist
+                if (typeof window.startSHANGOChat === 'function') {
+                    log('✅ startSHANGOChat function exists', 'success');
+                } else {
+                    log('❌ startSHANGOChat function not found', 'error');
+                }
+                
+                if (typeof window.initializeSHANGOChatWidget === 'function') {
+                    log('✅ initializeSHANGOChatWidget function exists', 'success');
+                } else {
+                    log('❌ initializeSHANGOChatWidget function not found', 'error');
+                }
+                
+                // Test if chat container exists
+                const chatContainer = document.getElementById('shango-chat-widget');
+                if (chatContainer) {
+                    log('✅ Chat container element found', 'success');
+                } else {
+                    log('❌ Chat container element not found', 'error');
+                }
+                
+            } catch (error) {
+                log(`❌ Frontend functions test error: ${error.message}`, 'error');
+            }
+        }
+        
+        function testChatWidget() {
+            try {
+                log('Testing chat widget initialization...');
+                
+                // Simulate the contact page environment
+                const chatContainer = document.createElement('div');
+                chatContainer.id = 'shango-chat-widget';
+                chatContainer.className = 'min-h-[400px]';
+                document.body.appendChild(chatContainer);
+                
+                // Test the initialization function
+                if (typeof window.initializeSHANGOChatWidget === 'function') {
+                    window.initializeSHANGOChatWidget();
+                    log('✅ Chat widget initialized successfully', 'success');
+                } else {
+                    log('❌ Cannot initialize chat widget - function not available', 'error');
+                }
+                
+            } catch (error) {
+                log(`❌ Chat widget test error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Auto-run basic tests on load
+        window.addEventListener('load', () => {
+            log('SHANGO Debug Test loaded');
+            testAgentsAPI();
+        });
+    </script>
+</body>
+</html>
