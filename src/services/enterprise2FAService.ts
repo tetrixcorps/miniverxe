@@ -166,7 +166,7 @@ class Enterprise2FAService {
 
     // Check if API key is configured
     if (!this.config.apiKey || this.config.apiKey.trim() === '') {
-      console.warn('***REMOVED*** not configured, using mock verification');
+      console.warn('TELNYX_API_KEY not configured, using mock verification');
       return this.verifyMockCode(verificationId, code, phoneNumber);
     }
 
@@ -275,7 +275,7 @@ class Enterprise2FAService {
   private async sendTelnyxVerification(request: VerificationRequest): Promise<any> {
     // Check if API key is configured
     if (!this.config.apiKey || this.config.apiKey.trim() === '') {
-      console.warn('***REMOVED*** not configured, using mock verification for development');
+      console.warn('TELNYX_API_KEY not configured, using mock verification for development');
       return this.generateMockVerification(request);
     }
 
@@ -520,7 +520,7 @@ class Enterprise2FAService {
 // Export configured instance
 export const enterprise2FAService = new Enterprise2FAService({
   verifyProfileId: process.env.TELNYX_PROFILE_ID || '***REMOVED***',
-  apiKey: process.env.***REMOVED*** || '',
+  apiKey: process.env.TELNYX_API_KEY || '',
   apiUrl: 'https://api.telnyx.com/v2',
   webhookUrl: (process.env.WEBHOOK_BASE_URL || 'http://localhost:3000') + '/webhooks/telnyx/verify',
   fallbackEnabled: true,

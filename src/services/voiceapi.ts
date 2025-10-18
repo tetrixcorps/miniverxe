@@ -361,7 +361,7 @@ const voiceAPIConfig: VoiceAPIConfig = {
     privateKey: process.env.NEXT_PUBLIC_VONAGE_PRIVATE_KEY || ''
   },
   telnyx: {
-    apiKey: process.env.NEXT_PUBLIC_***REMOVED*** || '',
+    apiKey: process.env.NEXT_PUBLIC_TELNYX_API_KEY || '',
     messagingProfileId: process.env.NEXT_PUBLIC_TELNYX_MESSAGING_PROFILE_ID || ''
   },
   twilio: {

@@ -87,7 +87,7 @@ class TelnyxVoiceService {
   private activeSessions: Map<string, VoiceCallSession> = new Map();
 
   constructor() {
-    this.apiKey = process.env.***REMOVED*** || '';
+    this.apiKey = process.env.TELNYX_API_KEY || '';
     this.apiUrl = process.env.TELNYX_API_URL || 'https://api.telnyx.com/v2';
     this.deepgramApiKey = process.env.DEEPGRAM_API_KEY || '';
     this.deepgramApiUrl = process.env.DEEPGRAM_API_URL || 'https://api.deepgram.com/v1';

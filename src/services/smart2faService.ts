@@ -288,7 +288,7 @@ class Smart2FAService {
   private async sendDirectTelnyxVerification(phone: string, method: 'voice' | 'sms'): Promise<any> {
     // Direct integration with Telnyx (fallback method)
     const telnyxApiUrl = process.env.TELNYX_API_URL || 'https://api.telnyx.com/v2';
-    const apiKey = process.env.***REMOVED***;
+    const apiKey = process.env.TELNYX_API_KEY;
     
     if (!apiKey) {
       throw new Error('Telnyx API key not configured');
