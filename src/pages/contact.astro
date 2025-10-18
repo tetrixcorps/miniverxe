@@ -277,7 +277,7 @@ import MainLayout from '../components/layout/MainLayout.astro';
 
 <script>
   // Enhanced SHANGO Chat Integration with Backend Service Knowledge
-  function initializeSHANGOChatWidget() {
+  window.initializeSHANGOChatWidget = function initializeSHANGOChatWidget() {
     console.log('Initializing enhanced SHANGO Chat...');
     
     const chatContainer = document.getElementById('shango-chat-widget');
@@ -319,7 +319,7 @@ import MainLayout from '../components/layout/MainLayout.astro';
   }
 
   // Start SHANGO Chat
-  async function startSHANGOChat() {
+  window.startSHANGOChat = async function startSHANGOChat() {
     const chatContainer = document.getElementById('shango-chat-widget');
     if (!chatContainer) return;
 
@@ -445,7 +445,7 @@ import MainLayout from '../components/layout/MainLayout.astro';
   }
 
   // Close chat
-  function closeSHANGOChat() {
+  window.closeSHANGOChat = function closeSHANGOChat() {
     const chatContainer = document.getElementById('shango-chat-widget');
     if (!chatContainer) return;
 
