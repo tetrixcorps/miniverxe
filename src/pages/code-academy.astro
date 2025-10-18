@@ -335,6 +335,11 @@ import TwoFAModal from '../components/auth/2FAModal.astro';
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Code Academy page loaded successfully!');
             
+            // Ensure 2FA modal is available
+            console.log('Checking for 2FA modal availability...');
+            console.log('window.open2FAModal available:', typeof window.open2FAModal);
+            console.log('window.twoFAManager available:', typeof window.twoFAManager);
+            
             // Button event listeners
             const startLearningBtn = document.getElementById('start-learning-btn');
             const getStartedBtn = document.getElementById('get-started-btn');
@@ -351,13 +356,34 @@ import TwoFAModal from '../components/auth/2FAModal.astro';
                 // Set authentication context for Code Academy (student learning)
                 window.tetrixAuthContext = 'code-academy';
                 
-                // Open 2FA modal for student verification
-                if (window.open2FAModal) {
-                    window.open2FAModal();
-                } else {
-                    console.error('Student authentication modal not available');
-                    alert('Student authentication system not available. Please try again later.');
-                }
+                let attempts = 0;
+                const maxAttempts = 50; // 5 seconds max wait time
+                
+                // Wait for 2FA modal to be available
+                const waitFor2FAModal = () => {
+                    attempts++;
+                    
+                    if (window.open2FAModal) {
+                        console.log('2FA modal found, opening...');
+                        window.open2FAModal();
+                    } else if (window.twoFAManager) {
+                        // Fallback: try to open modal directly
+                        console.log('2FA manager found, opening modal directly...');
+                        window.twoFAManager.updateAuthContext();
+                        window.twoFAManager.openModal();
+                    } else if (attempts < maxAttempts) {
+                        // Wait a bit more and try again
+                        console.log(`Waiting for 2FA modal... attempt ${attempts}/${maxAttempts}`);
+                        setTimeout(waitFor2FAModal, 100);
+                    } else {
+                        // Timeout reached
+                        console.error('2FA modal not available after maximum attempts');
+                        alert('Authentication system is loading. Please wait a moment and try again.');
+                    }
+                };
+                
+                // Start checking for 2FA modal availability
+                waitFor2FAModal();
             }
 
             // Show student learning interface after authentication
