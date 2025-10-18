@@ -3,6 +3,7 @@ import Logo from './Logo.astro';
 import DynamicTetrix from '../shared/DynamicTetrix.astro';
 import ProductsModal from '../ProductsModal.astro';
 import TwoFAModal from '../auth/2FAModal.astro';
+import JoRoMiIntegration from '../integration/JoRoMiIntegration.astro';
 ---
 <header class="w-full bg-gradient-to-r from-brand-red via-brand-orange to-brand-yellow text-white shadow relative">
   <div class="max-w-screen-xl mx-auto flex items-center justify-between px-4 py-3">
@@ -180,32 +181,8 @@ import TwoFAModal from '../auth/2FAModal.astro';
         const clientLoginBtn = document.getElementById('client-login-2fa-btn');
         const clientLoginBtnMobile = document.getElementById('client-login-2fa-btn-mobile');
 
-        // JoRoMi button handlers - Redirect to JoRoMi platform (has its own auth system)
-        if (joromiBtn) {
-          joromiBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            // Redirect to JoRoMi platform - it has its own authentication system
-            window.open('https://joromi.ai', '_blank');
-            // Close mobile menu if open
-            if (menu) {
-              menu.classList.add('hidden');
-              btn?.setAttribute('aria-expanded', 'false');
-            }
-          });
-        }
-
-        if (joromiBtnMobile) {
-          joromiBtnMobile.addEventListener('click', function(e) {
-            e.preventDefault();
-            // Redirect to JoRoMi platform - it has its own authentication system
-            window.open('https://joromi.ai', '_blank');
-            // Close mobile menu
-            if (menu) {
-              menu.classList.add('hidden');
-              btn?.setAttribute('aria-expanded', 'false');
-            }
-          });
-        }
+        // JoRoMi button handlers are now handled by JoRoMiIntegration component
+        // This ensures proper environment detection and fallback handling
 
         // Client Login button handlers - Industry-specific authentication
         if (clientLoginBtn) {
@@ -409,4 +386,7 @@ import TwoFAModal from '../auth/2FAModal.astro';
       transform: scale(1) rotate(180deg);
     }
   }
-</style> 
+</style>
+
+<!-- JoRoMi Integration Component -->
+<JoRoMiIntegration /> 

@@ -1,0 +1,147 @@
+---
+// JoRoMi Integration Component
+// Handles redirection to JoRoMi platform with environment detection
+---
+
+<script>
+  // JoRoMi Integration Service
+  class JoRoMiIntegration {
+    constructor() {
+      this.isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      this.isDevelopment = window.location.port === '8080' || window.location.port === '4321';
+      this.joromiUrl = this.getJoRoMiUrl();
+    }
+
+    getJoRoMiUrl() {
+      // Determine the correct JoRoMi URL based on environment
+      if (this.isLocal && this.isDevelopment) {
+        // Local development - redirect to local JoRoMi instance
+        return 'http://localhost:3000';
+      } else if (this.isLocal) {
+        // Local production - try local JoRoMi first, fallback to hosted
+        return 'http://localhost:3000';
+      } else {
+        // Production - redirect to hosted JoRoMi or TETRIX JoRoMi page
+        return '/joromi';
+      }
+    }
+
+    async checkJoRoMiAvailability() {
+      if (this.isLocal) {
+        try {
+          const response = await fetch(this.joromiUrl, { 
+            method: 'HEAD',
+            mode: 'no-cors',
+            cache: 'no-cache'
+          });
+          return true;
+        } catch (error) {
+          console.warn('Local JoRoMi not available, falling back to hosted version');
+          return false;
+        }
+      }
+      return true;
+    }
+
+    async redirectToJoRoMi() {
+      console.log('JoRoMi Integration: Redirecting to JoRoMi platform...');
+      
+      // Check if JoRoMi is available
+      const isAvailable = await this.checkJoRoMiAvailability();
+      
+      if (!isAvailable && this.isLocal) {
+        // Fallback to hosted JoRoMi page
+        this.joromiUrl = '/joromi';
+      }
+
+      // Open JoRoMi in new tab
+      const newWindow = window.open(this.joromiUrl, '_blank', 'noopener,noreferrer');
+      
+      if (!newWindow) {
+        // Popup blocked, redirect in same window
+        console.warn('Popup blocked, redirecting in same window');
+        window.location.href = this.joromiUrl;
+      } else {
+        console.log('JoRoMi opened successfully in new tab');
+      }
+    }
+
+    // Initialize event listeners
+    initializeEventListeners() {
+      // Desktop JoRoMi button
+      const joromiBtn = document.getElementById('joromi-2fa-btn');
+      if (joromiBtn) {
+        joromiBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.redirectToJoRoMi();
+        });
+      }
+
+      // Mobile JoRoMi button
+      const joromiBtnMobile = document.getElementById('joromi-2fa-btn-mobile');
+      if (joromiBtnMobile) {
+        joromiBtnMobile.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.redirectToJoRoMi();
+        });
+      }
+
+      // Close mobile menu after click
+      const closeMobileMenu = () => {
+        const menu = document.getElementById('mobile-menu');
+        const btn = document.getElementById('mobile-menu-button');
+        if (menu) {
+          menu.classList.add('hidden');
+        }
+        if (btn) {
+          btn.setAttribute('aria-expanded', 'false');
+        }
+      };
+
+      if (joromiBtn) {
+        joromiBtn.addEventListener('click', closeMobileMenu);
+      }
+      if (joromiBtnMobile) {
+        joromiBtnMobile.addEventListener('click', closeMobileMenu);
+      }
+    }
+  }
+
+  // Initialize JoRoMi Integration when DOM is loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    const joromiIntegration = new JoRoMiIntegration();
+    joromiIntegration.initializeEventListeners();
+    
+    // Log integration status
+    console.log('JoRoMi Integration initialized:', {
+      isLocal: joromiIntegration.isLocal,
+      isDevelopment: joromiIntegration.isDevelopment,
+      joromiUrl: joromiIntegration.joromiUrl
+    });
+  });
+</script>
+
+<!-- JoRoMi Integration Status (for debugging) -->
+<div id="joromi-integration-status" class="hidden fixed bottom-4 right-4 bg-gray-800 text-white p-3 rounded-lg text-xs z-50">
+  <div>JoRoMi Integration Status:</div>
+  <div id="joromi-status-details"></div>
+</div>
+
+<script>
+  // Debug status display (only in development)
+  if (window.location.hostname === 'localhost') {
+    document.addEventListener('DOMContentLoaded', () => {
+      const statusDiv = document.getElementById('joromi-integration-status');
+      const detailsDiv = document.getElementById('joromi-status-details');
+      
+      if (statusDiv && detailsDiv) {
+        statusDiv.classList.remove('hidden');
+        detailsDiv.innerHTML = `
+          <div>Environment: ${window.location.hostname === 'localhost' ? 'Local' : 'Production'}</div>
+          <div>Port: ${window.location.port || '80/443'}</div>
+          <div>JoRoMi URL: ${new JoRoMiIntegration().joromiUrl}</div>
+        `;
+      }
+    });
+  }
+</script>
