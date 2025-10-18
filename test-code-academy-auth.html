@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Academy Auth Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        #log { background: #f8f9fa; padding: 10px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <h1>Code Academy Authentication Test</h1>
+    
+    <div class="test-section info">
+        <h3>Test Instructions</h3>
+        <p>This page tests the Code Academy authentication functionality. Click the button below to test the authentication flow.</p>
+    </div>
+    
+    <div class="test-section">
+        <h3>Authentication Test</h3>
+        <button onclick="testCodeAcademyAuth()">Test Code Academy Authentication</button>
+        <button onclick="checkModalAvailability()">Check Modal Availability</button>
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test Log</h3>
+        <div id="log"></div>
+    </div>
+
+    <script>
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.textContent += `[${timestamp}] ${message}\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('log').textContent = '';
+        }
+
+        function checkModalAvailability() {
+            log('Checking modal availability...');
+            log(`window.open2FAModal: ${typeof window.open2FAModal}`);
+            log(`window.twoFAManager: ${typeof window.twoFAManager}`);
+            log(`window.tetrixAuthContext: ${window.tetrixAuthContext || 'not set'}`);
+        }
+
+        function testCodeAcademyAuth() {
+            log('Testing Code Academy authentication...');
+            
+            // Set authentication context for Code Academy (student learning)
+            window.tetrixAuthContext = 'code-academy';
+            log('Set tetrixAuthContext to: code-academy');
+            
+            let attempts = 0;
+            const maxAttempts = 50; // 5 seconds max wait time
+            
+            // Wait for 2FA modal to be available
+            const waitFor2FAModal = () => {
+                attempts++;
+                log(`Attempt ${attempts}/${maxAttempts}: Checking for 2FA modal...`);
+                
+                if (window.open2FAModal) {
+                    log('✅ window.open2FAModal found, opening...');
+                    try {
+                        window.open2FAModal();
+                        log('✅ 2FA modal opened successfully');
+                    } catch (error) {
+                        log(`❌ Error opening 2FA modal: ${error.message}`);
+                    }
+                } else if (window.twoFAManager) {
+                    // Fallback: try to open modal directly
+                    log('✅ window.twoFAManager found, opening modal directly...');
+                    try {
+                        window.twoFAManager.updateAuthContext();
+                        window.twoFAManager.openModal();
+                        log('✅ 2FA modal opened via twoFAManager');
+                    } catch (error) {
+                        log(`❌ Error opening 2FA modal via twoFAManager: ${error.message}`);
+                    }
+                } else if (attempts < maxAttempts) {
+                    // Wait a bit more and try again
+                    log(`⏳ Waiting for 2FA modal... attempt ${attempts}/${maxAttempts}`);
+                    setTimeout(waitFor2FAModal, 100);
+                } else {
+                    // Timeout reached
+                    log('❌ 2FA modal not available after maximum attempts');
+                    log('This might be because the 2FA modal is not loaded on this test page.');
+                }
+            };
+            
+            // Start checking for 2FA modal availability
+            waitFor2FAModal();
+        }
+
+        // Check availability on page load
+        window.addEventListener('load', () => {
+            log('Page loaded, checking initial modal availability...');
+            checkModalAvailability();
+        });
+    </script>
+</body>
+</html>
