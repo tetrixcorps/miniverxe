@@ -1,8 +1,9 @@
 // TETRIX Industry-Specific 2FA Authentication Service
 // Integrates with existing RBAC system and 2FA infrastructure
 
-import { User, Organization, Membership, IndustryType } from './IndustryAuthService';
-import { IndustryRolePermissionService, IndustryRole, IndustryPermission, AccessDecision } from './IndustryRolePermissionService';
+import type { User, Organization, Membership, IndustryType } from './IndustryAuthService';
+import { IndustryRolePermissionService } from './IndustryRolePermissionService';
+import type { IndustryRole, IndustryPermission, AccessDecision } from './IndustryRolePermissionService';
 
 export interface Industry2FASession {
   id: string;

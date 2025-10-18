@@ -2,7 +2,7 @@
 // Integrates Enterprise Workflow Engine with industry-specific dashboards
 // Maps workflows to existing CRM systems and backend services
 
-import { WorkflowTemplate, WorkflowExecution } from './EnterpriseWorkflowEngine';
+import type { WorkflowTemplate, WorkflowExecution } from './EnterpriseWorkflowEngine';
 import { CRMIntegrationService } from '../crmIntegrationService';
 
 export interface IndustryWorkflowMapping {
