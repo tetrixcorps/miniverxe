@@ -148,6 +148,14 @@
             >
               Continue to Code Academy
             </button>
+
+            <!-- JoRoMi Button -->
+            <button
+              id="redirect-joromi"
+              class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-200 shadow-lg hidden"
+            >
+              Continue to JoRoMi Platform
+            </button>
             
             <!-- JoRoMi Button - Removed: JoRoMi has its own authentication system -->
             
@@ -226,7 +234,11 @@
             modalTitle.textContent = 'Code Academy Access';
             modalSubtitle.textContent = 'Verify your identity to access Code Academy';
             break;
-          // JoRoMi context removed - JoRoMi has its own authentication system
+          case 'joromi':
+            contextBadge.textContent = 'JoRoMi Platform';
+            modalTitle.textContent = 'JoRoMi Platform Access';
+            modalSubtitle.textContent = 'Verify your identity to access JoRoMi AI Platform';
+            break;
           case 'dashboard':
             contextBadge.textContent = 'Client Dashboard';
             modalTitle.textContent = 'Client Dashboard Access';
@@ -237,6 +249,33 @@
             modalTitle.textContent = 'Enterprise Authentication';
             modalSubtitle.textContent = 'Secure 2FA verification required';
         }
+      }
+    }
+
+    showContextSpecificButtons() {
+      // Hide all context-specific buttons first
+      const codeAcademyBtn = document.getElementById('redirect-code-academy');
+      const joromiBtn = document.getElementById('redirect-joromi');
+      const dashboardBtn = document.getElementById('redirect-dashboard');
+      
+      if (codeAcademyBtn) codeAcademyBtn.classList.add('hidden');
+      if (joromiBtn) joromiBtn.classList.add('hidden');
+      if (dashboardBtn) dashboardBtn.classList.add('hidden');
+      
+      // Show the appropriate button based on context
+      switch (this.authContext) {
+        case 'code-academy':
+          if (codeAcademyBtn) codeAcademyBtn.classList.remove('hidden');
+          break;
+        case 'joromi':
+          if (joromiBtn) joromiBtn.classList.remove('hidden');
+          break;
+        case 'dashboard':
+          if (dashboardBtn) dashboardBtn.classList.remove('hidden');
+          break;
+        default:
+          // Show dashboard button for default context
+          if (dashboardBtn) dashboardBtn.classList.remove('hidden');
       }
     }
 
@@ -276,7 +315,16 @@
         this.closeModal();
       });
 
-      // JoRoMi redirect removed - JoRoMi has its own authentication system
+      document.getElementById('redirect-joromi')?.addEventListener('click', () => {
+        // Show JoRoMi dashboard after successful authentication
+        if (window.showJoRoMiInterface) {
+          window.showJoRoMiInterface({ id: 'joromi-session-' + Date.now() });
+        } else {
+          // Fallback: redirect to JoRoMi page
+          window.location.href = '/joromi';
+        }
+        this.closeModal();
+      });
 
       document.getElementById('redirect-dashboard')?.addEventListener('click', () => {
         window.location.href = '/dashboard';
@@ -479,6 +527,9 @@
             console.log('Authentication token stored:', result.token);
           }
           console.log('2FA verification successful');
+          
+          // Show context-specific buttons based on authentication context
+          this.showContextSpecificButtons();
         } else {
           this.showError(result.message || result.error || 'Invalid verification code. Please try again.');
         }

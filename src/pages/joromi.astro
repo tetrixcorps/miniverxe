@@ -1,6 +1,7 @@
 ---
 // JoRoMi Landing Page
 // Dedicated route for JoRoMi AI platform
+import TwoFAModal from '../components/auth/2FAModal.astro';
 ---
 
 <!DOCTYPE html>
@@ -299,6 +300,9 @@
         </div>
     </footer>
 
+    <!-- 2FA Authentication Modal -->
+    <TwoFAModal />
+
     <!-- JavaScript for interactivity -->
     <script>
         // Initialize JoRoMi functionality
@@ -314,69 +318,173 @@
             const startPlatformBtn2 = document.getElementById('start-platform-btn-2');
             const contactSalesBtn = document.getElementById('contact-sales-btn');
 
-            // Start JoRoMi platform session with SinchChatLive
+            // Start JoRoMi platform session with 2FA authentication
             function startJoRoMiSession() {
-                console.log('Starting JoRoMi platform session...');
+                console.log('Starting JoRoMi platform session with authentication...');
                 
-                // Create a session with SHANGO AI
-                fetch('/api/v1/shango/sessions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        userId: 'joromi-user-' + Date.now(),
-                        agentId: 'shango-general'
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        console.log('JoRoMi session started:', data.session);
-                        alert('Welcome to JoRoMi! Your AI communication session has started. You can now interact with our AI assistant.');
-                        
-                        // Show the communication interface
-                        showJoRoMiInterface(data.session);
+                // Set authentication context for JoRoMi platform
+                window.tetrixAuthContext = 'joromi';
+                
+                // Wait for 2FA modal to be available
+                let attempts = 0;
+                const maxAttempts = 50; // 5 seconds max wait time
+                
+                const waitFor2FAModal = () => {
+                    attempts++;
+                    console.log(`JoRoMi: Attempt ${attempts}/${maxAttempts}: Checking for 2FA modal...`);
+                    
+                    if (window.open2FAModal) {
+                        console.log('JoRoMi: 2FA modal found, opening...');
+                        window.open2FAModal();
+                    } else if (window.twoFAManager) {
+                        // Fallback: try to open modal directly
+                        console.log('JoRoMi: 2FA manager found, opening modal directly...');
+                        window.twoFAManager.updateAuthContext();
+                        window.twoFAManager.openModal();
+                    } else if (attempts < maxAttempts) {
+                        // Wait a bit more and try again
+                        console.log(`JoRoMi: Waiting for 2FA modal... attempt ${attempts}/${maxAttempts}`);
+                        setTimeout(waitFor2FAModal, 100);
                     } else {
-                        console.error('Failed to start JoRoMi session:', data);
-                        alert('Failed to start JoRoMi session. Please try again.');
+                        // Timeout reached
+                        console.error('JoRoMi: 2FA modal not available after maximum attempts');
+                        alert('Authentication system is loading. Please wait a moment and try again.');
                     }
-                })
-                .catch(error => {
-                    console.error('Error starting JoRoMi session:', error);
-                    alert('Error starting JoRoMi session. Please try again.');
-                });
+                };
+                
+                // Start checking for 2FA modal availability
+                waitFor2FAModal();
             }
 
-            // Show JoRoMi interface (placeholder)
-            function showJoRoMiInterface(session) {
+            // Show JoRoMi interface after successful authentication
+            window.showJoRoMiInterface = function(session) {
                 console.log('JoRoMi interface for session:', session.id);
                 
-                // For demo purposes, show a simple interface
-                const demo = document.getElementById('ai-chat-demo');
-                if (demo) {
-                    demo.innerHTML = `
-                        <div class="space-y-4">
-                            <div class="flex justify-start">
-                                <div class="bg-white border p-3 rounded-lg max-w-2xl">
-                                    <div class="flex items-center mb-2">
-                                        <div class="w-6 h-6 bg-gradient-to-r from-purple-500 to-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold mr-2">
-                                            🤖
-                                        </div>
-                                        <span class="text-sm font-semibold text-gray-700">JoRoMi AI</span>
+                // Create JoRoMi dashboard modal
+                const dashboardModal = document.createElement('div');
+                dashboardModal.id = 'joromi-dashboard-modal';
+                dashboardModal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+                dashboardModal.innerHTML = `
+                    <div class="bg-white rounded-xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+                        <!-- Header -->
+                        <div class="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-6 rounded-t-xl">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h2 class="text-2xl font-bold">🤖 Welcome to JoRoMi Platform!</h2>
+                                    <p class="text-purple-100">Your AI-powered communication dashboard</p>
+                                </div>
+                                <button onclick="closeJoRoMiDashboard()" class="text-white hover:text-gray-200 text-2xl">&times;</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Dashboard Content -->
+                        <div class="p-6">
+                            <!-- Quick Actions -->
+                            <div class="grid md:grid-cols-3 gap-4 mb-6">
+                                <div class="bg-purple-50 p-4 rounded-lg text-center">
+                                    <div class="text-3xl mb-2">🎤</div>
+                                    <h3 class="font-semibold text-gray-900">Voice Processing</h3>
+                                    <p class="text-sm text-gray-600">Start voice communication session</p>
+                                </div>
+                                <div class="bg-blue-50 p-4 rounded-lg text-center">
+                                    <div class="text-3xl mb-2">💬</div>
+                                    <h3 class="font-semibold text-gray-900">Smart Messaging</h3>
+                                    <p class="text-sm text-gray-600">AI-powered messaging tools</p>
+                                </div>
+                                <div class="bg-green-50 p-4 rounded-lg text-center">
+                                    <div class="text-3xl mb-2">📹</div>
+                                    <h3 class="font-semibold text-gray-900">Video Calls</h3>
+                                    <p class="text-sm text-gray-600">HD video communication</p>
+                                </div>
+                            </div>
+                            
+                            <!-- AI Assistant Chat -->
+                            <div class="border rounded-lg p-4">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">
+                                        🤖
                                     </div>
-                                    <p class="text-gray-800">
-                                        Welcome to JoRoMi! I'm your AI communication assistant. 
-                                        I can help you with voice processing, messaging automation, 
-                                        video communication, and intelligent workflow management. 
-                                        What would you like to explore today?
-                                    </p>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">JoRoMi AI Assistant</h4>
+                                        <p class="text-sm text-gray-600">Your intelligent communication partner</p>
+                                    </div>
+                                </div>
+                                <div id="joromi-ai-chat" class="bg-gray-50 rounded-lg p-4 min-h-[200px] mb-4">
+                                    <div class="space-y-3">
+                                        <div class="flex justify-start">
+                                            <div class="bg-white border p-3 rounded-lg max-w-xs">
+                                                <p class="text-sm text-gray-800">
+                                                    Welcome to JoRoMi! I'm your AI communication assistant. 
+                                                    I can help you with voice processing, messaging automation, 
+                                                    video communication, and intelligent workflow management. 
+                                                    What would you like to explore today?
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <input type="text" id="joromi-chat-input" placeholder="Ask me about JoRoMi features..." 
+                                           class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                                    <button onclick="sendJoRoMiMessage()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                                        Send
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                    `;
-                }
+                    </div>
+                `;
+                
+                document.body.appendChild(dashboardModal);
             }
+
+            // Close JoRoMi dashboard
+            window.closeJoRoMiDashboard = function() {
+                const modal = document.getElementById('joromi-dashboard-modal');
+                if (modal) {
+                    modal.remove();
+                }
+            };
+
+            // Send message to JoRoMi AI
+            window.sendJoRoMiMessage = function() {
+                const input = document.getElementById('joromi-chat-input');
+                const chat = document.getElementById('joromi-ai-chat');
+                
+                if (input && chat && input.value.trim()) {
+                    const message = input.value.trim();
+                    
+                    // Add user message
+                    const userMessage = document.createElement('div');
+                    userMessage.className = 'flex justify-end mb-3';
+                    userMessage.innerHTML = `
+                        <div class="bg-purple-600 text-white p-3 rounded-lg max-w-xs">
+                            <p class="text-sm">${message}</p>
+                        </div>
+                    `;
+                    chat.appendChild(userMessage);
+                    
+                    // Add AI response (placeholder)
+                    const aiResponse = document.createElement('div');
+                    aiResponse.className = 'flex justify-start mb-3';
+                    aiResponse.innerHTML = `
+                        <div class="bg-white border p-3 rounded-lg max-w-xs">
+                            <p class="text-sm text-gray-800">
+                                I understand you're asking about "${message}". Let me help you with that. 
+                                JoRoMi offers advanced AI communication tools including voice processing, 
+                                smart messaging, and video communication features.
+                            </p>
+                        </div>
+                    `;
+                    chat.appendChild(aiResponse);
+                    
+                    // Clear input
+                    input.value = '';
+                    
+                    // Scroll to bottom
+                    chat.scrollTop = chat.scrollHeight;
+                }
+            };
 
             // Add event listeners
             if (startPlatformBtn) {
