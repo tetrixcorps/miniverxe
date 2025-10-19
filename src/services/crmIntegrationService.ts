@@ -397,6 +397,13 @@ export class CRMIntegrationService {
     // Implement basic authentication
     return true;
   }
+
+  /**
+   * Get CRM integration by name (alias for getIntegration)
+   */
+  getCRMIntegration(name: string): CRMIntegration | null {
+    return this.integrations.find(integration => integration.name === name) || null;
+  }
 }
 
 // Industry-specific CRM operations

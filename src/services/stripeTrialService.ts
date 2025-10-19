@@ -19,6 +19,8 @@ export interface TrialUser {
   cardOnFile: boolean;
   subscriptionId?: string;
   paymentMethodId?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface OnboardingData {
@@ -38,7 +40,7 @@ class StripeTrialService {
   constructor(config: TrialConfig) {
     this.config = config;
     this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: '2024-06-20',
+      apiVersion: '2023-10-16',
       typescript: true
     });
   }

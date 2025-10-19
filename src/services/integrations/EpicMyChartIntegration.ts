@@ -303,7 +303,7 @@ export class TETRIXEpicMyChartIntegration {
         code: code,
         redirect_uri: this.config.redirectUri,
         client_id: this.config.clientId,
-        client_secret: this.config.clientSecret
+        client_secret: this.config.clientSecret || ''
       };
 
       const response = await fetch(this.config.tokenUrl, {
@@ -358,7 +358,7 @@ export class TETRIXEpicMyChartIntegration {
         grant_type: 'refresh_token',
         refresh_token: this.refreshToken,
         client_id: this.config.clientId,
-        client_secret: this.config.clientSecret
+        client_secret: this.config.clientSecret || ''
       };
 
       const response = await fetch(this.config.tokenUrl, {

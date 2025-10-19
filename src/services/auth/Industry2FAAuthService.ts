@@ -3,6 +3,7 @@
 
 import type { User, Organization, Membership, IndustryType } from './IndustryAuthService';
 import { IndustryRolePermissionService } from './IndustryRolePermissionService';
+import { TETRIXIndustryAuthService } from './IndustryAuthService';
 import type { IndustryRole, IndustryPermission, AccessDecision } from './IndustryRolePermissionService';
 
 export interface Industry2FASession {
@@ -508,7 +509,9 @@ export class Industry2FAAuthService {
       createdAt: new Date(),
       settings: {
         timezone: 'UTC',
-        language: 'en',
+        locale: 'en',
+        features: ['2fa', 'rbac', 'audit_logging'],
+        integrations: {},
         notifications: {
           email: true,
           sms: true,
@@ -519,7 +522,12 @@ export class Industry2FAAuthService {
         gdpr: true,
         hipaa: industry === 'healthcare',
         sox: industry === 'legal' || industry === 'government',
-        pci: industry === 'retail' || industry === 'ecommerce'
+        ferpa: industry === 'education',
+        cjis: industry === 'government',
+        dataRetention: 2555, // 7 years
+        auditLogging: true,
+        encryptionRequired: true,
+        sessionTimeout: 30
       }
     };
 
@@ -576,7 +584,9 @@ export class Industry2FAAuthService {
       createdAt: new Date(),
       settings: {
         timezone: 'UTC',
-        language: 'en',
+        locale: 'en',
+        features: ['2fa', 'rbac', 'audit_logging'],
+        integrations: {},
         notifications: {
           email: true,
           sms: true,
@@ -587,7 +597,12 @@ export class Industry2FAAuthService {
         gdpr: true,
         hipaa: industry === 'healthcare',
         sox: industry === 'legal' || industry === 'government',
-        pci: industry === 'retail' || industry === 'ecommerce'
+        ferpa: industry === 'education',
+        cjis: industry === 'government',
+        dataRetention: 2555, // 7 years
+        auditLogging: true,
+        encryptionRequired: true,
+        sessionTimeout: 30
       }
     };
   }

@@ -2,6 +2,8 @@
 // Handles Telnyx webhook events and TeXML responses
 
 import type { APIRoute } from 'astro';
+import { voiceService } from '../../../services/voiceService';
+import { parseRequestBody, getParsedBody, isBodyParsed } from '../../../middleware/requestParser';
 
 // TwiML response generators
 function generateGreetingTwiML(): string {
@@ -76,9 +78,35 @@ function generateHangupTwiML(): string {
 </Response>`;
 }
 
-export const POST: APIRoute = async ({ request, url }) => {
+export const POST: APIRoute = async ({ request, url, locals }) => {
   try {
-    const body = await request.json();
+    // Use enhanced request parsing
+    let body: any = {};
+    
+    if (isBodyParsed({ locals } as any)) {
+      console.log('✅ Using parsed body from middleware:', getParsedBody({ locals } as any));
+      body = getParsedBody({ locals } as any);
+    } else {
+      console.log('⚠️ Middleware parsing failed, trying direct parsing methods');
+      
+      const parseResult = await parseRequestBody(request);
+      if (!parseResult.isValid) {
+        console.error('❌ Request parsing failed:', parseResult.error);
+        // For webhooks, we still need to return TwiML even if parsing fails
+        return new Response(generateGreetingTwiML(), {
+          status: 200,
+          headers: {
+            'Content-Type': 'text/xml; charset=utf-8',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'X-Content-Type-Options': 'nosniff'
+          }
+        });
+      }
+      
+      body = parseResult.body;
+      console.log('✅ Successfully parsed request body:', body);
+    }
+    
     const { event_type, data } = body;
     
     console.log('Voice webhook received:', {
@@ -90,6 +118,11 @@ export const POST: APIRoute = async ({ request, url }) => {
     });
 
     let twiMLResponse = '';
+
+    // Handle call events using voice service
+    if (event_type && data?.call_control_id) {
+      await voiceService.handleCallEvent({ data });
+    }
 
     // Handle different event types
     switch (event_type) {

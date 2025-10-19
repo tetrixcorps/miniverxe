@@ -1,7 +1,7 @@
 // Voice API Demo Endpoints
 // Provides demonstration and testing capabilities
 
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { telnyxVoiceService } from '../../services/telnyxVoiceService';
 
 // Demo: Initiate a test call
@@ -53,7 +53,7 @@ export const demoCall = async (req: Request, res: Response) => {
     console.error('Demo call failed:', error);
     res.status(500).json({
       error: 'Failed to initiate demo call',
-      message: error.message
+      message: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 };
@@ -133,7 +133,7 @@ export const demoTranscription = async (req: Request, res: Response) => {
     console.error('Demo transcription failed:', error);
     res.status(500).json({
       error: 'Failed to process demo transcription',
-      message: error.message
+      message: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 };
@@ -166,7 +166,7 @@ export const demoAIResponse = async (req: Request, res: Response) => {
     console.error('Demo AI response failed:', error);
     res.status(500).json({
       error: 'Failed to generate AI response',
-      message: error.message
+      message: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 };
@@ -250,7 +250,7 @@ export const demoVoiceFlow = async (req: Request, res: Response) => {
     console.error('Demo voice flow failed:', error);
     res.status(500).json({
       error: 'Failed to initiate voice flow demo',
-      message: error.message
+      message: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 };
@@ -321,7 +321,7 @@ export const getCapabilities = async (req: Request, res: Response) => {
     console.error('Failed to get capabilities:', error);
     res.status(500).json({
       error: 'Failed to get capabilities',
-      message: error.message
+      message: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 };

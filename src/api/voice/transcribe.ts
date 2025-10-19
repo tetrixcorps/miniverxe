@@ -1,7 +1,7 @@
 // Deepgram STT Transcription API
 // Handles speech-to-text processing with Deepgram
 
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { telnyxVoiceService } from '../../services/telnyxVoiceService';
 
 // Process audio transcription with Deepgram
@@ -46,14 +46,14 @@ export const transcribeAudio = async (req: Request, res: Response) => {
     console.error('Transcription failed:', error);
     
     // Handle specific error types
-    if (error.message.includes('API key not configured')) {
+    if (error instanceof Error && error.message.includes('API key not configured')) {
       return res.status(500).json({
         error: 'Transcription service not properly configured',
         message: 'Please check your Deepgram API configuration'
       });
     }
     
-    if (error.message.includes('Deepgram API error')) {
+    if (error instanceof Error && error.message.includes('Deepgram API error')) {
       return res.status(502).json({
         error: 'External service error',
         message: 'Failed to connect to Deepgram API'
@@ -62,7 +62,7 @@ export const transcribeAudio = async (req: Request, res: Response) => {
 
     res.status(500).json({
       error: 'Failed to process transcription',
-      message: error.message
+      message: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 };
@@ -101,7 +101,7 @@ export const getTranscription = async (req: Request, res: Response) => {
     console.error('Failed to get transcription:', error);
     res.status(500).json({
       error: 'Failed to get transcription',
-      message: error.message
+      message: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 };
@@ -155,7 +155,7 @@ export const batchTranscribe = async (req: Request, res: Response) => {
     console.error('Batch transcription failed:', error);
     res.status(500).json({
       error: 'Failed to process batch transcription',
-      message: error.message
+      message: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 };
@@ -203,7 +203,7 @@ export const getTranscriptionStats = async (req: Request, res: Response) => {
     console.error('Failed to get transcription stats:', error);
     res.status(500).json({
       error: 'Failed to get transcription statistics',
-      message: error.message
+      message: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 };
@@ -237,7 +237,7 @@ export const transcriptionHealthCheck = async (req: Request, res: Response) => {
     res.status(500).json({
       status: 'unhealthy',
       service: 'deepgram-stt',
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
       timestamp: new Date().toISOString()
     });
   }

@@ -1,7 +1,7 @@
 // Voice Webhook Handler
 // Handles Telnyx webhook events and TeXML responses
 
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { telnyxVoiceService } from '../../services/telnyxVoiceService';
 
 // Main webhook handler for Telnyx events
@@ -273,7 +273,7 @@ export const healthCheck = async (req: Request, res: Response) => {
     console.error('Health check failed:', error);
     res.status(500).json({
       status: 'unhealthy',
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
       timestamp: new Date().toISOString()
     });
   }

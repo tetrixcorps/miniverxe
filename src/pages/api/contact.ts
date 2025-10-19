@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { mailgunConfig, validateMailgunConfig, getMailgunAuthHeader } from '../../config/mailgun';
+const { mailgunConfig, validateMailgunConfig, getMailgunAuthHeader } = require('../../config/mailgun.js');
 
 // Webhook signature verification
 function verifyWebhookSignature(timestamp: string, token: string, signature: string): boolean {

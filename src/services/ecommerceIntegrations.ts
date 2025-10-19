@@ -511,10 +511,14 @@ export class EcommerceIntegrationService {
   }): Promise<OrderData[]> {
     try {
       const endpoint = `${this.integration.apiEndpoint}/orders`;
-      const queryParams = new URLSearchParams({
-        storeId: this.config.storeId,
-        ...filters
-      });
+      const queryParams = new URLSearchParams();
+      queryParams.set('storeId', this.config.storeId);
+      
+      if (filters?.status) queryParams.set('status', filters.status);
+      if (filters?.customerId) queryParams.set('customerId', filters.customerId);
+      if (filters?.startDate) queryParams.set('startDate', filters.startDate);
+      if (filters?.endDate) queryParams.set('endDate', filters.endDate);
+      if (filters?.limit) queryParams.set('limit', filters.limit.toString());
 
       const response = await fetch(`${endpoint}?${queryParams}`, {
         method: 'GET',

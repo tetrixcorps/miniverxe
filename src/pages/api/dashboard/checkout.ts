@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { dashboardProductService } from '/src/services/dashboardProductService';
+import { dashboardProductService } from '../../../services/dashboardProductService';
 import StripeCheckoutService from '../../../services/stripeCheckoutService';
 
 export const POST: APIRoute = async ({ request }) => {
@@ -19,8 +19,8 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    // Get cart
-    const cart = dashboardProductService.getCart(cartId);
+    // Get cart details
+    const cart = await dashboardProductService.getCart(cartId);
     if (!cart) {
       return new Response(JSON.stringify({
         success: false,
@@ -34,7 +34,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // Validate cart
-    const validation = dashboardProductService.validateCartForCheckout(cartId);
+    const validation = await dashboardProductService.validateCartForCheckout(cartId);
     if (!validation.valid) {
       return new Response(JSON.stringify({
         success: false,
@@ -49,7 +49,11 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // Create checkout session
-    const checkoutSession = dashboardProductService.createCheckoutSession(cartId);
+    const checkoutSession = await dashboardProductService.createCheckoutSession(
+      cartId, 
+      '/dashboard?checkout=success', 
+      '/dashboard?checkout=cancelled'
+    );
     if (!checkoutSession) {
       return new Response(JSON.stringify({
         success: false,
@@ -63,13 +67,13 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // Handle different checkout flows based on industry and requirements
-    if (checkoutSession.requiresPayment) {
+    if (cart.total > 0) {
       // Create Stripe checkout session for paid items
       const stripeService = new StripeCheckoutService();
       
       // Map cart items to Stripe line items
-      const lineItems = cart.items.map(item => {
-        const product = dashboardProductService.getProduct(item.productId);
+      const lineItems = await Promise.all(cart.items.map(async item => {
+        const product = await dashboardProductService.getProduct(item.productId);
         return {
           price_data: {
             currency: 'usd',
@@ -81,13 +85,13 @@ export const POST: APIRoute = async ({ request }) => {
           },
           quantity: item.quantity,
         };
-      });
+      }));
 
       // Create Stripe checkout session
       const stripeSession = await stripeService.createTrialCheckoutSession({
         priceId: 'price_trial_7day', // Use trial price as base
         customerEmail: cart.customerId, // This should be actual customer email
-        trialDays: checkoutSession.trialDays || 7,
+        trialDays: 7,
         successUrl: `${request.url.split('/api')[0]}/dashboard?checkout=success&cart=${cartId}`,
         cancelUrl: `${request.url.split('/api')[0]}/dashboard?checkout=cancelled&cart=${cartId}`,
         metadata: {

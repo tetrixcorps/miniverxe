@@ -404,11 +404,16 @@ export abstract class BaseEcommerceIntegration {
       ...options.headers
     };
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), this.config.timeout || 30000);
+    
     const response = await fetch(url, {
       ...options,
       headers,
-      timeout: this.config.timeout || 30000
+      signal: controller.signal
     });
+    
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       throw new Error(`E-commerce API request failed: ${response.statusText}`);
@@ -888,7 +893,11 @@ export class TETRIXShopifyIntegration extends BaseEcommerceIntegration {
       inventoryQuantity: variant.inventory_quantity || 0,
       weight: variant.weight ? parseFloat(variant.weight) : undefined,
       weightUnit: variant.weight_unit || 'kg',
-      options: variant.option1 ? { option1: variant.option1, option2: variant.option2, option3: variant.option3 } : {},
+      options: variant.option1 ? { 
+        option1: String(variant.option1 || ''), 
+        option2: String(variant.option2 || ''), 
+        option3: String(variant.option3 || '') 
+      } : {} as Record<string, string>,
       position: variant.position || 0,
       createdAt: variant.created_at,
       updatedAt: variant.updated_at

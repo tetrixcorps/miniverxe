@@ -15,7 +15,7 @@ interface ChatSession {
 
 interface ChatMessage {
   id: string;
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'system' | 'shango' | 'agent';
   content: string;
   timestamp: string;
   type: string;

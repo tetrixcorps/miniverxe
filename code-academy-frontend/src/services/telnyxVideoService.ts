@@ -377,5 +377,5 @@ export class TelnyxVideoService {
 
 // Export a singleton instance
 export const telnyxVideoService = new TelnyxVideoService(
-  process.env.REACT_APP_***REMOVED*** || ''
+  process.env.REACT_APP_TELNYX_API_KEY || ''
 );

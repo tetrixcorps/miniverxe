@@ -247,7 +247,11 @@ class EnhancedInvoiceService {
   async handlePaymentSuccess(invoice: Stripe.Invoice): Promise<DeliveryResult> {
     try {
       // 1. Retrieve customer data
-      const customer = await this.stripe.customers.retrieve(invoice.customer) as Stripe.Customer;
+      const customerId = typeof invoice.customer === 'string' ? invoice.customer : invoice.customer?.id;
+      if (!customerId) {
+        throw new Error('Invoice customer ID not found');
+      }
+      const customer = await this.stripe.customers.retrieve(customerId) as Stripe.Customer;
       
       // 2. Analyze service details from invoice
       const serviceDetails = await this.analyzeServiceDetails(invoice);
@@ -286,7 +290,7 @@ class EnhancedInvoiceService {
       tier,
       planName: serviceConfig.name,
       basePrice: serviceConfig.basePrice,
-      perUnitPrice: serviceConfig.perUnitPrice || serviceConfig.perProvider || serviceConfig.perAttorney,
+      perUnitPrice: (serviceConfig as any).perUnitPrice || (serviceConfig as any).perProvider || (serviceConfig as any).perAttorney || 0,
       unitCount,
       period: serviceConfig.period,
       description: serviceConfig.description,
@@ -334,8 +338,8 @@ class EnhancedInvoiceService {
     console.error('🔍 Promise results:', results.map((r, i) => ({
       index: i,
       status: r.status,
-      hasValue: !!r.value,
-      hasReason: !!r.reason
+      hasValue: r.status === 'fulfilled' ? !!r.value : false,
+      hasReason: r.status === 'rejected' ? !!r.reason : false
     })));
     
     return this.processDeliveryResults(results, serviceDetails);
@@ -452,7 +456,11 @@ class EnhancedInvoiceService {
       }
 
       // Get customer data
-      const customer = await this.stripe.customers.retrieve(invoice.customer) as Stripe.Customer;
+      const customerId = typeof invoice.customer === 'string' ? invoice.customer : invoice.customer?.id;
+      if (!customerId) {
+        throw new Error('Invoice customer ID not found');
+      }
+      const customer = await this.stripe.customers.retrieve(customerId) as Stripe.Customer;
       
       // Create eSIM order request
       const esimOrderRequest = {

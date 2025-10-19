@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { openWebUIService, ChatMessage, industryAIFunctions } from '../../services/openwebui';
+import { openWebUIService, industryAIFunctions } from '../../services/openwebui';
+import type { ChatMessage } from '../../services/openwebui';
 
 interface AIChatProps {
   industry: string;
@@ -130,7 +131,10 @@ const AIChat: React.FC<AIChatProps> = ({
   const executeIndustryFunction = async (functionName: string, parameters: any) => {
     try {
       setIsLoading(true);
-      const result = await industryAIFunctions[industry as keyof typeof industryAIFunctions]?.[functionName as any]?.(parameters);
+      const industryFunctions = industryAIFunctions[industry as keyof typeof industryAIFunctions];
+      const result = industryFunctions && functionName in industryFunctions 
+        ? await (industryFunctions as any)[functionName](parameters)
+        : null;
       
       const functionMessage: ChatMessage = {
         id: Date.now().toString(),

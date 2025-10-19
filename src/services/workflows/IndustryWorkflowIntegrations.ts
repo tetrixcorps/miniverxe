@@ -3,6 +3,7 @@
 // Maps workflows to existing CRM systems and backend services
 
 import type { WorkflowTemplate, WorkflowExecution } from './EnterpriseWorkflowEngine';
+import { EnterpriseWorkflowEngine } from './EnterpriseWorkflowEngine';
 import { CRMIntegrationService } from '../crmIntegrationService';
 
 export interface IndustryWorkflowMapping {
@@ -32,7 +33,15 @@ export class IndustryWorkflowIntegrations {
 
   constructor() {
     this.workflowEngine = new EnterpriseWorkflowEngine();
-    this.crmService = new CRMIntegrationService();
+    // Initialize with a default CRM config
+    const defaultCRMConfig = {
+      provider: 'custom' as const,
+      apiKey: '',
+      baseUrl: '',
+      industry: 'business' as const,
+      features: []
+    };
+    this.crmService = new CRMIntegrationService(defaultCRMConfig);
     this.initializeIndustryMappings();
   }
 
@@ -216,7 +225,7 @@ export class IndustryWorkflowIntegrations {
   getAllIndustryWorkflowIntegrations(): WorkflowDashboardIntegration[] {
     const integrations: WorkflowDashboardIntegration[] = [];
     
-    for (const [industry, mapping] of this.industryMappings) {
+    for (const [industry, mapping] of Array.from(this.industryMappings.entries())) {
       const integration = this.getIndustryWorkflowIntegration(industry);
       if (integration) {
         integrations.push(integration);

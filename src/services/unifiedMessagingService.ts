@@ -82,15 +82,23 @@ class UnifiedMessagingService {
       }
       
       // Update message status
-      const updatedMessage = {
-        ...request,
-        status: result.success ? 'sent' : 'failed',
-        provider: result.provider,
-        messageId: result.messageId,
+      const updatedMessage: UnifiedMessage = {
+        id: request.id,
+        channel: request.channel,
+        to: request.to,
+        from: request.from,
+        subject: request.subject,
+        content: request.content,
+        customerName: request.customerName,
+        link: request.link,
         metadata: {
           ...request.metadata,
           providerResponse: result
-        }
+        },
+        timestamp: request.timestamp,
+        status: result.success ? 'sent' : 'failed',
+        provider: result.provider,
+        messageId: result.messageId
       };
       
       this.messageHistory.set(request.id, updatedMessage);

@@ -2,23 +2,8 @@
 // TETRIX Salesforce Integration Component
 // Provides Salesforce CRM integration for industry dashboards
 
-import { TETRIXSalesforceIntegration } from '../../services/integrations/UniversalCRMIntegration';
-
-// Initialize Salesforce integration
-const salesforceConfig = {
-  apiKey: process.env.SALESFORCE_API_KEY || '',
-  accessToken: process.env.SALESFORCE_ACCESS_TOKEN || '',
-  baseUrl: process.env.SALESFORCE_BASE_URL || 'https://your-instance.salesforce.com',
-  version: '58.0'
-};
-
-const salesforce = new TETRIXSalesforceIntegration({
-  provider: 'salesforce',
-  ...salesforceConfig
-});
-
-// Connect to Salesforce
-await salesforce.connect();
+// Note: Service initialization moved to client-side to avoid build issues
+// The component will handle data loading through JavaScript
 ---
 
 <div class="salesforce-integration bg-white rounded-lg shadow-md p-6">
@@ -184,13 +169,68 @@ await salesforce.connect();
   // Salesforce Integration JavaScript
   class SalesforceIntegration {
     constructor() {
-      this.modal = document.getElementById('salesforce-modal');
-      this.init();
+      /** @type {boolean} */
+      this.debug = window.location.hostname === 'localhost';
+      /** @type {HTMLElement | null} */
+      this.modal = null;
+      /** @type {boolean} */
+      this.initialized = false;
+      
+      if (this.debug) {
+        console.log('🔧 SalesforceIntegration: Constructor called');
+      }
+      
+      // Initialize after DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => this.init());
+      } else {
+        this.init();
+      }
     }
 
     async init() {
-      await this.loadSalesforceData();
-      this.bindEvents();
+      try {
+        if (this.debug) {
+          console.log('🔧 SalesforceIntegration: Initializing...');
+        }
+        
+        // Wait for DOM elements to be available
+        await this.waitForElements();
+        
+        await this.loadSalesforceData();
+        this.bindEvents();
+        
+        this.initialized = true;
+        
+        if (this.debug) {
+          console.log('✅ SalesforceIntegration: Initialization complete');
+        }
+      } catch (error) {
+        console.error('❌ SalesforceIntegration: Initialization failed:', error);
+        this.showError('Failed to initialize Salesforce integration');
+      }
+    }
+
+    async waitForElements() {
+      return new Promise((resolve) => {
+        const checkElements = () => {
+          this.modal = document.getElementById('salesforce-modal');
+          
+          if (this.modal) {
+            if (this.debug) {
+              console.log('✅ SalesforceIntegration: Modal element found');
+            }
+            resolve();
+          } else {
+            if (this.debug) {
+              console.log('⏳ SalesforceIntegration: Waiting for modal element...');
+            }
+            setTimeout(checkElements, 100);
+          }
+        };
+        
+        checkElements();
+      });
     }
 
     bindEvents() {
@@ -209,6 +249,10 @@ await salesforce.connect();
 
     async loadSalesforceData() {
       try {
+        if (this.debug) {
+          console.log('🔧 SalesforceIntegration: Loading data...');
+        }
+        
         // Load counts
         await this.loadCounts();
         
@@ -217,13 +261,22 @@ await salesforce.connect();
         
         // Update sync status
         this.updateSyncStatus();
+        
+        if (this.debug) {
+          console.log('✅ SalesforceIntegration: Data loaded successfully');
+        }
       } catch (error) {
-        console.error('Failed to load Salesforce data:', error);
+        console.error('❌ SalesforceIntegration: Failed to load data:', error);
+        this.showError('Failed to load Salesforce data');
       }
     }
 
     async loadCounts() {
       try {
+        if (this.debug) {
+          console.log('🔧 SalesforceIntegration: Loading counts...');
+        }
+        
         // Simulate API calls to Salesforce
         const counts = {
           contacts: Math.floor(Math.random() * 1000) + 500,
@@ -232,12 +285,18 @@ await salesforce.connect();
           tasks: Math.floor(Math.random() * 300) + 100
         };
 
-        document.getElementById('salesforce-contacts-count').textContent = counts.contacts.toLocaleString();
-        document.getElementById('salesforce-companies-count').textContent = counts.companies.toLocaleString();
-        document.getElementById('salesforce-opportunities-count').textContent = counts.opportunities.toLocaleString();
-        document.getElementById('salesforce-tasks-count').textContent = counts.tasks.toLocaleString();
+        // Update DOM elements with error checking
+        this.updateElement('salesforce-contacts-count', counts.contacts.toLocaleString());
+        this.updateElement('salesforce-companies-count', counts.companies.toLocaleString());
+        this.updateElement('salesforce-opportunities-count', counts.opportunities.toLocaleString());
+        this.updateElement('salesforce-tasks-count', counts.tasks.toLocaleString());
+        
+        if (this.debug) {
+          console.log('✅ SalesforceIntegration: Counts loaded:', counts);
+        }
       } catch (error) {
-        console.error('Failed to load Salesforce counts:', error);
+        console.error('❌ SalesforceIntegration: Failed to load counts:', error);
+        this.showError('Failed to load contact counts');
       }
     }
 
@@ -374,21 +433,82 @@ await salesforce.connect();
     }
 
     closeModal() {
-      this.modal.classList.add('hidden');
+      if (this.modal) {
+        this.modal.classList.add('hidden');
+      }
+    }
+
+    // Utility methods
+    /** @param {string} id @param {string} value */
+    updateElement(id, value) {
+      const element = document.getElementById(id);
+      if (element) {
+        element.textContent = value;
+      } else if (this.debug) {
+        console.warn(`⚠️ SalesforceIntegration: Element not found: ${id}`);
+      }
+    }
+
+    /** @param {string} message */
+    showError(message) {
+      console.error(`❌ SalesforceIntegration: ${message}`);
+      // You could add a toast notification or error display here
+    }
+
+    getStatus() {
+      return {
+        initialized: this.initialized,
+        modal: !!this.modal,
+        debug: this.debug
+      };
     }
   }
 
-  // Initialize Salesforce integration
-  document.addEventListener('DOMContentLoaded', () => {
-    window.salesforceIntegration = new SalesforceIntegration();
-  });
+  // Initialize Salesforce integration with error handling
+  function initializeSalesforceIntegration() {
+    try {
+      if (window.salesforceIntegration) {
+        console.warn('⚠️ SalesforceIntegration: Already initialized');
+        return;
+      }
+      
+      window.salesforceIntegration = new SalesforceIntegration();
+      
+      // Global functions with error handling
+      window.openSalesforceModal = (type) => {
+        try {
+          if (window.salesforceIntegration?.openModal) {
+            window.salesforceIntegration.openModal(type);
+          } else {
+            console.error('❌ SalesforceIntegration: Not initialized or openModal method not available');
+          }
+        } catch (error) {
+          console.error('❌ SalesforceIntegration: Error opening modal:', error);
+        }
+      };
 
-  // Global functions
-  window.openSalesforceModal = (type) => {
-    window.salesforceIntegration?.openModal(type);
-  };
+      window.closeSalesforceModal = () => {
+        try {
+          if (window.salesforceIntegration?.closeModal) {
+            window.salesforceIntegration.closeModal();
+          } else {
+            console.error('❌ SalesforceIntegration: Not initialized or closeModal method not available');
+          }
+        } catch (error) {
+          console.error('❌ SalesforceIntegration: Error closing modal:', error);
+        }
+      };
+      
+      console.log('✅ SalesforceIntegration: Global functions registered');
+    } catch (error) {
+      console.error('❌ SalesforceIntegration: Failed to initialize:', error);
+    }
+  }
 
-  window.closeSalesforceModal = () => {
-    window.salesforceIntegration?.closeModal();
-  };
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeSalesforceIntegration);
+  } else {
+    initializeSalesforceIntegration();
+  }
 </script>

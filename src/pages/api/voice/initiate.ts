@@ -2,36 +2,8 @@
 // Handles voice call initiation with Telnyx and Deepgram STT
 
 import type { APIRoute } from 'astro';
-
-// Inline utility functions to avoid import issues
-async function parseRequestBody(request: Request) {
-  try {
-    const contentType = request.headers.get('content-type') || '';
-    
-    if (contentType.includes('application/json')) {
-      const body = await request.json();
-      return { body, isValid: true };
-    } else {
-      const text = await request.text();
-      if (text) {
-        try {
-          const body = JSON.parse(text);
-          return { body, isValid: true };
-        } catch {
-          return { body: { raw: text }, isValid: true };
-        }
-      } else {
-        return { body: {}, isValid: true };
-      }
-    }
-  } catch (error) {
-    return { 
-      body: null, 
-      isValid: false, 
-      error: `Request parsing failed: ${error instanceof Error ? error.message : 'Unknown error'}` 
-    };
-  }
-}
+import { voiceService } from '../../../services/voiceService';
+import { parseRequestBody, getParsedBody, isBodyParsed } from '../../../middleware/requestParser';
 
 function validatePhoneNumber(phone: string) {
   const phoneRegex = /^\+[1-9]\d{1,14}$/;
@@ -84,39 +56,23 @@ function createSuccessResponse(data: any, status: number = 200) {
 
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
-    // Use parsed body from middleware if available
+    // Use enhanced request parsing
     let body: any = {};
     
-    if (locals.bodyParsed && locals.parsedBody) {
-      console.log('Using parsed body from middleware:', locals.parsedBody);
-      body = locals.parsedBody;
+    if (isBodyParsed({ locals } as any)) {
+      console.log('✅ Using parsed body from middleware:', getParsedBody({ locals } as any));
+      body = getParsedBody({ locals } as any);
     } else {
-      console.log('Middleware parsing failed, trying direct parsing methods');
+      console.log('⚠️ Middleware parsing failed, trying direct parsing methods');
       
-      try {
-        // Method 1: Try request.json() first
-        body = await request.json();
-        console.log('Successfully parsed with request.json():', body);
-      } catch (jsonError) {
-        console.log('request.json() failed, trying request.text():', jsonError);
-        
-        try {
-          // Method 2: Try request.text() and parse manually
-          const rawBody = await request.text();
-          console.log('Raw request body:', rawBody);
-          
-          if (rawBody && rawBody.trim()) {
-            body = JSON.parse(rawBody);
-            console.log('Successfully parsed with request.text() + JSON.parse():', body);
-          } else {
-            console.log('Empty request body');
-            return createErrorResponse('Request body is required', 400);
-          }
-        } catch (textError) {
-          console.error('Both parsing methods failed:', { jsonError, textError });
-          return createErrorResponse('Failed to parse request body', 400);
-        }
+      const parseResult = await parseRequestBody(request);
+      if (!parseResult.isValid) {
+        console.error('❌ Request parsing failed:', parseResult.error);
+        return createErrorResponse('Failed to parse request body', 400);
       }
+      
+      body = parseResult.body;
+      console.log('✅ Successfully parsed request body:', body);
     }
     const {
       to,
@@ -154,39 +110,27 @@ export const POST: APIRoute = async ({ request, locals }) => {
       }
     }
 
-    // Generate session and call IDs
-    const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const callId = `call_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
-    // Create session data
-    const session = {
-      sessionId,
-      callId,
-      phoneNumber: to,
-      status: 'initiated',
-      startTime: new Date().toISOString(),
-      metadata: {
-        from,
-        webhookUrl: webhookUrl || `${process.env.WEBHOOK_BASE_URL}/api/voice/webhook`,
-        recordCall,
-        transcriptionEnabled,
-        language,
-        timeout,
-        maxDuration
-      }
+    // Create call configuration
+    const callConfig = {
+      from,
+      to,
+      webhookUrl: webhookUrl || `${process.env.WEBHOOK_BASE_URL}/api/voice/webhook`,
+      recordCall,
+      transcriptionEnabled,
+      language,
+      timeout,
+      maxDuration
     };
 
-    // In a real implementation, you would:
-    // 1. Call Telnyx API to initiate the call
-    // 2. Store session in database
-    // 3. Set up webhooks
+    // Initiate the call using voice service
+    const session = await voiceService.initiateCall(callConfig);
 
     return createSuccessResponse({
       sessionId: session.sessionId,
       callId: session.callId,
       phoneNumber: session.phoneNumber,
       status: session.status,
-      startTime: session.startTime,
+      startTime: session.startTime.toISOString(),
       message: 'Voice call initiated successfully'
     });
 

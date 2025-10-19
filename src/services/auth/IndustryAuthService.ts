@@ -148,6 +148,11 @@ export interface OrganizationSettings {
   locale: string;
   features: string[];
   integrations: Record<string, any>;
+  notifications?: {
+    email: boolean;
+    sms: boolean;
+    push: boolean;
+  };
   branding?: {
     logo?: string;
     primaryColor?: string;
@@ -452,7 +457,7 @@ export class TETRIXIndustryAuthService {
       // Get additional permissions from policies
       const policyPermissions = await this.getPolicyPermissions(userId, orgId);
 
-      return [...new Set([...rolePermissions, ...policyPermissions])];
+      return Array.from(new Set([...rolePermissions, ...policyPermissions]));
     } catch (error) {
       console.error('❌ Failed to get user permissions:', error);
       return [];

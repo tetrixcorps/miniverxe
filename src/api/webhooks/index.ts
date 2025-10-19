@@ -1,11 +1,43 @@
 // Webhook Handlers for Real-time Updates
 // Handles webhooks from Telnyx, Stripe, and Sinch
 
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
+import * as crypto from 'crypto';
 import { smart2FAService } from '../../services/smart2faService';
 import { stripeTrialService } from '../../services/stripeTrialService';
 import { whatsappOnboardingService } from '../../services/whatsappOnboardingService';
 import { crossPlatformSessionService } from '../../services/crossPlatformSessionService';
+
+// Type definitions for webhook events
+interface TelnyxEvent {
+  data: {
+    event_type: string;
+    payload: {
+      message_id?: string;
+      status?: string;
+      to?: string;
+      from?: string;
+      call_control_id?: string;
+      duration?: number;
+      recording_url?: string;
+    };
+  };
+}
+
+interface SinchEvent {
+  eventType: string;
+  wabaId?: string;
+  status?: string;
+  message?: string;
+  timestamp?: string;
+  metadata?: any;
+}
+
+interface SessionEvent {
+  sessionId: string;
+  action: string;
+  data?: any;
+}
 
 // Telnyx 2FA Webhooks
 export const handleTelnyxWebhook = async (req: Request, res: Response) => {
@@ -13,12 +45,26 @@ export const handleTelnyxWebhook = async (req: Request, res: Response) => {
     const signature = req.headers['telnyx-signature'] as string;
     const payload = JSON.stringify(req.body);
 
+    // Validate required headers
+    if (!signature) {
+      console.error('Missing Telnyx signature header');
+      return res.status(400).json({ error: 'Missing signature header' });
+    }
+
     // Verify webhook signature
     if (!verifyTelnyxSignature(payload, signature)) {
+      console.error('Invalid Telnyx webhook signature');
       return res.status(401).json({ error: 'Invalid signature' });
     }
 
     const event = req.body;
+    
+    // Validate event structure
+    if (!event || !event.data || !event.data.event_type) {
+      console.error('Invalid Telnyx webhook event structure:', event);
+      return res.status(400).json({ error: 'Invalid event structure' });
+    }
+
     console.log('Telnyx webhook received:', event.data.event_type);
 
     // Handle different event types
@@ -42,7 +88,10 @@ export const handleTelnyxWebhook = async (req: Request, res: Response) => {
     res.status(200).json({ received: true });
   } catch (error) {
     console.error('Telnyx webhook error:', error);
-    res.status(500).json({ error: 'Webhook processing failed' });
+    res.status(500).json({ 
+      error: 'Webhook processing failed',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 };
 
@@ -93,30 +142,52 @@ export const handleSinchWebhook = async (req: Request, res: Response) => {
     const signature = req.headers['sinch-signature'] as string;
     const payload = JSON.stringify(req.body);
 
+    // Validate required headers
+    if (!signature) {
+      console.error('Missing Sinch signature header');
+      return res.status(400).json({ error: 'Missing signature header' });
+    }
+
     // Verify webhook signature
     if (!verifySinchSignature(payload, signature)) {
+      console.error('Invalid Sinch webhook signature');
       return res.status(401).json({ error: 'Invalid signature' });
     }
 
     const event = req.body;
+    
+    // Validate event structure
+    if (!event || !event.eventType) {
+      console.error('Invalid Sinch webhook event structure:', event);
+      return res.status(400).json({ error: 'Invalid event structure' });
+    }
+
     console.log('Sinch webhook received:', event.eventType);
 
     // Handle WABA events
     if (event.eventType.startsWith('waba.')) {
-      await whatsappOnboardingService.handleWABAWebhook({
-        eventType: event.eventType,
-        wabaId: event.wabaId,
-        status: event.status,
-        message: event.message,
-        timestamp: new Date(event.timestamp),
-        metadata: event.metadata
-      });
+      try {
+        await whatsappOnboardingService.handleWABAWebhook({
+          eventType: event.eventType,
+          wabaId: event.wabaId,
+          status: event.status,
+          message: event.message,
+          timestamp: new Date(event.timestamp),
+          metadata: event.metadata
+        });
+      } catch (webhookError) {
+        console.error('Failed to handle WABA webhook:', webhookError);
+        // Don't fail the entire request for WABA processing errors
+      }
     }
 
     res.status(200).json({ received: true });
   } catch (error) {
     console.error('Sinch webhook error:', error);
-    res.status(500).json({ error: 'Webhook processing failed' });
+    res.status(500).json({ 
+      error: 'Webhook processing failed',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 };
 
@@ -124,6 +195,12 @@ export const handleSinchWebhook = async (req: Request, res: Response) => {
 export const handleSessionWebhook = async (req: Request, res: Response) => {
   try {
     const { sessionId, action, data } = req.body;
+
+    // Validate required fields
+    if (!sessionId || !action) {
+      console.error('Missing required fields in session webhook:', { sessionId, action });
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
 
     console.log('Session webhook received:', { sessionId, action });
 
@@ -147,26 +224,72 @@ export const handleSessionWebhook = async (req: Request, res: Response) => {
     res.status(200).json({ received: true });
   } catch (error) {
     console.error('Session webhook error:', error);
-    res.status(500).json({ error: 'Webhook processing failed' });
+    res.status(500).json({ 
+      error: 'Webhook processing failed',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 };
 
 // Private helper functions
 function verifyTelnyxSignature(payload: string, signature: string): boolean {
-  // Implement Telnyx signature verification
-  // This would use the webhook secret to verify the signature
-  return true; // Placeholder
+  try {
+    const webhookSecret = process.env.TELNYX_WEBHOOK_SECRET;
+    if (!webhookSecret) {
+      console.error('TELNYX_WEBHOOK_SECRET not configured');
+      return false;
+    }
+
+    // Telnyx uses HMAC-SHA256 for webhook signature verification
+    const expectedSignature = crypto
+      .createHmac('sha256', webhookSecret)
+      .update(payload, 'utf8')
+      .digest('hex');
+
+    // Compare signatures using constant-time comparison to prevent timing attacks
+    return crypto.timingSafeEqual(
+      Buffer.from(signature, 'hex'),
+      Buffer.from(expectedSignature, 'hex')
+    );
+  } catch (error) {
+    console.error('Telnyx signature verification failed:', error);
+    return false;
+  }
 }
 
 function verifySinchSignature(payload: string, signature: string): boolean {
-  // Implement Sinch signature verification
-  // This would use the webhook secret to verify the signature
-  return true; // Placeholder
+  try {
+    const webhookSecret = process.env.SINCH_WEBHOOK_SECRET;
+    if (!webhookSecret) {
+      console.error('SINCH_WEBHOOK_SECRET not configured');
+      return false;
+    }
+
+    // Sinch uses HMAC-SHA256 for webhook signature verification
+    const expectedSignature = crypto
+      .createHmac('sha256', webhookSecret)
+      .update(payload, 'utf8')
+      .digest('hex');
+
+    // Compare signatures using constant-time comparison
+    return crypto.timingSafeEqual(
+      Buffer.from(signature, 'hex'),
+      Buffer.from(expectedSignature, 'hex')
+    );
+  } catch (error) {
+    console.error('Sinch signature verification failed:', error);
+    return false;
+  }
 }
 
-async function handleSMSDelivery(event: any): Promise<void> {
+async function handleSMSDelivery(event: TelnyxEvent): Promise<void> {
   try {
     const { message_id, status, to, from } = event.data.payload;
+    
+    if (!message_id || !status) {
+      console.error('Invalid SMS delivery event data:', event.data.payload);
+      return;
+    }
     
     console.log(`SMS delivery status: ${status} for message ${message_id}`);
     
@@ -185,9 +308,14 @@ async function handleSMSDelivery(event: any): Promise<void> {
   }
 }
 
-async function handleCallAnswered(event: any): Promise<void> {
+async function handleCallAnswered(event: TelnyxEvent): Promise<void> {
   try {
     const { call_control_id, to, from } = event.data.payload;
+    
+    if (!call_control_id) {
+      console.error('Invalid call answered event data:', event.data.payload);
+      return;
+    }
     
     console.log(`Call answered: ${call_control_id}`);
     
@@ -205,9 +333,14 @@ async function handleCallAnswered(event: any): Promise<void> {
   }
 }
 
-async function handleCallEnded(event: any): Promise<void> {
+async function handleCallEnded(event: TelnyxEvent): Promise<void> {
   try {
     const { call_control_id, duration, to, from } = event.data.payload;
+    
+    if (!call_control_id) {
+      console.error('Invalid call ended event data:', event.data.payload);
+      return;
+    }
     
     console.log(`Call ended: ${call_control_id}, duration: ${duration}s`);
     
@@ -226,9 +359,14 @@ async function handleCallEnded(event: any): Promise<void> {
   }
 }
 
-async function handleCallRecording(event: any): Promise<void> {
+async function handleCallRecording(event: TelnyxEvent): Promise<void> {
   try {
     const { call_control_id, recording_url } = event.data.payload;
+    
+    if (!call_control_id || !recording_url) {
+      console.error('Invalid call recording event data:', event.data.payload);
+      return;
+    }
     
     console.log(`Call recording saved: ${call_control_id}`);
     
@@ -247,6 +385,11 @@ async function handleCallRecording(event: any): Promise<void> {
 
 async function handleSessionCreated(sessionId: string, data: any): Promise<void> {
   try {
+    if (!sessionId) {
+      console.error('Invalid session created event: missing sessionId');
+      return;
+    }
+    
     console.log(`Session created: ${sessionId}`);
     
     // Log session creation
@@ -264,6 +407,11 @@ async function handleSessionCreated(sessionId: string, data: any): Promise<void>
 
 async function handleSessionAuthenticated(sessionId: string, data: any): Promise<void> {
   try {
+    if (!sessionId) {
+      console.error('Invalid session authenticated event: missing sessionId');
+      return;
+    }
+    
     console.log(`Session authenticated: ${sessionId}`);
     
     // Update session status
@@ -281,6 +429,11 @@ async function handleSessionAuthenticated(sessionId: string, data: any): Promise
 
 async function handleSessionExpired(sessionId: string, data: any): Promise<void> {
   try {
+    if (!sessionId) {
+      console.error('Invalid session expired event: missing sessionId');
+      return;
+    }
+    
     console.log(`Session expired: ${sessionId}`);
     
     // Clean up session
@@ -298,13 +451,18 @@ async function handleSessionExpired(sessionId: string, data: any): Promise<void>
 
 async function handlePlatformLinked(sessionId: string, data: any): Promise<void> {
   try {
+    if (!sessionId) {
+      console.error('Invalid platform linked event: missing sessionId');
+      return;
+    }
+    
     console.log(`Platform linked: ${sessionId}`);
     
     // Update session with platform linkage
     await crossPlatformSessionService.linkPlatforms(
       sessionId,
-      data.tetrixUserId,
-      data.joromiUserId
+      data?.tetrixUserId,
+      data?.joromiUserId
     );
     
     // Send real-time update to frontend if needed
@@ -319,9 +477,21 @@ async function handlePlatformLinked(sessionId: string, data: any): Promise<void>
 
 async function sendRealtimeUpdate(type: string, data: any): Promise<void> {
   try {
+    if (!type) {
+      console.error('Invalid real-time update: missing type');
+      return;
+    }
+    
     // This would send real-time updates via WebSocket or Server-Sent Events
     // For now, just log the update
     console.log(`Real-time update: ${type}`, data);
+    
+    // TODO: Implement actual real-time update mechanism
+    // This could integrate with:
+    // - WebSocket server
+    // - Server-Sent Events
+    // - Push notifications
+    // - Message queue (Redis, RabbitMQ, etc.)
   } catch (error) {
     console.error('Failed to send real-time update:', error);
   }

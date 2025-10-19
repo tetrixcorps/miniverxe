@@ -150,7 +150,7 @@ class Enterprise2FAService {
       });
 
       // Always fallback to Smart2FA if Telnyx fails or is not configured
-      console.log('Falling back to Smart2FA service due to error:', error.message);
+      console.log('Falling back to Smart2FA service due to error:', error instanceof Error ? error.message : 'Unknown error');
       return await this.fallbackToSmart2FA(request);
     }
   }
@@ -254,14 +254,17 @@ class Enterprise2FAService {
     // For development, accept 123456 or any 6-digit code
     const isValidCode = code === '123456' || /^\d{6}$/.test(code);
     
-    console.log(`[MOCK] Verifying code ${code} for +${phoneNumber}: ${isValidCode ? 'ACCEPTED' : 'REJECTED'}`);
+    // Ensure phone number has proper formatting (single +)
+    const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber}`;
+    
+    console.log(`[MOCK] Verifying code ${code} for ${formattedPhone}: ${isValidCode ? 'ACCEPTED' : 'REJECTED'}`);
     console.log(`[MOCK] Expected: 123456 or any 6-digit code`);
     
     return {
       success: true,
       verified: isValidCode,
       responseCode: isValidCode ? 'accepted' : 'rejected',
-      phoneNumber: `+${phoneNumber}`,
+      phoneNumber: formattedPhone,
       verificationId,
       timestamp: new Date().toISOString(),
       fraudScore: 0.1,
@@ -291,7 +294,7 @@ class Enterprise2FAService {
       : 'https://api.telnyx.com/v2/verifications/sms';
 
     const payload: any = {
-      phone_number: `+${request.phoneNumber}`, // Ensure phone number has + prefix
+      phone_number: request.phoneNumber.startsWith('+') ? request.phoneNumber : `+${request.phoneNumber}`, // Ensure phone number has + prefix
       verify_profile_id: this.config.verifyProfileId
     };
 
@@ -340,13 +343,14 @@ class Enterprise2FAService {
   private generateMockVerification(request: VerificationRequest): any {
     const verificationId = `mock_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
-    console.log(`[MOCK] Generated verification for +${request.phoneNumber} via ${request.method}: ${verificationId}`);
+    const formattedPhone = request.phoneNumber.startsWith('+') ? request.phoneNumber : `+${request.phoneNumber}`;
+    console.log(`[MOCK] Generated verification for ${formattedPhone} via ${request.method}: ${verificationId}`);
     console.log(`[MOCK] In development mode - OTP code is: 123456`);
     console.log(`[MOCK] This verification will expire in ${request.timeoutSecs || 300} seconds`);
     
     return {
       id: verificationId,
-      phone_number: `+${request.phoneNumber}`, // Ensure phone number has + prefix
+      phone_number: formattedPhone, // Use consistently formatted phone number
       type: request.method,
       status: 'pending',
       created_at: new Date().toISOString(),

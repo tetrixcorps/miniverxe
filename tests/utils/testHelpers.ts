@@ -1,7 +1,7 @@
 // Test utilities and helpers for TETRIX dual invoice delivery tests
 
 import Stripe from 'stripe';
-import { ServiceType, ServiceDetails } from '../../src/services/enhancedInvoiceService';
+import type { ServiceType, ServiceDetails } from '../../src/services/enhancedInvoiceService';
 
 // Mock Stripe objects
 export const createMockStripeInvoice = (overrides: Partial<Stripe.Invoice> = {}): Stripe.Invoice => ({

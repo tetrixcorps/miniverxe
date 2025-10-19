@@ -2,12 +2,13 @@
 // Integrates Enterprise Workflow Engine with existing TETRIX backend systems
 // Provides automated workflow execution with CRM, IVR, and AI agent integration
 
-import { EnterpriseWorkflowEngine, WorkflowExecution } from './EnterpriseWorkflowEngine';
+import { EnterpriseWorkflowEngine } from './EnterpriseWorkflowEngine';
+import type { WorkflowExecution } from './EnterpriseWorkflowEngine';
 import { IndustryWorkflowIntegrations } from './IndustryWorkflowIntegrations';
 import { CRMIntegrationService } from '../crmIntegrationService';
 import { EpicOAuthService } from '../integrations/EpicOAuthService';
-import { SalesforceIntegrationService } from '../integrations/SalesforceIntegrationService';
-import { HubSpotIntegrationService } from '../integrations/HubSpotIntegrationService';
+import { TETRIXSalesforceIntegration } from '../integrations/UniversalCRMIntegration';
+import { TETRIXHubSpotIntegration } from '../integrations/UniversalCRMIntegration';
 
 export interface WorkflowAutomationConfig {
   industry: string;
@@ -53,7 +54,13 @@ export class WorkflowAutomationService {
     this.config = config;
     this.workflowEngine = new EnterpriseWorkflowEngine();
     this.industryIntegrations = new IndustryWorkflowIntegrations();
-    this.crmService = new CRMIntegrationService();
+    this.crmService = new CRMIntegrationService({
+      provider: 'custom',
+      apiKey: '',
+      baseUrl: '',
+      industry: config.industry as any,
+      features: []
+    });
     
     console.log(`WorkflowAutomationService initialized for ${config.industry} industry`);
   }

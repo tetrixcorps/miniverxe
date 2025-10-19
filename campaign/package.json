@@ -1,0 +1,50 @@
+{
+  "name": "tetrix-campaign-system",
+  "version": "1.0.0",
+  "description": "TETRIX Email and SMS Campaign Management System",
+  "main": "dist/executeCampaign.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/executeCampaign.js",
+    "dev": "ts-node executeCampaign.ts",
+    "campaign:execute": "npm run build && npm start",
+    "campaign:test": "npm run build && node dist/executeCampaign.js --test",
+    "campaign:healthcare": "npm run build && node dist/executeCampaign.js --industry=healthcare",
+    "campaign:construction": "npm run build && node dist/executeCampaign.js --industry=construction",
+    "campaign:fleet": "npm run build && node dist/executeCampaign.js --industry=fleet"
+  },
+  "keywords": [
+    "email",
+    "sms",
+    "campaign",
+    "marketing",
+    "automation",
+    "tetrix",
+    "construction",
+    "fleet",
+    "healthcare"
+  ],
+  "author": "TETRIX Team",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "mailgun-js": "^0.22.0"
+  },
+  "devDependencies": {
+    "@types/mailgun-js": "^0.22.0",
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tetrix/campaign-system.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tetrix/campaign-system/issues"
+  },
+  "homepage": "https://tetrix.com/campaigns"
+}

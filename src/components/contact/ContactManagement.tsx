@@ -1,36 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ContactForm from './ContactForm';
 import PhoneInput from './PhoneInput';
-
-interface Contact {
-  id: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  email?: string;
-  company?: string;
-  industry: string;
-  tags: string[];
-  notes?: string;
-  smsOptIn: boolean;
-  emailOptIn: boolean;
-  preferredContactTime?: string;
-  timezone: string;
-  customFields: Record<string, any>;
-  createdAt: string;
-  updatedAt: string;
-  lastContactedAt?: string;
-}
-
-interface ContactManagementProps {
-  industry: string;
-  onContactSelect: (contact: Contact) => void;
-  onContactCreate: (contact: Contact) => void;
-  onContactUpdate: (contact: Contact) => void;
-  onContactDelete: (contactId: string) => void;
-  onSendSMS?: (contact: Contact) => void;
-  showSMSActions?: boolean;
-}
+import { Contact, ContactManagementProps } from '../../types/contact';
 
 const ContactManagement: React.FC<ContactManagementProps> = ({
   industry,

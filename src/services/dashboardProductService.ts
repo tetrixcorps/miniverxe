@@ -1,488 +1,289 @@
 // Dashboard Product Service
-// Maps products and services for different industry dashboards
+// Manages products and cart functionality for industry-specific dashboards
 
 export interface DashboardProduct {
   id: string;
   name: string;
   description: string;
-  category: 'subscription' | 'esim' | 'addon' | 'service';
-  industry: 'healthcare' | 'construction' | 'logistics';
   price: number;
-  currency: string;
-  billingCycle: 'monthly' | 'yearly' | 'one-time';
-  required: boolean;
-  trialEligible: boolean;
+  category: string;
+  industry: 'healthcare' | 'legal' | 'construction' | 'logistics' | 'business';
   features: string[];
-  metadata: Record<string, any>;
-}
-
-export interface CartItem {
-  productId: string;
-  quantity: number;
-  customizations?: Record<string, any>;
-  metadata?: Record<string, any>;
-}
-
-export interface DashboardCart {
-  id: string;
-  customerId: string;
-  industry: string;
-  items: CartItem[];
-  subtotal: number;
-  tax: number;
-  total: number;
-  currency: string;
+  isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface CheckoutSession {
-  cartId: string;
+export interface CartItem {
+  id: string;
+  productId: string;
+  quantity: number;
+  customizations?: Record<string, any>;
+  addedAt: Date;
+}
+
+export interface Cart {
+  id: string;
+  userId: string;
   customerId: string;
   industry: string;
   items: CartItem[];
   total: number;
-  currency: string;
-  trialDays?: number;
-  requiresPayment: boolean;
-  metadata: Record<string, any>;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-class DashboardProductService {
-  private products: Map<string, DashboardProduct> = new Map();
-  private carts: Map<string, DashboardCart> = new Map();
+export interface AddToCartRequest {
+  cartId: string;
+  productId: string;
+  quantity?: number;
+  customizations?: Record<string, any>;
+}
 
-  constructor() {
-    this.initializeProducts();
+export interface RemoveFromCartRequest {
+  cartId: string;
+  productId: string;
+}
+
+export interface CheckoutRequest {
+  cartId: string;
+  customerId: string;
+  paymentMethodId: string;
+  billingAddress: {
+    line1: string;
+    line2?: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+  };
+}
+
+// Mock data for now
+const mockProducts: DashboardProduct[] = [
+  {
+    id: 'prod_healthcare_basic',
+    name: 'Healthcare Basic Plan',
+    description: 'Essential healthcare communication tools',
+    price: 150,
+    category: 'communication',
+    industry: 'healthcare',
+    features: ['Voice calls', 'SMS', 'Patient notifications'],
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: 'prod_legal_standard',
+    name: 'Legal Standard Plan',
+    description: 'Complete legal practice management',
+    price: 200,
+    category: 'management',
+    industry: 'legal',
+    features: ['Client communication', 'Case management', 'Billing integration'],
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: 'prod_construction_pro',
+    name: 'Construction Pro Plan',
+    description: 'Advanced construction project management',
+    price: 250,
+    category: 'project_management',
+    industry: 'construction',
+    features: ['Team coordination', 'Safety alerts', 'Resource tracking'],
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: 'prod_logistics_fleet',
+    name: 'Logistics Fleet Plan',
+    description: 'Comprehensive fleet management solution',
+    price: 300,
+    category: 'fleet_management',
+    industry: 'logistics',
+    features: ['Vehicle tracking', 'Driver management', 'Route optimization'],
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  }
+];
+
+const mockCarts: Map<string, Cart> = new Map();
+
+export class DashboardProductService {
+  async getProducts(industry?: string): Promise<DashboardProduct[]> {
+    if (industry) {
+      return mockProducts.filter(product => product.industry === industry);
+    }
+    return mockProducts;
   }
 
-  /**
-   * Initialize products for each industry dashboard
-   */
-  private initializeProducts() {
-    // Healthcare Products
-    this.addProduct({
-      id: 'healthcare-trial',
-      name: 'Healthcare Communication Platform',
-      description: '7-day free trial with full access to patient communication, appointment scheduling, and EHR integration',
-      category: 'subscription',
-      industry: 'healthcare',
-      price: 0,
-      currency: 'USD',
-      billingCycle: 'monthly',
-      required: true,
-      trialEligible: true,
-      features: [
-        'Patient communication',
-        'Appointment scheduling',
-        'EHR integration',
-        'Emergency triage',
-        'HIPAA compliance'
-      ],
-      metadata: {
-        trialDays: 7,
-        requiresPayment: false,
-        autoActivate: true
-      }
-    });
-
-    // Construction Products
-    this.addProduct({
-      id: 'construction-trial',
-      name: 'Construction Management Platform',
-      description: '7-day free trial with project management, safety alerts, and resource optimization',
-      category: 'subscription',
-      industry: 'construction',
-      price: 0,
-      currency: 'USD',
-      billingCycle: 'monthly',
-      required: true,
-      trialEligible: true,
-      features: [
-        'Project management',
-        'Safety compliance',
-        'Resource optimization',
-        'Team collaboration',
-        'Real-time reporting'
-      ],
-      metadata: {
-        trialDays: 7,
-        requiresPayment: false,
-        autoActivate: true
-      }
-    });
-
-    // Logistics Products
-    this.addProduct({
-      id: 'logistics-trial',
-      name: 'Fleet Management Platform',
-      description: '7-day free trial with vehicle tracking, driver management, and route optimization',
-      category: 'subscription',
-      industry: 'logistics',
-      price: 0,
-      currency: 'USD',
-      billingCycle: 'monthly',
-      required: true,
-      trialEligible: true,
-      features: [
-        'Vehicle tracking',
-        'Driver management',
-        'Route optimization',
-        'Delivery management',
-        'Analytics dashboard'
-      ],
-      metadata: {
-        trialDays: 7,
-        requiresPayment: false,
-        autoActivate: true
-      }
-    });
-
-    // eSIM Products (Required for Logistics)
-    this.addProduct({
-      id: 'esim-fleet-basic',
-      name: 'Fleet eSIM - Basic',
-      description: 'eSIM for fleet vehicles with basic connectivity and tracking',
-      category: 'esim',
-      industry: 'logistics',
-      price: 25,
-      currency: 'USD',
-      billingCycle: 'monthly',
-      required: true,
-      trialEligible: false,
-      features: [
-        'Global connectivity',
-        'Real-time tracking',
-        'Data monitoring',
-        'Device management'
-      ],
-      metadata: {
-        dataLimit: '5GB',
-        coverage: 'global',
-        deviceType: 'vehicle'
-      }
-    });
-
-    this.addProduct({
-      id: 'esim-fleet-premium',
-      name: 'Fleet eSIM - Premium',
-      description: 'eSIM for fleet vehicles with premium connectivity and advanced features',
-      category: 'esim',
-      industry: 'logistics',
-      price: 45,
-      currency: 'USD',
-      billingCycle: 'monthly',
-      required: false,
-      trialEligible: false,
-      features: [
-        'Global connectivity',
-        'Real-time tracking',
-        'Advanced analytics',
-        'Priority support',
-        'Custom integrations'
-      ],
-      metadata: {
-        dataLimit: 'unlimited',
-        coverage: 'global',
-        deviceType: 'vehicle',
-        priority: 'high'
-      }
-    });
-
-    // Contact Management Products
-    this.addProduct({
-      id: 'contact-management-basic',
-      name: 'Contact Management - Basic',
-      description: 'Basic contact management for driver and vehicle information',
-      category: 'addon',
-      industry: 'logistics',
-      price: 15,
-      currency: 'USD',
-      billingCycle: 'monthly',
-      required: true,
-      trialEligible: false,
-      features: [
-        'Driver profiles',
-        'Vehicle information',
-        'Basic reporting',
-        'Data export'
-      ],
-      metadata: {
-        maxContacts: 100,
-        maxVehicles: 50
-      }
-    });
-
-    this.addProduct({
-      id: 'contact-management-advanced',
-      name: 'Contact Management - Advanced',
-      description: 'Advanced contact management with analytics and integrations',
-      category: 'addon',
-      industry: 'logistics',
-      price: 35,
-      currency: 'USD',
-      billingCycle: 'monthly',
-      required: false,
-      trialEligible: false,
-      features: [
-        'Unlimited contacts',
-        'Advanced analytics',
-        'CRM integration',
-        'Custom fields',
-        'API access'
-      ],
-      metadata: {
-        maxContacts: -1, // unlimited
-        maxVehicles: -1, // unlimited
-        integrations: ['salesforce', 'hubspot', 'zapier']
-      }
-    });
-
-    // Healthcare Add-ons
-    this.addProduct({
-      id: 'healthcare-ehr-integration',
-      name: 'EHR Integration',
-      description: 'Advanced EHR integration with multiple systems',
-      category: 'addon',
-      industry: 'healthcare',
-      price: 50,
-      currency: 'USD',
-      billingCycle: 'monthly',
-      required: false,
-      trialEligible: true,
-      features: [
-        'Epic integration',
-        'Cerner integration',
-        'Allscripts integration',
-        'Custom EHR support'
-      ],
-      metadata: {
-        supportedEHRs: ['epic', 'cerner', 'allscripts'],
-        customIntegration: true
-      }
-    });
-
-    // Construction Add-ons
-    this.addProduct({
-      id: 'construction-safety-compliance',
-      name: 'Safety Compliance Module',
-      description: 'Advanced safety compliance tracking and reporting',
-      category: 'addon',
-      industry: 'construction',
-      price: 30,
-      currency: 'USD',
-      billingCycle: 'monthly',
-      required: false,
-      trialEligible: true,
-      features: [
-        'OSHA compliance',
-        'Safety training tracking',
-        'Incident reporting',
-        'Compliance analytics'
-      ],
-      metadata: {
-        complianceStandards: ['OSHA', 'ANSI', 'ISO'],
-        reporting: true
-      }
-    });
+  async getProductById(id: string): Promise<DashboardProduct | null> {
+    return mockProducts.find(product => product.id === id) || null;
   }
 
-  private addProduct(product: DashboardProduct) {
-    this.products.set(product.id, product);
+  async getCart(cartId: string): Promise<Cart | null> {
+    return mockCarts.get(cartId) || null;
   }
 
-  /**
-   * Get products for a specific industry dashboard
-   */
-  getProductsForIndustry(industry: string): DashboardProduct[] {
-    return Array.from(this.products.values())
-      .filter(product => product.industry === industry);
-  }
-
-  /**
-   * Get required products for an industry
-   */
-  getRequiredProducts(industry: string): DashboardProduct[] {
-    return this.getProductsForIndustry(industry)
-      .filter(product => product.required);
-  }
-
-  /**
-   * Get trial-eligible products
-   */
-  getTrialEligibleProducts(industry: string): DashboardProduct[] {
-    return this.getProductsForIndustry(industry)
-      .filter(product => product.trialEligible);
-  }
-
-  /**
-   * Create a cart for a customer
-   */
-  createCart(customerId: string, industry: string): DashboardCart {
-    const cartId = `cart_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const cart: DashboardCart = {
-      id: cartId,
-      customerId,
-      industry,
+  async createCart(userId: string, customerId?: string, industry?: string): Promise<Cart> {
+    const cart: Cart = {
+      id: `cart_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      userId,
+      customerId: customerId || userId,
+      industry: industry || 'business',
       items: [],
-      subtotal: 0,
-      tax: 0,
       total: 0,
-      currency: 'USD',
       createdAt: new Date(),
       updatedAt: new Date()
     };
-
-    this.carts.set(cartId, cart);
+    mockCarts.set(cart.id, cart);
     return cart;
   }
 
-  /**
-   * Add product to cart
-   */
-  addToCart(cartId: string, productId: string, quantity: number = 1, customizations?: Record<string, any>): boolean {
-    const cart = this.carts.get(cartId);
-    const product = this.products.get(productId);
-
-    if (!cart || !product) {
-      return false;
+  async addToCart(request: AddToCartRequest): Promise<Cart> {
+    const cart = mockCarts.get(request.cartId);
+    if (!cart) {
+      throw new Error('Cart not found');
     }
 
-    // Check if product already exists in cart
-    const existingItemIndex = cart.items.findIndex(item => item.productId === productId);
-    
-    if (existingItemIndex >= 0) {
-      cart.items[existingItemIndex].quantity += quantity;
+    const product = await this.getProductById(request.productId);
+    if (!product) {
+      throw new Error('Product not found');
+    }
+
+    const existingItem = cart.items.find(item => item.productId === request.productId);
+    if (existingItem) {
+      existingItem.quantity += request.quantity || 1;
     } else {
       cart.items.push({
-        productId,
-        quantity,
-        customizations,
-        metadata: product.metadata
+        id: `item_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        productId: request.productId,
+        quantity: request.quantity || 1,
+        customizations: request.customizations,
+        addedAt: new Date()
       });
     }
 
-    this.updateCartTotals(cart);
-    return true;
+    this.calculateCartTotal(cart);
+    cart.updatedAt = new Date();
+    mockCarts.set(cart.id, cart);
+    return cart;
   }
 
-  /**
-   * Remove product from cart
-   */
-  removeFromCart(cartId: string, productId: string): boolean {
-    const cart = this.carts.get(cartId);
-    if (!cart) return false;
 
-    cart.items = cart.items.filter(item => item.productId !== productId);
-    this.updateCartTotals(cart);
-    return true;
+  async clearCart(cartId: string): Promise<Cart> {
+    const cart = mockCarts.get(cartId);
+    if (!cart) {
+      throw new Error('Cart not found');
+    }
+
+    cart.items = [];
+    cart.total = 0;
+    cart.updatedAt = new Date();
+    mockCarts.set(cart.id, cart);
+    return cart;
   }
 
-  /**
-   * Update cart totals
-   */
-  private updateCartTotals(cart: DashboardCart) {
-    cart.subtotal = cart.items.reduce((total, item) => {
-      const product = this.products.get(item.productId);
+  private calculateCartTotal(cart: Cart): void {
+    cart.total = cart.items.reduce((total, item) => {
+      const product = mockProducts.find(p => p.id === item.productId);
       return total + (product ? product.price * item.quantity : 0);
     }, 0);
-
-    cart.tax = cart.subtotal * 0.08; // 8% tax
-    cart.total = cart.subtotal + cart.tax;
-    cart.updatedAt = new Date();
   }
 
-  /**
-   * Get cart by ID
-   */
-  getCart(cartId: string): DashboardCart | null {
-    return this.carts.get(cartId) || null;
-  }
+  async processCheckout(request: CheckoutRequest): Promise<{ success: boolean; orderId?: string; error?: string }> {
+    const cart = mockCarts.get(request.cartId);
+    if (!cart) {
+      return { success: false, error: 'Cart not found' };
+    }
 
-  /**
-   * Create checkout session
-   */
-  createCheckoutSession(cartId: string): CheckoutSession | null {
-    const cart = this.carts.get(cartId);
-    if (!cart) return null;
+    if (cart.items.length === 0) {
+      return { success: false, error: 'Cart is empty' };
+    }
 
-    const industry = cart.industry;
-    const hasTrialProducts = cart.items.some(item => {
-      const product = this.products.get(item.productId);
-      return product?.trialEligible;
-    });
-
-    return {
-      cartId,
-      customerId: cart.customerId,
-      industry,
-      items: cart.items,
-      total: cart.total,
-      currency: cart.currency,
-      trialDays: hasTrialProducts ? 7 : undefined,
-      requiresPayment: cart.total > 0,
-      metadata: {
-        industry,
-        hasTrial: hasTrialProducts,
-        itemCount: cart.items.length
-      }
-    };
-  }
-
-  /**
-   * Get product by ID
-   */
-  getProduct(productId: string): DashboardProduct | null {
-    return this.products.get(productId) || null;
+    // In a real implementation, this would integrate with Stripe
+    // For now, we'll simulate a successful checkout
+    const orderId = `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    // Clear the cart after successful checkout
+    await this.clearCart(request.cartId);
+    
+    return { success: true, orderId };
   }
 
   /**
    * Validate cart for checkout
    */
-  validateCartForCheckout(cartId: string): { valid: boolean; errors: string[] } {
-    const cart = this.carts.get(cartId);
+  async validateCartForCheckout(cartId: string): Promise<{ valid: boolean; errors: string[] }> {
+    const cart = mockCarts.get(cartId);
     if (!cart) {
       return { valid: false, errors: ['Cart not found'] };
     }
 
+    if (cart.items.length === 0) {
+      return { valid: false, errors: ['Cart is empty'] };
+    }
+
     const errors: string[] = [];
-    const industry = cart.industry;
-
-    // Check for required products
-    const requiredProducts = this.getRequiredProducts(industry);
-    const cartProductIds = cart.items.map(item => item.productId);
-
-    for (const requiredProduct of requiredProducts) {
-      if (!cartProductIds.includes(requiredProduct.id)) {
-        errors.push(`Required product missing: ${requiredProduct.name}`);
+    
+    // Validate each item
+    for (const item of cart.items) {
+      const product = mockProducts.find(p => p.id === item.productId);
+      if (!product) {
+        errors.push(`Product ${item.productId} not found`);
+      }
+      if (item.quantity <= 0) {
+        errors.push(`Invalid quantity for product ${item.productId}`);
       }
     }
 
-    // Industry-specific validation
-    if (industry === 'logistics') {
-      const hasESIM = cart.items.some(item => {
-        const product = this.products.get(item.productId);
-        return product?.category === 'esim';
-      });
+    return { valid: errors.length === 0, errors };
+  }
 
-      if (!hasESIM) {
-        errors.push('eSIM is required for fleet management');
-      }
-
-      const hasContactManagement = cart.items.some(item => {
-        const product = this.products.get(item.productId);
-        return product?.category === 'addon' && product.name.includes('Contact Management');
-      });
-
-      if (!hasContactManagement) {
-        errors.push('Contact management is required for fleet management');
-      }
-    }
-
+  /**
+   * Create checkout session (placeholder for Stripe integration)
+   */
+  async createCheckoutSession(cartId: string, successUrl: string, cancelUrl: string): Promise<{ sessionId: string; url: string }> {
+    // In a real implementation, this would create a Stripe checkout session
+    const sessionId = `cs_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     return {
-      valid: errors.length === 0,
-      errors
+      sessionId,
+      url: `${successUrl}?session_id=${sessionId}`
     };
+  }
+
+  /**
+   * Get product by ID (alias for getProductById)
+   */
+  async getProduct(productId: string): Promise<DashboardProduct | undefined> {
+    const product = await this.getProductById(productId);
+    return product || undefined;
+  }
+
+  /**
+   * Remove item from cart
+   */
+  async removeFromCart(cartId: string, productId: string): Promise<boolean> {
+    const cart = mockCarts.get(cartId);
+    if (!cart) {
+      return false;
+    }
+
+    const initialLength = cart.items.length;
+    cart.items = cart.items.filter(item => item.productId !== productId);
+    
+    if (cart.items.length < initialLength) {
+      this.calculateCartTotal(cart);
+      cart.updatedAt = new Date();
+      mockCarts.set(cartId, cart);
+      return true;
+    }
+    
+    return false;
   }
 }
 

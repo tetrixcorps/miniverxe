@@ -3,7 +3,7 @@
 
 export interface PriceMapping {
   priceId: string;
-  serviceType: 'healthcare' | 'legal' | 'business';
+  serviceType: 'healthcare' | 'legal' | 'business' | 'construction' | 'logistics' | 'government' | 'education' | 'retail' | 'hospitality' | 'wellness' | 'beauty';
   tier: string;
   planName: string;
   basePrice: number;

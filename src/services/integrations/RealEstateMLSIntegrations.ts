@@ -301,11 +301,16 @@ export abstract class BaseMLSIntegration {
       ...options.headers
     };
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), this.config.timeout);
+    
     const response = await fetch(url, {
       ...options,
       headers,
-      timeout: this.config.timeout
+      signal: controller.signal
     });
+    
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       throw new Error(`MLS request failed: ${response.statusText}`);

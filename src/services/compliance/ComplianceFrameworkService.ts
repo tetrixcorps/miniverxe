@@ -990,7 +990,7 @@ export class ComplianceFrameworkService {
     const controls = framework.controls.map(control => ({
       id: control.id,
       name: control.name,
-      status: control.isImplemented ? 'implemented' : 'not_implemented',
+      status: (control.isImplemented ? 'implemented' : 'not_implemented') as 'implemented' | 'not_implemented',
       testResult: control.testResult || 'not_tested'
     }));
 

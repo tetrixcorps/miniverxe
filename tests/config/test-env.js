@@ -13,7 +13,7 @@ const testEnvVars = {
   PORT: '4321',
 
   // Voice API Configuration
-  ***REMOVED***: 'test_telnyx_key',
+  TELNYX_API_KEY: 'test_telnyx_key',
   TELNYX_PHONE_NUMBER: '+1234567890',
   TELNYX_API_URL: 'https://api.telnyx.com/v2',
 

@@ -170,7 +170,7 @@ export const POST: APIRoute = async ({ request }) => {
       if (agent) {
         const greetingMessage = {
           id: `msg-${Date.now()}`,
-          role: 'assistant',
+          role: 'assistant' as const,
           content: agent.greeting,
           timestamp: new Date().toISOString(),
           type: 'text'

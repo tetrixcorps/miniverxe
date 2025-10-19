@@ -415,7 +415,7 @@ class Smart2FAService {
   }
 
   private calculateProgress(status: string, event: any): number {
-    const progressMap = {
+    const progressMap: Record<string, number> = {
       'pending': 25,
       'in_progress': 60,
       'completed': 100,
@@ -425,7 +425,7 @@ class Smart2FAService {
   }
 
   private getStatusMessage(status: string, event: any): string {
-    const messages = {
+    const messages: Record<string, string> = {
       'pending': 'Your WhatsApp Business Account is being reviewed. This usually takes 24-48 hours.',
       'in_progress': 'We\'re processing your application. You\'ll receive an email when ready.',
       'completed': 'Congratulations! Your WhatsApp Business Account is ready to use.',
@@ -435,7 +435,7 @@ class Smart2FAService {
   }
 
   private getRequiredActions(status: string, event: any): string[] {
-    const actions = {
+    const actions: Record<string, string[]> = {
       'pending': ['Check your email', 'Verify your business information'],
       'in_progress': ['Wait for approval', 'Monitor your email'],
       'completed': ['Start using your dashboard'],

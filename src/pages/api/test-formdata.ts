@@ -18,7 +18,7 @@ export const POST: APIRoute = async ({ request }) => {
       result.formDataSuccess = true;
     } catch (formError) {
       console.log('FormData failed:', formError);
-      result.formDataError = formError.message;
+      result.formDataError = formError instanceof Error ? formError.message : 'Unknown error';
     }
     
     try {
@@ -37,7 +37,7 @@ export const POST: APIRoute = async ({ request }) => {
       }
     } catch (arrayError) {
       console.log('ArrayBuffer failed:', arrayError);
-      result.arrayBufferError = arrayError.message;
+      result.arrayBufferError = arrayError instanceof Error ? arrayError.message : 'Unknown error';
     }
     
     try {
@@ -50,7 +50,7 @@ export const POST: APIRoute = async ({ request }) => {
       result.textSuccess = text.length > 0;
     } catch (textError) {
       console.log('Text failed:', textError);
-      result.textError = textError.message;
+      result.textError = textError instanceof Error ? textError.message : 'Unknown error';
     }
     
     try {
@@ -62,7 +62,7 @@ export const POST: APIRoute = async ({ request }) => {
       result.jsonSuccess = true;
     } catch (jsonError) {
       console.log('JSON failed:', jsonError);
-      result.jsonError = jsonError.message;
+      result.jsonError = jsonError instanceof Error ? jsonError.message : 'Unknown error';
     }
     
     return new Response(JSON.stringify({

@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { dashboardProductService } from '/src/services/dashboardProductService';
+import { dashboardProductService } from '../../../../services/dashboardProductService';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -19,7 +19,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // Remove product from cart
-    const success = dashboardProductService.removeFromCart(cartId, productId);
+    const success = await dashboardProductService.removeFromCart(cartId, productId);
     
     if (!success) {
       return new Response(JSON.stringify({

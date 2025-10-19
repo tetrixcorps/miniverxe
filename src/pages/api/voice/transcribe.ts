@@ -2,6 +2,8 @@
 // Handles speech-to-text processing with Deepgram
 
 import type { APIRoute } from 'astro';
+import { voiceService } from '../../../services/voiceService';
+import { parseRequestBody, getParsedBody, isBodyParsed } from '../../../middleware/requestParser';
 
 // Inline utility functions to avoid import issues
 function validateRequiredFields(data: any, requiredFields: string[]) {
@@ -42,44 +44,25 @@ function createSuccessResponse(data: any, status: number = 200) {
   });
 }
 
-// Mock session storage (in production, use a database)
-const sessions = new Map();
-
 export const POST: APIRoute = async ({ request, url, locals }) => {
   try {
-    // Use parsed body from middleware if available
+    // Use enhanced request parsing
     let body: any = {};
     
-    if (locals.bodyParsed && locals.parsedBody) {
-      console.log('Using parsed body from middleware:', locals.parsedBody);
-      body = locals.parsedBody;
+    if (isBodyParsed({ locals } as any)) {
+      console.log('✅ Using parsed body from middleware:', getParsedBody({ locals } as any));
+      body = getParsedBody({ locals } as any);
     } else {
-      console.log('Middleware parsing failed, trying direct parsing methods');
+      console.log('⚠️ Middleware parsing failed, trying direct parsing methods');
       
-      try {
-        // Method 1: Try request.json() first
-        body = await request.json();
-        console.log('Successfully parsed with request.json():', body);
-      } catch (jsonError) {
-        console.log('request.json() failed, trying request.text():', jsonError);
-        
-        try {
-          // Method 2: Try request.text() and parse manually
-          const rawBody = await request.text();
-          console.log('Raw request body:', rawBody);
-          
-          if (rawBody && rawBody.trim()) {
-            body = JSON.parse(rawBody);
-            console.log('Successfully parsed with request.text() + JSON.parse():', body);
-          } else {
-            console.log('Empty request body');
-            return createErrorResponse('Request body is required', 400);
-          }
-        } catch (textError) {
-          console.error('Both parsing methods failed:', { jsonError, textError });
-          return createErrorResponse('Failed to parse request body', 400);
-        }
+      const parseResult = await parseRequestBody(request);
+      if (!parseResult.isValid) {
+        console.error('❌ Request parsing failed:', parseResult.error);
+        return createErrorResponse('Failed to parse request body', 400);
       }
+      
+      body = parseResult.body;
+      console.log('✅ Successfully parsed request body:', body);
     }
     
     const pathname = url.pathname;
@@ -100,31 +83,28 @@ export const POST: APIRoute = async ({ request, url, locals }) => {
         return createErrorResponse('Audio URLs and Session IDs arrays must have the same length', 400);
       }
 
-      // Process batch transcription
-      const results = audioUrls.map((audioUrl, index) => {
-        const sessionId = sessionIds[index];
-        const session = sessions.get(sessionId) || {
-          sessionId,
-          status: 'active',
-          startTime: new Date().toISOString()
-        };
-
-        // Mock transcription result
-        const transcription = {
-          text: `Transcribed text for ${audioUrl}`,
-          confidence: 0.95,
-          language,
-          timestamp: new Date().toISOString()
-        };
-
-        session.transcription = transcription;
-        sessions.set(sessionId, session);
-
-        return {
-          sessionId,
-          transcription
-        };
-      });
+      // Process batch transcription using voice service
+      const results = [];
+      for (let i = 0; i < audioUrls.length; i++) {
+        const audioUrl = audioUrls[i];
+        const sessionId = sessionIds[i];
+        
+        try {
+          await voiceService.processTranscription(audioUrl, sessionId);
+          const session = voiceService.getSession(sessionId);
+          
+          results.push({
+            sessionId,
+            transcription: session?.transcription
+          });
+        } catch (error) {
+          console.error(`Failed to process transcription for session ${sessionId}:`, error);
+          results.push({
+            sessionId,
+            error: error instanceof Error ? error.message : 'Unknown error'
+          });
+        }
+      }
 
       return createSuccessResponse({
         sessions: results,
@@ -146,29 +126,17 @@ export const POST: APIRoute = async ({ request, url, locals }) => {
         return createErrorResponse(urlValidation.error || 'Invalid audio URL format', 400);
       }
 
-      // Get or create session
-      let session = sessions.get(sessionId);
+      // Process transcription using voice service
+      await voiceService.processTranscription(audioUrl, sessionId);
+      
+      // Get updated session
+      const session = voiceService.getSession(sessionId);
       if (!session) {
-        session = {
-          sessionId,
-          status: 'active',
-          startTime: new Date().toISOString()
-        };
+        return createErrorResponse('Session not found', 404);
       }
 
-      // Mock Deepgram transcription
-      const transcription = {
-        text: `Hello, this is a test transcription from ${audioUrl}`,
-        confidence: 0.95,
-        language,
-        timestamp: new Date().toISOString()
-      };
-
-      session.transcription = transcription;
-      sessions.set(sessionId, session);
-
       return createSuccessResponse({
-        transcription,
+        transcription: session.transcription,
         message: 'Transcription completed successfully'
       });
     }
@@ -188,15 +156,15 @@ export const GET: APIRoute = async ({ url }) => {
     const pathname = url.pathname;
     
     if (pathname.includes('/stats')) {
-      // Get transcription statistics
-      const allSessions = Array.from(sessions.values());
+      // Get transcription statistics from voice service
+      const allSessions = voiceService.getAllSessions();
       const sessionsWithTranscription = allSessions.filter(s => s.transcription);
       
       const stats = {
         totalSessions: allSessions.length,
         sessionsWithTranscription: sessionsWithTranscription.length,
         averageConfidence: sessionsWithTranscription.length > 0 
-          ? sessionsWithTranscription.reduce((sum, s) => sum + s.transcription.confidence, 0) / sessionsWithTranscription.length
+          ? sessionsWithTranscription.reduce((sum, s) => sum + (s.transcription?.confidence || 0), 0) / sessionsWithTranscription.length
           : 0,
         lastUpdated: new Date().toISOString()
       };
@@ -236,7 +204,7 @@ export const GET: APIRoute = async ({ url }) => {
         });
       }
 
-      const session = sessions.get(sessionId);
+      const session = voiceService.getSession(sessionId);
       if (!session || !session.transcription) {
         return new Response(JSON.stringify({
           error: 'Transcription not found'

@@ -1,0 +1,281 @@
+---
+// Test page for debugging Astro components
+// This page loads all three components and provides debugging information
+
+import HubSpotIntegration from '../components/dashboards/HubSpotIntegration.astro';
+import SalesforceIntegration from '../components/dashboards/SalesforceIntegration.astro';
+import WorkflowAutomation from '../components/dashboards/WorkflowAutomation.astro';
+---
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Component Debug Test - TETRIX</title>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      margin: 0; 
+      padding: 20px; 
+      background: #f5f5f5; 
+    }
+    .container { 
+      max-width: 1200px; 
+      margin: 0 auto; 
+    }
+    .header { 
+      background: white; 
+      padding: 20px; 
+      border-radius: 8px; 
+      margin-bottom: 20px; 
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .debug-panel { 
+      background: #1a1a1a; 
+      color: #00ff00; 
+      padding: 20px; 
+      border-radius: 8px; 
+      margin-bottom: 20px; 
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+    }
+    .component-section { 
+      background: white; 
+      padding: 20px; 
+      border-radius: 8px; 
+      margin-bottom: 20px; 
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .test-buttons { 
+      display: flex; 
+      gap: 10px; 
+      margin: 20px 0; 
+      flex-wrap: wrap;
+    }
+    .test-btn { 
+      background: #007bff; 
+      color: white; 
+      border: none; 
+      padding: 10px 20px; 
+      border-radius: 4px; 
+      cursor: pointer; 
+      font-size: 14px;
+    }
+    .test-btn:hover { 
+      background: #0056b3; 
+    }
+    .status { 
+      padding: 10px; 
+      margin: 10px 0; 
+      border-radius: 4px; 
+      font-weight: bold;
+    }
+    .status.success { 
+      background: #d4edda; 
+      color: #155724; 
+      border: 1px solid #c3e6cb;
+    }
+    .status.error { 
+      background: #f8d7da; 
+      color: #721c24; 
+      border: 1px solid #f5c6cb;
+    }
+    .status.warning { 
+      background: #fff3cd; 
+      color: #856404; 
+      border: 1px solid #ffeaa7;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🔧 TETRIX Component Debug Test</h1>
+      <p>This page tests the three main Astro components for proper initialization and functionality.</p>
+    </div>
+
+    <div class="debug-panel">
+      <h3>🐛 Debug Console</h3>
+      <div id="debug-output">
+        <div>Initializing component tests...</div>
+      </div>
+    </div>
+
+    <div class="test-buttons">
+      <button class="test-btn" onclick="testAllComponents()">Test All Components</button>
+      <button class="test-btn" onclick="testHubSpot()">Test HubSpot</button>
+      <button class="test-btn" onclick="testSalesforce()">Test Salesforce</button>
+      <button class="test-btn" onclick="testWorkflow()">Test Workflow</button>
+      <button class="test-btn" onclick="clearDebugOutput()">Clear Output</button>
+    </div>
+
+    <div class="component-section">
+      <h2>HubSpot Integration</h2>
+      <div id="hubspot-status" class="status warning">Not tested</div>
+      <HubSpotIntegration />
+    </div>
+
+    <div class="component-section">
+      <h2>Salesforce Integration</h2>
+      <div id="salesforce-status" class="status warning">Not tested</div>
+      <SalesforceIntegration />
+    </div>
+
+    <div class="component-section">
+      <h2>Workflow Automation</h2>
+      <div id="workflow-status" class="status warning">Not tested</div>
+      <WorkflowAutomation industry="healthcare" />
+    </div>
+  </div>
+
+  <script>
+    // Debug output management
+    function addDebugOutput(message, type = 'info') {
+      const output = document.getElementById('debug-output');
+      const timestamp = new Date().toLocaleTimeString();
+      const color = type === 'error' ? '#ff6b6b' : type === 'success' ? '#51cf66' : '#00ff00';
+      output.innerHTML += `<div style="color: ${color}">[${timestamp}] ${message}</div>`;
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function clearDebugOutput() {
+      document.getElementById('debug-output').innerHTML = '<div>Debug output cleared...</div>';
+    }
+
+    function updateStatus(component, status, message) {
+      const statusEl = document.getElementById(`${component}-status`);
+      statusEl.className = `status ${status}`;
+      statusEl.textContent = message;
+    }
+
+    // Test functions
+    function testAllComponents() {
+      addDebugOutput('🧪 Starting comprehensive component tests...', 'info');
+      testHubSpot();
+      testSalesforce();
+      testWorkflow();
+    }
+
+    function testHubSpot() {
+      addDebugOutput('🔧 Testing HubSpot Integration...', 'info');
+      
+      try {
+        // Test 1: Check if class exists
+        if (window.hubspotIntegration) {
+          addDebugOutput('✅ HubSpot class found', 'success');
+          
+          // Test 2: Check initialization status
+          const status = window.hubspotIntegration.getStatus();
+          if (status.initialized) {
+            addDebugOutput('✅ HubSpot initialized successfully', 'success');
+            updateStatus('hubspot', 'success', 'Initialized and working');
+          } else {
+            addDebugOutput('⚠️ HubSpot not fully initialized', 'warning');
+            updateStatus('hubspot', 'warning', 'Partially initialized');
+          }
+          
+          // Test 3: Check global functions
+          if (typeof window.openHubSpotModal === 'function') {
+            addDebugOutput('✅ HubSpot global functions available', 'success');
+          } else {
+            addDebugOutput('❌ HubSpot global functions missing', 'error');
+            updateStatus('hubspot', 'error', 'Global functions missing');
+          }
+          
+        } else {
+          addDebugOutput('❌ HubSpot class not found', 'error');
+          updateStatus('hubspot', 'error', 'Class not found');
+        }
+      } catch (error) {
+        addDebugOutput(`❌ HubSpot test failed: ${error.message}`, 'error');
+        updateStatus('hubspot', 'error', `Test failed: ${error.message}`);
+      }
+    }
+
+    function testSalesforce() {
+      addDebugOutput('🔧 Testing Salesforce Integration...', 'info');
+      
+      try {
+        // Test 1: Check if class exists
+        if (window.salesforceIntegration) {
+          addDebugOutput('✅ Salesforce class found', 'success');
+          
+          // Test 2: Check initialization status
+          const status = window.salesforceIntegration.getStatus();
+          if (status.initialized) {
+            addDebugOutput('✅ Salesforce initialized successfully', 'success');
+            updateStatus('salesforce', 'success', 'Initialized and working');
+          } else {
+            addDebugOutput('⚠️ Salesforce not fully initialized', 'warning');
+            updateStatus('salesforce', 'warning', 'Partially initialized');
+          }
+          
+          // Test 3: Check global functions
+          if (typeof window.openSalesforceModal === 'function') {
+            addDebugOutput('✅ Salesforce global functions available', 'success');
+          } else {
+            addDebugOutput('❌ Salesforce global functions missing', 'error');
+            updateStatus('salesforce', 'error', 'Global functions missing');
+          }
+          
+        } else {
+          addDebugOutput('❌ Salesforce class not found', 'error');
+          updateStatus('salesforce', 'error', 'Class not found');
+        }
+      } catch (error) {
+        addDebugOutput(`❌ Salesforce test failed: ${error.message}`, 'error');
+        updateStatus('salesforce', 'error', `Test failed: ${error.message}`);
+      }
+    }
+
+    function testWorkflow() {
+      addDebugOutput('🔧 Testing Workflow Automation...', 'info');
+      
+      try {
+        // Test 1: Check if class exists
+        if (window.workflowAutomation) {
+          addDebugOutput('✅ Workflow class found', 'success');
+          
+          // Test 2: Check initialization status
+          const status = window.workflowAutomation.getStatus();
+          if (status.initialized) {
+            addDebugOutput('✅ Workflow initialized successfully', 'success');
+            updateStatus('workflow', 'success', 'Initialized and working');
+          } else {
+            addDebugOutput('⚠️ Workflow not fully initialized', 'warning');
+            updateStatus('workflow', 'warning', 'Partially initialized');
+          }
+          
+          // Test 3: Check global functions
+          if (typeof window.startWorkflow === 'function') {
+            addDebugOutput('✅ Workflow global functions available', 'success');
+          } else {
+            addDebugOutput('❌ Workflow global functions missing', 'error');
+            updateStatus('workflow', 'error', 'Global functions missing');
+          }
+          
+        } else {
+          addDebugOutput('❌ Workflow class not found', 'error');
+          updateStatus('workflow', 'error', 'Class not found');
+        }
+      } catch (error) {
+        addDebugOutput(`❌ Workflow test failed: ${error.message}`, 'error');
+        updateStatus('workflow', 'error', `Test failed: ${error.message}`);
+      }
+    }
+
+    // Auto-run tests when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      addDebugOutput('🚀 Page loaded, starting auto-tests...', 'info');
+      setTimeout(() => {
+        testAllComponents();
+      }, 1000); // Wait 1 second for components to initialize
+    });
+
+    // Global error handler
+    window.addEventListener('error', (event) => {
+      addDebugOutput(`❌ Global error: ${event.error.message}`, 'error');
+    });
+  </script>
+</body>
+</html>

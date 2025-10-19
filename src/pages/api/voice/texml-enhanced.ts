@@ -4,7 +4,7 @@
 import type { APIRoute } from 'astro';
 
 // Industry-specific TeXML response generators
-class TeXMLResponseGenerator {
+export class TeXMLResponseGenerator {
   private webhookUrl: string;
 
   constructor() {

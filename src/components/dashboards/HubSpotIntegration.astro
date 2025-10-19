@@ -2,23 +2,8 @@
 // TETRIX HubSpot Integration Component
 // Provides HubSpot CRM integration for industry dashboards
 
-import { TETRIXHubSpotIntegration } from '../../services/integrations/UniversalCRMIntegration';
-
-// Initialize HubSpot integration
-const hubspotConfig = {
-  apiKey: process.env.HUBSPOT_API_KEY || '',
-  accessToken: process.env.HUBSPOT_ACCESS_TOKEN || '',
-  baseUrl: 'https://api.hubapi.com',
-  version: '3.0'
-};
-
-const hubspot = new TETRIXHubSpotIntegration({
-  provider: 'hubspot',
-  ...hubspotConfig
-});
-
-// Connect to HubSpot
-await hubspot.connect();
+// Note: Service initialization moved to client-side to avoid build issues
+// The component will handle data loading through JavaScript
 ---
 
 <div class="hubspot-integration bg-white rounded-lg shadow-md p-6">
@@ -222,13 +207,68 @@ await hubspot.connect();
   // HubSpot Integration JavaScript
   class HubSpotIntegration {
     constructor() {
-      this.modal = document.getElementById('hubspot-modal');
-      this.init();
+      /** @type {boolean} */
+      this.debug = window.location.hostname === 'localhost';
+      /** @type {HTMLElement | null} */
+      this.modal = null;
+      /** @type {boolean} */
+      this.initialized = false;
+      
+      if (this.debug) {
+        console.log('🔧 HubSpotIntegration: Constructor called');
+      }
+      
+      // Initialize after DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => this.init());
+      } else {
+        this.init();
+      }
     }
 
     async init() {
-      await this.loadHubSpotData();
-      this.bindEvents();
+      try {
+        if (this.debug) {
+          console.log('🔧 HubSpotIntegration: Initializing...');
+        }
+        
+        // Wait for DOM elements to be available
+        await this.waitForElements();
+        
+        await this.loadHubSpotData();
+        this.bindEvents();
+        
+        this.initialized = true;
+        
+        if (this.debug) {
+          console.log('✅ HubSpotIntegration: Initialization complete');
+        }
+      } catch (error) {
+        console.error('❌ HubSpotIntegration: Initialization failed:', error);
+        this.showError('Failed to initialize HubSpot integration');
+      }
+    }
+
+    async waitForElements() {
+      return new Promise((resolve) => {
+        const checkElements = () => {
+          this.modal = document.getElementById('hubspot-modal');
+          
+          if (this.modal) {
+            if (this.debug) {
+              console.log('✅ HubSpotIntegration: Modal element found');
+            }
+            resolve();
+          } else {
+            if (this.debug) {
+              console.log('⏳ HubSpotIntegration: Waiting for modal element...');
+            }
+            setTimeout(checkElements, 100);
+          }
+        };
+        
+        checkElements();
+      });
     }
 
     bindEvents() {
@@ -238,7 +278,7 @@ await hubspot.connect();
       });
 
       // Close on backdrop click
-      this.modal?.addEventListener('click', (e) => {
+      this.modal?.addEventListener('click', (/** @type {Event} */ e) => {
         if (e.target === this.modal) {
           this.closeModal();
         }
@@ -247,6 +287,10 @@ await hubspot.connect();
 
     async loadHubSpotData() {
       try {
+        if (this.debug) {
+          console.log('🔧 HubSpotIntegration: Loading data...');
+        }
+        
         // Load counts
         await this.loadCounts();
         
@@ -258,13 +302,22 @@ await hubspot.connect();
         
         // Update sync status
         this.updateSyncStatus();
+        
+        if (this.debug) {
+          console.log('✅ HubSpotIntegration: Data loaded successfully');
+        }
       } catch (error) {
-        console.error('Failed to load HubSpot data:', error);
+        console.error('❌ HubSpotIntegration: Failed to load data:', error);
+        this.showError('Failed to load HubSpot data');
       }
     }
 
     async loadCounts() {
       try {
+        if (this.debug) {
+          console.log('🔧 HubSpotIntegration: Loading counts...');
+        }
+        
         // Simulate API calls to HubSpot
         const counts = {
           contacts: Math.floor(Math.random() * 2000) + 1000,
@@ -273,12 +326,18 @@ await hubspot.connect();
           emails: Math.floor(Math.random() * 5000) + 2000
         };
 
-        document.getElementById('hubspot-contacts-count').textContent = counts.contacts.toLocaleString();
-        document.getElementById('hubspot-companies-count').textContent = counts.companies.toLocaleString();
-        document.getElementById('hubspot-deals-count').textContent = counts.deals.toLocaleString();
-        document.getElementById('hubspot-emails-count').textContent = counts.emails.toLocaleString();
+        // Update DOM elements with error checking
+        this.updateElement('hubspot-contacts-count', counts.contacts.toLocaleString());
+        this.updateElement('hubspot-companies-count', counts.companies.toLocaleString());
+        this.updateElement('hubspot-deals-count', counts.deals.toLocaleString());
+        this.updateElement('hubspot-emails-count', counts.emails.toLocaleString());
+        
+        if (this.debug) {
+          console.log('✅ HubSpotIntegration: Counts loaded:', counts);
+        }
       } catch (error) {
-        console.error('Failed to load HubSpot counts:', error);
+        console.error('❌ HubSpotIntegration: Failed to load counts:', error);
+        this.showError('Failed to load contact counts');
       }
     }
 
@@ -344,6 +403,7 @@ await hubspot.connect();
       document.getElementById('hubspot-marketing-score').textContent = '85/100';
     }
 
+    /** @param {string} type */
     openModal(type) {
       const titles = {
         contact: 'Create New Contact',
@@ -352,11 +412,15 @@ await hubspot.connect();
         email: 'Send Email Campaign'
       };
 
-      document.getElementById('hubspot-modal-title').textContent = titles[type] || 'HubSpot';
-      document.getElementById('hubspot-modal-content').innerHTML = this.getModalContent(type);
-      this.modal.classList.remove('hidden');
+      const titleEl = document.getElementById('hubspot-modal-title');
+      const contentEl = document.getElementById('hubspot-modal-content');
+      
+      if (titleEl) titleEl.textContent = titles[type] || 'HubSpot';
+      if (contentEl) contentEl.innerHTML = this.getModalContent(type);
+      if (this.modal) this.modal.classList.remove('hidden');
     }
 
+    /** @param {string} type */
     getModalContent(type) {
       const forms = {
         contact: `
@@ -446,21 +510,82 @@ await hubspot.connect();
     }
 
     closeModal() {
-      this.modal.classList.add('hidden');
+      if (this.modal) {
+        this.modal.classList.add('hidden');
+      }
+    }
+
+    // Utility methods
+    /** @param {string} id @param {string} value */
+    updateElement(id, value) {
+      const element = document.getElementById(id);
+      if (element) {
+        element.textContent = value;
+      } else if (this.debug) {
+        console.warn(`⚠️ HubSpotIntegration: Element not found: ${id}`);
+      }
+    }
+
+    /** @param {string} message */
+    showError(message) {
+      console.error(`❌ HubSpotIntegration: ${message}`);
+      // You could add a toast notification or error display here
+    }
+
+    getStatus() {
+      return {
+        initialized: this.initialized,
+        modal: !!this.modal,
+        debug: this.debug
+      };
     }
   }
 
-  // Initialize HubSpot integration
-  document.addEventListener('DOMContentLoaded', () => {
-    window.hubspotIntegration = new HubSpotIntegration();
-  });
+  // Initialize HubSpot integration with error handling
+  function initializeHubSpotIntegration() {
+    try {
+      if (window.hubspotIntegration) {
+        console.warn('⚠️ HubSpotIntegration: Already initialized');
+        return;
+      }
+      
+      window.hubspotIntegration = new HubSpotIntegration();
+      
+      // Global functions with error handling
+      window.openHubSpotModal = (/** @type {string} */ type) => {
+        try {
+          if (window.hubspotIntegration?.openModal) {
+            window.hubspotIntegration.openModal(type);
+          } else {
+            console.error('❌ HubSpotIntegration: Not initialized or openModal method not available');
+          }
+        } catch (error) {
+          console.error('❌ HubSpotIntegration: Error opening modal:', error);
+        }
+      };
 
-  // Global functions
-  window.openHubSpotModal = (type) => {
-    window.hubspotIntegration?.openModal(type);
-  };
+      window.closeHubSpotModal = () => {
+        try {
+          if (window.hubspotIntegration?.closeModal) {
+            window.hubspotIntegration.closeModal();
+          } else {
+            console.error('❌ HubSpotIntegration: Not initialized or closeModal method not available');
+          }
+        } catch (error) {
+          console.error('❌ HubSpotIntegration: Error closing modal:', error);
+        }
+      };
+      
+      console.log('✅ HubSpotIntegration: Global functions registered');
+    } catch (error) {
+      console.error('❌ HubSpotIntegration: Failed to initialize:', error);
+    }
+  }
 
-  window.closeHubSpotModal = () => {
-    window.hubspotIntegration?.closeModal();
-  };
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeHubSpotIntegration);
+  } else {
+    initializeHubSpotIntegration();
+  }
 </script>

@@ -28,7 +28,7 @@ export class TeXMLIntegrationService {
 
   // Healthcare Integration
   async generateHealthcareTeXML(scenario: string, patientData?: any): Promise<string> {
-    const variables = {
+    const variables: any = {
       patient_services_number: this.config.phoneNumbers.primary,
       emergency_services_number: this.config.phoneNumbers.emergency,
       billing_services_number: this.config.phoneNumbers.secondary
@@ -36,8 +36,8 @@ export class TeXMLIntegrationService {
 
     // Add patient-specific data if available
     if (patientData) {
-      variables.patient_name = patientData.name || '';
-      variables.patient_id = patientData.id || '';
+      variables.patient_name = patientData.patient_name || '';
+      variables.patient_id = patientData.patient_id || '';
     }
 
     return this.industryGenerator.generateHealthcareTeXML(scenario, variables);
@@ -45,7 +45,7 @@ export class TeXMLIntegrationService {
 
   // Legal Integration
   async generateLegalTeXML(scenario: string, clientData?: any): Promise<string> {
-    const variables = {
+    const variables: any = {
       legal_services_number: this.config.phoneNumbers.primary,
       attorney_support_number: this.config.phoneNumbers.secondary,
       emergency_legal_number: this.config.phoneNumbers.emergency
@@ -62,7 +62,7 @@ export class TeXMLIntegrationService {
 
   // Fleet Management Integration
   async generateFleetTeXML(scenario: string, vehicleData?: any): Promise<string> {
-    const variables = {
+    const variables: any = {
       emergency_dispatch_number: this.config.phoneNumbers.emergency,
       fleet_coordination_number: this.config.phoneNumbers.primary,
       maintenance_dispatch_number: this.config.phoneNumbers.secondary
@@ -79,7 +79,7 @@ export class TeXMLIntegrationService {
 
   // General Business Integration
   async generateGeneralTeXML(scenario: string, businessData?: any): Promise<string> {
-    const variables = {
+    const variables: any = {
       sales_number: this.config.phoneNumbers.primary,
       support_number: this.config.phoneNumbers.secondary,
       operator_number: this.config.phoneNumbers.emergency

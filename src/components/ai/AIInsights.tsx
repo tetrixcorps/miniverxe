@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AIInsight } from '../../services/openwebui';
+import type { AIInsight } from '../../services/openwebui';
 
 interface AIInsightsProps {
   industry: string;

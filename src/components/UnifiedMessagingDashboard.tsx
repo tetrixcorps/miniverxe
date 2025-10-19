@@ -2,8 +2,10 @@
 // Integrates WhatsApp, SMS, Voice, and AI Chat in a single interface
 
 import React, { useState, useEffect, useRef } from 'react';
-import { crossPlatformSessionService, CrossPlatformSession } from '../services/crossPlatformSessionService';
-import { whatsappOnboardingService, WABAStatus } from '../services/whatsappOnboardingService';
+import { crossPlatformSessionService } from '../services/crossPlatformSessionService';
+import type { CrossPlatformSession } from '../services/crossPlatformSessionService';
+import { whatsappOnboardingService } from '../services/whatsappOnboardingService';
+import type { WABAStatus } from '../services/whatsappOnboardingService';
 import { stripeTrialService } from '../services/stripeTrialService';
 
 interface UnifiedMessagingDashboardProps {

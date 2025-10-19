@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import { openWebUIService, DocumentAnalysis } from '../../services/openwebui';
+import { openWebUIService } from '../../services/openwebui';
+import type { DocumentAnalysis } from '../../services/openwebui';
 
 interface DocumentAnalyzerProps {
   industry: string;

@@ -17,7 +17,7 @@ export const GET: APIRoute = async ({ request }) => {
     
     console.log('✅ JWKS served successfully:', {
       keyCount: jwks.keys.length,
-      keyIds: jwks.keys.map(k => k.kid)
+      keyIds: jwks.keys.map((k: any) => k.kid)
     });
 
     // Set appropriate headers for Epic FHIR

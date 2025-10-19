@@ -149,12 +149,18 @@ import JoRoMiIntegration from '../integration/JoRoMiIntegration.astro';
         const codeAcademyBtn = document.getElementById('open-code-academy-modal');
         const codeAcademyBtnMobile = document.getElementById('open-code-academy-modal-mobile');
 
-        // Code Academy button handlers - Redirect to subdomain
+        // Code Academy button handlers - 2FA authentication
         if (codeAcademyBtn) {
           codeAcademyBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            // Redirect to Code Academy subdomain
-            window.location.href = '/code-academy';
+            // Set authentication context for Code Academy
+            (window as any).tetrixAuthContext = 'code-academy';
+            // Open 2FA modal
+            if ((window as any).open2FAModal) {
+              (window as any).open2FAModal();
+            } else {
+              console.error('2FA modal not available');
+            }
             // Close mobile menu if open
             if (menu) {
               menu.classList.add('hidden');
@@ -166,8 +172,14 @@ import JoRoMiIntegration from '../integration/JoRoMiIntegration.astro';
         if (codeAcademyBtnMobile) {
           codeAcademyBtnMobile.addEventListener('click', function(e) {
             e.preventDefault();
-            // Redirect to Code Academy subdomain
-            window.location.href = '/code-academy';
+            // Set authentication context for Code Academy
+            (window as any).tetrixAuthContext = 'code-academy';
+            // Open 2FA modal
+            if ((window as any).open2FAModal) {
+              (window as any).open2FAModal();
+            } else {
+              console.error('2FA modal not available');
+            }
             // Close mobile menu
             if (menu) {
               menu.classList.add('hidden');
@@ -182,15 +194,12 @@ import JoRoMiIntegration from '../integration/JoRoMiIntegration.astro';
         const clientLoginBtn = document.getElementById('client-login-2fa-btn');
         const clientLoginBtnMobile = document.getElementById('client-login-2fa-btn-mobile');
 
-        // JoRoMi button handlers are now handled by JoRoMiIntegration component
-        // This ensures proper environment detection and fallback handling
-
-        // Client Login button handlers - 2FA authentication with industry selection
-        if (clientLoginBtn) {
-          clientLoginBtn.addEventListener('click', function(e) {
+        // JoRoMi button handlers - 2FA authentication
+        if (joromiBtn) {
+          joromiBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            // Set authentication context for dashboard
-            (window as any).tetrixAuthContext = 'dashboard';
+            // Set authentication context for JoRoMi
+            (window as any).tetrixAuthContext = 'joromi';
             // Open 2FA modal
             if ((window as any).open2FAModal) {
               (window as any).open2FAModal();
@@ -205,16 +214,55 @@ import JoRoMiIntegration from '../integration/JoRoMiIntegration.astro';
           });
         }
 
-        if (clientLoginBtnMobile) {
-          clientLoginBtnMobile.addEventListener('click', function(e) {
+        if (joromiBtnMobile) {
+          joromiBtnMobile.addEventListener('click', function(e) {
             e.preventDefault();
-            // Set authentication context for dashboard
-            (window as any).tetrixAuthContext = 'dashboard';
+            // Set authentication context for JoRoMi
+            (window as any).tetrixAuthContext = 'joromi';
             // Open 2FA modal
             if ((window as any).open2FAModal) {
               (window as any).open2FAModal();
             } else {
               console.error('2FA modal not available');
+            }
+            // Close mobile menu
+            if (menu) {
+              menu.classList.add('hidden');
+              btn?.setAttribute('aria-expanded', 'false');
+            }
+          });
+        }
+
+        // Client Login button handlers - Industry authentication with industry selection
+        if (clientLoginBtn) {
+          clientLoginBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Set authentication context for dashboard
+            (window as any).tetrixAuthContext = 'dashboard';
+            // Open Industry Auth modal
+            if ((window as any).openIndustryAuthModal) {
+              (window as any).openIndustryAuthModal();
+            } else {
+              console.error('Industry Auth modal not available');
+            }
+            // Close mobile menu if open
+            if (menu) {
+              menu.classList.add('hidden');
+              btn?.setAttribute('aria-expanded', 'false');
+            }
+          });
+        }
+
+        if (clientLoginBtnMobile) {
+          clientLoginBtnMobile.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Set authentication context for dashboard
+            (window as any).tetrixAuthContext = 'dashboard';
+            // Open Industry Auth modal
+            if ((window as any).openIndustryAuthModal) {
+              (window as any).openIndustryAuthModal();
+            } else {
+              console.error('Industry Auth modal not available');
             }
             // Close mobile menu
             if (menu) {

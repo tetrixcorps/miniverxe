@@ -1,7 +1,7 @@
 // Voice Call Initiation API Endpoint
 // Handles voice call initiation with Telnyx and Deepgram STT
 
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { telnyxVoiceService } from '../../services/telnyxVoiceService';
 
 export const initiateVoiceCall = async (req: Request, res: Response) => {
@@ -62,14 +62,14 @@ export const initiateVoiceCall = async (req: Request, res: Response) => {
     console.error('Voice call initiation failed:', error);
     
     // Handle specific error types
-    if (error.message.includes('API key not configured')) {
+    if (error instanceof Error && error.message.includes('API key not configured')) {
       return res.status(500).json({
         error: 'Voice service not properly configured',
         message: 'Please check your Telnyx API configuration'
       });
     }
     
-    if (error.message.includes('Telnyx API error')) {
+    if (error instanceof Error && error.message.includes('Telnyx API error')) {
       return res.status(502).json({
         error: 'External service error',
         message: 'Failed to connect to Telnyx API'
@@ -78,7 +78,7 @@ export const initiateVoiceCall = async (req: Request, res: Response) => {
 
     res.status(500).json({
       error: 'Failed to initiate voice call',
-      message: error.message
+      message: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 };
@@ -110,7 +110,7 @@ export const getCallStatus = async (req: Request, res: Response) => {
     console.error('Failed to get call status:', error);
     res.status(500).json({
       error: 'Failed to get call status',
-      message: error.message
+      message: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 };
@@ -149,7 +149,7 @@ export const endCall = async (req: Request, res: Response) => {
     console.error('Failed to end call:', error);
     res.status(500).json({
       error: 'Failed to end call',
-      message: error.message
+      message: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 };
@@ -168,7 +168,7 @@ export const getActiveSessions = async (req: Request, res: Response) => {
     console.error('Failed to get active sessions:', error);
     res.status(500).json({
       error: 'Failed to get active sessions',
-      message: error.message
+      message: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 };
@@ -186,7 +186,7 @@ export const cleanupSessions = async (req: Request, res: Response) => {
     console.error('Failed to cleanup sessions:', error);
     res.status(500).json({
       error: 'Failed to cleanup sessions',
-      message: error.message
+      message: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 };

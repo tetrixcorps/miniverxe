@@ -158,7 +158,7 @@ export const POST: APIRoute = async ({ params, request }) => {
     // Add user message
     const userMessage = {
       id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      role: 'user',
+      role: 'user' as const,
       content: message,
       timestamp: new Date().toISOString(),
       type: 'text'
@@ -172,7 +172,7 @@ export const POST: APIRoute = async ({ params, request }) => {
     // Create AI message
     const aiMessage = {
       id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      role: 'assistant',
+      role: 'assistant' as const,
       content: aiResponse,
       timestamp: new Date().toISOString(),
       type: 'text',

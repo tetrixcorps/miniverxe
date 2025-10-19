@@ -357,56 +357,90 @@
     formatPhoneNumber(input: HTMLInputElement) {
       let value = input.value;
       
-      // Allow + at the beginning
-      if (value.startsWith('+')) {
-        // Keep the + and format the rest
-        let digits = value.slice(1).replace(/\D/g, '');
-        if (digits.length > 0) {
-          // Handle different country codes and lengths
-          if (digits.length <= 3) {
-            value = `+${digits}`;
-          } else if (digits.length <= 6) {
-            value = `+${digits.slice(0, 1)} (${digits.slice(1, 4)}) ${digits.slice(4)}`;
-          } else if (digits.length <= 10) {
-            value = `+${digits.slice(0, 1)} (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
-          } else {
-            value = `+${digits.slice(0, 1)} (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7, 11)}`;
-          }
+      // Remove all non-digit characters except +
+      let cleanValue = value.replace(/[^\d+]/g, '');
+      
+      // Remove double plus signs
+      if (cleanValue.startsWith('++')) {
+        cleanValue = cleanValue.substring(1);
+      }
+      
+      // Ensure single + at the beginning
+      if (!cleanValue.startsWith('+')) {
+        cleanValue = '+' + cleanValue;
+      }
+      
+      // Extract digits after the +
+      let digits = cleanValue.slice(1).replace(/\D/g, '');
+      
+      if (digits.length > 0) {
+        // Handle US numbers (10 digits) - add +1
+        if (digits.length === 10) {
+          value = `+1 (${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+        }
+        // Handle US numbers (11 digits starting with 1)
+        else if (digits.length === 11 && digits.startsWith('1')) {
+          value = `+1 (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
+        }
+        // Handle other international numbers - more flexible formatting
+        else if (digits.length <= 3) {
+          value = `+${digits}`;
+        } else if (digits.length <= 6) {
+          value = `+${digits.slice(0, 1)} (${digits.slice(1, 4)}) ${digits.slice(4)}`;
+        } else if (digits.length <= 10) {
+          value = `+${digits.slice(0, 1)} (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
+        } else if (digits.length <= 12) {
+          // Handle longer international numbers
+          value = `+${digits.slice(0, 2)} (${digits.slice(2, 5)}) ${digits.slice(5, 8)}-${digits.slice(8)}`;
         } else {
-          value = '+';
+          // Very long numbers - just add + and basic formatting
+          value = `+${digits.slice(0, 2)} (${digits.slice(2, 5)}) ${digits.slice(5, 8)}-${digits.slice(8, 12)}`;
         }
       } else {
-        // No + at beginning, add it and format
-        let digits = value.replace(/\D/g, '');
-        if (digits.length > 0) {
-          // Handle US numbers (10 digits) - add +1
-          if (digits.length === 10) {
-            value = `+1 (${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
-          }
-          // Handle US numbers (11 digits starting with 1)
-          else if (digits.length === 11 && digits.startsWith('1')) {
-            value = `+1 (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
-          }
-          // Handle other international numbers - more flexible formatting
-          else if (digits.length <= 3) {
-            value = `+${digits}`;
-          } else if (digits.length <= 6) {
-            value = `+${digits.slice(0, 1)} (${digits.slice(1, 4)}) ${digits.slice(4)}`;
-          } else if (digits.length <= 10) {
-            value = `+${digits.slice(0, 1)} (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
-          } else if (digits.length <= 12) {
-            // Handle longer international numbers
-            value = `+${digits.slice(0, 2)} (${digits.slice(2, 5)}) ${digits.slice(5, 8)}-${digits.slice(8)}`;
-          } else {
-            // Very long numbers - just add + and basic formatting
-            value = `+${digits.slice(0, 2)} (${digits.slice(2, 5)}) ${digits.slice(5, 8)}-${digits.slice(8, 12)}`;
-          }
-        } else {
-          value = '';
-        }
+        value = '+';
       }
       
       input.value = value;
+    }
+
+    validatePhoneNumber(phoneNumber: string): { isValid: boolean; error?: string; formatted?: string } {
+      if (!phoneNumber) {
+        return { isValid: false, error: 'Phone number is required' };
+      }
+
+      // Remove all non-digit characters except +
+      let cleanPhone = phoneNumber.replace(/[^\d+]/g, '');
+      
+      // Remove double plus signs
+      if (cleanPhone.startsWith('++')) {
+        cleanPhone = cleanPhone.substring(1);
+      }
+      
+      // Ensure it starts with +
+      if (!cleanPhone.startsWith('+')) {
+        cleanPhone = '+' + cleanPhone;
+      }
+      
+      // Extract digits after the +
+      const digits = cleanPhone.slice(1).replace(/\D/g, '');
+      
+      // Validate length (international numbers can be 7-15 digits)
+      if (digits.length < 7 || digits.length > 15) {
+        return { 
+          isValid: false, 
+          error: 'Phone number must be 7-15 digits. Examples: +1 (555) 123-4567, +44 20 7946 0958' 
+        };
+      }
+
+      // Additional validation for US numbers
+      if (digits.startsWith('1') && digits.length !== 11) {
+        return { 
+          isValid: false, 
+          error: 'US/Canada numbers must be 11 digits (including country code 1)' 
+        };
+      }
+
+      return { isValid: true, formatted: cleanPhone };
     }
 
     async handlePhoneSubmit() {
@@ -416,38 +450,24 @@
       // Extract phone number with proper international formatting
       let phoneValue = phoneInput?.value || '';
       
-      // Remove all non-digit characters except +
-      let cleanPhone = phoneValue.replace(/[^\d+]/g, '');
-      
-      // Ensure it starts with +
-      if (!cleanPhone.startsWith('+')) {
-        cleanPhone = '+' + cleanPhone;
+      // Use standardized phone validation
+      const phoneValidation = this.validatePhoneNumber(phoneValue);
+      if (!phoneValidation.isValid) {
+        this.showError(phoneValidation.error || 'Invalid phone number format');
+        return;
       }
-      
-      // Extract just the digits for validation (remove + prefix)
-      this.phoneNumber = cleanPhone.slice(1);
+
+      this.phoneNumber = phoneValidation.formatted!; // Keep + prefix for consistency
       this.method = methodSelect?.value || 'sms';
-
-      // Validate phone number length (international numbers can be 7-15 digits)
-      if (!this.phoneNumber || this.phoneNumber.length < 7 || this.phoneNumber.length > 15) {
-        this.showError('Please enter a valid international phone number (7-15 digits). Examples: +1 (555) 123-4567, +44 20 7946 0958, +33 1 42 86 83 26');
-        return;
-      }
-
-      // Additional validation for common country codes
-      if (this.phoneNumber.startsWith('1') && this.phoneNumber.length !== 11) {
-        this.showError('US/Canada numbers must be 11 digits (including country code 1)');
-        return;
-      }
 
       this.setLoading('send-code', true);
       this.hideError();
 
       try {
-        console.log('Initiating 2FA for phone:', `+${this.phoneNumber}`, 'method:', this.method);
+        console.log('Initiating 2FA for phone:', this.phoneNumber, 'method:', this.method);
         
         const requestBody = {
-          phoneNumber: `+${this.phoneNumber}`,
+          phoneNumber: this.phoneNumber, // Already includes + prefix
           method: this.method,
           userAgent: navigator.userAgent,
           ipAddress: await this.getClientIP(),
@@ -456,7 +476,7 @@
         
         console.log('2FA request body:', requestBody);
         
-        const response = await fetch('/api/v2/2fa/initiate', {
+        const response = await fetch('https://tetrix-2fa-simple-fhafz.ondigitalocean.app/api/v2/2fa/initiate', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -502,7 +522,7 @@
       try {
         console.log('Verifying code:', code, 'for verification ID:', this.verificationId);
         
-        const response = await fetch('/api/v2/2fa/verify', {
+        const response = await fetch('https://tetrix-2fa-simple-fhafz.ondigitalocean.app/api/v2/2fa/verify', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -510,7 +530,7 @@
           body: JSON.stringify({
             verificationId: this.verificationId,
             code: code,
-            phoneNumber: `+${this.phoneNumber}`
+            phoneNumber: this.phoneNumber // Already includes + prefix
           })
         });
 
@@ -519,6 +539,20 @@
         console.log('2FA verification result:', result);
 
         if (result.success && result.verified) {
+          // Check if this is being called from industry auth
+          if ((window as any).handle2FAResult) {
+            // Return result to industry auth
+            (window as any).handle2FAResult({
+              success: true,
+              phoneNumber: this.phoneNumber,
+              verificationId: this.verificationId,
+              token: result.token
+            });
+            // Close the 2FA modal
+            this.closeModal();
+            return;
+          }
+          
           this.showStep(3);
           this.hideError();
           // Store authentication token
@@ -531,7 +565,8 @@
           // Show context-specific buttons based on authentication context
           this.showContextSpecificButtons();
         } else {
-          this.showError(result.message || result.error || 'Invalid verification code. Please try again.');
+          const errorMessage = this.getDetailedErrorMessage(result);
+          this.showError(errorMessage);
         }
       } catch (error) {
         console.error('2FA verification error:', error);
@@ -553,7 +588,7 @@
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            phoneNumber: `+${this.phoneNumber}`,
+            phoneNumber: this.phoneNumber, // Already includes + prefix
             method: this.method,
             userAgent: navigator.userAgent,
             ipAddress: await this.getClientIP(),
@@ -603,22 +638,8 @@
     }
 
     showContextButton() {
-      // Hide all redirect buttons
-      document.getElementById('redirect-code-academy')?.classList.add('hidden');
-      document.getElementById('redirect-dashboard')?.classList.add('hidden');
-      document.getElementById('redirect-custom')?.classList.add('hidden');
-
-      // Show the appropriate button based on context
-      switch (this.authContext) {
-        case 'code-academy':
-          document.getElementById('redirect-code-academy')?.classList.remove('hidden');
-          break;
-        case 'dashboard':
-          document.getElementById('redirect-dashboard')?.classList.remove('hidden');
-          break;
-        default:
-          document.getElementById('redirect-custom')?.classList.remove('hidden');
-      }
+      // Use the more comprehensive showContextSpecificButtons method
+      this.showContextSpecificButtons();
     }
 
     formatPhoneDisplay(phone: string) {
@@ -714,6 +735,35 @@
 
     generateSessionId() {
       return 'session_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+    }
+
+    getDetailedErrorMessage(result: any): string {
+      // Handle specific error cases
+      if (result.details?.responseCode) {
+        switch (result.details.responseCode) {
+          case 'rejected':
+            return 'Invalid verification code. Please check the code and try again.';
+          case 'expired':
+            return 'Verification code has expired. Please request a new code.';
+          case 'max_attempts':
+            return 'Maximum verification attempts exceeded. Please request a new code.';
+          case 'invalid_phone_number':
+            return 'Invalid phone number format. Please check your number and try again.';
+          default:
+            return result.details.message || 'Verification failed. Please try again.';
+        }
+      }
+      
+      // Handle general error messages
+      if (result.message) {
+        return result.message;
+      }
+      
+      if (result.error) {
+        return result.error;
+      }
+      
+      return 'Verification failed. Please try again.';
     }
 
     openModal() {

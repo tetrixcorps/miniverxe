@@ -5,6 +5,7 @@ import Footer from './Footer.astro';
 import ServiceModals from '../ServiceModals.astro';
 import SeamlessTransition from '../SeamlessTransition.astro';
 import IndustryAuth from '../auth/IndustryAuth.astro';
+import TwoFAModal from '../auth/2FAModal.astro';
 // MainLayout.astro
 ---
 
@@ -72,6 +73,9 @@ import IndustryAuth from '../auth/IndustryAuth.astro';
   
   <!-- Industry Authentication Modal -->
   <IndustryAuth />
+  
+  <!-- 2FA Authentication Modal -->
+  <TwoFAModal />
   
   <!-- Seamless Transition Component -->
   <SeamlessTransition />

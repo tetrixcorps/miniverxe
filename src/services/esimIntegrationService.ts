@@ -227,7 +227,16 @@ class ESIMIntegrationService {
       }
     };
 
-    return configurations[serviceType as keyof typeof configurations]?.[planTier as keyof typeof configurations[typeof serviceType]] || {
+    const serviceConfig = configurations[serviceType as keyof typeof configurations];
+    if (!serviceConfig) {
+      return {
+        esimType: 'standard',
+        features: ['voice', 'sms', 'data'],
+        priority: 'normal'
+      };
+    }
+    
+    return (serviceConfig as any)[planTier] || {
       esimType: 'standard',
       features: ['voice', 'sms', 'data'],
       priority: 'normal'
@@ -279,16 +288,7 @@ class ESIMIntegrationService {
         to: customerEmail,
         channel: 'email',
         subject,
-        content: {
-          html: content.html,
-          text: content.text
-        },
-        attachments: [
-          {
-            filename: `esim-qr-${activationDetails.orderId}.png`,
-            content: activationDetails.qrCode // Base64 encoded QR code
-          }
-        ]
+        content: content.html || content.text
       });
 
       return { success: result.success };

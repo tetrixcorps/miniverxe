@@ -217,7 +217,7 @@ export abstract class BaseLegalIntegration {
   /**
    * Initialize OAuth flow
    */
-  abstract initiateOAuthFlow(state: string): string;
+  abstract initiateOAuthFlow(state: string): Promise<string>;
 
   /**
    * Exchange code for tokens
@@ -367,7 +367,7 @@ export class TETRIXClioIntegration extends BaseLegalIntegration {
     super(config);
   }
 
-  async initiateOAuthFlow(state: string): string {
+  async initiateOAuthFlow(state: string): Promise<string> {
     const authUrl = new URL(`${this.config.baseUrl}/oauth/authorize`);
     authUrl.searchParams.set('client_id', this.config.clientId);
     authUrl.searchParams.set('redirect_uri', this.config.redirectUri);
@@ -676,7 +676,7 @@ export class TETRIXMyCaseIntegration extends BaseLegalIntegration {
     super(config);
   }
 
-  async initiateOAuthFlow(state: string): string {
+  async initiateOAuthFlow(state: string): Promise<string> {
     const authUrl = new URL(`${this.config.baseUrl}/oauth/authorize`);
     authUrl.searchParams.set('client_id', this.config.clientId);
     authUrl.searchParams.set('redirect_uri', this.config.redirectUri);
@@ -977,7 +977,7 @@ export class TETRIXPracticePantherIntegration extends BaseLegalIntegration {
     super(config);
   }
 
-  async initiateOAuthFlow(state: string): string {
+  async initiateOAuthFlow(state: string): Promise<string> {
     const authUrl = new URL(`${this.config.baseUrl}/oauth/authorize`);
     authUrl.searchParams.set('client_id', this.config.clientId);
     authUrl.searchParams.set('redirect_uri', this.config.redirectUri);

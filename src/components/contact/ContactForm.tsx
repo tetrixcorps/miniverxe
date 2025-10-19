@@ -1,29 +1,15 @@
 import React, { useState } from 'react';
 import PhoneInput from './PhoneInput';
+import { Contact, ContactFormProps } from '../../types/contact';
 
-interface Contact {
-  id?: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  email?: string;
-  company?: string;
-  industry: string;
-  tags: string[];
-  notes?: string;
-  smsOptIn: boolean;
-  emailOptIn: boolean;
-  preferredContactTime?: string;
-  timezone: string;
-  customFields: Record<string, any>;
-}
-
-interface ContactFormProps {
-  industry: string;
-  initialData?: Partial<Contact>;
-  onSubmit: (contact: Contact) => void;
-  onCancel: () => void;
-  isLoading?: boolean;
+interface PhoneValidation {
+  isValid: boolean;
+  formattedNumber: string;
+  countryCode: string;
+  nationalNumber: string;
+  carrier?: string;
+  lineType?: 'mobile' | 'landline' | 'voip' | 'unknown';
+  validationSource: 'twilio' | 'libphonenumber' | 'manual';
 }
 
 const ContactForm: React.FC<ContactFormProps> = ({
@@ -34,6 +20,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
   isLoading = false
 }) => {
   const [formData, setFormData] = useState<Contact>({
+    id: initialData.id || '',
     firstName: initialData.firstName || '',
     lastName: initialData.lastName || '',
     phoneNumber: initialData.phoneNumber || '',
@@ -47,16 +34,37 @@ const ContactForm: React.FC<ContactFormProps> = ({
     preferredContactTime: initialData.preferredContactTime || '9-17',
     timezone: initialData.timezone || 'UTC',
     customFields: initialData.customFields || {},
+    createdAt: initialData.createdAt || new Date(),
+    updatedAt: initialData.updatedAt || new Date(),
+    lastContactedAt: initialData.lastContactedAt,
     ...initialData
   });
 
-  const [phoneValidation, setPhoneValidation] = useState<any>(null);
+  const [phoneValidation, setPhoneValidation] = useState<PhoneValidation | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleInputChange = (field: keyof Contact, value: any) => {
+  const handleInputChange = (field: keyof Contact, value: string | boolean | string[] | Record<string, any>) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
+    }));
+    
+    // Clear error when user starts typing
+    if (errors[field as string]) {
+      setErrors(prev => ({
+        ...prev,
+        [field as string]: ''
+      }));
+    }
+  };
+
+  const handleCustomFieldChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      customFields: {
+        ...prev.customFields,
+        [field]: value
+      }
     }));
     
     // Clear error when user starts typing
@@ -68,7 +76,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
     }
   };
 
-  const handlePhoneChange = (phone: string, validation: any) => {
+  const handlePhoneChange = (phone: string, validation: PhoneValidation) => {
     setFormData(prev => ({
       ...prev,
       phoneNumber: phone
@@ -79,6 +87,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
+    // Required field validations
     if (!formData.firstName.trim()) {
       newErrors.firstName = 'First name is required';
     }
@@ -89,12 +98,26 @@ const ContactForm: React.FC<ContactFormProps> = ({
 
     if (!formData.phoneNumber.trim()) {
       newErrors.phoneNumber = 'Phone number is required';
-    } else if (!phoneValidation?.isValid) {
+    } else if (phoneValidation && !phoneValidation.isValid) {
       newErrors.phoneNumber = 'Please enter a valid phone number';
     }
 
-    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    // Email validation (optional field)
+    if (formData.email && formData.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email address';
+    }
+
+    // Industry-specific field validations
+    if (formData.industry.toLowerCase() === 'healthcare') {
+      if (formData.customFields.dateOfBirth && !formData.customFields.dateOfBirth.trim()) {
+        newErrors.dateOfBirth = 'Date of birth is required for healthcare contacts';
+      }
+    }
+
+    if (formData.industry.toLowerCase() === 'legal') {
+      if (formData.customFields.caseType && !formData.customFields.caseType.trim()) {
+        newErrors.caseType = 'Case type is required for legal contacts';
+      }
     }
 
     setErrors(newErrors);
@@ -105,7 +128,15 @@ const ContactForm: React.FC<ContactFormProps> = ({
     e.preventDefault();
     
     if (validateForm()) {
-      onSubmit(formData);
+      // Ensure all required fields are properly set
+      const contactData: Contact = {
+        ...formData,
+        id: formData.id || '', // Generate ID if not present
+        createdAt: formData.createdAt || new Date(),
+        updatedAt: new Date(), // Always update the timestamp
+      };
+      
+      onSubmit(contactData);
     }
   };
 
@@ -121,12 +152,14 @@ const ContactForm: React.FC<ContactFormProps> = ({
               <input
                 type="date"
                 value={formData.customFields.dateOfBirth || ''}
-                onChange={(e) => handleInputChange('customFields', {
-                  ...formData.customFields,
-                  dateOfBirth: e.target.value
-                })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onChange={(e) => handleCustomFieldChange('dateOfBirth', e.target.value)}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.dateOfBirth ? 'border-red-500' : 'border-gray-300'
+                }`}
               />
+              {errors.dateOfBirth && (
+                <p className="mt-1 text-sm text-red-600">{errors.dateOfBirth}</p>
+              )}
             </div>
             
             <div className="form-group">
@@ -136,10 +169,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
               <input
                 type="text"
                 value={formData.customFields.insuranceProvider || ''}
-                onChange={(e) => handleInputChange('customFields', {
-                  ...formData.customFields,
-                  insuranceProvider: e.target.value
-                })}
+                onChange={(e) => handleCustomFieldChange('insuranceProvider', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter insurance provider"
               />
@@ -156,11 +186,10 @@ const ContactForm: React.FC<ContactFormProps> = ({
               </label>
               <select
                 value={formData.customFields.caseType || ''}
-                onChange={(e) => handleInputChange('customFields', {
-                  ...formData.customFields,
-                  caseType: e.target.value
-                })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onChange={(e) => handleCustomFieldChange('caseType', e.target.value)}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.caseType ? 'border-red-500' : 'border-gray-300'
+                }`}
               >
                 <option value="">Select case type</option>
                 <option value="personal-injury">Personal Injury</option>
@@ -169,6 +198,9 @@ const ContactForm: React.FC<ContactFormProps> = ({
                 <option value="criminal-law">Criminal Law</option>
                 <option value="estate-planning">Estate Planning</option>
               </select>
+              {errors.caseType && (
+                <p className="mt-1 text-sm text-red-600">{errors.caseType}</p>
+              )}
             </div>
             
             <div className="form-group">
@@ -177,10 +209,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
               </label>
               <select
                 value={formData.customFields.caseStatus || ''}
-                onChange={(e) => handleInputChange('customFields', {
-                  ...formData.customFields,
-                  caseStatus: e.target.value
-                })}
+                onChange={(e) => handleCustomFieldChange('caseStatus', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Select status</option>
@@ -202,10 +231,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
               </label>
               <select
                 value={formData.customFields.customerType || ''}
-                onChange={(e) => handleInputChange('customFields', {
-                  ...formData.customFields,
-                  customerType: e.target.value
-                })}
+                onChange={(e) => handleCustomFieldChange('customerType', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Select customer type</option>
@@ -222,10 +248,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
               <input
                 type="text"
                 value={formData.customFields.preferredStore || ''}
-                onChange={(e) => handleInputChange('customFields', {
-                  ...formData.customFields,
-                  preferredStore: e.target.value
-                })}
+                onChange={(e) => handleCustomFieldChange('preferredStore', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter preferred store location"
               />

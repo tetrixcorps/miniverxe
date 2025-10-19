@@ -502,7 +502,7 @@ class CrossPlatformSessionService {
       const now = new Date();
       const expiredSessions: string[] = [];
 
-      for (const [sessionId, session] of this.sessions.entries()) {
+      for (const [sessionId, session] of Array.from(this.sessions.entries())) {
         if (session.expiresAt < now) {
           expiredSessions.push(sessionId);
         }

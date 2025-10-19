@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { dashboardProductService } from '/src/services/dashboardProductService';
+import { dashboardProductService } from '../../../../services/dashboardProductService';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -19,9 +19,14 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // Add product to cart
-    const success = dashboardProductService.addToCart(cartId, productId, quantity, customizations);
+    const updatedCart = await dashboardProductService.addToCart({
+      cartId,
+      productId,
+      quantity,
+      customizations
+    });
     
-    if (!success) {
+    if (!updatedCart) {
       return new Response(JSON.stringify({
         success: false,
         error: 'Failed to add product to cart'

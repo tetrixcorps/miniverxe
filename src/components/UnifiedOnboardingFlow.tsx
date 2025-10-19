@@ -2,9 +2,12 @@
 // Integrates phone authentication, Stripe trial, and WhatsApp Business Account setup
 
 import React, { useState, useEffect, useRef } from 'react';
-import { smart2FAService, TwoFAConfig } from '../services/smart2faService';
-import { stripeTrialService, TrialUser, OnboardingData } from '../services/stripeTrialService';
-import { whatsappOnboardingService, WABAOnboardingData } from '../services/whatsappOnboardingService';
+import { smart2FAService } from '../services/smart2faService';
+import type { TwoFAConfig } from '../services/smart2faService';
+import { stripeTrialService } from '../services/stripeTrialService';
+import type { TrialUser, OnboardingData } from '../services/stripeTrialService';
+import { whatsappOnboardingService } from '../services/whatsappOnboardingService';
+import type { WABAOnboardingData } from '../services/whatsappOnboardingService';
 
 interface UnifiedOnboardingFlowProps {
   onComplete: (user: TrialUser) => void;
@@ -50,8 +53,12 @@ const UnifiedOnboardingFlow: React.FC<UnifiedOnboardingFlowProps> = ({
     businessType: 'BUSINESS',
     verificationMethod: 'SMS'
   });
-  const [trialStatus, setTrialStatus] = useState({
-    status: 'not_started' as const,
+  const [trialStatus, setTrialStatus] = useState<{
+    status: 'not_started' | 'active' | 'expired' | 'converted';
+    daysRemaining: number;
+    trialEndDate: Date;
+  }>({
+    status: 'not_started',
     daysRemaining: 0,
     trialEndDate: new Date()
   });
@@ -81,15 +88,12 @@ const UnifiedOnboardingFlow: React.FC<UnifiedOnboardingFlowProps> = ({
       // Initiate 2FA with voice (primary) or SMS (fallback)
       const result = await smart2FAService.initiateSmart2FA(phoneNumber, navigator.userAgent);
       
-      if (result.success) {
-        setVerificationId(result.verificationId);
-        setCurrentStep('phone_verification');
-        
-        // Show method used and estimated delivery time
-        console.log(`Verification sent via ${result.method}, estimated delivery: ${result.estimatedDelivery}s`);
-      } else {
-        setError('Failed to send verification. Please try again.');
-      }
+      // The result already contains the verification data directly
+      setVerificationId(result.verificationId);
+      setCurrentStep('phone_verification');
+      
+      // Show method used and estimated delivery time
+      console.log(`Verification sent via ${result.method}, estimated delivery: ${result.estimatedDelivery}s`);
     } catch (err) {
       setError('An error occurred. Please try again.');
       console.error('Phone verification error:', err);
@@ -118,20 +122,28 @@ const UnifiedOnboardingFlow: React.FC<UnifiedOnboardingFlowProps> = ({
         timezone: onboardingData.timezone
       });
 
-      if (result.success) {
-        setUser(result.user);
-        setCurrentStep('business_info');
-        
-        // Pre-fill WABA data with verified phone number
-        setWabaData(prev => ({
-          ...prev,
-          phoneNumber: result.user.phoneNumber,
-          businessName: result.user.businessName || '',
-          displayName: result.user.displayName || ''
-        }));
-      } else {
-        setError('Invalid verification code. Please try again.');
-      }
+      // Create a TrialUser from the UserProfile
+      const trialUser: TrialUser = {
+        id: result.user.id,
+        email: result.user.email || '',
+        phoneNumber: (result.user.phoneNumber || phoneNumber || 'unknown') as string,
+        stripeCustomerId: result.user.stripeCustomerId,
+        trialStatus: 'active' as const,
+        cardOnFile: false, // Default value
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      
+      setUser(trialUser);
+      setCurrentStep('business_info');
+      
+      // Pre-fill WABA data with verified phone number
+      setWabaData(prev => ({
+        ...prev,
+        phoneNumber: result.user.phoneNumber,
+        businessName: result.user.businessName || '',
+        displayName: result.user.displayName || ''
+      }));
     } catch (err) {
       setError('Verification failed. Please try again.');
       console.error('OTP verification error:', err);
@@ -199,7 +211,7 @@ const UnifiedOnboardingFlow: React.FC<UnifiedOnboardingFlowProps> = ({
         };
         setUser(updatedUser);
         setTrialStatus({
-          status: 'active',
+          status: 'active' as const,
           daysRemaining: 7,
           trialEndDate: trialResult.trialEndDate
         });

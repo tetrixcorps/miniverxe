@@ -8,9 +8,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
     // Use parsed body from middleware if available
     let body: any = {};
     
-    if (locals.bodyParsed && locals.parsedBody) {
-      console.log('Using parsed body from middleware:', locals.parsedBody);
-      body = locals.parsedBody;
+    if ((locals as any).bodyParsed && (locals as any).parsedBody) {
+      console.log('Using parsed body from middleware:', (locals as any).parsedBody);
+      body = (locals as any).parsedBody;
     } else {
       console.log('Middleware parsing failed, trying direct parsing methods');
       

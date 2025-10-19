@@ -80,7 +80,7 @@ vi.mock('react-query', () => ({
     setQueryData: vi.fn(),
     getQueryData: vi.fn()
   }))
-})
+}));
 
 // Mock react-hot-toast
 vi.mock('react-hot-toast', () => ({
@@ -91,7 +91,7 @@ vi.mock('react-hot-toast', () => ({
     loading: vi.fn(),
     dismiss: vi.fn()
   }
-}))
+}));;
 
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
@@ -118,7 +118,7 @@ vi.mock('framer-motion', () => ({
     option: ({ children, ...props }: any) => <option {...props}>{children}</option>
   },
   AnimatePresence: ({ children }: any) => <div>{children}</div>
-}))
+}));
 
 // Mock lucide-react icons
 vi.mock('lucide-react', () => ({
@@ -135,7 +135,7 @@ vi.mock('lucide-react', () => ({
   Users: () => <div data-testid="users-icon" />,
   Trophy: () => <div data-testid="trophy-icon" />,
   MessageCircle: () => <div data-testid="message-circle-icon" />
-}))
+}));
 
 // Mock axios
 vi.mock('axios', () => ({
@@ -155,7 +155,7 @@ vi.mock('axios', () => ({
     put: vi.fn(),
     delete: vi.fn()
   }
-}))
+}));
 
 // Mock socket.io-client
 vi.mock('socket.io-client', () => ({

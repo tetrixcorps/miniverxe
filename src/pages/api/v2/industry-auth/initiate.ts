@@ -2,7 +2,7 @@
 // Handles phone number verification for industry dashboards
 
 import type { APIRoute } from 'astro';
-import { industry2FAAuthService } from '../../../../services/auth/Industry2FAAuthService';
+import { Industry2FAAuthService } from '../../../../services/auth/Industry2FAAuthService';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -48,8 +48,11 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
+    // Create industry 2FA service instance
+    const industry2FAService = new Industry2FAAuthService();
+    
     // Initiate industry 2FA
-    const result = await industry2FAAuthService.initiateIndustry2FA({
+    const result = await industry2FAService.initiateIndustry2FA({
       phoneNumber,
       industry,
       organizationId,

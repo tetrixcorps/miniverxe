@@ -24,7 +24,7 @@ export interface EpicJwtHeaders {
 }
 
 export class EpicJwtService {
-  private privateKey: string;
+  private privateKey!: string;
   private keyId: string;
 
   constructor() {

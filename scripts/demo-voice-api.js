@@ -11,7 +11,7 @@ const http = require('http');
 // Configuration
 const CONFIG = {
   baseUrl: process.env.VOICE_API_URL || 'http://localhost:4321',
-  telnyxApiKey: process.env.***REMOVED*** || 'KEY1234567890abcdef',
+  telnyxApiKey: process.env.TELNYX_API_KEY || 'KEY1234567890abcdef',
   deepgramApiKey: process.env.DEEPGRAM_API_KEY || 'your_deepgram_key_here',
   testPhoneNumber: process.env.TEST_PHONE_NUMBER || '+1234567890',
   webhookUrl: process.env.WEBHOOK_BASE_URL || 'https://tetrixcorp.com'

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { voiceAPIService, CallParams, CallResponse, industryVoiceFunctions } from '../../services/voiceapi';
+import { voiceAPIService, industryVoiceFunctions } from '../../services/voiceapi';
+import type { CallParams, CallResponse } from '../../services/voiceapi';
 
 interface VoiceCallerProps {
   industry: string;
@@ -36,7 +37,7 @@ const VoiceCaller: React.FC<VoiceCallerProps> = ({
 
   useEffect(() => {
     // Set provider based on industry preferences
-    const industryProviders = {
+    const industryProviders: Record<string, 'telnyx' | 'twilio' | 'vonage'> = {
       healthcare: 'vonage',
       legal: 'telnyx',
       retail: 'twilio',
@@ -49,7 +50,7 @@ const VoiceCaller: React.FC<VoiceCallerProps> = ({
       beauty: 'twilio'
     };
     
-    const preferredProvider = industryProviders[industry as keyof typeof industryProviders] || 'vonage';
+    const preferredProvider = industryProviders[industry] || 'vonage';
     setProvider(preferredProvider);
     voiceAPIService.setProvider(preferredProvider);
   }, [industry]);

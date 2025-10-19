@@ -2,7 +2,7 @@
 
 **Version:** 2.0  
 **Base URL:** `https://tetrixcorp.com/api/v2/2fa`  
-**Authentication:** Bearer Token  
+**Authentication:** Bearer Token (Optional for testing)  
 **Content-Type:** `application/json`
 
 ---
@@ -31,7 +31,6 @@ Authorization: Bearer YOUR_API_KEY
 | `POST` | `/verify` | Verify 6-digit code |
 | `GET` | `/status` | Check verification status |
 | `GET` | `/audit` | Retrieve audit logs |
-| `POST` | `/webhooks/telnyx/verify` | Webhook endpoint |
 
 ---
 

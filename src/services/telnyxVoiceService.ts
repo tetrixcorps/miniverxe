@@ -222,7 +222,7 @@ class TelnyxVoiceService {
   /**
    * Format TeXML response as XML string
    */
-  private formatTeXML(texml: TeXMLResponse): string {
+  public formatTeXML(texml: TeXMLResponse): string {
     let xml = '<?xml version="1.0" encoding="UTF-8"?><Response>';
     
     if (texml.Response.Say) {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { voiceAPIService, CallAnalytics } from '../../services/voiceapi';
+import { voiceAPIService } from '../../services/voiceapi';
+import type { CallAnalytics } from '../../services/voiceapi';
 
 interface CallAnalyticsProps {
   industry: string;

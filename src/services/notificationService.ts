@@ -1,7 +1,7 @@
 // Unified Notification Service
 // Integrates Mailgun (Email), Telnyx (SMS), and Sinch (SMS) for cross-platform messaging
 
-import mailgun from 'mailgun-js';
+import * as mailgun from 'mailgun-js';
 import axios from 'axios';
 
 // Configuration interfaces
@@ -58,7 +58,7 @@ class NotificationService {
 
   constructor(config: NotificationConfig) {
     this.config = config;
-    this.mailgunClient = mailgun({
+    this.mailgunClient = mailgun.default({
       apiKey: config.mailgun.apiKey,
       domain: config.mailgun.domain,
     });

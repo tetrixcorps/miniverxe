@@ -9,7 +9,7 @@ vi.mock('../../../../services/shangoStorage', () => ({
   }
 }));
 
-import { shangoStorage } from '../../../../services/shangoStorage';
+import { shangoStorage } from '../../src/services/shangoStorage';
 
 describe('SHANGO Messages API', () => {
   beforeEach(() => {

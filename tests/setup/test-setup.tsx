@@ -150,7 +150,7 @@ export const globalTestConfig = {
 export const setupTestEnvironment = async () => {
   // Set up test environment variables
   process.env.NODE_ENV = 'test';
-  process.env.***REMOVED*** = 'test_telnyx_key';
+  process.env.TELNYX_API_KEY = 'test_telnyx_key';
   process.env.DEEPGRAM_API_KEY = 'test_deepgram_key';
   process.env.WEBHOOK_BASE_URL = 'https://tetrixcorp.com';
   

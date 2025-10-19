@@ -424,11 +424,16 @@ export abstract class BaseCRMIntegration {
       ...options.headers
     };
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), this.config.timeout || 30000);
+    
     const response = await fetch(url, {
       ...options,
       headers,
-      timeout: this.config.timeout || 30000
+      signal: controller.signal
     });
+    
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       throw new Error(`CRM API request failed: ${response.statusText}`);

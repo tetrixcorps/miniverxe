@@ -1,6 +1,7 @@
 // SHANGO AI Super Agent - Enhanced Chat Widget Component
 import React, { useState, useEffect, useRef } from 'react';
-import { getSHANGOAIService, ChatSession, ChatMessage, SHANGOAgent } from '../services/sinchChatService';
+import { getSHANGOAIService } from '../services/sinchChatService';
+import type { ChatSession, ChatMessage, SHANGOAgent } from '../services/sinchChatService';
 
 interface SHANGOChatWidgetProps {
   userId: string;
@@ -37,6 +38,11 @@ export const SHANGOChatWidget: React.FC<SHANGOChatWidgetProps> = ({
     // Initialize SHANGO AI Super Agent
     const initSHANGO = async () => {
       try {
+        if (!shangoService) {
+          console.error('SHANGO service not available');
+          return;
+        }
+        
         await shangoService.initialize();
         
         // Get available SHANGO agents
@@ -75,7 +81,7 @@ export const SHANGOChatWidget: React.FC<SHANGOChatWidgetProps> = ({
   }, [messages]);
 
   const startSHANGOChat = async () => {
-    if (currentSession) return;
+    if (currentSession || !shangoService) return;
     
     setIsLoading(true);
     try {
@@ -91,7 +97,7 @@ export const SHANGOChatWidget: React.FC<SHANGOChatWidgetProps> = ({
   };
 
   const endSHANGOChat = async () => {
-    if (!currentSession) return;
+    if (!currentSession || !shangoService) return;
     
     try {
       await shangoService.endSHANGOChat(currentSession.id);
@@ -105,7 +111,7 @@ export const SHANGOChatWidget: React.FC<SHANGOChatWidgetProps> = ({
   };
 
   const sendMessage = async () => {
-    if (!input.trim() || !currentSession) return;
+    if (!input.trim() || !currentSession || !shangoService) return;
     
     const messageText = input.trim();
     setInput('');

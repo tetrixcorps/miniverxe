@@ -1,0 +1,59 @@
+name: tetrix-2fa-simple
+services:
+- name: tetrix-2fa-api
+  source_dir: /
+  github:
+    repo: tetrixcorps/miniverxe
+    branch: main
+    deploy_on_push: true
+  run_command: pnpm run start
+  environment_slug: node-js
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  http_port: 4321
+  routes:
+  - path: /
+  envs:
+  # Application Configuration
+  - key: NODE_ENV
+    value: production
+  - key: PORT
+    value: "4321"
+  - key: HOST
+    value: "0.0.0.0"
+  
+  # Telnyx Configuration
+  - key: TELNYX_API_KEY
+    value: "***REMOVED***"
+  - key: TELNYX_PROFILE_ID
+    value: "***REMOVED***"
+  - key: TELNYX_API_URL
+    value: "https://api.telnyx.com/v2"
+  
+  # Webhook Configuration
+  - key: WEBHOOK_BASE_URL
+    value: "https://tetrix-2fa-simple-xxxxx.ondigitalocean.app"
+  
+  # Enhanced Security Features
+  - key: FRAUD_DETECTION_ENABLED
+    value: "true"
+  - key: RATE_LIMITING_ENABLED
+    value: "true"
+  - key: AUDIT_LOGGING_ENABLED
+    value: "true"
+  
+  # CORS Configuration
+  - key: CORS_ORIGIN
+    value: "https://tetrixcorp.com,https://joromi.ai,https://poisonedreligion.ai"
+  
+  # Logging
+  - key: LOG_LEVEL
+    value: "info"
+
+  health_check:
+    http_path: /api/v2/2fa/status?verificationId=health
+    initial_delay_seconds: 30
+    period_seconds: 15
+    timeout_seconds: 10
+    success_threshold: 1
+    failure_threshold: 3

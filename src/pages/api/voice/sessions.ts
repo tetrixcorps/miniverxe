@@ -1,117 +1,146 @@
 // Voice Sessions API Endpoint
-// Handles voice session management
+// Handles session management for voice calls
 
 import type { APIRoute } from 'astro';
+import { voiceService } from '../../../services/voiceService';
 
-// Mock session storage (in production, use a database)
-const sessions = new Map();
+function createErrorResponse(message: string, status: number = 400, details?: any) {
+  return new Response(JSON.stringify({
+    error: message,
+    ...(details && { details })
+  }), {
+    status,
+    headers: { 'Content-Type': 'application/json' }
+  });
+}
 
+function createSuccessResponse(data: any, status: number = 200) {
+  return new Response(JSON.stringify({
+    success: true,
+    ...data
+  }), {
+    status,
+    headers: { 'Content-Type': 'application/json' }
+  });
+}
+
+// Get all active sessions
 export const GET: APIRoute = async ({ url }) => {
   try {
-    const sessionId = url.searchParams.get('sessionId');
+    const pathname = url.pathname;
     
-    if (sessionId) {
-      // Get specific session
-      const session = sessions.get(sessionId);
-      if (!session) {
-        return new Response(JSON.stringify({
-          error: 'Session not found'
-        }), {
-          status: 404,
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-      }
-
-      return new Response(JSON.stringify({
-        success: true,
-        session
-      }), {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json'
-        }
+    if (pathname.includes('/cleanup')) {
+      // Cleanup old sessions
+      voiceService.cleanupSessions();
+      
+      return createSuccessResponse({
+        message: 'Sessions cleaned up successfully'
       });
     } else {
-      // Get all active sessions
-      const allSessions = Array.from(sessions.values());
+      // Get all sessions
+      const sessions = voiceService.getAllSessions();
       
-      return new Response(JSON.stringify({
-        success: true,
-        sessions: allSessions,
-        count: allSessions.length
-      }), {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json'
-        }
+      return createSuccessResponse({
+        sessions: sessions.map(session => ({
+          sessionId: session.sessionId,
+          callId: session.callId,
+          phoneNumber: session.phoneNumber,
+          status: session.status,
+          startTime: session.startTime.toISOString(),
+          hasTranscription: !!session.transcription,
+          hasRecording: !!session.recording
+        })),
+        count: sessions.length
       });
     }
 
   } catch (error) {
     console.error('Failed to get sessions:', error);
-    return new Response(JSON.stringify({
-      error: 'Failed to get sessions',
-      message: error instanceof Error ? error.message : 'Unknown error'
-    }), {
-      status: 500,
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
+    return createErrorResponse(
+      'Failed to get sessions',
+      500,
+      { message: error instanceof Error ? error.message : 'Unknown error' }
+    );
   }
 };
 
-export const POST: APIRoute = async ({ request, url }) => {
+// Get specific session
+export const POST: APIRoute = async ({ request, locals }) => {
   try {
-    const pathname = url.pathname;
+    // Parse request body
+    let body: any = {};
     
-    if (pathname.includes('/cleanup')) {
-      // Cleanup sessions
-      const now = new Date();
-      const maxAge = 24 * 60 * 60 * 1000; // 24 hours
-      
-      let cleanedCount = 0;
-      for (const [sessionId, session] of sessions.entries()) {
-        const sessionTime = new Date(session.startTime);
-        if (now.getTime() - sessionTime.getTime() > maxAge) {
-          sessions.delete(sessionId);
-          cleanedCount++;
+    try {
+      body = await request.json();
+    } catch (jsonError) {
+      try {
+        const rawBody = await request.text();
+        if (rawBody && rawBody.trim()) {
+          body = JSON.parse(rawBody);
         }
+      } catch (textError) {
+        console.error('Failed to parse request body:', { jsonError, textError });
+        return createErrorResponse('Failed to parse request body', 400);
       }
-
-      return new Response(JSON.stringify({
-        success: true,
-        message: `Cleaned up ${cleanedCount} sessions`,
-        cleanedCount
-      }), {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
     }
-
-    return new Response(JSON.stringify({
-      error: 'Invalid endpoint'
-    }), {
-      status: 404,
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
+    
+    const { sessionId, action } = body;
+    
+    if (!sessionId) {
+      return createErrorResponse('Session ID is required', 400);
+    }
+    
+    const session = voiceService.getSession(sessionId);
+    
+    if (!session) {
+      return createErrorResponse('Session not found', 404);
+    }
+    
+    // Handle different actions
+    switch (action) {
+      case 'get':
+        return createSuccessResponse({
+          session: {
+            sessionId: session.sessionId,
+            callId: session.callId,
+            phoneNumber: session.phoneNumber,
+            status: session.status,
+            startTime: session.startTime.toISOString(),
+            transcription: session.transcription,
+            recording: session.recording,
+            metadata: session.metadata
+          }
+        });
+        
+      case 'end':
+        // Update session status to completed
+        session.status = 'completed';
+        return createSuccessResponse({
+          message: 'Call ended successfully',
+          session: {
+            sessionId: session.sessionId,
+            status: session.status
+          }
+        });
+        
+      case 'status':
+        return createSuccessResponse({
+          sessionId: session.sessionId,
+          status: session.status,
+          phoneNumber: session.phoneNumber,
+          startTime: session.startTime.toISOString()
+        });
+        
+      default:
+        return createErrorResponse('Invalid action. Use: get, end, or status', 400);
+    }
 
   } catch (error) {
     console.error('Session operation failed:', error);
-    return new Response(JSON.stringify({
-      error: 'Session operation failed',
-      message: error instanceof Error ? error.message : 'Unknown error'
-    }), {
-      status: 500,
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
+    return createErrorResponse(
+      'Session operation failed',
+      500,
+      { message: error instanceof Error ? error.message : 'Unknown error' }
+    );
   }
 };

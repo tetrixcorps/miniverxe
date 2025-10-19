@@ -136,7 +136,7 @@ export interface SHANGOAgent {
 }
 
 export class SHANGOAIService {
-  private sinchChat: SinchChatLive;
+  private sinchChat: MockSinchChatLive;
   private currentSession: ChatSession | null = null;
   private messageHandlers: ((message: ChatMessage) => void)[] = [];
   private sessionHandlers: ((session: ChatSession) => void)[] = [];
@@ -260,11 +260,11 @@ export class SHANGOAIService {
   }
 
   // Event listeners
-  on(event: string, handler: Function): void {
+  on(event: string, handler: ((message: ChatMessage) => void) | ((session: ChatSession) => void)): void {
     if (event === 'message') {
-      this.messageHandlers.push(handler);
+      this.messageHandlers.push(handler as (message: ChatMessage) => void);
     } else if (event === 'session') {
-      this.sessionHandlers.push(handler);
+      this.sessionHandlers.push(handler as (session: ChatSession) => void);
     }
   }
 

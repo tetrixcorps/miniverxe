@@ -1,7 +1,7 @@
 // Voice API Test Suite
 // Comprehensive testing for voice functionality
 
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { telnyxVoiceService } from '../../services/telnyxVoiceService';
 
 // Test voice call initiation
@@ -43,7 +43,7 @@ export const testVoiceCall = async (req: Request, res: Response) => {
       success: false,
       test: 'voice_call_initiation',
       result: 'FAILED',
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
       timestamp: new Date().toISOString()
     });
   }
@@ -95,7 +95,7 @@ export const testTeXML = async (req: Request, res: Response) => {
       success: false,
       test: 'texml_generation',
       result: 'FAILED',
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
       timestamp: new Date().toISOString()
     });
   }
@@ -128,7 +128,7 @@ export const testTranscription = async (req: Request, res: Response) => {
         test: 'transcription_processing',
         result: 'PASSED',
         message: 'Transcription service is accessible (test URL failed as expected)',
-        error: transcriptionError.message,
+        error: transcriptionError instanceof Error ? transcriptionError.message : 'Unknown error',
         sessionId: testSessionId,
         timestamp: new Date().toISOString()
       });
@@ -140,7 +140,7 @@ export const testTranscription = async (req: Request, res: Response) => {
       success: false,
       test: 'transcription_processing',
       result: 'FAILED',
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
       timestamp: new Date().toISOString()
     });
   }
@@ -176,7 +176,7 @@ export const testAIResponse = async (req: Request, res: Response) => {
       success: false,
       test: 'ai_response_generation',
       result: 'FAILED',
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
       timestamp: new Date().toISOString()
     });
   }
@@ -229,7 +229,7 @@ export const testSessionManagement = async (req: Request, res: Response) => {
       success: false,
       test: 'session_management',
       result: 'FAILED',
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
       timestamp: new Date().toISOString()
     });
   }
@@ -270,7 +270,7 @@ export const runAllTests = async (req: Request, res: Response) => {
         results.push({
           test: name,
           status: 500,
-          error: error.message
+          error: error instanceof Error ? error.message : 'Unknown error'
         });
       }
     }
@@ -298,7 +298,7 @@ export const runAllTests = async (req: Request, res: Response) => {
       success: false,
       test: 'comprehensive_test_suite',
       result: 'FAILED',
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
       timestamp: new Date().toISOString()
     });
   }

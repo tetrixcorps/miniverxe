@@ -5,7 +5,7 @@ import { jest } from '@jest/globals';
 beforeAll(() => {
   // Set test environment variables
   process.env.NODE_ENV = 'test';
-  process.env.***REMOVED*** = 'KEY_mock_telnyx';
+  process.env.TELNYX_API_KEY = 'KEY_mock_telnyx';
   process.env.TELNYX_PROFILE_ID = 'test-profile-id';
   process.env.MAILGUN_API_KEY = 'key_mock_mailgun';
   process.env.MAILGUN_DOMAIN = 'mg.test.com';
