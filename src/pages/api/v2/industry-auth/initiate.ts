@@ -2,7 +2,7 @@
 // Handles phone number verification for industry dashboards
 
 import type { APIRoute } from 'astro';
-import { smart2FAService } from '../../../../services/smart2faService';
+import { enterprise2FAService } from '../../../../services/enterprise2FAService';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -49,14 +49,12 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // Use existing 2FA service with industry metadata
-    const result = await smart2FAService.initiate2FA({
+    const result = await enterprise2FAService.initiateVerification({
       phoneNumber,
-      method,
-      metadata: {
-        industry,
-        organizationId,
-        rememberDevice
-      }
+      method: method as 'sms' | 'voice',
+      userAgent: 'TETRIX-Industry-Auth/1.0',
+      ipAddress: 'unknown',
+      sessionId: 'industry_' + Date.now()
     });
 
     if (result.success) {

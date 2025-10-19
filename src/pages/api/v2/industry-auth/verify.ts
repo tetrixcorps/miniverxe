@@ -2,7 +2,7 @@
 // Verifies 2FA code and returns access tokens for industry dashboards
 
 import type { APIRoute } from 'astro';
-import { smart2FAService } from '../../../../services/smart2faService';
+import { enterprise2FAService } from '../../../../services/enterprise2FAService';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -27,11 +27,11 @@ export const POST: APIRoute = async ({ request }) => {
     const userAgent = request.headers.get('user-agent') || 'unknown';
 
     // Use existing 2FA service
-    const result = await smart2FAService.verify2FA({
-      verificationId: sessionId, // Use sessionId as verificationId
+    const result = await enterprise2FAService.verifyCode(
+      sessionId, // Use sessionId as verificationId
       code,
-      phoneNumber: deviceInfo?.phoneNumber || 'unknown'
-    });
+      deviceInfo?.phoneNumber || 'unknown'
+    );
 
     if (result.success && result.verified) {
       // Generate mock tokens for now
