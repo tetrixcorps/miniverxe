@@ -17,9 +17,6 @@ export default defineConfig({
   adapter: node({
     mode: 'standalone'
   }),
-  experimental: {
-    contentCollectionCache: false
-  },
   define: {
     // Make environment variables available to the client
     'import.meta.env.MAILGUN_API_KEY': JSON.stringify(env.MAILGUN_API_KEY),
