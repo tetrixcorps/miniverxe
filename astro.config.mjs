@@ -52,6 +52,10 @@ export default defineConfig({
       noExternal: []
     }
   },
+  build: {
+    // Force clean build
+    clean: true
+  },
   server: {
     host: '0.0.0.0', // **CRITICAL: Listen on all network interfaces**
     port: parseInt(process.env.PORT) || 8080,
