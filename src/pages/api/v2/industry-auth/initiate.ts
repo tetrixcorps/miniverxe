@@ -2,7 +2,7 @@
 // Handles phone number verification for industry dashboards
 
 import type { APIRoute } from 'astro';
-import { Industry2FAAuthService } from '../../../../services/auth/Industry2FAAuthService';
+import { smart2FAService } from '../../../../services/smart2faService';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -48,28 +48,27 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    // Create industry 2FA service instance
-    const industry2FAService = new Industry2FAAuthService();
-    
-    // Initiate industry 2FA
-    const result = await industry2FAService.initiateIndustry2FA({
+    // Use existing 2FA service with industry metadata
+    const result = await smart2FAService.initiate2FA({
       phoneNumber,
-      industry,
-      organizationId,
       method,
-      rememberDevice
+      metadata: {
+        industry,
+        organizationId,
+        rememberDevice
+      }
     });
 
     if (result.success) {
       return new Response(JSON.stringify({
         success: true,
-        sessionId: result.sessionId,
+        sessionId: result.verificationId, // Use verificationId as sessionId
         verificationId: result.verificationId,
-        provider: result.provider,
+        provider: 'telnyx',
         method: result.method,
-        expiresIn: result.expiresIn,
-        requiresOrganizationSelection: result.requiresOrganizationSelection,
-        availableOrganizations: result.availableOrganizations
+        expiresIn: 300, // 5 minutes
+        industry: industry,
+        organizationId: organizationId
       }), {
         status: 200,
         headers: { 'Content-Type': 'application/json' }
@@ -77,7 +76,7 @@ export const POST: APIRoute = async ({ request }) => {
     } else {
       return new Response(JSON.stringify({
         success: false,
-        error: result.error
+        error: result.error || 'Failed to initiate 2FA'
       }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
