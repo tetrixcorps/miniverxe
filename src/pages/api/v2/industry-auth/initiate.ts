@@ -1,6 +1,6 @@
 // Industry-Specific 2FA Authentication Initiation API
 // Handles phone number verification for industry dashboards
-// Build cache fix: 2025-10-19
+// Uses working enterprise2FAService directly
 
 import type { APIRoute } from 'astro';
 import { enterprise2FAService } from '../../../../services/enterprise2FAService';
