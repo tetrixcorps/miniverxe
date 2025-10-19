@@ -1,9 +1,9 @@
 // Industry-Specific 2FA Authentication Initiation API
 // Handles phone number verification for industry dashboards
-// Uses working enterprise2FAService directly
+// Uses TETRIXIndustryAuthService for industry-specific logic
 
 import type { APIRoute } from 'astro';
-import { enterprise2FAService } from '../../../../services/enterprise2FAService';
+import { industryAuthService } from '../../../../services/TETRIXIndustryAuthService';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -49,25 +49,24 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    // Use existing 2FA service with industry metadata
-    const result = await enterprise2FAService.initiateVerification({
+    // Use industry auth service for 2FA initiation
+    const result = await industryAuthService.initiateIndustry2FA(
       phoneNumber,
-      method: method as 'sms' | 'voice',
-      userAgent: 'TETRIX-Industry-Auth/1.0',
-      ipAddress: 'unknown',
-      sessionId: 'industry_' + Date.now()
-    });
+      industry,
+      organizationId
+    );
 
     if (result.success) {
       return new Response(JSON.stringify({
         success: true,
-        sessionId: result.verificationId, // Use verificationId as sessionId
+        sessionId: result.verificationId,
         verificationId: result.verificationId,
         provider: 'telnyx',
-        method: result.method,
+        method: method,
         expiresIn: 300, // 5 minutes
         industry: industry,
-        organizationId: organizationId
+        organizationId: organizationId,
+        message: 'Industry 2FA verification initiated successfully'
       }), {
         status: 200,
         headers: { 'Content-Type': 'application/json' }

@@ -1,9 +1,9 @@
 // Industry-Specific 2FA Authentication Verification API
 // Verifies 2FA code and returns access tokens for industry dashboards
-// Uses working enterprise2FAService directly
+// Uses TETRIXIndustryAuthService for industry-specific logic
 
 import type { APIRoute } from 'astro';
-import { enterprise2FAService } from '../../../../services/enterprise2FAService';
+import { industryAuthService } from '../../../../services/TETRIXIndustryAuthService';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -27,9 +27,9 @@ export const POST: APIRoute = async ({ request }) => {
                     'unknown';
     const userAgent = request.headers.get('user-agent') || 'unknown';
 
-    // Use existing 2FA service
-    const result = await enterprise2FAService.verifyCode(
-      sessionId, // Use sessionId as verificationId
+    // Use industry auth service for 2FA verification
+    const result = await industryAuthService.verifyIndustry2FA(
+      sessionId,
       code,
       deviceInfo?.phoneNumber || 'unknown'
     );
