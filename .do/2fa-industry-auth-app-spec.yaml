@@ -1,0 +1,43 @@
+name: tetrix-industry-auth
+services:
+- name: tetrix-industry-auth-api
+  github:
+    repo: tetrixcorps/miniverxe
+    branch: main
+    deploy_on_push: true
+  source_dir: /
+  build_command: pnpm install && pnpm run build
+  run_command: pnpm run start
+  environment_slug: node-js
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  http_port: 4321
+  routes:
+  - path: /
+  envs:
+  # Application Configuration
+  - key: NODE_ENV
+    value: production
+  - key: PORT
+    value: "4321"
+  # Telnyx 2FA Configuration
+  - key: TELNYX_API_KEY
+    scope: RUN_TIME
+    value: ${TELNYX_API_KEY}
+  - key: TELNYX_PROFILE_ID
+    scope: RUN_TIME
+    value: ${TELNYX_PROFILE_ID}
+  - key: TELNYX_WEBHOOK_SECRET
+    scope: RUN_TIME
+    value: ${TELNYX_WEBHOOK_SECRET}
+  # Webhook Base URL (for Telnyx callbacks)
+  - key: WEBHOOK_BASE_URL
+    scope: RUN_TIME
+    value: ${APP_URL} # DigitalOcean will inject this
+  health_check:
+    http_path: /api/health
+    initial_delay_seconds: 30
+    period_seconds: 15
+    timeout_seconds: 10
+    success_threshold: 1
+    failure_threshold: 3

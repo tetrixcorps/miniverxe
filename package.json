@@ -14,7 +14,7 @@
     "test:api": "vitest run src/pages/api/v2/2fa/__tests__",
     "test:integration": "vitest run src/components/auth/__tests__/auth-integration.test.ts",
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "rm -rf dist && astro build",
     "preview": "astro preview",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx,.astro",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx,.astro --fix",
