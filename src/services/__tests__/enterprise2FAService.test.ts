@@ -33,7 +33,7 @@ describe('Enterprise2FAService', () => {
 
     // Mock configuration
     mockConfig = {
-      verifyProfileId: '***REMOVED***',
+      verifyProfileId: '49000199-7882-f4ce-6514-a67c8190f107',
       apiKey: 'test_api_key_123',
       apiUrl: 'https://api.telnyx.com/v2',
       webhookUrl: 'https://example.com/webhooks/telnyx/verify',

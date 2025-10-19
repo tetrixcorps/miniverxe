@@ -45,7 +45,7 @@ Create a `.env` file with the following variables:
 ```bash
 # Required - Telnyx Configuration
 TELNYX_API_KEY=your_telnyx_api_key_here
-TELNYX_PROFILE_ID=***REMOVED***
+TELNYX_PROFILE_ID=49000199-7882-f4ce-6514-a67c8190f107
 TELNYX_API_URL=https://api.telnyx.com/v2
 
 # Required - Application Configuration
@@ -73,7 +73,7 @@ REDIS_URL=redis://localhost:6379
    - Create a new API key with Verify permissions
 
 2. **Configure Verify Profile:**
-   - Use existing profile ID: `***REMOVED***`
+   - Use existing profile ID: `49000199-7882-f4ce-6514-a67c8190f107`
    - Or create a new profile in Telnyx dashboard
 
 3. **Set up Webhooks:**
@@ -120,7 +120,7 @@ REDIS_URL=redis://localhost:6379
      - key: TELNYX_API_KEY
        value: your_telnyx_api_key
      - key: TELNYX_PROFILE_ID
-       value: ***REMOVED***
+       value: 49000199-7882-f4ce-6514-a67c8190f107
      - key: WEBHOOK_BASE_URL
        value: https://yourdomain.com
    ```
@@ -174,7 +174,7 @@ REDIS_URL=redis://localhost:6379
        environment:
          - NODE_ENV=production
          - TELNYX_API_KEY=${TELNYX_API_KEY}
-         - TELNYX_PROFILE_ID=***REMOVED***
+         - TELNYX_PROFILE_ID=49000199-7882-f4ce-6514-a67c8190f107
          - WEBHOOK_BASE_URL=${WEBHOOK_BASE_URL}
        restart: unless-stopped
    ```
@@ -201,7 +201,7 @@ REDIS_URL=redis://localhost:6379
    
    # Set environment variables
    export TELNYX_API_KEY="your_api_key"
-   export TELNYX_PROFILE_ID="***REMOVED***"
+   export TELNYX_PROFILE_ID="49000199-7882-f4ce-6514-a67c8190f107"
    export WEBHOOK_BASE_URL="https://yourdomain.com"
    
    # Start application

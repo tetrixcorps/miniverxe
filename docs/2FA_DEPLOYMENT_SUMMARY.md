@@ -31,7 +31,7 @@ nano .env
 **Required Variables:**
 ```bash
 TELNYX_API_KEY=your_telnyx_api_key_here
-TELNYX_PROFILE_ID=***REMOVED***
+TELNYX_PROFILE_ID=49000199-7882-f4ce-6514-a67c8190f107
 WEBHOOK_BASE_URL=https://yourdomain.com
 ```
 

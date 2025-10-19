@@ -185,7 +185,7 @@ main() {
     echo "    • POST /api/v2/2fa/initiate"
     echo "    • POST /api/v2/2fa/verify"
     echo "    • GET /api/v2/2fa/status"
-    echo "  - Telnyx Profile ID: ${TELNYX_PROFILE_ID:-"***REMOVED***"}"
+    echo "  - Telnyx Profile ID: ${TELNYX_PROFILE_ID:-"49000199-7882-f4ce-6514-a67c8190f107"}"
     echo
     echo "🧪 Test your deployment:"
     echo "  curl -X POST ${WEBHOOK_BASE_URL:-"http://localhost:4321"}/api/v2/2fa/initiate \\"

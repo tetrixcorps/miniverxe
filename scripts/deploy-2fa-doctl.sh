@@ -113,7 +113,7 @@ services:
   - key: TELNYX_API_KEY
     value: "${TELNYX_API_KEY}"
   - key: TELNYX_PROFILE_ID
-    value: "***REMOVED***"
+    value: "49000199-7882-f4ce-6514-a67c8190f107"
   - key: TELNYX_API_URL
     value: "https://api.telnyx.com/v2"
   

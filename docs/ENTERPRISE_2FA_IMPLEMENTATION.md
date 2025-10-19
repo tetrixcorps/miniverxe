@@ -3,7 +3,7 @@
 
 **Date:** January 10, 2025  
 **Status:** Complete Implementation  
-**Profile ID:** `***REMOVED***`
+**Profile ID:** `49000199-7882-f4ce-6514-a67c8190f107`
 
 ## 🎯 **Executive Summary**
 
@@ -42,7 +42,7 @@ Your existing implementation was already highly sophisticated. The new enterpris
 **Configuration:**
 ```typescript
 {
-  verifyProfileId: '***REMOVED***',
+  verifyProfileId: '49000199-7882-f4ce-6514-a67c8190f107',
   apiKey: process.env.***REMOVED***,
   apiUrl: 'https://api.telnyx.com/v2',
   webhookUrl: process.env.WEBHOOK_BASE_URL + '/webhooks/telnyx/verify',
@@ -202,7 +202,7 @@ Your existing implementation was already highly sophisticated. The new enterpris
 ```bash
 # Required
 ***REMOVED***=your_telnyx_api_key
-TELNYX_VERIFY_PROFILE_ID=***REMOVED***
+TELNYX_VERIFY_PROFILE_ID=49000199-7882-f4ce-6514-a67c8190f107
 WEBHOOK_BASE_URL=https://yourdomain.com
 
 # Optional

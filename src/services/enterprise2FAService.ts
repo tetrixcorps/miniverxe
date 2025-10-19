@@ -1,5 +1,5 @@
 // Enterprise-Grade 2FA Service using Telnyx Verify API
-// Leverages existing profile ID: ***REMOVED***
+// Leverages existing profile ID: 49000199-7882-f4ce-6514-a67c8190f107
 // Integrates with existing Smart2FAService for backward compatibility
 
 import { smart2FAService } from './smart2faService';
@@ -523,7 +523,7 @@ class Enterprise2FAService {
 
 // Export configured instance
 export const enterprise2FAService = new Enterprise2FAService({
-  verifyProfileId: process.env.TELNYX_PROFILE_ID || '***REMOVED***',
+  verifyProfileId: process.env.TELNYX_PROFILE_ID || '2775849996304516927',
   apiKey: process.env.TELNYX_API_KEY || '',
   apiUrl: 'https://api.telnyx.com/v2',
   webhookUrl: (process.env.WEBHOOK_BASE_URL || 'http://localhost:3000') + '/webhooks/telnyx/verify',

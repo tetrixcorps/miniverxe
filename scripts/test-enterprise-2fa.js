@@ -11,7 +11,7 @@ import http from 'http';
 // Configuration
 const BASE_URL = process.env.BASE_URL || 'http://localhost:4321';
 const TEST_PHONE = process.env.TEST_PHONE || '+15042749808';
-const VERIFY_PROFILE_ID = '***REMOVED***';
+const VERIFY_PROFILE_ID = '49000199-7882-f4ce-6514-a67c8190f107';
 
 // Colors for console output
 const colors = {
