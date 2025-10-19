@@ -25,9 +25,11 @@ services:
   
   # Telnyx Configuration
   - key: TELNYX_API_KEY
-    value: "***REMOVED***"
+    scope: RUN_TIME
+    value: ${TELNYX_API_KEY}
   - key: TELNYX_PROFILE_ID
-    value: "***REMOVED***"
+    scope: RUN_TIME
+    value: ${TELNYX_PROFILE_ID}
   - key: TELNYX_API_URL
     value: "https://api.telnyx.com/v2"
   
