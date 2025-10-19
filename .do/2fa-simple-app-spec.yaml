@@ -34,7 +34,7 @@ services:
   
   # Webhook Configuration
   - key: WEBHOOK_BASE_URL
-    value: "https://tetrix-2fa-simple-xxxxx.ondigitalocean.app"
+    value: "https://tetrix-2fa-simple-fhafz.ondigitalocean.app"
   
   # Enhanced Security Features
   - key: FRAUD_DETECTION_ENABLED
