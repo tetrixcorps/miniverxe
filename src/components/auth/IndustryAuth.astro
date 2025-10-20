@@ -3,7 +3,7 @@
 // Handles authentication for different industries with role-based access
 ---
 
-<div id="industry-auth-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+<div id="industry-auth-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 industry-auth-overlay">
   <div class="flex items-center justify-center min-h-screen p-4">
     <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8">
       <!-- Header -->
@@ -406,3 +406,23 @@
   // Initialize when DOM is loaded
   document.addEventListener('DOMContentLoaded', initIndustryAuth);
 </script>
+
+<style>
+  /* CSS-based modal stacking solution */
+  /* When 2FA modal is visible, hide Industry Auth modal */
+  body:has(#2fa-modal:not(.hidden)) #industry-auth-modal {
+    display: none !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+  }
+  
+  /* Ensure 2FA modal is always on top */
+  #2fa-modal {
+    z-index: 100 !important;
+  }
+  
+  #industry-auth-modal {
+    z-index: 50;
+  }
+</style>
