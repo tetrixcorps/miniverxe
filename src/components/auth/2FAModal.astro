@@ -896,6 +896,7 @@
 
   // Global function to open 2FA modal
   window.open2FAModal = function() {
+    console.log('2FAModal.astro: open2FAModal called');
     // Always hide Industry Auth modal when opening 2FA modal
     const industryModal = document.getElementById('industry-auth-modal');
     if (industryModal) {
