@@ -3,10 +3,10 @@ import MainLayout from '../components/layout/MainLayout.astro';
 ---
 
 <MainLayout title="Client Login">
-  <div class="min-h-screen bg-gradient-to-br from-brand-red via-brand-orange to-brand-yellow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+  <div class="min-h-[70vh] bg-gradient-to-br from-brand-red via-brand-orange to-brand-yellow flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8">
     <div class="max-w-md w-full space-y-8">
       <div class="text-center">
-        <h2 class="mt-6 text-3xl font-extrabold text-white">
+        <h2 class="mt-4 text-2xl font-extrabold text-white">
           Enterprise Client Login
         </h2>
         <p class="mt-2 text-sm text-white/90">
@@ -14,7 +14,7 @@ import MainLayout from '../components/layout/MainLayout.astro';
         </p>
       </div>
       
-      <div class="bg-white/20 backdrop-blur-sm rounded-xl p-8 shadow-lg border border-white/30">
+      <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/30">
         <form class="space-y-6" action="#" method="POST">
           <div class="space-y-4">
             <div>
@@ -70,7 +70,7 @@ import MainLayout from '../components/layout/MainLayout.astro';
           <div>
             <button 
               type="submit" 
-              class="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-brand-red bg-white hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-yellow transition-colors shadow-lg"
+              class="w-full flex justify-center py-2.5 px-4 border border-transparent text-sm font-semibold rounded-md text-brand-red bg-white hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-yellow transition-colors shadow-lg"
             >
               Sign in to Dashboard
             </button>
@@ -79,14 +79,14 @@ import MainLayout from '../components/layout/MainLayout.astro';
       </div>
 
       <!-- Security Notice -->
-      <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+      <div class="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
         <div class="flex items-center">
           <div class="flex-shrink-0">
-            <span class="text-2xl">&#128274;#128274;</span>
+            <span class="text-xl">&#128274;</span>
           </div>
           <div class="ml-3">
-            <p class="text-sm text-white/90">
-              <strong class="font-medium">Enterprise Security:</strong> Your connection is protected with SOC II Type II compliance and PKCE OAuth 2.0 authentication.
+            <p class="text-xs text-white/90">
+              <strong class="font-semibold">Enterprise Security:</strong> SOC II Type II controls with PKCE OAuth 2.0.
             </p>
           </div>
         </div>
