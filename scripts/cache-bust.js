@@ -7,9 +7,9 @@
  * to prevent Cloudflare from serving cached versions.
  */
 
-const fs = require('fs');
-const path = require('path');
-const crypto = require('crypto');
+import fs from 'fs';
+import path from 'path';
+import crypto from 'crypto';
 
 // Configuration
 const BUILD_DIR = './dist';
@@ -123,8 +123,6 @@ function main() {
 }
 
 // Run the script
-if (require.main === module) {
-  main();
-}
+main();
 
-module.exports = { addCacheBusting, processFile, processDirectory };
+export { addCacheBusting, processFile, processDirectory };
