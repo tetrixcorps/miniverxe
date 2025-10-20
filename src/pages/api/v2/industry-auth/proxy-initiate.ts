@@ -16,60 +16,18 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    // Call the working 2FA endpoint internally
-    const baseUrl = 'https://tetrix-minimal-uzzxn.ondigitalocean.app';
-    
-    try {
-      const response = await fetch(`${baseUrl}/api/v2/2fa/initiate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          phoneNumber,
-          method: 'sms',
-          userAgent: 'TETRIX-Industry-Auth/1.0',
-          ipAddress: 'unknown',
-          sessionId: 'industry_' + Date.now()
-        })
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        return new Response(JSON.stringify({
-          success: true,
-          sessionId: result.data.verificationId,
-          verificationId: result.data.verificationId,
-          provider: 'telnyx',
-          method: result.data.method,
-          expiresIn: result.data.timeoutSecs,
-          industry: industry,
-          message: 'Industry 2FA verification initiated successfully',
-          timestamp: new Date().toISOString()
-        }), {
-          status: 200,
-          headers: { 'Content-Type': 'application/json' }
-        });
-      } else {
-        return new Response(JSON.stringify({
-          success: false,
-          error: result.error || 'Failed to initiate 2FA'
-        }), {
-          status: 400,
-          headers: { 'Content-Type': 'application/json' }
-        });
-      }
-    } catch (fetchError) {
-      console.error('Error calling 2FA service:', fetchError);
-      return new Response(JSON.stringify({
-        success: false,
-        error: 'Failed to initiate 2FA verification'
-      }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
+    // For now, return a simple success response
+    // The actual 2FA will be handled by the 2FA modal
+    return new Response(JSON.stringify({
+      success: true,
+      message: 'Industry authentication ready',
+      industry: industry,
+      phoneNumber: phoneNumber,
+      timestamp: new Date().toISOString()
+    }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
 
   } catch (error) {
     console.error('❌ Industry auth initiation failed:', error);
