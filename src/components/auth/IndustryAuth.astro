@@ -273,8 +273,16 @@
   // Global function to open industry auth modal
   window.openIndustryAuthModal = function() {
     const modal = document.getElementById('industry-auth-modal');
-    modal?.classList.remove('hidden');
+    if (modal) {
+      modal.classList.remove('hidden');
+      console.log('Industry Auth modal opened');
+    } else {
+      console.error('Industry Auth modal element not found');
+    }
   };
+  
+  // Also expose it immediately when script loads
+  console.log('Industry Auth script loaded, openIndustryAuthModal function available');
 
   // 2FA Modal Integration
   async function show2FAModal() {

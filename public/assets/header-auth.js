@@ -84,9 +84,17 @@
         window.openIndustryAuthModal();
         closeMenuIfOpen();
       } else {
-        // Fallback: show error message instead of redirecting
-        console.error('Industry Auth modal not available');
-        alert('Authentication service is temporarily unavailable. Please try again later.');
+        // Wait a bit for the Industry Auth script to load
+        console.log('Industry Auth modal not immediately available, waiting...');
+        setTimeout(() => {
+          if (typeof window.openIndustryAuthModal === 'function') {
+            window.openIndustryAuthModal();
+            closeMenuIfOpen();
+          } else {
+            console.error('Industry Auth modal still not available after waiting');
+            alert('Authentication service is temporarily unavailable. Please try again later.');
+          }
+        }, 500);
       }
     }
 
