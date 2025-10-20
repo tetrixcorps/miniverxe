@@ -26,17 +26,17 @@ import JoRoMiIntegration from '../integration/JoRoMiIntegration.astro';
         <li><a href="/contact" class="hover:underline focus:outline-none focus:ring-2 focus:ring-brand-yellow">Contact Us</a></li>
         <li><a href="/about" class="hover:underline focus:outline-none focus:ring-2 focus:ring-brand-yellow">About Us</a></li>
         <li>
-          <button id="open-code-academy-modal" class="auth-button bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-300 shadow-lg text-sm min-w-[120px]">
+          <button type="button" id="open-code-academy-modal" class="auth-button bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-300 shadow-lg text-sm min-w-[120px]">
             Code Academy
           </button>
         </li>
             <li>
-              <button id="joromi-2fa-btn" class="auth-button bg-red-600 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-300 shadow-lg text-sm min-w-[100px]">
+              <button type="button" id="joromi-2fa-btn" class="auth-button bg-red-600 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-300 shadow-lg text-sm min-w-[100px]">
                 JoRoMi
               </button>
             </li>
             <li>
-              <button id="client-login-2fa-btn" class="auth-button bg-black text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 shadow-lg text-sm min-w-[110px]">
+              <button type="button" id="client-login-2fa-btn" class="auth-button bg-black text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 shadow-lg text-sm min-w-[110px]">
                 Client Login
               </button>
             </li>
@@ -59,17 +59,17 @@ import JoRoMiIntegration from '../integration/JoRoMiIntegration.astro';
           <li><a href="/contact" class="hover:underline">Contact Us</a></li>
           <li><a href="/about" class="hover:underline">About Us</a></li>
           <li>
-            <button id="open-code-academy-modal-mobile" class="auth-button bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg text-sm min-w-[120px] w-full">
+            <button type="button" id="open-code-academy-modal-mobile" class="auth-button bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg text-sm min-w-[120px] w-full">
               Code Academy
             </button>
           </li>
               <li>
-                <button id="joromi-2fa-btn-mobile" class="auth-button bg-red-600 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-red-700 transition-colors shadow-lg text-sm min-w-[100px] w-full">
+                <button type="button" id="joromi-2fa-btn-mobile" class="auth-button bg-red-600 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-red-700 transition-colors shadow-lg text-sm min-w-[100px] w-full">
                   JoRoMi
                 </button>
               </li>
               <li>
-                <button id="client-login-2fa-btn-mobile" class="auth-button bg-black text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-gray-800 transition-colors shadow-lg text-sm min-w-[110px] w-full">
+                <button type="button" id="client-login-2fa-btn-mobile" class="auth-button bg-black text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-gray-800 transition-colors shadow-lg text-sm min-w-[110px] w-full">
                   Client Login
                 </button>
               </li>
@@ -86,192 +86,7 @@ import JoRoMiIntegration from '../integration/JoRoMiIntegration.astro';
       <!-- 2FA Modal -->
       <TwoFAModal />
   
-  <script>
-    const btn = document.getElementById('mobile-menu-btn');
-    const menu = document.getElementById('mobile-menu');
-    const openProductsModal = document.getElementById('open-products-modal');
-    const openProductsModalMobile = document.getElementById('open-products-modal-mobile');
-    const productsModal = document.getElementById('products-modal');
-    
-    if (btn && menu) {
-      btn.addEventListener('click', () => {
-        const open = menu.classList.toggle('hidden');
-        btn.setAttribute('aria-expanded', open ? 'false' : 'true');
-        if (!open) {
-          menu.focus();
-        }
-      });
-      // Close menu on link click
-      menu.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', () => {
-          menu.classList.add('hidden');
-          btn.setAttribute('aria-expanded', 'false');
-        });
-      });
-      // Optional: Close on outside click
-      document.addEventListener('click', (e) => {
-        if (e.target instanceof Node && !menu.contains(e.target) && !btn.contains(e.target)) {
-          menu.classList.add('hidden');
-          btn.setAttribute('aria-expanded', 'false');
-        }
-      });
-    }
-
-        // Products modal functionality
-        if (openProductsModal) {
-          openProductsModal.addEventListener('click', function(e) {
-            e.preventDefault();
-            productsModal?.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-            // Close mobile menu if open
-            if (menu) {
-              menu.classList.add('hidden');
-              btn?.setAttribute('aria-expanded', 'false');
-            }
-          });
-        }
-
-        if (openProductsModalMobile) {
-          openProductsModalMobile.addEventListener('click', function(e) {
-            e.preventDefault();
-            productsModal?.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-            // Close mobile menu
-            if (menu) {
-              menu.classList.add('hidden');
-              btn?.setAttribute('aria-expanded', 'false');
-            }
-          });
-        }
-
-
-        // Code Academy functionality
-        const codeAcademyBtn = document.getElementById('open-code-academy-modal');
-        const codeAcademyBtnMobile = document.getElementById('open-code-academy-modal-mobile');
-
-        // Code Academy button handlers - 2FA authentication
-        if (codeAcademyBtn) {
-          codeAcademyBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            // Set authentication context for Code Academy
-            (window as any).tetrixAuthContext = 'code-academy';
-            // Open 2FA modal
-            if ((window as any).open2FAModal) {
-              (window as any).open2FAModal();
-            } else {
-              console.error('2FA modal not available');
-            }
-            // Close mobile menu if open
-            if (menu) {
-              menu.classList.add('hidden');
-              btn?.setAttribute('aria-expanded', 'false');
-            }
-          });
-        }
-
-        if (codeAcademyBtnMobile) {
-          codeAcademyBtnMobile.addEventListener('click', function(e) {
-            e.preventDefault();
-            // Set authentication context for Code Academy
-            (window as any).tetrixAuthContext = 'code-academy';
-            // Open 2FA modal
-            if ((window as any).open2FAModal) {
-              (window as any).open2FAModal();
-            } else {
-              console.error('2FA modal not available');
-            }
-            // Close mobile menu
-            if (menu) {
-              menu.classList.add('hidden');
-              btn?.setAttribute('aria-expanded', 'false');
-            }
-          });
-        }
-
-        // 2FA Authentication functionality
-        const joromiBtn = document.getElementById('joromi-2fa-btn');
-        const joromiBtnMobile = document.getElementById('joromi-2fa-btn-mobile');
-        const clientLoginBtn = document.getElementById('client-login-2fa-btn');
-        const clientLoginBtnMobile = document.getElementById('client-login-2fa-btn-mobile');
-
-        // JoRoMi button handlers - 2FA authentication
-        if (joromiBtn) {
-          joromiBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            // Set authentication context for JoRoMi
-            (window as any).tetrixAuthContext = 'joromi';
-            // Open 2FA modal
-            if ((window as any).open2FAModal) {
-              (window as any).open2FAModal();
-            } else {
-              console.error('2FA modal not available');
-            }
-            // Close mobile menu if open
-            if (menu) {
-              menu.classList.add('hidden');
-              btn?.setAttribute('aria-expanded', 'false');
-            }
-          });
-        }
-
-        if (joromiBtnMobile) {
-          joromiBtnMobile.addEventListener('click', function(e) {
-            e.preventDefault();
-            // Set authentication context for JoRoMi
-            (window as any).tetrixAuthContext = 'joromi';
-            // Open 2FA modal
-            if ((window as any).open2FAModal) {
-              (window as any).open2FAModal();
-            } else {
-              console.error('2FA modal not available');
-            }
-            // Close mobile menu
-            if (menu) {
-              menu.classList.add('hidden');
-              btn?.setAttribute('aria-expanded', 'false');
-            }
-          });
-        }
-
-        // Client Login button handlers - Industry authentication with industry selection
-        if (clientLoginBtn) {
-          clientLoginBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            // Set authentication context for dashboard
-            (window as any).tetrixAuthContext = 'dashboard';
-            // Open Industry Auth modal
-            if ((window as any).openIndustryAuthModal) {
-              (window as any).openIndustryAuthModal();
-            } else {
-              console.error('Industry Auth modal not available');
-            }
-            // Close mobile menu if open
-            if (menu) {
-              menu.classList.add('hidden');
-              btn?.setAttribute('aria-expanded', 'false');
-            }
-          });
-        }
-
-        if (clientLoginBtnMobile) {
-          clientLoginBtnMobile.addEventListener('click', function(e) {
-            e.preventDefault();
-            // Set authentication context for dashboard
-            (window as any).tetrixAuthContext = 'dashboard';
-            // Open Industry Auth modal
-            if ((window as any).openIndustryAuthModal) {
-              (window as any).openIndustryAuthModal();
-            } else {
-              console.error('Industry Auth modal not available');
-            }
-            // Close mobile menu
-            if (menu) {
-              menu.classList.add('hidden');
-              btn?.setAttribute('aria-expanded', 'false');
-            }
-          });
-        }
-  </script>
+  <script defer src="/assets/header-auth.js"></script>
 </header>
 
 <style>
