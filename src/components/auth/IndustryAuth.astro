@@ -303,9 +303,12 @@
       };
       
       // Open the 2FA modal (it will handle hiding the Industry Auth modal)
+      console.log('show2FAModal: About to call open2FAModal');
       if ((window as any).open2FAModal) {
+        console.log('show2FAModal: open2FAModal function exists, calling it');
         (window as any).open2FAModal();
       } else {
+        console.log('show2FAModal: open2FAModal function not available');
         resolve({ success: false, message: '2FA modal not available' });
       }
     });
