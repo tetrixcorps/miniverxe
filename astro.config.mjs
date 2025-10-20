@@ -4,6 +4,9 @@ import tailwind from '@astrojs/tailwind';
 import node from '@astrojs/node';
 // Note: loadEnv is not available in this context, using process.env directly
 
+// Import graceful shutdown
+import './src/lib/graceful-shutdown.js';
+
 // Load environment variables from process.env
 const env = process.env;
 
