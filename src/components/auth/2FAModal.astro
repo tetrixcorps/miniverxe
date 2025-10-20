@@ -916,6 +916,35 @@
   // Initialize 2FA Manager
   window.twoFAManager = new TwoFAManager();
 
+  // Watch for 2FA modal visibility changes and disable Industry Auth modal
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+        const target = mutation.target;
+        if (target.id === '2fa-modal') {
+          const industryModal = document.getElementById('industry-auth-modal');
+          if (industryModal) {
+            if (!target.classList.contains('hidden')) {
+              // 2FA modal is visible, disable Industry Auth modal
+              industryModal.classList.add('disable-pointer');
+              console.log('Industry Auth modal disabled via observer');
+            } else {
+              // 2FA modal is hidden, enable Industry Auth modal
+              industryModal.classList.remove('disable-pointer');
+              console.log('Industry Auth modal enabled via observer');
+            }
+          }
+        }
+      }
+    });
+  });
+
+  // Start observing the 2FA modal
+  const twoFAModal = document.getElementById('2fa-modal');
+  if (twoFAModal) {
+    observer.observe(twoFAModal, { attributes: true, attributeFilter: ['class'] });
+  }
+
   // Global function to open 2FA modal
   window.open2FAModal = function() {
     console.log('2FAModal.astro: open2FAModal called');
