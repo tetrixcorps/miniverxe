@@ -202,10 +202,13 @@
 
     // Login handler
     loginBtn?.addEventListener('click', async () => {
+      console.log('handleLogin: Login button clicked');
       const industry = (industrySelect as HTMLSelectElement)?.value;
       const role = (roleSelect as HTMLSelectElement)?.value;
       const organizationInput = document.getElementById('organization-input') as HTMLInputElement;
       const organization = organizationInput?.value;
+
+      console.log('handleLogin: Form values:', { industry, role, organization });
 
       if (!industry || !role || !organization) {
         alert('Please fill in all required fields');
@@ -216,6 +219,7 @@
       const authLoading = document.getElementById('auth-loading');
       authLoading?.classList.remove('hidden');
       (loginBtn as HTMLButtonElement).disabled = true;
+      console.log('handleLogin: Loading state shown, calling show2FAModal');
 
       try {
         // Show 2FA modal for phone number and verification
