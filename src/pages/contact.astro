@@ -18,7 +18,7 @@ import MainLayout from '../components/layout/MainLayout.astro';
           <span class="text-brand-yellow">Contact Center</span>
         </h1>
         <p class="text-xl text-white/90 mb-8 max-w-3xl mx-auto">
-          Connect with our enterprise team. Chat with SHANGO, our AI Super Agent, or reach out directly for mission-critical support and solutions.
+          Connect with our enterprise team. Chat with JoRoMi, our AI Super Agent, or reach out directly for mission-critical support and solutions.
         </p>
         
         <!-- Contact Statistics -->
@@ -138,23 +138,23 @@ import MainLayout from '../components/layout/MainLayout.astro';
             </form>
           </div>
           
-          <!-- SHANGO Live Chat Section -->
+          <!-- JoRoMi Live Chat Section -->
           <div class="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-8 shadow-lg border border-purple-200">
             <div class="text-center mb-8">
               <div class="w-20 h-20 mx-auto mb-4 flex items-center justify-center">
                 <img 
                   src="/images/joromi-base-logo.jpg" 
-                  alt="SHANGO AI Super Agent Logo" 
+                  alt="JoRoMi AI Super Agent Logo" 
                   class="w-full h-full object-contain rounded-lg shadow-lg border-2 border-purple-200"
                 />
               </div>
-              <h2 class="text-3xl font-bold text-gray-900 mb-4">Chat with SHANGO</h2>
+              <h2 class="text-3xl font-bold text-gray-900 mb-4">Chat with JoRoMi</h2>
               <p class="text-gray-600 mb-6">
                 Our AI Super Agent is available 24/7 to help with enterprise inquiries, technical support, and solution recommendations.
               </p>
             </div>
             
-            <!-- SHANGO Features -->
+            <!-- JoRoMi Features -->
             <div class="space-y-4 mb-8">
               <div class="flex items-center">
                 <span class="text-green-600 mr-3">&check;</span>
@@ -174,18 +174,18 @@ import MainLayout from '../components/layout/MainLayout.astro';
               </div>
             </div>
 
-            <!-- SHANGO Chat Widget -->
+            <!-- JoRoMi Chat Widget -->
             <div class="bg-white rounded-lg p-4 border border-purple-200">
-              <div id="shango-chat-widget" class="min-h-[400px]">
+              <div id="joromi-chat-widget" class="min-h-[400px]">
                 <div class="flex flex-col items-center justify-center h-full min-h-[400px] text-center">
                   <div class="w-16 h-16 mb-4 flex items-center justify-center">
                     <img 
                       src="/images/joromi-base-logo.jpg" 
-                      alt="SHANGO AI Super Agent Logo" 
+                      alt="JoRoMi AI Super Agent Logo" 
                       class="w-full h-full object-contain rounded-lg shadow-md border border-purple-200"
                     />
                   </div>
-                  <h3 class="text-xl font-bold text-gray-900 mb-2">SHANGO AI Super Agent</h3>
+                  <h3 class="text-xl font-bold text-gray-900 mb-2">JoRoMi AI Super Agent</h3>
                   <p class="text-gray-600 mb-4">Our AI Super Agent is ready to help you with enterprise inquiries and technical support.</p>
                   <div class="space-y-2 text-sm text-gray-500 mb-6">
                     <p>• Instant responses to enterprise queries</p>
@@ -194,10 +194,10 @@ import MainLayout from '../components/layout/MainLayout.astro';
                     <p>• Escalation to human experts when needed</p>
                   </div>
                   <button 
-                    onclick="startSHANGOChat()"
+                    onclick="startJoRoMiChat()"
                     class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-colors"
                   >
-                    Start Chat with SHANGO
+                    Start Chat with JoRoMi
                   </button>
                 </div>
               </div>
@@ -284,11 +284,11 @@ import MainLayout from '../components/layout/MainLayout.astro';
 </MainLayout>
 
 <script>
-  // Enhanced SHANGO Chat Integration with Backend Service Knowledge
-  window.initializeSHANGOChatWidget = function initializeSHANGOChatWidget() {
-    console.log('Initializing enhanced SHANGO Chat...');
+  // Enhanced JoRoMi Chat Integration with Backend Service Knowledge
+  window.initializeJoRoMiChatWidget = function initializeJoRoMiChatWidget() {
+    console.log('Initializing enhanced JoRoMi Chat...');
     
-    const chatContainer = document.getElementById('shango-chat-widget');
+    const chatContainer = document.getElementById('joromi-chat-widget');
     if (!chatContainer) {
       console.error('Chat container not found!');
       return;
@@ -300,7 +300,7 @@ import MainLayout from '../components/layout/MainLayout.astro';
 
   // Render initial chat interface
   function renderInitialChatInterface() {
-    const chatContainer = document.getElementById('shango-chat-widget');
+    const chatContainer = document.getElementById('joromi-chat-widget');
     if (!chatContainer) return;
 
     chatContainer.innerHTML = `
@@ -308,11 +308,11 @@ import MainLayout from '../components/layout/MainLayout.astro';
         <div class="w-16 h-16 mb-4 flex items-center justify-center">
           <img 
             src="/images/joromi-base-logo.jpg" 
-            alt="SHANGO AI Super Agent Logo" 
+            alt="JoRoMi AI Super Agent Logo" 
             class="w-full h-full object-contain rounded-lg shadow-md border border-purple-200"
           />
         </div>
-        <h3 class="text-xl font-bold text-gray-900 mb-2">SHANGO AI Super Agent</h3>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">JoRoMi AI Super Agent</h3>
         <p class="text-gray-600 mb-4">Our AI Super Agent is ready to help you with enterprise inquiries and technical support.</p>
         <div class="space-y-2 text-sm text-gray-500 mb-6">
           <p>• Instant responses to enterprise queries</p>
@@ -321,18 +321,18 @@ import MainLayout from '../components/layout/MainLayout.astro';
           <p>• Escalation to human experts when needed</p>
         </div>
         <button 
-          onclick="startSHANGOChat()"
+          onclick="startJoRoMiChat()"
           class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-colors"
         >
-          Start Chat with SHANGO
+          Start Chat with JoRoMi
         </button>
       </div>
     `;
   }
 
-  // Start SHANGO Chat
-  window.startSHANGOChat = async function startSHANGOChat() {
-    const chatContainer = document.getElementById('shango-chat-widget');
+  // Start JoRoMi Chat
+  window.startJoRoMiChat = async function startJoRoMiChat() {
+    const chatContainer = document.getElementById('joromi-chat-widget');
     if (!chatContainer) return;
 
     try {
@@ -340,19 +340,19 @@ import MainLayout from '../components/layout/MainLayout.astro';
       chatContainer.innerHTML = `
         <div class="flex flex-col items-center justify-center h-full min-h-[400px] text-center">
           <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mb-4"></div>
-          <p class="text-gray-600">Starting SHANGO AI Super Agent...</p>
+          <p class="text-gray-600">Starting JoRoMi AI Super Agent...</p>
         </div>
       `;
 
       // Create session
-      const response = await fetch('/api/v1/shango/sessions', {
+      const response = await fetch('/api/v1/joromi/sessions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           userId: `contact-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-          agentId: 'shango-general',
+          agentId: 'joromi-general',
           channel: 'chat'
         })
       });
@@ -373,9 +373,9 @@ import MainLayout from '../components/layout/MainLayout.astro';
             <span class="text-2xl text-red-600">⚠️</span>
           </div>
           <h3 class="text-xl font-bold text-gray-900 mb-2">Connection Error</h3>
-          <p class="text-gray-600 mb-4">Unable to start SHANGO chat. Please try again.</p>
+          <p class="text-gray-600 mb-4">Unable to start JoRoMi chat. Please try again.</p>
           <button 
-            onclick="startSHANGOChat()"
+            onclick="startJoRoMiChat()"
             class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-colors"
           >
             Try Again
@@ -387,7 +387,7 @@ import MainLayout from '../components/layout/MainLayout.astro';
 
   // Render chat interface
   function renderChatInterface() {
-    const chatContainer = document.getElementById('shango-chat-widget');
+    const chatContainer = document.getElementById('joromi-chat-widget');
     if (!chatContainer) return;
 
     chatContainer.innerHTML = `
@@ -397,17 +397,17 @@ import MainLayout from '../components/layout/MainLayout.astro';
           <div class="flex items-center space-x-2">
             <span class="text-lg">⚡</span>
             <div>
-              <h3 class="font-semibold">SHANGO</h3>
+              <h3 class="font-semibold">JoRoMi</h3>
               <p class="text-sm opacity-90">AI Super Agent Online</p>
             </div>
           </div>
-          <button onclick="closeSHANGOChat()" class="text-white hover:text-gray-200 transition-colors">
+          <button onclick="closeJoRoMiChat()" class="text-white hover:text-gray-200 transition-colors">
             ✕
           </button>
         </div>
 
         <!-- Messages -->
-        <div id="shango-messages" class="flex-1 overflow-y-auto p-4 space-y-2 bg-gray-50">
+        <div id="joromi-messages" class="flex-1 overflow-y-auto p-4 space-y-2 bg-gray-50">
           ${window.messages.map(message => renderMessage(message)).join('')}
         </div>
 
@@ -416,13 +416,13 @@ import MainLayout from '../components/layout/MainLayout.astro';
           <div class="flex space-x-2">
             <input
               type="text"
-              id="shango-message-input"
-              placeholder="Ask SHANGO anything..."
+              id="joromi-message-input"
+              placeholder="Ask JoRoMi anything..."
               class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
               onkeypress="handleKeyPress(event)"
             />
             <button
-              onclick="sendSHANGOMessage()"
+              onclick="sendJoRoMiMessage()"
               class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-colors"
             >
               Send
@@ -436,7 +436,7 @@ import MainLayout from '../components/layout/MainLayout.astro';
   // Render individual message
   function renderMessage(message) {
     const isUser = message.role === 'user';
-    const isSHANGO = message.role === 'assistant';
+    const isJoRoMi = message.role === 'assistant';
     const isStreaming = message.isStreaming;
     
     return `
@@ -444,11 +444,11 @@ import MainLayout from '../components/layout/MainLayout.astro';
         <div class="max-w-xs px-3 py-2 rounded-lg ${
           isUser 
             ? 'bg-blue-600 text-white' 
-            : isSHANGO
+            : isJoRoMi
             ? 'bg-gradient-to-r from-purple-100 to-blue-100 text-purple-800 border border-purple-200'
             : 'bg-gray-100 text-gray-800'
         }">
-          ${isSHANGO ? '<div class="flex items-center space-x-1 mb-1"><span class="text-xs font-semibold text-purple-600">🤖 SHANGO</span></div>' : ''}
+          ${isJoRoMi ? '<div class="flex items-center space-x-1 mb-1"><span class="text-xs font-semibold text-purple-600">🤖 JoRoMi</span></div>' : ''}
           <p class="text-sm">${message.content}${isStreaming ? '<span class="inline-block w-2 h-2 bg-purple-500 rounded-full animate-pulse ml-1"></span>' : ''}</p>
           <p class="text-xs opacity-70 mt-1">${new Date(message.timestamp).toLocaleTimeString()}</p>
         </div>
@@ -457,8 +457,8 @@ import MainLayout from '../components/layout/MainLayout.astro';
   }
 
   // Close chat
-  window.closeSHANGOChat = function closeSHANGOChat() {
-    const chatContainer = document.getElementById('shango-chat-widget');
+  window.closeJoRoMiChat = function closeJoRoMiChat() {
+    const chatContainer = document.getElementById('joromi-chat-widget');
     if (!chatContainer) return;
 
     chatContainer.innerHTML = `
@@ -466,11 +466,11 @@ import MainLayout from '../components/layout/MainLayout.astro';
         <div class="w-16 h-16 mb-4 flex items-center justify-center">
           <img 
             src="/images/joromi-base-logo.jpg" 
-            alt="SHANGO AI Super Agent Logo" 
+            alt="JoRoMi AI Super Agent Logo" 
             class="w-full h-full object-contain rounded-lg shadow-md border border-purple-200"
           />
         </div>
-        <h3 class="text-xl font-bold text-gray-900 mb-2">SHANGO AI Super Agent</h3>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">JoRoMi AI Super Agent</h3>
         <p class="text-gray-600 mb-4">Our AI Super Agent is ready to help you with enterprise inquiries and technical support.</p>
         <div class="space-y-2 text-sm text-gray-500 mb-6">
           <p>• Instant responses to enterprise queries</p>
@@ -479,10 +479,10 @@ import MainLayout from '../components/layout/MainLayout.astro';
           <p>• Escalation to human experts when needed</p>
         </div>
         <button 
-          onclick="startSHANGOChat()"
+          onclick="startJoRoMiChat()"
           class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-colors"
         >
-          Start Chat with SHANGO
+          Start Chat with JoRoMi
         </button>
       </div>
     `;
@@ -494,13 +494,13 @@ import MainLayout from '../components/layout/MainLayout.astro';
   function handleKeyPress(event) {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
-      sendSHANGOMessage();
+      sendJoRoMiMessage();
     }
   }
 
   // Send message with enhanced backend service knowledge
-  async function sendSHANGOMessage() {
-    const input = document.getElementById('shango-message-input');
+  async function sendJoRoMiMessage() {
+    const input = document.getElementById('joromi-message-input');
     const message = input.value.trim();
     
     if (!message || !window.currentSession) return;
@@ -519,8 +519,8 @@ import MainLayout from '../components/layout/MainLayout.astro';
     updateMessagesDisplay();
     
     try {
-      // First try SHANGO API
-      const response = await fetch(`/api/v1/shango/sessions/${window.currentSession.id}/messages`, {
+      // First try JoRoMi API
+      const response = await fetch(`/api/v1/joromi/sessions/${window.currentSession.id}/messages`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -528,7 +528,7 @@ import MainLayout from '../components/layout/MainLayout.astro';
         body: JSON.stringify({
           message: message,
           role: 'user',
-          agentId: 'shango-general'
+          agentId: 'joromi-general'
         })
       });
 
@@ -552,7 +552,7 @@ import MainLayout from '../components/layout/MainLayout.astro';
         await sendToEnhancedFallback(message);
       }
     } catch (error) {
-      console.error('Error sending message via SHANGO API, trying enhanced fallback:', error);
+      console.error('Error sending message via JoRoMi API, trying enhanced fallback:', error);
       // Fallback to enhanced responses
       await sendToEnhancedFallback(message);
     }
@@ -561,7 +561,7 @@ import MainLayout from '../components/layout/MainLayout.astro';
   // Enhanced fallback with TETRIX backend service knowledge
   async function sendToEnhancedFallback(message) {
     try {
-      const prompt = `You are SHANGO, an AI Super Agent for TETRIX enterprise communication platform. You help customers with:
+      const prompt = `You are JoRoMi, an AI Super Agent for TETRIX enterprise communication platform. You help customers with:
 
 TETRIX Backend Services:
 - IVR System: Interactive Voice Response with TeXML integration, voice recognition, intelligent call routing
@@ -573,7 +573,7 @@ TETRIX Backend Services:
 - Phone Provisioning: Phone number provisioning, porting, and management with global coverage
 - Data Labeling: Human-in-the-loop data annotation and quality assurance for ML models
 - AI Engine: Enterprise AI with machine learning models, NLP, and computer vision
-- SHANGO AI: Multi-agent AI system with specialized capabilities for sales, support, technical assistance
+- JoRoMi AI: Multi-agent AI system with specialized capabilities for sales, support, technical assistance
 - RPA Services: Robotic Process Automation for business workflow automation
 - Epic FHIR Integration: Healthcare data integration with Epic EHR systems
 - CRM Integrations: Salesforce, HubSpot, Clio, MyCase integrations
@@ -595,7 +595,7 @@ Please provide a helpful, professional response that addresses their inquiry wit
         content: '',
         timestamp: new Date().toISOString(),
         type: 'text',
-        agentId: 'shango-general',
+        agentId: 'joromi-general',
         isStreaming: true
       };
       
@@ -630,10 +630,10 @@ Please provide a helpful, professional response that addresses their inquiry wit
       const fallbackMessage = {
         id: `fallback-${Date.now()}`,
         role: 'assistant',
-        content: "Thank you for your message! I'm SHANGO, your AI Super Agent for TETRIX enterprise communication platform. I can help you with information about our IVR systems, unified messaging, marketing campaigns, IoT telematics, voice APIs, 2FA services, and more. Our enterprise solutions start at $2,999/month with 24/7 support. What specific service would you like to know more about?",
+        content: "Thank you for your message! I'm JoRoMi, your AI Super Agent for TETRIX enterprise communication platform. I can help you with information about our IVR systems, unified messaging, marketing campaigns, IoT telematics, voice APIs, 2FA services, and more. Our enterprise solutions start at $2,999/month with 24/7 support. What specific service would you like to know more about?",
         timestamp: new Date().toISOString(),
         type: 'text',
-        agentId: 'shango-general'
+        agentId: 'joromi-general'
       };
       
       window.messages.push(fallbackMessage);
@@ -643,7 +643,7 @@ Please provide a helpful, professional response that addresses their inquiry wit
 
   // Update messages display
   function updateMessagesDisplay() {
-    const messagesContainer = document.getElementById('shango-messages');
+    const messagesContainer = document.getElementById('joromi-messages');
     if (messagesContainer) {
       messagesContainer.innerHTML = window.messages.map(message => renderMessage(message)).join('');
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -695,7 +695,7 @@ Please provide a helpful, professional response that addresses their inquiry wit
       });
     }
 
-    // Initialize SHANGO Chat Widget
-    initializeSHANGOChatWidget();
+    // Initialize JoRoMi Chat Widget
+    initializeJoRoMiChatWidget();
   });
 </script>
