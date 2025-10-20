@@ -55,12 +55,32 @@ export const POST: APIRoute = async ({ request, locals }) => {
       return createErrorResponse('Phone number is required', 400);
     }
 
-    // Normalize phone number to E.164
-    const parsed = parsePhoneNumberFromString(String(phoneNumber));
-    if (!parsed || !parsed.isValid()) {
-      return createErrorResponse('Invalid phone number. Please enter an international number with country code.', 400);
+    // Normalize phone number to E.164 format
+    let phoneStr = String(phoneNumber).trim();
+    
+    // Basic E.164 format validation and normalization
+    // Remove all non-digit characters except +
+    let cleanPhone = phoneStr.replace(/[^\d+]/g, '');
+    
+    // Remove double plus signs
+    if (cleanPhone.startsWith('++')) {
+      cleanPhone = cleanPhone.substring(1);
     }
-    const e164 = parsed.number; // e.g., +14155552671
+    
+    // Ensure it starts with +
+    if (!cleanPhone.startsWith('+')) {
+      cleanPhone = '+' + cleanPhone;
+    }
+    
+    // Extract digits after the +
+    const digits = cleanPhone.slice(1).replace(/\D/g, '');
+    
+    // Validate E.164 format: + followed by 1-15 digits, first digit cannot be 0
+    if (digits.length < 7 || digits.length > 15 || digits.startsWith('0')) {
+      return createErrorResponse('Invalid phone number format. Please enter a valid international number with country code (e.g., +1 555-123-4567, +44 20 7946 0958, +33 1 23 45 67 89).', 400);
+    }
+    
+    const e164 = cleanPhone; // Use the cleaned E.164 format
 
     // Validate method
     const validMethods = ['sms', 'voice', 'flashcall', 'whatsapp'];

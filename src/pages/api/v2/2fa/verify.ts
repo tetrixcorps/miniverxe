@@ -56,12 +56,32 @@ export const POST: APIRoute = async ({ request, locals }) => {
       return createErrorResponse('Code must be 6 digits', 400);
     }
 
-    // Normalize phone number to E.164 for verification
-    const parsed = parsePhoneNumberFromString(String(phoneNumber));
-    if (!parsed || !parsed.isValid()) {
-      return createErrorResponse('Invalid phone number format', 400);
+    // Normalize phone number to E.164 format for verification
+    let phoneStr = String(phoneNumber).trim();
+    
+    // Basic E.164 format validation and normalization
+    // Remove all non-digit characters except +
+    let cleanPhone = phoneStr.replace(/[^\d+]/g, '');
+    
+    // Remove double plus signs
+    if (cleanPhone.startsWith('++')) {
+      cleanPhone = cleanPhone.substring(1);
     }
-    const e164 = parsed.number;
+    
+    // Ensure it starts with +
+    if (!cleanPhone.startsWith('+')) {
+      cleanPhone = '+' + cleanPhone;
+    }
+    
+    // Extract digits after the +
+    const digits = cleanPhone.slice(1).replace(/\D/g, '');
+    
+    // Validate E.164 format: + followed by 1-15 digits, first digit cannot be 0
+    if (digits.length < 7 || digits.length > 15 || digits.startsWith('0')) {
+      return createErrorResponse('Invalid phone number format. Please enter a valid international number with country code.', 400);
+    }
+    
+    const e164 = cleanPhone; // Use the cleaned E.164 format
 
     // Verify code
     const result = await enterprise2FAService.verifyCode(verificationId, code, e164);
