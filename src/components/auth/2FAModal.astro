@@ -65,7 +65,11 @@
                 <option value="sms">SMS Text Message</option>
                 <option value="voice">Voice Call</option>
                 <option value="whatsapp">WhatsApp</option>
+                <option value="flashcall">Flash Call</option>
               </select>
+              <p class="text-xs text-gray-500 mt-2">
+                Choose a verification channel. WhatsApp and Flash Call are available in supported countries.
+              </p>
             </div>
 
             <button
@@ -197,6 +201,15 @@
 </div>
 
 <script>
+  declare global {
+    interface Window {
+      twoFAManager: any;
+      open2FAModal: () => void;
+      tetrixAuthContext?: string;
+      showJoRoMiInterface?: (options: any) => void;
+    }
+  }
+
   class TwoFAManager {
     currentStep: number;
     verificationId: string | null;

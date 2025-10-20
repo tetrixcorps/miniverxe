@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { enterprise2FAService } from '../../../../services/enterprise2FAService';
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
 
 // Enhanced 2FA verification endpoint using Telnyx Verify API
 export const POST: APIRoute = async ({ request, locals }) => {
@@ -55,8 +56,15 @@ export const POST: APIRoute = async ({ request, locals }) => {
       return createErrorResponse('Code must be 6 digits', 400);
     }
 
+    // Normalize phone number to E.164 for verification
+    const parsed = parsePhoneNumberFromString(String(phoneNumber));
+    if (!parsed || !parsed.isValid()) {
+      return createErrorResponse('Invalid phone number format', 400);
+    }
+    const e164 = parsed.number;
+
     // Verify code
-    const result = await enterprise2FAService.verifyCode(verificationId, code, phoneNumber);
+    const result = await enterprise2FAService.verifyCode(verificationId, code, e164);
 
     if (result.verified) {
       return createSuccessResponse({

@@ -289,12 +289,18 @@ class Enterprise2FAService {
       phoneNumber: request.phoneNumber
     });
 
-    const endpoint = request.method === 'voice' 
-      ? 'https://api.telnyx.com/v2/verifications/call'
-      : 'https://api.telnyx.com/v2/verifications/sms';
+    let endpoint = 'https://api.telnyx.com/v2/verifications/sms';
+    if (request.method === 'voice') {
+      endpoint = 'https://api.telnyx.com/v2/verifications/call';
+    } else if (request.method === 'whatsapp') {
+      endpoint = 'https://api.telnyx.com/v2/verifications/whatsapp';
+    } else if (request.method === 'flashcall' || request.method === 'flash') {
+      // Telnyx flash call: phone rings once with last digits as code
+      endpoint = 'https://api.telnyx.com/v2/verifications/flashcall';
+    }
 
     const payload: any = {
-      phone_number: request.phoneNumber.startsWith('+') ? request.phoneNumber : `+${request.phoneNumber}`, // Ensure phone number has + prefix
+      phone_number: request.phoneNumber.startsWith('+') ? request.phoneNumber : `+${request.phoneNumber}`,
       verify_profile_id: this.config.verifyProfileId
     };
 

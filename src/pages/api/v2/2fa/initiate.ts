@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { enterprise2FAService } from '../../../../services/enterprise2FAService';
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
 
 // Enhanced 2FA initiation endpoint using Telnyx Verify API
 export const POST: APIRoute = async ({ request, locals }) => {
@@ -54,6 +55,13 @@ export const POST: APIRoute = async ({ request, locals }) => {
       return createErrorResponse('Phone number is required', 400);
     }
 
+    // Normalize phone number to E.164
+    const parsed = parsePhoneNumberFromString(String(phoneNumber));
+    if (!parsed || !parsed.isValid()) {
+      return createErrorResponse('Invalid phone number. Please enter an international number with country code.', 400);
+    }
+    const e164 = parsed.number; // e.g., +14155552671
+
     // Validate method
     const validMethods = ['sms', 'voice', 'flashcall', 'whatsapp'];
     if (!validMethods.includes(method)) {
@@ -70,7 +78,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     // Initiate verification
     const verification = await enterprise2FAService.initiateVerification({
-      phoneNumber,
+      phoneNumber: e164,
       method,
       customCode,
       timeoutSecs,
