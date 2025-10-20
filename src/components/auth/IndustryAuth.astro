@@ -74,6 +74,7 @@
         </button>
         <button 
           id="login-btn" 
+          type="button"
           class="flex-1 px-4 py-3 bg-brand-red text-white rounded-lg hover:bg-red-700 transition-colors"
         >
           Access Dashboard
@@ -201,7 +202,9 @@
     // Note: Authentication method selection removed - using 2FA only
 
     // Login handler
-    loginBtn?.addEventListener('click', async () => {
+    loginBtn?.addEventListener('click', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       console.log('handleLogin: Login button clicked');
       const industry = (industrySelect as HTMLSelectElement)?.value;
       const role = (roleSelect as HTMLSelectElement)?.value;
@@ -222,6 +225,22 @@
       console.log('handleLogin: Loading state shown, calling show2FAModal');
 
       try {
+        // Direct approach: Hide Industry Auth modal and open 2FA modal
+        const industryModal = document.getElementById('industry-auth-modal');
+        if (industryModal) {
+          industryModal.classList.add('hidden');
+          industryModal.style.display = 'none';
+          console.log('Industry Auth modal hidden directly');
+        }
+        
+        // Open 2FA modal directly
+        const twoFAModal = document.getElementById('2fa-modal');
+        if (twoFAModal) {
+          twoFAModal.classList.remove('hidden');
+          twoFAModal.style.display = 'block';
+          console.log('2FA modal opened directly');
+        }
+        
         // Show 2FA modal for phone number and verification
         const twoFAResult = await show2FAModal();
         if (!twoFAResult.success) {
