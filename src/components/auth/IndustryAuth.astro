@@ -302,6 +302,12 @@
         resolve(result);
       };
       
+      // Hide the Industry Auth modal first
+      const industryModal = document.getElementById('industry-auth-modal');
+      if (industryModal) {
+        industryModal.classList.add('hidden');
+      }
+      
       // Open the 2FA modal
       if ((window as any).open2FAModal) {
         (window as any).open2FAModal();
