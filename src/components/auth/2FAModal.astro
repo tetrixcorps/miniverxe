@@ -568,6 +568,9 @@
             return;
           }
           
+          // Handle dashboard routing for direct 2FA usage
+          this.handleDashboardRouting(result);
+          
           this.showStep(3);
           this.hideError();
           // Store authentication token
@@ -839,6 +842,44 @@
     }
 
     // getJoromiUrl method removed - JoRoMi has its own authentication system
+
+    /**
+     * Handle dashboard routing after successful 2FA
+     */
+    handleDashboardRouting(result: any) {
+      // Get authentication context to determine routing
+      const authContext = window.tetrixAuthContext || 'default';
+      
+      console.log('Handling dashboard routing for context:', authContext);
+      
+      // Store authentication token
+      if (result.token) {
+        localStorage.setItem('tetrix_auth_token', result.token);
+        console.log('Authentication token stored:', result.token);
+      }
+
+      // Route based on context
+      switch (authContext) {
+        case 'dashboard':
+          // Redirect to client dashboard
+          setTimeout(() => {
+            window.location.href = `/dashboards/client?token=${result.token}&phone=${this.phoneNumber}`;
+          }, 2000);
+          break;
+        case 'code-academy':
+          // Redirect to Code Academy
+          setTimeout(() => {
+            const codeAcademyUrl = this.getCodeAcademyUrl();
+            window.location.href = `${codeAcademyUrl}?token=${result.token}`;
+          }, 2000);
+          break;
+        default:
+          // Default to client dashboard
+          setTimeout(() => {
+            window.location.href = `/dashboards/client?token=${result.token}&phone=${this.phoneNumber}`;
+          }, 2000);
+      }
+    }
 
     getCodeAcademyUrl() {
       // Get environment-specific Code Academy URL

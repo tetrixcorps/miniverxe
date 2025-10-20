@@ -155,7 +155,7 @@
     ]
   };
 
-  // Industry dashboard mappings
+  // Industry dashboard mappings (fallback)
   const industryDashboards = {
     healthcare: '/dashboards/healthcare',
     construction: '/dashboards/construction',
@@ -168,6 +168,16 @@
     beauty: '/dashboards/beauty',
     legal: '/dashboards/legal'
   };
+
+  // Load dashboard routing service
+  import('/src/lib/dashboardRouting.ts').then(module => {
+    if (module.dashboardRoutingService) {
+      window.dashboardRoutingService = module.dashboardRoutingService;
+      console.log('Dashboard routing service loaded');
+    }
+  }).catch(error => {
+    console.warn('Failed to load dashboard routing service:', error);
+  });
 
   // Initialize authentication modal
   function initIndustryAuth() {
@@ -225,24 +235,44 @@
       console.log('handleLogin: Loading state shown, calling show2FAModal');
 
       try {
-        // Direct approach: Hide Industry Auth modal and open 2FA modal
+        // Set up 2FA modal result handler
+        (window as any).handle2FAResult = (result: any) => {
+          console.log('2FA result received:', result);
+          // This will be handled by the 2FA modal itself
+        };
+        
+        // Hide Industry Auth modal
         const industryModal = document.getElementById('industry-auth-modal');
         if (industryModal) {
           industryModal.classList.add('hidden');
           industryModal.style.display = 'none';
-          console.log('Industry Auth modal hidden directly');
+          console.log('Industry Auth modal hidden');
         }
         
-        // Open 2FA modal directly
-        const twoFAModal = document.getElementById('2fa-modal');
-        if (twoFAModal) {
-          twoFAModal.classList.remove('hidden');
-          twoFAModal.style.display = 'block';
-          console.log('2FA modal opened directly');
+        // Open 2FA modal using the global function
+        if ((window as any).open2FAModal) {
+          console.log('Opening 2FA modal via open2FAModal');
+          (window as any).open2FAModal();
+        } else {
+          // Fallback: open 2FA modal directly
+          const twoFAModal = document.getElementById('2fa-modal');
+          if (twoFAModal) {
+            twoFAModal.classList.remove('hidden');
+            twoFAModal.style.display = 'block';
+            console.log('2FA modal opened directly (fallback)');
+          } else {
+            throw new Error('2FA modal not found');
+          }
         }
         
-        // Show 2FA modal for phone number and verification
-        const twoFAResult = await show2FAModal();
+        // Wait for 2FA completion
+        const twoFAResult = await new Promise((resolve) => {
+          (window as any).handle2FAResult = (result: any) => {
+            console.log('2FA completed with result:', result);
+            resolve(result);
+          };
+        });
+        
         if (!twoFAResult.success) {
           throw new Error(twoFAResult.message || '2FA authentication failed');
         }
@@ -261,12 +291,30 @@
 
         localStorage.setItem('tetrixAuth', JSON.stringify(authData));
 
-        // Redirect to appropriate dashboard
-        const dashboardUrl = industryDashboards[industry as keyof typeof industryDashboards];
-        if (dashboardUrl) {
-          window.location.href = `${dashboardUrl}?token=${twoFAResult.token}`;
+        // Use dashboard routing service for proper URL parameters
+        if (window.dashboardRoutingService) {
+          window.dashboardRoutingService.handleSuccessful2FA(
+            twoFAResult.phoneNumber,
+            twoFAResult.verificationId,
+            twoFAResult.token,
+            industry,
+            role,
+            organization
+          );
         } else {
-          window.location.href = `/dashboards/client?token=${twoFAResult.token}`;
+          // Fallback to manual routing
+          const dashboardUrl = industryDashboards[industry as keyof typeof industryDashboards];
+          if (dashboardUrl) {
+            const url = new URL(dashboardUrl, window.location.origin);
+            url.searchParams.set('token', twoFAResult.token);
+            url.searchParams.set('role', role);
+            url.searchParams.set('org', organization);
+            url.searchParams.set('phone', twoFAResult.phoneNumber);
+            url.searchParams.set('industry', industry);
+            window.location.href = url.toString();
+          } else {
+            window.location.href = `/dashboards/client?token=${twoFAResult.token}&role=${role}&org=${organization}&phone=${twoFAResult.phoneNumber}&industry=${industry}`;
+          }
         }
 
       } catch (error) {
@@ -317,25 +365,7 @@
     window.industryAuthDebugger.log('IndustryAuth', 'loaded', 'Component initialized');
   }
 
-  // 2FA Modal Integration
-  async function show2FAModal() {
-    return new Promise((resolve) => {
-      // Set up 2FA modal result handler
-      (window as any).handle2FAResult = (result: any) => {
-        resolve(result);
-      };
-      
-      // Open the 2FA modal (it will handle hiding the Industry Auth modal)
-      console.log('show2FAModal: About to call open2FAModal');
-      if ((window as any).open2FAModal) {
-        console.log('show2FAModal: open2FAModal function exists, calling it');
-        (window as any).open2FAModal();
-      } else {
-        console.log('show2FAModal: open2FAModal function not available');
-        resolve({ success: false, message: '2FA modal not available' });
-      }
-    });
-  }
+  // 2FA Modal Integration - handled directly in the login handler
 
   async function initiate2FA(phoneNumber: string) {
     try {

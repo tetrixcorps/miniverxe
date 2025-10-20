@@ -1,0 +1,194 @@
+name: tetrix-2fa-production
+
+# TETRIX 2FA Authentication System - Production Optimized
+domains:
+  - domain: tetrixcorp.com
+    type: PRIMARY
+  - domain: www.tetrixcorp.com
+    type: ALIAS
+
+services:
+  # TETRIX 2FA Frontend Service
+  - name: tetrix-2fa-frontend
+    github:
+      repo: tetrixcorps/miniverxe
+      branch: main
+      deploy_on_push: true
+    source_dir: /
+    http_port: 8080
+    instance_count: 1  # Basic plan limit
+    instance_size_slug: basic-xxs
+    build_command: |
+      # Set build environment
+      export NODE_ENV=production
+      export NODE_OPTIONS="--max-old-space-size=512"
+      export BUILD_OPTIMIZATION=true
+      
+      # Clean workspace
+      echo "🧹 Cleaning workspace..."
+      rm -rf dist .astro node_modules/.cache
+      rm -f package-lock.json yarn.lock npm-shrinkwrap.json .yarnrc .yarnrc.yml
+      
+      # Install dependencies with optimization
+      echo "📦 Installing dependencies..."
+      pnpm install --frozen-lockfile --prefer-offline --no-audit
+      
+      # Run build optimization
+      echo "🚀 Running build optimization..."
+      node scripts/optimize-build.js
+      
+      # Build application
+      echo "🏗️ Building application..."
+      pnpm run build
+      
+      # Verify build
+      echo "✅ Verifying build..."
+      if [ ! -d "dist" ]; then
+        echo "❌ Build failed: dist directory not found"
+        exit 1
+      fi
+      
+      if [ ! -f "dist/server/entry.mjs" ]; then
+        echo "❌ Build failed: server entry point not found"
+        exit 1
+      fi
+      
+      echo "✅ Build completed successfully"
+    run_command: |
+      # Set runtime environment
+      export NODE_ENV=production
+      export NODE_OPTIONS="--max-old-space-size=512"
+      export HOST=0.0.0.0
+      export PORT=8080
+      
+      # Start application
+      pnpm run start
+    routes:
+      - path: /
+    envs:
+      # Core Application
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: "0.0.0.0"
+      - key: PORT
+        value: "8080"
+      - key: NODE_OPTIONS
+        value: "--max-old-space-size=512"
+      
+      # TETRIX Configuration
+      - key: TETRIX_DOMAIN
+        value: "tetrixcorp.com"
+      - key: WEBHOOK_BASE_URL
+        value: "https://tetrixcorp.com"
+      
+      # Telnyx 2FA Configuration (SECRET)
+      - key: TELNYX_API_KEY
+        type: SECRET
+      - key: TELNYX_VERIFY_PROFILE_ID
+        type: SECRET
+      - key: TELNYX_PUBLIC_KEY
+        type: SECRET
+      - key: TELNYX_FROM_NUMBER
+        type: SECRET
+      - key: TELNYX_MESSAGING_PROFILE_ID
+        type: SECRET
+      - key: TELNYX_PROFILE_ID
+        type: SECRET
+      - key: TELNYX_WEBHOOK_SECRET
+        type: SECRET
+      - key: TELNYX_API_URL
+        type: SECRET
+      
+      # Database Configuration (SECRET)
+      - key: DATABASE_URL
+        type: SECRET
+      - key: POSTGRES_USER
+        type: SECRET
+      - key: POSTGRES_PASSWORD
+        type: SECRET
+      - key: POSTGRES_DB
+        type: SECRET
+      - key: POSTGRES_HOST
+        type: SECRET
+      - key: POSTGRES_PORT
+        type: SECRET
+      - key: POSTGRES_SSL
+        type: SECRET
+      - key: INDUSTRY_AUTH_DB_URL
+        type: SECRET
+      
+      # Firebase Configuration (SECRET)
+      - key: FIREBASE_API_KEY
+        type: SECRET
+      - key: FIREBASE_AUTH_DOMAIN
+        type: SECRET
+      - key: FIREBASE_PROJECT_ID
+        type: SECRET
+      - key: FIREBASE_STORAGE_BUCKET
+        type: SECRET
+      - key: FIREBASE_MESSAGING_SENDER_ID
+        type: SECRET
+      - key: FIREBASE_APP_ID
+        type: SECRET
+      
+      # Sinch Backup Configuration (SECRET)
+      - key: SINCH_API_TOKEN
+        type: SECRET
+      - key: SINCH_SERVICE_PLAN_ID
+        type: SECRET
+      - key: SINCH_VIRTUAL_NUMBER
+        type: SECRET
+      - key: SINCH_BACKUP_NUMBER_1
+        type: SECRET
+      - key: SINCH_BACKUP_NUMBER_2
+        type: SECRET
+      - key: SINCH_BACKUP_NUMBER_3
+        type: SECRET
+      - key: SINCH_CONVERSATION_PROJECT_ID
+        type: SECRET
+      - key: NEXT_PUBLIC_SINCH_API_KEY
+        type: SECRET
+      - key: NEXT_PUBLIC_SINCH_WIDGET_ID
+        type: SECRET
+      
+      # MQTT Configuration (SECRET)
+      - key: MQTT_BROKER_URL
+        type: SECRET
+      - key: MQTT_BROKER_PORT
+        type: SECRET
+      - key: MQTT_USERNAME
+        type: SECRET
+      - key: MQTT_PASSWORD
+        type: SECRET
+      
+      # Performance Optimization
+      - key: BUILD_OPTIMIZATION
+        value: "true"
+      - key: CACHE_OPTIMIZATION
+        value: "true"
+      - key: COMPRESSION_ENABLED
+        value: "true"
+      
+      # Monitoring
+      - key: ENABLE_METRICS
+        value: "true"
+      - key: LOG_LEVEL
+        value: "info"
+    
+    health_check:
+      http_path: /api/health
+      initial_delay_seconds: 90  # Increased for build time
+      period_seconds: 30
+      timeout_seconds: 15
+      success_threshold: 2
+      failure_threshold: 3
+
+# Alerts for monitoring
+alerts:
+  - rule: DEPLOYMENT_FAILED
+  - rule: DOMAIN_FAILED
+
+# Features
+features:
+  - buildpack-stack=ubuntu-22

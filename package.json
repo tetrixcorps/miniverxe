@@ -15,6 +15,8 @@
     "test:integration": "vitest run src/components/auth/__tests__/auth-integration.test.ts",
     "dev": "astro dev",
     "build": "rm -rf dist && rm -rf .astro && astro build && node scripts/cache-bust.js",
+    "build:optimized": "node scripts/optimize-build.js",
+    "build:production": "pnpm run build:optimized && pnpm run build",
     "build:no-cache-bust": "rm -rf dist && rm -rf .astro && astro build",
     "start": "node ./dist/server/entry.mjs",
     "preview": "astro preview",
