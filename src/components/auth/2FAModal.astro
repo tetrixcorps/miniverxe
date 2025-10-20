@@ -2,7 +2,7 @@
 // 2FA Modal Component for Enterprise Authentication
 ---
 
-<div id="2fa-modal" class="modal-2fa fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] hidden">
+<div id="2fa-modal" class="modal-2fa fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] hidden">
   <div class="flex items-center justify-center min-h-screen p-4">
     <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-hidden border-2 border-gray-200">
       <!-- Modal Header -->
@@ -785,6 +785,7 @@
       const modal = document.getElementById('2fa-modal');
       if (modal) {
         modal.classList.remove('hidden');
+        modal.style.display = 'block';
         document.body.style.overflow = 'hidden';
         this.showStep(1);
         this.hideError();
@@ -857,8 +858,17 @@
       const modal = document.getElementById('2fa-modal');
       if (modal) {
         modal.classList.add('hidden');
+        modal.style.display = 'none';
         document.body.style.overflow = '';
         this.reset();
+      }
+      
+      // Restore Industry Auth modal if it was hidden
+      const industryModal = document.getElementById('industry-auth-modal');
+      if (industryModal && industryModal.style.display === 'none') {
+        industryModal.classList.remove('hidden');
+        industryModal.style.display = '';
+        console.log('Industry Auth modal restored');
       }
     }
 
@@ -889,7 +899,9 @@
     // Always hide Industry Auth modal when opening 2FA modal
     const industryModal = document.getElementById('industry-auth-modal');
     if (industryModal) {
+      // Use both hidden class and display none for maximum compatibility
       industryModal.classList.add('hidden');
+      industryModal.style.display = 'none';
       console.log('Industry Auth modal hidden for 2FA');
     }
     
