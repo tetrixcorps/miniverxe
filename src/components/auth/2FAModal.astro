@@ -886,6 +886,13 @@
 
   // Global function to open 2FA modal
   window.open2FAModal = function() {
+    // Hide Industry Auth modal if it's open
+    const industryModal = document.getElementById('industry-auth-modal');
+    if (industryModal && !industryModal.classList.contains('hidden')) {
+      industryModal.classList.add('hidden');
+      console.log('Industry Auth modal hidden for 2FA');
+    }
+    
     // Update context before opening
     window.twoFAManager.updateAuthContext();
     window.twoFAManager.openModal();
