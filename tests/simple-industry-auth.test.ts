@@ -40,10 +40,17 @@ test.describe('Simple Industry Auth Test', () => {
     await expect(page.locator('[id="2fa-modal"]')).toBeVisible({ timeout: 10000 });
     console.log('✅ 2FA modal opened');
 
-    // Check if Industry Auth modal is hidden (may still be visible in DOM but should not block interaction)
-    // Skip this check for now - focus on whether we can interact with 2FA modal
-    // await expect(page.locator('#industry-auth-modal')).toBeHidden();
-    console.log('ℹ️  Industry Auth modal visibility check skipped - checking interaction instead');
+    // Check if Industry Auth modal has pointer events disabled
+    const industryModalPointerEvents = await page.locator('#industry-auth-modal').evaluate(el => {
+      return window.getComputedStyle(el).pointerEvents;
+    });
+    console.log(`Industry Auth modal pointer-events: ${industryModalPointerEvents}`);
+    
+    // Check if 2FA modal is visible and has proper z-index
+    const twoFAModalZIndex = await page.locator('[id="2fa-modal"]').evaluate(el => {
+      return window.getComputedStyle(el).zIndex;
+    });
+    console.log(`2FA modal z-index: ${twoFAModalZIndex}`);
 
     // Fill phone number
     await page.locator('#phone-number').fill('+1234567890');

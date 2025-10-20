@@ -3,7 +3,7 @@
 // Handles authentication for different industries with role-based access
 ---
 
-<div id="industry-auth-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden industry-auth-overlay" style="z-index: 50;">
+<div id="industry-auth-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40 pointer-events-auto transition-opacity duration-300">
   <div class="flex items-center justify-center min-h-screen p-4">
     <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8">
       <!-- Header -->
@@ -408,22 +408,18 @@
 </script>
 
 <style is:global>
-  /* CSS-based modal stacking solution */
-  /* Disable pointer events on Industry Auth modal globally */
-  #industry-auth-modal {
-    z-index: 50 !important;
-  }
-  
-  /* When Industry Auth modal doesn't have hidden class, still allow it to be interactive */
-  #industry-auth-modal:not(.hidden) {
-    pointer-events: auto;
-  }
-  
-  /* When 2FA modal is visible, disable Industry Auth modal pointer events */
-  #2fa-modal:not(.hidden) ~ * #industry-auth-modal,
-  body.modal-open #industry-auth-modal {
+  /* Pointer events fix for modal overlap */
+  .disable-pointer {
     pointer-events: none !important;
-    display: none !important;
-    visibility: hidden !important;
+    opacity: 0.6;
+  }
+  
+  /* Ensure proper z-index stacking */
+  #industry-auth-modal {
+    z-index: 40;
+  }
+  
+  #2fa-modal {
+    z-index: 100;
   }
 </style>
