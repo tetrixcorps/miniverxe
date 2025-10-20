@@ -79,12 +79,20 @@
       }
     }
 
+    function redirectToAuthApp() {
+      try {
+        var target = 'https://tetrix-minimal-uzzxn.ondigitalocean.app';
+        window.location.href = target;
+      } catch (_) {}
+    }
+
     function openIndustryAuth() {
       if (typeof window.openIndustryAuthModal === 'function') {
         window.openIndustryAuthModal();
         closeMenuIfOpen();
       } else {
-        // console.error('Industry Auth modal not available');
+        // Fallback: navigate to deployed auth app
+        redirectToAuthApp();
       }
     }
 
