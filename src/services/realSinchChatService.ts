@@ -523,10 +523,10 @@ Please provide a helpful, professional response that addresses their inquiry. Be
 // Factory function to create the service
 export function createRealSHANGOAIService(): RealSHANGOAIService {
   // Use environment variables directly with fallbacks
-  const projectId = process.env.SINCH_PROJECT_ID || process.env.SINCH_SERVICE_PLAN_ID || '01K1GYEHZAXEZVGDA34V3873KM';
-  const appId = process.env.SINCH_APP_ID || process.env.SINCH_CONVERSATION_PROJECT_ID || '01K1GYEHZAXEZVGDA34V3873KM';
-  const clientId = process.env.SINCH_CLIENT_ID || process.env.SINCH_API_TOKEN || '544cdba462974e05adc5140211c0311c';
-  const clientSecret = process.env.SINCH_CLIENT_SECRET || process.env.SINCH_SERVICE_PLAN_ID || '01K1GYEHZAXEZVGDA34V3873KM';
+  const projectId = process.env.SINCH_PROJECT_ID || process.env.SINCH_SERVICE_PLAN_ID;
+  const appId = process.env.SINCH_APP_ID || process.env.SINCH_CONVERSATION_PROJECT_ID;
+  const clientId = process.env.SINCH_CLIENT_ID || process.env.SINCH_API_TOKEN;
+  const clientSecret = process.env.SINCH_CLIENT_SECRET || process.env.SINCH_SERVICE_PLAN_ID;
   const environment = (process.env.NODE_ENV as 'development' | 'production') || 'development';
   
   console.log('RealSHANGOAIService: Environment variables loaded:', {
