@@ -15,6 +15,7 @@
     "test:integration": "vitest run src/components/auth/__tests__/auth-integration.test.ts",
     "dev": "astro dev",
     "build": "rm -rf dist && rm -rf .astro && astro build",
+    "start": "node ./dist/server/entry.mjs",
     "preview": "astro preview",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx,.astro",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx,.astro --fix",
