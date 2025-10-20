@@ -787,6 +787,15 @@
         modal.classList.remove('hidden');
         modal.style.display = 'block';
         document.body.style.overflow = 'hidden';
+        document.body.classList.add('modal-open');
+        
+        // Hide Industry Auth modal when 2FA modal opens
+        const industryModal = document.getElementById('industry-auth-modal');
+        if (industryModal) {
+          industryModal.style.pointerEvents = 'none';
+          industryModal.style.display = 'none';
+        }
+        
         this.showStep(1);
         this.hideError();
         this.updateModalForContext();
