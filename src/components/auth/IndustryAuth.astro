@@ -405,6 +405,42 @@
 
   // Initialize when DOM is loaded
   document.addEventListener('DOMContentLoaded', initIndustryAuth);
+
+  // Add comprehensive logging to track all event listeners
+  console.log('🔍 Setting up comprehensive event listener logging...');
+  
+  // Override addEventListener to track all listeners
+  const originalAddEventListener = EventTarget.prototype.addEventListener;
+  EventTarget.prototype.addEventListener = function(type, listener, options) {
+    if (this.id === 'login-btn' || this.id === 'industry-auth-modal') {
+      console.log('🔍 Event listener added to', this.id, ':', {
+        type: type,
+        listener: listener.toString().substring(0, 100) + '...',
+        options: options
+      });
+      console.trace('🔍 Stack trace for event listener:');
+    }
+    return originalAddEventListener.call(this, type, listener, options);
+  };
+
+  // Log all existing event listeners on login button
+  setTimeout(() => {
+    const loginBtn = document.getElementById('login-btn');
+    if (loginBtn) {
+      console.log('🔍 Login button found:', loginBtn);
+      console.log('🔍 Login button classes:', loginBtn.className);
+      console.log('🔍 Login button parent:', loginBtn.parentElement);
+      
+      // Check if there are any data attributes that might trigger events
+      console.log('🔍 Login button data attributes:', 
+        Array.from(loginBtn.attributes)
+          .filter(attr => attr.name.startsWith('data-'))
+          .map(attr => `${attr.name}="${attr.value}"`)
+      );
+    } else {
+      console.log('❌ Login button not found');
+    }
+  }, 1000);
 </script>
 
 <style is:global>

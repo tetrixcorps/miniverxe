@@ -4,9 +4,11 @@ test.describe('Simple Industry Auth Test', () => {
   test('should complete industry auth flow without spinning', async ({ page }) => {
     console.log('🚀 Starting simple industry auth test...');
     
-    // Enable console logging
+    // Enable comprehensive console logging
     page.on('console', msg => {
-      console.log(`[${msg.type()}] ${msg.text()}`);
+      if (msg.text().includes('🔍') || msg.text().includes('✅') || msg.text().includes('❌')) {
+        console.log(`[${msg.type()}] ${msg.text()}`);
+      }
     });
 
     // Navigate to the app

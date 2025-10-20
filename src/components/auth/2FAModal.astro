@@ -918,20 +918,29 @@
 
   // Watch for 2FA modal visibility changes and disable Industry Auth modal
   const observer = new MutationObserver((mutations) => {
+    console.log('🔍 MutationObserver triggered:', mutations.length, 'mutations');
     mutations.forEach((mutation) => {
+      console.log('🔍 Mutation:', {
+        type: mutation.type,
+        attributeName: mutation.attributeName,
+        targetId: mutation.target.id,
+        targetClasses: mutation.target.className
+      });
+      
       if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
         const target = mutation.target;
         if (target.id === '2fa-modal') {
+          console.log('🔍 2FA modal class changed:', target.classList.toString());
           const industryModal = document.getElementById('industry-auth-modal');
           if (industryModal) {
             if (!target.classList.contains('hidden')) {
               // 2FA modal is visible, disable Industry Auth modal
               industryModal.classList.add('disable-pointer');
-              console.log('Industry Auth modal disabled via observer');
+              console.log('✅ Industry Auth modal disabled via observer');
             } else {
               // 2FA modal is hidden, enable Industry Auth modal
               industryModal.classList.remove('disable-pointer');
-              console.log('Industry Auth modal enabled via observer');
+              console.log('✅ Industry Auth modal enabled via observer');
             }
           }
         }
@@ -943,6 +952,45 @@
   const twoFAModal = document.getElementById('2fa-modal');
   if (twoFAModal) {
     observer.observe(twoFAModal, { attributes: true, attributeFilter: ['class'] });
+    console.log('🔍 MutationObserver started watching 2FA modal');
+  } else {
+    console.log('❌ 2FA modal not found for MutationObserver');
+  }
+
+  // Add comprehensive logging to track modal opening
+  console.log('🔍 Setting up comprehensive modal logging...');
+  
+  // Override classList.remove to catch when hidden is removed
+  if (twoFAModal) {
+    const originalRemove = twoFAModal.classList.remove;
+    twoFAModal.classList.remove = function(...args) {
+      console.log('🔍 2FA modal classList.remove called with:', args);
+      console.trace('🔍 Stack trace for classList.remove:');
+      return originalRemove.apply(this, args);
+    };
+  }
+
+  // Override classList.add to catch when hidden is added
+  if (twoFAModal) {
+    const originalAdd = twoFAModal.classList.add;
+    twoFAModal.classList.add = function(...args) {
+      console.log('🔍 2FA modal classList.add called with:', args);
+      console.trace('🔍 Stack trace for classList.add:');
+      return originalAdd.apply(this, args);
+    };
+  }
+
+  // Watch for any direct style changes
+  if (twoFAModal) {
+    const styleObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+          console.log('🔍 2FA modal style changed:', twoFAModal.style.cssText);
+          console.trace('🔍 Stack trace for style change:');
+        }
+      });
+    });
+    styleObserver.observe(twoFAModal, { attributes: true, attributeFilter: ['style'] });
   }
 
   // Global function to open 2FA modal
@@ -956,6 +1004,8 @@
 
   // Global functions for modal management
   window.show2FAModal = function() {
+    console.log('🔍 show2FAModal() called');
+    console.trace('🔍 Stack trace for show2FAModal:');
     const industryModal = document.getElementById('industry-auth-modal');
     if (industryModal) {
       industryModal.classList.add('disable-pointer');
@@ -967,6 +1017,8 @@
   };
 
   window.close2FAModal = function() {
+    console.log('🔍 close2FAModal() called');
+    console.trace('🔍 Stack trace for close2FAModal:');
     const twoFAModal = document.getElementById('2fa-modal');
     if (twoFAModal) {
       twoFAModal.classList.add('hidden');
@@ -975,6 +1027,29 @@
     if (industryModal) {
       industryModal.classList.remove('disable-pointer');
     }
+  };
+
+  // Add logging to track any direct access to the 2FA modal
+  console.log('🔍 Setting up 2FA modal access logging...');
+  
+  // Override getElementById to catch any access to 2fa-modal
+  const originalGetElementById = document.getElementById;
+  document.getElementById = function(id) {
+    if (id === '2fa-modal') {
+      console.log('🔍 Someone accessed 2fa-modal via getElementById');
+      console.trace('🔍 Stack trace for getElementById(2fa-modal):');
+    }
+    return originalGetElementById.call(this, id);
+  };
+
+  // Override querySelector to catch any access to 2fa-modal
+  const originalQuerySelector = Document.prototype.querySelector;
+  Document.prototype.querySelector = function(selector) {
+    if (selector === '#2fa-modal' || selector.includes('2fa-modal')) {
+      console.log('🔍 Someone accessed 2fa-modal via querySelector:', selector);
+      console.trace('🔍 Stack trace for querySelector:');
+    }
+    return originalQuerySelector.call(this, selector);
   };
 </script>
 
