@@ -256,5 +256,10 @@ import JoRoMiIntegration from '../integration/JoRoMiIntegration.astro';
 <TwoFAModal />
 <IndustryAuth />
 
+<!-- Debug Script (only in development) -->
+{import.meta.env.DEV && (
+  <script type="module" src="/src/lib/industry-auth-debug.ts"></script>
+)}
+
 <!-- JoRoMi Integration Component -->
 <JoRoMiIntegration /> 

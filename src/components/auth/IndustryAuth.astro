@@ -276,6 +276,11 @@
     if (modal) {
       modal.classList.remove('hidden');
       console.log('Industry Auth modal opened');
+      
+      // Debug: Test modal functionality
+      if (window.industryAuthDebugger) {
+        window.industryAuthDebugger.testModalFunctionality();
+      }
     } else {
       console.error('Industry Auth modal element not found');
     }
@@ -283,6 +288,11 @@
   
   // Also expose it immediately when script loads
   console.log('Industry Auth script loaded, openIndustryAuthModal function available');
+  
+  // Initialize debugger if available
+  if (window.industryAuthDebugger) {
+    window.industryAuthDebugger.log('IndustryAuth', 'loaded', 'Component initialized');
+  }
 
   // 2FA Modal Integration
   async function show2FAModal() {
