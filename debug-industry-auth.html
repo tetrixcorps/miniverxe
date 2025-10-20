@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Industry Auth Debug Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+        #log { background: #f5f5f5; padding: 10px; margin: 10px 0; height: 200px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <h1>Industry Auth Debug Test</h1>
+    
+    <div class="test-section">
+        <h3>Test 1: Check if functions are available</h3>
+        <button onclick="testFunctionAvailability()">Test Function Availability</button>
+        <div id="function-test-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test 2: Test 2FA Modal Integration</h3>
+        <button onclick="test2FAModal()">Test 2FA Modal</button>
+        <div id="2fa-test-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test 3: Test Industry Auth Flow</h3>
+        <button onclick="testIndustryAuthFlow()">Test Industry Auth Flow</button>
+        <div id="industry-auth-test-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test 4: Test API Endpoints</h3>
+        <button onclick="testAPIEndpoints()">Test API Endpoints</button>
+        <div id="api-test-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Debug Log</h3>
+        <div id="log"></div>
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : 'info';
+            logDiv.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+
+        function testFunctionAvailability() {
+            const resultDiv = document.getElementById('function-test-result');
+            let results = [];
+            
+            // Test openIndustryAuthModal
+            if (typeof window.openIndustryAuthModal === 'function') {
+                results.push('✅ openIndustryAuthModal function available');
+                log('openIndustryAuthModal function is available', 'success');
+            } else {
+                results.push('❌ openIndustryAuthModal function NOT available');
+                log('openIndustryAuthModal function is NOT available', 'error');
+            }
+            
+            // Test open2FAModal
+            if (typeof window.open2FAModal === 'function') {
+                results.push('✅ open2FAModal function available');
+                log('open2FAModal function is available', 'success');
+            } else {
+                results.push('❌ open2FAModal function NOT available');
+                log('open2FAModal function is NOT available', 'error');
+            }
+            
+            // Test twoFAManager
+            if (typeof window.twoFAManager === 'object') {
+                results.push('✅ twoFAManager object available');
+                log('twoFAManager object is available', 'success');
+            } else {
+                results.push('❌ twoFAManager object NOT available');
+                log('twoFAManager object is NOT available', 'error');
+            }
+            
+            resultDiv.innerHTML = results.join('<br>');
+        }
+
+        function test2FAModal() {
+            const resultDiv = document.getElementById('2fa-test-result');
+            resultDiv.innerHTML = 'Testing 2FA modal...';
+            
+            if (typeof window.open2FAModal === 'function') {
+                try {
+                    // Set up a test handler
+                    window.handle2FAResult = (result) => {
+                        log('2FA result received: ' + JSON.stringify(result), 'success');
+                        resultDiv.innerHTML = '✅ 2FA modal test completed. Result: ' + JSON.stringify(result);
+                    };
+                    
+                    window.open2FAModal();
+                    log('2FA modal opened successfully', 'success');
+                } catch (error) {
+                    log('Error opening 2FA modal: ' + error.message, 'error');
+                    resultDiv.innerHTML = '❌ Error opening 2FA modal: ' + error.message;
+                }
+            } else {
+                log('open2FAModal function not available', 'error');
+                resultDiv.innerHTML = '❌ open2FAModal function not available';
+            }
+        }
+
+        function testIndustryAuthFlow() {
+            const resultDiv = document.getElementById('industry-auth-test-result');
+            resultDiv.innerHTML = 'Testing industry auth flow...';
+            
+            // Simulate the industry auth flow
+            const testData = {
+                industry: 'healthcare',
+                role: 'doctor',
+                organization: 'Test Hospital'
+            };
+            
+            log('Testing industry auth flow with data: ' + JSON.stringify(testData), 'info');
+            
+            // Test the show2FAModal function
+            if (typeof window.open2FAModal === 'function') {
+                // Set up the handler
+                window.handle2FAResult = (result) => {
+                    log('Industry auth 2FA result: ' + JSON.stringify(result), 'success');
+                    resultDiv.innerHTML = '✅ Industry auth flow test completed. 2FA result: ' + JSON.stringify(result);
+                };
+                
+                // Open 2FA modal
+                window.open2FAModal();
+                log('2FA modal opened for industry auth test', 'info');
+            } else {
+                log('Cannot test industry auth flow - open2FAModal not available', 'error');
+                resultDiv.innerHTML = '❌ Cannot test industry auth flow - open2FAModal not available';
+            }
+        }
+
+        async function testAPIEndpoints() {
+            const resultDiv = document.getElementById('api-test-result');
+            resultDiv.innerHTML = 'Testing API endpoints...';
+            
+            try {
+                // Test health endpoint
+                const healthResponse = await fetch('/api/health');
+                const healthData = await healthResponse.json();
+                log('Health endpoint response: ' + JSON.stringify(healthData), 'success');
+                
+                // Test 2FA initiate endpoint
+                const initiateResponse = await fetch('/api/v2/2fa/initiate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        phoneNumber: '+1234567890',
+                        method: 'sms'
+                    })
+                });
+                const initiateData = await initiateResponse.json();
+                log('2FA initiate response: ' + JSON.stringify(initiateData), 'info');
+                
+                resultDiv.innerHTML = '✅ API endpoints tested successfully';
+            } catch (error) {
+                log('API test error: ' + error.message, 'error');
+                resultDiv.innerHTML = '❌ API test error: ' + error.message;
+            }
+        }
+
+        // Auto-run function availability test on load
+        window.addEventListener('load', () => {
+            log('Debug page loaded', 'info');
+            testFunctionAvailability();
+        });
+    </script>
+</body>
+</html>

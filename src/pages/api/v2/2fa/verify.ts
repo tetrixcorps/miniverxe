@@ -88,6 +88,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     if (result.verified) {
       return createSuccessResponse({
+        success: true,
         verified: true,
         verificationId: result.verificationId,
         phoneNumber: result.phoneNumber,

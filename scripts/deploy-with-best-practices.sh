@@ -186,8 +186,23 @@ doctl apps get $APP_ID -o json | jq -r '.[0].domains[] | select(.phase != "ACTIV
     fi
 done
 
+# Purge Cloudflare Cache (if configured)
+log "🧹 Purging Cloudflare cache..."
+if [ -n "$CLOUDFLARE_API_TOKEN" ] && [ -n "$CLOUDFLARE_ZONE_ID" ]; then
+    node scripts/purge-cloudflare-cache.js
+    if [ $? -eq 0 ]; then
+        log "✅ Cloudflare cache purged successfully"
+    else
+        log "⚠️  Cloudflare cache purge failed, but deployment continues"
+    fi
+else
+    log "ℹ️  Cloudflare cache purge skipped (no API credentials configured)"
+    log "   Set CLOUDFLARE_API_TOKEN and CLOUDFLARE_ZONE_ID to enable cache purging"
+fi
+
 log "🎉 Deployment completed successfully!"
 log "🌐 App URL: https://tetrix-minimal-uzzxn.ondigitalocean.app"
+log "🌐 Custom Domain: https://tetrixcorp.com"
 log "🏥 Health Check: https://tetrix-minimal-uzzxn.ondigitalocean.app/api/health"
 
 # Optional: Open health check in browser (if running on macOS)

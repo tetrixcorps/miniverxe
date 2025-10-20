@@ -2,8 +2,14 @@ import type { MiddlewareHandler } from 'astro';
 
 // Cache configuration for different asset types
 const CACHE_CONFIG = {
-  // Static assets (JS, CSS, images) - long cache
+  // Static assets (JS, CSS, images) - shorter cache for JS/CSS to prevent Cloudflare issues
   static: {
+    maxAge: 3600, // 1 hour for JS/CSS to prevent Cloudflare caching issues
+    sMaxAge: 3600, // 1 hour
+    immutable: false // Allow revalidation
+  },
+  // Static assets (images, fonts) - long cache
+  staticLong: {
     maxAge: 31536000, // 1 year
     sMaxAge: 31536000, // 1 year
     immutable: true
@@ -73,14 +79,22 @@ function getCacheStrategy(pathname: string): typeof CACHE_CONFIG.static {
     return CACHE_CONFIG.health;
   }
   
-  // Static assets - long cache
-  if (pathname.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$/)) {
+  // JavaScript and CSS files - shorter cache to prevent Cloudflare issues
+  if (pathname.match(/\.(js|css)$/)) {
     return CACHE_CONFIG.static;
   }
   
-  // Astro assets - long cache
+  // Other static assets (images, fonts) - long cache
+  if (pathname.match(/\.(png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$/)) {
+    return CACHE_CONFIG.staticLong;
+  }
+  
+  // Astro assets - shorter cache for JS/CSS, long for others
   if (pathname.startsWith('/_astro/')) {
-    return CACHE_CONFIG.static;
+    if (pathname.match(/\.(js|css)$/)) {
+      return CACHE_CONFIG.static;
+    }
+    return CACHE_CONFIG.staticLong;
   }
   
   // HTML pages - short cache
@@ -100,6 +114,12 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
   // Add cache headers
   const cacheControl = generateCacheControl(cacheStrategy);
   response.headers.set('Cache-Control', cacheControl);
+  
+  // Add Cloudflare-specific headers to prevent aggressive caching
+  if (pathname.match(/\.(js|css)$/) || pathname.startsWith('/_astro/')) {
+    response.headers.set('CF-Cache-Status', 'DYNAMIC');
+    response.headers.set('ETag', `"${Date.now()}-${Math.random().toString(36).substr(2, 9)}"`);
+  }
   
   // Add security headers
   response.headers.set('X-Content-Type-Options', 'nosniff');
