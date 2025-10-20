@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Client Login Test</title>
+</head>
+<body>
+    <h1>Client Login Button Test</h1>
+    <button id="client-login-2fa-btn" type="button">Client Login</button>
+    
+    <script>
+        // Simulate the header-auth.js logic
+        function openIndustryAuth() {
+            if (typeof window.openIndustryAuthModal === 'function') {
+                console.log('✅ openIndustryAuthModal function found');
+                window.openIndustryAuthModal();
+            } else {
+                console.log('❌ openIndustryAuthModal function not found');
+                console.log('Waiting 500ms and trying again...');
+                setTimeout(() => {
+                    if (typeof window.openIndustryAuthModal === 'function') {
+                        console.log('✅ openIndustryAuthModal function found after waiting');
+                        window.openIndustryAuthModal();
+                    } else {
+                        console.log('❌ openIndustryAuthModal function still not found after waiting');
+                        alert('Authentication service is temporarily unavailable. Please try again later.');
+                    }
+                }, 500);
+            }
+        }
+        
+        // Add event listener
+        document.getElementById('client-login-2fa-btn').addEventListener('click', openIndustryAuth);
+        
+        // Simulate the Industry Auth modal function
+        window.openIndustryAuthModal = function() {
+            console.log('✅ Industry Auth modal opened successfully');
+            alert('Industry Auth modal would open here!');
+        };
+        
+        console.log('Test page loaded');
+    </script>
+</body>
+</html>

@@ -2,6 +2,7 @@
 // Healthcare Dashboard
 // Appointment scheduling, patient communication, emergency triage
 
+import DashboardLayout from '../../components/dashboards/DashboardLayout.astro';
 import SalesforceIntegration from '../../components/dashboards/SalesforceIntegration.astro';
 import HubSpotIntegration from '../../components/dashboards/HubSpotIntegration.astro';
 import EpicIntegration from '../../components/dashboards/EpicIntegration.astro';
@@ -10,34 +11,7 @@ import PricingCard from '../../components/stripe/PricingCard.astro';
 import StripeCheckoutModal from '../../components/stripe/StripeCheckoutModal.astro';
 ---
 
-<div class="min-h-screen bg-gray-50">
-  <!-- Header -->
-  <div class="bg-white shadow-sm border-b border-gray-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center py-4">
-        <div class="flex items-center">
-          <h1 class="text-2xl font-bold text-gray-900">Healthcare Dashboard</h1>
-          <span class="ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-            🏥 Healthcare
-          </span>
-        </div>
-        <div class="flex items-center space-x-4">
-          <div class="flex items-center text-sm text-gray-500">
-            <div class="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
-            System Online
-          </div>
-          <button id="refresh-btn" class="p-2 text-gray-400 hover:text-gray-600 transition-colors">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Main Content -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<DashboardLayout title="Healthcare Dashboard" industry="healthcare">
     <!-- Key Metrics -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
@@ -341,8 +315,7 @@ import StripeCheckoutModal from '../../components/stripe/StripeCheckoutModal.ast
         </div>
       </div>
     </div>
-  </div>
-</div>
+</DashboardLayout>
 
 <!-- Stripe Checkout Modal -->
 <StripeCheckoutModal 

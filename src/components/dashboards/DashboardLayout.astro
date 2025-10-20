@@ -1,0 +1,191 @@
+---
+// Base Dashboard Layout Component
+// Provides common structure for all industry dashboards
+import { dashboardRoutingService } from '../../services/dashboardRoutingService';
+
+export interface Props {
+  title: string;
+  industry: string;
+  userRole?: string;
+  organization?: string;
+}
+
+const { title, industry, userRole, organization } = Astro.props;
+
+// Get authentication data from the routing service
+const authData = dashboardRoutingService.getAuthData();
+const dashboardConfig = dashboardRoutingService.getDashboardConfig();
+const userInfo = dashboardRoutingService.getUserInfo();
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{title} - TETRIX Dashboard</title>
+  <link rel="stylesheet" href="/src/styles/global.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'brand-red': '#DC2626',
+            'brand-orange': '#EA580C',
+            'brand-yellow': '#F59E0B',
+            'brand-dark': '#1F2937'
+          }
+        }
+      }
+    }
+  </script>
+  <script src="/assets/dashboard-routing-service.js" is:inline></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <!-- Navigation Header -->
+  <nav class="bg-white shadow-sm border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <!-- Logo and Title -->
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <h1 class="text-xl font-bold text-brand-red">TETRIX</h1>
+          </div>
+          <div class="ml-4">
+            <h2 class="text-lg font-semibold text-gray-900">{title}</h2>
+            <p class="text-sm text-gray-500 capitalize">{industry} Industry</p>
+          </div>
+        </div>
+
+        <!-- User Info and Actions -->
+        <div class="flex items-center space-x-4">
+          <div class="text-right">
+            <p class="text-sm font-medium text-gray-900">{userInfo?.role || userRole || 'User'}</p>
+            <p class="text-xs text-gray-500">{userInfo?.organization || organization || 'Organization'}</p>
+            <p class="text-xs text-gray-400 capitalize">{userInfo?.industry || industry} Industry</p>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button id="refresh-data-btn" class="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+              </svg>
+            </button>
+            <button id="logout-btn" class="bg-brand-red text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-700 transition-colors">
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <slot />
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-gray-200 mt-auto">
+    <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+      <div class="text-center text-sm text-gray-500">
+        <p>&copy; 2024 TETRIX Corporation. All rights reserved.</p>
+        <p class="mt-1">Industry Dashboard - {industry.charAt(0).toUpperCase() + industry.slice(1)}</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Load dashboard routing service
+    // The service is loaded via script tag in the head
+
+    // Logout functionality
+    document.getElementById('logout-btn')?.addEventListener('click', () => {
+      if (confirm('Are you sure you want to logout?')) {
+        dashboardRoutingService.logout();
+      }
+    });
+
+    // Refresh data functionality
+    document.getElementById('refresh-data-btn')?.addEventListener('click', async () => {
+      const button = document.getElementById('refresh-data-btn');
+      const originalContent = button.innerHTML;
+      
+      // Show loading state
+      button.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>';
+      button.disabled = true;
+
+      try {
+        // Refresh authentication data
+        dashboardRoutingService.refreshAuthData();
+        
+        // Get fresh dashboard data
+        const data = await dashboardRoutingService.getDashboardData();
+        console.log('Dashboard data refreshed:', data);
+        
+        // Trigger custom event for components to refresh
+        window.dispatchEvent(new CustomEvent('dashboardDataRefreshed', { detail: data }));
+        
+        // Show success feedback
+        button.innerHTML = '<svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+        setTimeout(() => {
+          button.innerHTML = originalContent;
+          button.disabled = false;
+        }, 2000);
+        
+      } catch (error) {
+        console.error('Failed to refresh dashboard data:', error);
+        button.innerHTML = '<svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+        setTimeout(() => {
+          button.innerHTML = originalContent;
+          button.disabled = false;
+        }, 2000);
+      }
+    });
+
+    // Check authentication on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check if user is authenticated
+      if (!dashboardRoutingService.isAuthenticated()) {
+        alert('Please authenticate to access this dashboard');
+        window.location.href = '/';
+        return;
+      }
+
+      // Validate access to current dashboard
+      const currentIndustry = window.location.pathname.split('/')[2]; // Extract industry from path
+      if (!dashboardRoutingService.validateAccess(currentIndustry)) {
+        alert('You do not have access to this dashboard');
+        window.location.href = '/';
+        return;
+      }
+
+      // Get user info and log
+      const userInfo = dashboardRoutingService.getUserInfo();
+      const config = dashboardRoutingService.getDashboardConfig();
+      
+      console.log('Dashboard loaded for:', userInfo);
+      console.log('Dashboard config:', config);
+
+      // Set up real-time data updates
+      setupRealTimeUpdates();
+    });
+
+    // Set up real-time data updates
+    function setupRealTimeUpdates() {
+      // Refresh data every 30 seconds
+      setInterval(async () => {
+        try {
+          const data = await dashboardRoutingService.getDashboardData();
+          window.dispatchEvent(new CustomEvent('dashboardDataUpdated', { detail: data }));
+        } catch (error) {
+          console.error('Real-time update failed:', error);
+        }
+      }, 30000);
+    }
+
+    // Export dashboard routing service to global scope for use by other components
+    window.dashboardRoutingService = dashboardRoutingService;
+  </script>
+</body>
+</html>
