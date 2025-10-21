@@ -397,36 +397,7 @@ import JoRoMiIntegration from '../integration/JoRoMiIntegration.astro';
   };
   
   // Add visual indicator to buttons
-  function addVisualIndicator() {
-    const buttons = document.querySelectorAll('[data-action="client-login"]');
-    buttons.forEach(button => {
-      button.style.position = 'relative';
-      button.style.cursor = 'pointer';
-      
-      // Add a small indicator
-      const indicator = document.createElement('span');
-      indicator.innerHTML = '⚠️';
-      indicator.style.position = 'absolute';
-      indicator.style.top = '-5px';
-      indicator.style.right = '-5px';
-      indicator.style.fontSize = '12px';
-      indicator.title = 'Click to open Client Login (JavaScript execution issue on custom domain)';
-      button.appendChild(indicator);
-      
-      // Add click handler that shows instructions
-      button.addEventListener('click', function(e) {
-        e.preventDefault();
-        alert('Due to a JavaScript execution issue on the custom domain, please open the browser console (F12) and type: openClientLogin()\n\nThis will open the Client Login modal.');
-      });
-    });
-  }
-  
-  // Try to add visual indicator
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', addVisualIndicator);
-  } else {
-    addVisualIndicator();
-  }
+  // Visual indicator code removed - authentication is now working properly
   
   console.log('🔧 openClientLogin function defined');
   console.log('🔧 To open Client Login, type: openClientLogin()');
