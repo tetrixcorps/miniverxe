@@ -320,7 +320,7 @@ import JoRoMiIntegration from '../integration/JoRoMiIntegration.astro';
     }
     
     // Open Industry Auth modal with comprehensive retry logic
-    function tryOpenIndustryAuth(attempts = 0, maxAttempts = 10) {
+        function tryOpenIndustryAuth(attempts = 0, maxAttempts = 25) {
       console.log(`🔧 [VERBOSE] Header tryOpenIndustryAuth attempt ${attempts + 1}/${maxAttempts}`);
       console.log(`🔧 [VERBOSE] Header attempt details:`, {
         attempt: attempts + 1,
@@ -369,9 +369,9 @@ import JoRoMiIntegration from '../integration/JoRoMiIntegration.astro';
           timestamp: new Date().toISOString()
         });
         
-        setTimeout(() => {
-          tryOpenIndustryAuth(attempts + 1, maxAttempts);
-        }, 200);
+            setTimeout(() => {
+              tryOpenIndustryAuth(attempts + 1, maxAttempts);
+            }, 300);
       } else {
         console.error('❌ [VERBOSE] Header: Industry Auth modal still not available after waiting');
         console.error('❌ [VERBOSE] Header: Final failure state:', {
@@ -393,7 +393,10 @@ import JoRoMiIntegration from '../integration/JoRoMiIntegration.astro';
       }
     }
     
-    tryOpenIndustryAuth();
+        // Add initial delay to allow module scripts to load
+        setTimeout(() => {
+          tryOpenIndustryAuth();
+        }, 500);
   };
   
   // Add visual indicator to buttons
