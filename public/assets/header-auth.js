@@ -103,7 +103,7 @@
       });
       
       // Enhanced retry logic with comprehensive error logging
-      function tryOpenIndustryAuth(attempts = 0, maxAttempts = 25) {
+      function tryOpenIndustryAuth(attempts = 0, maxAttempts = 10) { // Reduced for faster response
         console.log(`🔧 [VERBOSE] Attempting to open Industry Auth modal (attempt ${attempts + 1}/${maxAttempts})`);
         console.log(`🔧 [VERBOSE] Current attempt details:`, {
           attempt: attempts + 1,
@@ -158,7 +158,7 @@
           
           setTimeout(() => {
             tryOpenIndustryAuth(attempts + 1, maxAttempts);
-          }, 300);
+          }, 100); // Reduced delay for faster response
         } else {
           console.error('❌ [VERBOSE] Industry Auth modal still not available after waiting');
           console.error('❌ [VERBOSE] Final failure state:', {
@@ -190,10 +190,10 @@
         }
       }
       
-      // Add initial delay to allow module scripts to load
+      // Add minimal delay to allow module scripts to load
       setTimeout(() => {
         tryOpenIndustryAuth();
-      }, 500);
+      }, 100); // Reduced initial delay
     }
 
     // Code Academy buttons
