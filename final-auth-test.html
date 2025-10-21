@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Auth Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        iframe { width: 100%; height: 600px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Final Authentication Test</h1>
+    <p>Testing the enhanced authentication flow with retry logic and better error handling.</p>
+    
+    <div id="results"></div>
+    
+    <button onclick="testAuth()">Test Authentication</button>
+    <button onclick="testClientLogin()">Test Client Login</button>
+    <button onclick="clearResults()">Clear Results</button>
+    
+    <script>
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.innerHTML = message;
+            results.appendChild(div);
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+        
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+        
+        function testAuth() {
+            log('🔍 Testing authentication...', 'info');
+            
+            // Test if the function exists
+            if (typeof window.openIndustryAuthModal === 'function') {
+                log('✅ openIndustryAuthModal function found', 'success');
+                try {
+                    window.openIndustryAuthModal();
+                    log('✅ Modal opened successfully', 'success');
+                } catch (error) {
+                    log(`❌ Error opening modal: ${error.message}`, 'error');
+                }
+            } else {
+                log('❌ openIndustryAuthModal function NOT found', 'error');
+            }
+        }
+        
+        function testClientLogin() {
+            log('🔍 Testing Client Login button...', 'info');
+            
+            // Try to find and click the Client Login button
+            const clientLoginBtn = document.getElementById('client-login-2fa-btn');
+            if (clientLoginBtn) {
+                log('✅ Client Login button found', 'success');
+                try {
+                    clientLoginBtn.click();
+                    log('✅ Client Login button clicked', 'success');
+                } catch (error) {
+                    log(`❌ Error clicking Client Login button: ${error.message}`, 'error');
+                }
+            } else {
+                log('❌ Client Login button NOT found', 'error');
+            }
+        }
+        
+        // Auto-test on load
+        window.addEventListener('load', function() {
+            log('🚀 Page loaded, running auto-tests...', 'info');
+            setTimeout(() => {
+                testAuth();
+            }, 2000);
+        });
+    </script>
+    
+    <!-- Load the actual TETRIX page -->
+    <iframe src="http://localhost:8080/" width="100%" height="600" style="border: 1px solid #ccc; margin-top: 20px;"></iframe>
+</body>
+</html>

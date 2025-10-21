@@ -4,6 +4,8 @@ import TableOfContents from '../../components/features/TableOfContents.astro';
 import SocialShare from '../../components/features/SocialShare.astro';
 import Button from '../../components/shared/Button.astro';
 
+export const prerender = true;
+
 export async function getStaticPaths() {
   // In a real app, this would fetch from a CMS or markdown files
   const posts = [

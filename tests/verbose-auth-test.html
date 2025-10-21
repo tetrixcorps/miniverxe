@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verbose Authentication Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+        .warning { background-color: #fff3cd; color: #856404; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .log-container { max-height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; background: #f8f9fa; }
+        .log-entry { margin: 2px 0; padding: 2px 5px; border-radius: 3px; font-family: monospace; font-size: 12px; }
+        .log-verbose { background-color: #e3f2fd; }
+        .log-error { background-color: #ffebee; color: #c62828; }
+        .log-success { background-color: #e8f5e8; color: #2e7d32; }
+        .log-warning { background-color: #fff8e1; color: #f57c00; }
+        iframe { width: 100%; height: 600px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Verbose Authentication Test</h1>
+    <p>Comprehensive testing with detailed error logging and verbose output.</p>
+    
+    <div class="test-section">
+        <h2>Test Controls</h2>
+        <button onclick="runComprehensiveTest()">Run Comprehensive Test</button>
+        <button onclick="testClientLogin()">Test Client Login</button>
+        <button onclick="testFunctionAvailability()">Test Functions</button>
+        <button onclick="testScriptLoading()">Test Script Loading</button>
+        <button onclick="clearLogs()">Clear Logs</button>
+        <button onclick="exportLogs()">Export Logs</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test Results</h2>
+        <div id="test-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Verbose Console Logs</h2>
+        <div id="log-container" class="log-container"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Live Test</h2>
+        <p>Click the "Client Login" button in the iframe below to test the authentication flow:</p>
+        <iframe id="test-iframe" src="http://localhost:8080/"></iframe>
+    </div>
+    
+    <script>
+        let testResults = [];
+        let consoleLogs = [];
+        
+        // Override console methods to capture all logs
+        const originalConsole = {
+            log: console.log,
+            error: console.error,
+            warn: console.warn,
+            info: console.info
+        };
+        
+        function captureLog(level, args) {
+            const message = Array.from(args).map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+            ).join(' ');
+            
+            const logEntry = {
+                level,
+                message,
+                timestamp: new Date().toISOString(),
+                stack: new Error().stack
+            };
+            
+            consoleLogs.push(logEntry);
+            addLogToDisplay(logEntry);
+            
+            // Call original console method
+            originalConsole[level].apply(console, args);
+        }
+        
+        console.log = (...args) => captureLog('log', args);
+        console.error = (...args) => captureLog('error', args);
+        console.warn = (...args) => captureLog('warn', args);
+        console.info = (...args) => captureLog('info', args);
+        
+        function addLogToDisplay(logEntry) {
+            const container = document.getElementById('log-container');
+            const div = document.createElement('div');
+            div.className = `log-entry log-${logEntry.level}`;
+            div.innerHTML = `<strong>[${logEntry.timestamp}]</strong> [${logEntry.level.toUpperCase()}] ${logEntry.message}`;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        function log(message, type = 'info') {
+            const results = document.getElementById('test-results');
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong>: ${message}`;
+            results.appendChild(div);
+            console.log(`[${type.toUpperCase()}] ${message}`);
+            testResults.push({ message, type, timestamp: new Date() });
+        }
+        
+        function clearLogs() {
+            document.getElementById('test-results').innerHTML = '';
+            document.getElementById('log-container').innerHTML = '';
+            testResults = [];
+            consoleLogs = [];
+        }
+        
+        function exportLogs() {
+            const data = {
+                testResults,
+                consoleLogs,
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent,
+                url: window.location.href
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `auth-test-logs-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function testScriptLoading() {
+            log('🔍 Testing script loading...', 'info');
+            
+            // Check if IndustryAuth script is loaded
+            const scripts = document.querySelectorAll('script[src*="IndustryAuth"]');
+            if (scripts.length > 0) {
+                log('✅ IndustryAuth script found in DOM', 'success');
+                scripts.forEach((script, index) => {
+                    log(`Script ${index + 1}: ${script.src}`, 'info');
+                });
+            } else {
+                log('❌ IndustryAuth script NOT found in DOM', 'error');
+            }
+            
+            // Check if header-auth.js is loaded
+            const headerAuthScript = document.querySelector('script[src*="header-auth"]');
+            if (headerAuthScript) {
+                log('✅ header-auth.js script found in DOM', 'success');
+            } else {
+                log('❌ header-auth.js script NOT found in DOM', 'error');
+            }
+            
+            // Check all scripts
+            const allScripts = Array.from(document.querySelectorAll('script'));
+            log(`📊 Total scripts loaded: ${allScripts.length}`, 'info');
+            
+            allScripts.forEach((script, index) => {
+                if (script.src) {
+                    log(`Script ${index + 1}: ${script.src}`, 'info');
+                } else {
+                    log(`Script ${index + 1}: Inline (${script.textContent?.length || 0} chars)`, 'info');
+                }
+            });
+        }
+        
+        function testFunctionAvailability() {
+            log('🔍 Testing function availability...', 'info');
+            
+            const functions = [
+                'openIndustryAuthModal',
+                'open2FAModal',
+                'dashboardRoutingService',
+                'tetrixAuthContext',
+                'handle2FAResult',
+                'openClientLogin'
+            ];
+            
+            functions.forEach(func => {
+                if (typeof window[func] === 'function') {
+                    log(`✅ ${func} is a function`, 'success');
+                } else if (window[func]) {
+                    log(`✅ ${func} is available (not a function)`, 'success');
+                } else {
+                    log(`❌ ${func} is NOT available`, 'error');
+                }
+            });
+            
+            // Test function execution
+            if (typeof window.openClientLogin === 'function') {
+                log('🔍 Testing openClientLogin function execution...', 'info');
+                try {
+                    window.openClientLogin();
+                    log('✅ openClientLogin executed successfully', 'success');
+                } catch (error) {
+                    log(`❌ Error executing openClientLogin: ${error.message}`, 'error');
+                }
+            }
+        }
+        
+        function testClientLogin() {
+            log('🔍 Testing Client Login functionality...', 'info');
+            
+            // Test if we can find the Client Login button
+            const clientLoginBtn = document.getElementById('client-login-2fa-btn');
+            if (clientLoginBtn) {
+                log('✅ Client Login button found in current page', 'success');
+                try {
+                    clientLoginBtn.click();
+                    log('✅ Client Login button clicked successfully', 'success');
+                } catch (error) {
+                    log(`❌ Error clicking Client Login button: ${error.message}`, 'error');
+                }
+            } else {
+                log('❌ Client Login button NOT found in current page', 'error');
+            }
+        }
+        
+        function runComprehensiveTest() {
+            log('🚀 Running comprehensive authentication tests...', 'info');
+            
+            // Test 1: Script loading
+            testScriptLoading();
+            
+            // Test 2: Function availability
+            setTimeout(() => {
+                testFunctionAvailability();
+            }, 500);
+            
+            // Test 3: Client Login button
+            setTimeout(() => {
+                testClientLogin();
+            }, 1000);
+            
+            // Test 4: Iframe functionality
+            setTimeout(() => {
+                log('🔍 Testing iframe functionality...', 'info');
+                const iframe = document.getElementById('test-iframe');
+                if (iframe) {
+                    log('✅ Test iframe loaded', 'success');
+                } else {
+                    log('❌ Test iframe not found', 'error');
+                }
+            }, 2000);
+            
+            // Test 5: Console message analysis
+            setTimeout(() => {
+                log('🔍 Analyzing console messages...', 'info');
+                const verboseLogs = consoleLogs.filter(log => log.message.includes('[VERBOSE]'));
+                const errorLogs = consoleLogs.filter(log => log.level === 'error');
+                const warningLogs = consoleLogs.filter(log => log.level === 'warn');
+                
+                log(`📊 Found ${verboseLogs.length} verbose log messages`, 'info');
+                log(`📊 Found ${errorLogs.length} error messages`, errorLogs.length > 0 ? 'warning' : 'success');
+                log(`📊 Found ${warningLogs.length} warning messages`, warningLogs.length > 0 ? 'warning' : 'success');
+                
+                if (errorLogs.length > 0) {
+                    log('⚠️ Error messages found:', 'warning');
+                    errorLogs.forEach(error => {
+                        log(`  - ${error.message}`, 'error');
+                    });
+                }
+            }, 3000);
+        }
+        
+        // Auto-run tests on load
+        window.addEventListener('load', function() {
+            log('🚀 Page loaded, running initial tests...', 'info');
+            setTimeout(() => {
+                runComprehensiveTest();
+            }, 2000);
+        });
+        
+        // Listen for messages from iframe
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'auth-test') {
+                log(`📨 Message from iframe: ${event.data.message}`, 'info');
+            }
+        });
+    </script>
+</body>
+</html>

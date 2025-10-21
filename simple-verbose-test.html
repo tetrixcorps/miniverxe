@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Verbose Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .log { margin: 5px 0; padding: 5px; border-radius: 3px; font-family: monospace; font-size: 12px; }
+        .verbose { background-color: #e3f2fd; }
+        .error { background-color: #ffebee; color: #c62828; }
+        .success { background-color: #e8f5e8; color: #2e7d32; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Simple Verbose Authentication Test</h1>
+    
+    <button onclick="testAuth()">Test Authentication</button>
+    <button onclick="clearLogs()">Clear Logs</button>
+    
+    <div id="logs"></div>
+    
+    <script>
+        function log(message, type = 'info') {
+            const logs = document.getElementById('logs');
+            const div = document.createElement('div');
+            div.className = `log ${type}`;
+            div.innerHTML = `<strong>[${new Date().toLocaleTimeString()}]</strong> ${message}`;
+            logs.appendChild(div);
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+        
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = '';
+        }
+        
+        async function testAuth() {
+            log('🔍 Starting authentication test...', 'info');
+            
+            try {
+                // Fetch the main page
+                const response = await fetch('http://localhost:8080/');
+                log('✅ Main page fetched successfully', 'success');
+                
+                const html = await response.text();
+                log(`📊 Page size: ${html.length} characters`, 'info');
+                
+                // Check for Client Login button
+                if (html.includes('client-login-2fa-btn')) {
+                    log('✅ Client Login button found in HTML', 'success');
+                } else {
+                    log('❌ Client Login button NOT found in HTML', 'error');
+                }
+                
+                // Check for Industry Auth modal
+                if (html.includes('industry-auth-modal')) {
+                    log('✅ Industry Auth modal found in HTML', 'success');
+                } else {
+                    log('❌ Industry Auth modal NOT found in HTML', 'error');
+                }
+                
+                // Check for header-auth.js script
+                if (html.includes('header-auth.js')) {
+                    log('✅ header-auth.js script found in HTML', 'success');
+                } else {
+                    log('❌ header-auth.js script NOT found in HTML', 'error');
+                }
+                
+                // Check for verbose logging
+                if (html.includes('[VERBOSE]')) {
+                    log('✅ Verbose logging found in HTML', 'success');
+                } else {
+                    log('❌ Verbose logging NOT found in HTML', 'error');
+                }
+                
+                // Test API endpoint
+                try {
+                    const apiResponse = await fetch('http://localhost:8080/api/v2/2fa/initiate', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            phoneNumber: '+1234567890',
+                            method: 'sms'
+                        })
+                    });
+                    
+                    if (apiResponse.ok) {
+                        log('✅ 2FA API endpoint is working', 'success');
+                    } else {
+                        log(`❌ 2FA API endpoint returned status: ${apiResponse.status}`, 'error');
+                    }
+                } catch (apiError) {
+                    log(`❌ 2FA API endpoint error: ${apiError.message}`, 'error');
+                }
+                
+            } catch (error) {
+                log(`❌ Test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        // Auto-run test
+        window.addEventListener('load', function() {
+            log('🚀 Page loaded, starting test...', 'info');
+            setTimeout(() => {
+                testAuth();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -7,7 +7,7 @@
  * to ensure users get the latest version of your JavaScript files.
  */
 
-const https = require('https');
+import https from 'https';
 
 // Configuration - Replace with your actual values
 const CLOUDFLARE_CONFIG = {
@@ -176,8 +176,8 @@ async function main() {
 }
 
 // Run the script
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   main().catch(console.error);
 }
 
-module.exports = { purgeCacheForFiles, purgeEntireCache, getZoneInfo };
+export { purgeCacheForFiles, purgeEntireCache, getZoneInfo };
