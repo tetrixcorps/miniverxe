@@ -1,1 +1,17 @@
-https://github.com/heroku/heroku-buildpack-nodejs
+# Force fresh build by disabling cache
+# This file forces DigitalOcean to use a fresh build every time
+
+# Disable node_modules cache
+NODE_MODULES_CACHE=false
+
+# Disable build cache
+BUILD_CACHE=false
+
+# Force clean install
+CLEAN_INSTALL=true
+
+# Disable layer caching
+DISABLE_LAYER_CACHE=true
+
+# Force rebuild all layers
+FORCE_REBUILD=true

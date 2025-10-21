@@ -23,7 +23,9 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx,.astro",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx,.astro --fix",
     "type-check": "tsc --noEmit",
-    "cache-bust": "node scripts/cache-bust.js"
+    "cache-bust": "node scripts/cache-bust.js",
+    "build:fresh": "rm -rf dist .astro node_modules/.cache && pnpm run build",
+    "build:force": "rm -rf dist .astro node_modules/.cache .pnpm-store && pnpm install --frozen-lockfile=false && pnpm run build"
   },
   "dependencies": {
     "@astrojs/check": "^0.3.4",

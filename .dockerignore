@@ -1,0 +1,22 @@
+# Ignore cache directories
+node_modules/.cache
+.pnpm-store
+.astro
+dist
+.next
+.nuxt
+.vuepress/dist
+.vitepress/cache
+.vite
+.turbo
+
+# Ignore build artifacts
+*.log
+*.tmp
+*.temp
+
+# Ignore environment files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
