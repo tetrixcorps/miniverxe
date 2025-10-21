@@ -20,3 +20,27 @@ dist
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Ignore development files
+.git
+.gitignore
+README.md
+*.md
+.vscode
+.idea
+
+# Ignore test files
+tests/
+__tests__/
+*.test.*
+*.spec.*
+
+# Ignore documentation
+docs/
+*.md
+
+# Ignore other services
+services/
+campaign/
+code-academy-backend/
+open-webui/
