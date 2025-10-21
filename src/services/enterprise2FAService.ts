@@ -78,11 +78,25 @@ class Enterprise2FAService {
    */
   async initiateVerification(request: VerificationRequest): Promise<VerificationResponse> {
     const startTime = Date.now();
+    const verificationId = `verify_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    console.log(`🔐 [${verificationId}] Starting enterprise 2FA verification`);
+    console.log(`📋 [${verificationId}] Request details:`, {
+      phoneNumber: request.phoneNumber ? `${request.phoneNumber.substring(0, 3)}***${request.phoneNumber.substring(request.phoneNumber.length - 3)}` : 'NOT_PROVIDED',
+      method: request.method,
+      userAgent: request.userAgent ? request.userAgent.substring(0, 50) + '...' : 'NOT_PROVIDED',
+      ipAddress: request.ipAddress ? request.ipAddress.substring(0, 10) + '...' : 'NOT_PROVIDED',
+      sessionId: request.sessionId ? request.sessionId.substring(0, 10) + '...' : 'NOT_PROVIDED'
+    });
     
     try {
       // 1. Fraud Detection & Risk Assessment
+      console.log(`🛡️ [${verificationId}] Starting fraud risk assessment`);
       const fraudScore = await this.assessFraudRisk(request);
+      console.log(`🛡️ [${verificationId}] Fraud risk score: ${fraudScore}`);
+      
       if (fraudScore > 0.8) {
+        console.log(`🚫 [${verificationId}] High fraud risk detected, blocking verification`);
         await this.logAuditEvent({
           id: this.generateId(),
           phoneNumber: request.phoneNumber,
@@ -101,14 +115,27 @@ class Enterprise2FAService {
       }
 
       // 2. Rate Limiting Check
+      console.log(`⏱️ [${verificationId}] Checking rate limits`);
       if (this.config.rateLimiting && !this.checkRateLimit(request.phoneNumber)) {
+        console.log(`🚫 [${verificationId}] Rate limit exceeded for phone number`);
         throw new Error('Rate limit exceeded. Please try again later.');
       }
+      console.log(`✅ [${verificationId}] Rate limit check passed`);
 
       // 3. Use Telnyx Verify API
+      console.log(`📡 [${verificationId}] Calling Telnyx Verify API`);
       const verification = await this.sendTelnyxVerification(request);
+      console.log(`✅ [${verificationId}] Telnyx verification response:`, {
+        id: verification.id,
+        phone_number: verification.phone_number,
+        type: verification.type,
+        status: verification.status,
+        created_at: verification.created_at,
+        timeout_secs: verification.timeout_secs
+      });
       
       // 4. Log successful initiation
+      console.log(`📝 [${verificationId}] Logging successful initiation`);
       await this.logAuditEvent({
         id: this.generateId(),
         phoneNumber: request.phoneNumber,
@@ -123,7 +150,7 @@ class Enterprise2FAService {
         riskLevel: fraudScore > 0.5 ? 'medium' : 'low'
       });
 
-      return {
+      const response = {
         verificationId: verification.id,
         phoneNumber: verification.phone_number.startsWith('+') ? verification.phone_number.slice(1) : verification.phone_number, // Remove + for storage
         method: verification.type,
@@ -135,7 +162,26 @@ class Enterprise2FAService {
         maxAttempts: 3
       };
 
+      const responseTime = Date.now() - startTime;
+      console.log(`✅ [${verificationId}] Verification initiated successfully in ${responseTime}ms:`, {
+        verificationId: response.verificationId,
+        phoneNumber: response.phoneNumber,
+        method: response.method,
+        status: response.status
+      });
+
+      return response;
+
     } catch (error) {
+      const responseTime = Date.now() - startTime;
+      console.error(`❌ [${verificationId}] Enterprise 2FA verification failed after ${responseTime}ms:`, {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        type: error instanceof Error ? error.constructor.name : typeof error,
+        verificationId,
+        responseTime
+      });
+
       // Log failed initiation
       await this.logAuditEvent({
         id: this.generateId(),
@@ -146,11 +192,15 @@ class Enterprise2FAService {
         ipAddress: request.ipAddress || 'unknown',
         userAgent: request.userAgent || 'unknown',
         timestamp: new Date().toISOString(),
-        metadata: { error: error instanceof Error ? error.message : 'Unknown error' }
+        metadata: { 
+          error: error instanceof Error ? error.message : 'Unknown error',
+          verificationId,
+          responseTime
+        }
       });
 
       // Always fallback to Smart2FA if Telnyx fails or is not configured
-      console.log('Falling back to Smart2FA service due to error:', error instanceof Error ? error.message : 'Unknown error');
+      console.log(`🔄 [${verificationId}] Falling back to Smart2FA service due to error:`, error instanceof Error ? error.message : 'Unknown error');
       return await this.fallbackToSmart2FA(request);
     }
   }
@@ -276,17 +326,21 @@ class Enterprise2FAService {
    * Send verification using Telnyx Verify API
    */
   private async sendTelnyxVerification(request: VerificationRequest): Promise<any> {
+    const telnyxId = `telnyx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    console.log(`📡 [${telnyxId}] Starting Telnyx verification request`);
+    
     // Check if API key is configured
     if (!this.config.apiKey || this.config.apiKey.trim() === '') {
-      console.warn('TELNYX_API_KEY not configured, using mock verification for development');
+      console.warn(`⚠️ [${telnyxId}] TELNYX_API_KEY not configured, using mock verification for development`);
       return this.generateMockVerification(request);
     }
 
-    console.log('Sending Telnyx verification with config:', {
+    console.log(`🔑 [${telnyxId}] Telnyx configuration:`, {
       apiKey: this.config.apiKey ? `${this.config.apiKey.substring(0, 10)}...` : 'NOT_SET',
       verifyProfileId: this.config.verifyProfileId,
       method: request.method,
-      phoneNumber: request.phoneNumber
+      phoneNumber: request.phoneNumber ? `${request.phoneNumber.substring(0, 3)}***${request.phoneNumber.substring(request.phoneNumber.length - 3)}` : 'NOT_PROVIDED'
     });
 
     let endpoint = 'https://api.telnyx.com/v2/verifications/sms';
@@ -298,6 +352,8 @@ class Enterprise2FAService {
       // Telnyx flash call: phone rings once with last digits as code
       endpoint = 'https://api.telnyx.com/v2/verifications/flashcall';
     }
+
+    console.log(`🎯 [${telnyxId}] Selected endpoint: ${endpoint}`);
 
     const payload: any = {
       phone_number: request.phoneNumber.startsWith('+') ? request.phoneNumber : `+${request.phoneNumber}`,
@@ -312,9 +368,12 @@ class Enterprise2FAService {
       payload.timeout_secs = request.timeoutSecs;
     }
 
-    console.log('Sending Telnyx request to:', endpoint);
-    console.log('Telnyx request payload:', payload);
+    console.log(`📤 [${telnyxId}] Telnyx request payload:`, {
+      ...payload,
+      phone_number: payload.phone_number ? `${payload.phone_number.substring(0, 3)}***${payload.phone_number.substring(payload.phone_number.length - 3)}` : 'NOT_PROVIDED'
+    });
 
+    console.log(`🚀 [${telnyxId}] Sending request to Telnyx API...`);
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
@@ -325,12 +384,12 @@ class Enterprise2FAService {
       body: JSON.stringify(payload)
     });
 
-    console.log('Telnyx response status:', response.status);
-    console.log('Telnyx response headers:', Object.fromEntries(response.headers.entries()));
+    console.log(`📊 [${telnyxId}] Telnyx response status: ${response.status}`);
+    console.log(`📋 [${telnyxId}] Telnyx response headers:`, Object.fromEntries(response.headers.entries()));
 
     if (!response.ok) {
       const error = await response.json();
-      console.error('Telnyx initiation error:', {
+      console.error(`❌ [${telnyxId}] Telnyx initiation error:`, {
         status: response.status,
         statusText: response.statusText,
         error: error
@@ -339,7 +398,12 @@ class Enterprise2FAService {
     }
 
     const result = await response.json();
-    console.log('Telnyx initiation response:', result);
+    console.log(`✅ [${telnyxId}] Telnyx initiation successful:`, {
+      id: result.data?.id,
+      phone_number: result.data?.phone_number,
+      type: result.data?.type,
+      status: result.data?.status
+    });
     return result;
   }
 
