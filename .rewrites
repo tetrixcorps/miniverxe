@@ -1,0 +1,31 @@
+# DigitalOcean App Platform URL Rewrites Configuration
+# This file configures URL rewrites to redirect authentication flows
+# from the custom domain to the working production URL while maintaining
+# the custom domain in the browser address bar
+
+# Authentication API endpoints - redirect to production URL
+/api/v2/2fa/initiate https://tetrix-minimal-uzzxn.ondigitalocean.app/api/v2/2fa/initiate
+/api/v2/2fa/verify https://tetrix-minimal-uzzxn.ondigitalocean.app/api/v2/2fa/verify
+/api/v2/2fa/status https://tetrix-minimal-uzzxn.ondigitalocean.app/api/v2/2fa/status
+/api/v2/industry-auth/initiate https://tetrix-minimal-uzzxn.ondigitalocean.app/api/v2/industry-auth/initiate
+/api/v2/industry-auth/verify https://tetrix-minimal-uzzxn.ondigitalocean.app/api/v2/industry-auth/verify
+/api/v2/industry-auth/status https://tetrix-minimal-uzzxn.ondigitalocean.app/api/v2/industry-auth/status
+
+# Dashboard routes - redirect to production URL
+/dashboards/* https://tetrix-minimal-uzzxn.ondigitalocean.app/dashboards/*
+
+# Authentication modal assets - redirect to production URL
+/_astro/IndustryAuth.astro_astro_type_script_index_0_lang.*.js https://tetrix-minimal-uzzxn.ondigitalocean.app/_astro/IndustryAuth.astro_astro_type_script_index_0_lang.*.js
+/_astro/2FAModal.astro_astro_type_script_index_0_lang.*.js https://tetrix-minimal-uzzxn.ondigitalocean.app/_astro/2FAModal.astro_astro_type_script_index_0_lang.*.js
+
+# Header authentication script - redirect to production URL
+/assets/header-auth.js https://tetrix-minimal-uzzxn.ondigitalocean.app/assets/header-auth.js
+/assets/dashboard-routing-service.js https://tetrix-minimal-uzzxn.ondigitalocean.app/assets/dashboard-routing-service.js
+
+# Webhook endpoints - redirect to production URL
+/webhooks/telnyx/verify https://tetrix-minimal-uzzxn.ondigitalocean.app/webhooks/telnyx/verify
+/webhooks/telnyx/voice https://tetrix-minimal-uzzxn.ondigitalocean.app/webhooks/telnyx/voice
+
+# Health check endpoints - redirect to production URL
+/api/health https://tetrix-minimal-uzzxn.ondigitalocean.app/api/health
+/api/health/check https://tetrix-minimal-uzzxn.ondigitalocean.app/api/health/check
