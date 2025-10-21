@@ -18,14 +18,9 @@
       url.includes('/api/v2/industry-auth/') ||
       url.includes('/dashboards/')
     )) {
-      // Convert relative URLs to production URLs
-      if (url.startsWith('/')) {
-        url = PRODUCTION_URL + url;
-      } else if (url.startsWith(CUSTOM_DOMAIN)) {
-        url = url.replace(CUSTOM_DOMAIN, PRODUCTION_URL);
-      }
-      
-      console.log(`🔄 [AUTH-PROXY] Proxying API call to: ${url}`);
+      // For authentication API calls, let them go through the custom domain
+      // The server-side API route will handle the proxying
+      console.log(`🔄 [AUTH-PROXY] Authentication API call detected: ${url}`);
     }
     
     return originalFetch.call(this, url, options);
@@ -40,14 +35,9 @@
       url.includes('/api/v2/industry-auth/') ||
       url.includes('/dashboards/')
     )) {
-      // Convert relative URLs to production URLs
-      if (url.startsWith('/')) {
-        url = PRODUCTION_URL + url;
-      } else if (url.startsWith(CUSTOM_DOMAIN)) {
-        url = url.replace(CUSTOM_DOMAIN, PRODUCTION_URL);
-      }
-      
-      console.log(`🔄 [AUTH-PROXY] Proxying XHR call to: ${url}`);
+      // For authentication API calls, let them go through the custom domain
+      // The server-side API route will handle the proxying
+      console.log(`🔄 [AUTH-PROXY] Authentication XHR call detected: ${url}`);
     }
     
     return originalXHROpen.call(this, method, url, ...args);
