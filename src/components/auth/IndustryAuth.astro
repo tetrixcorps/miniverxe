@@ -252,10 +252,18 @@
         // Open 2FA modal using the global function
         if ((window as any).open2FAModal) {
           console.log('Opening 2FA modal via open2FAModal');
-          (window as any).open2FAModal();
+          console.log('open2FAModal function type:', typeof (window as any).open2FAModal);
+          console.log('twoFAManager available:', !!(window as any).twoFAManager);
+          try {
+            (window as any).open2FAModal();
+            console.log('open2FAModal called successfully');
+          } catch (error) {
+            console.error('Error calling open2FAModal:', error);
+            throw error;
+          }
         } else {
           // Fallback: open 2FA modal directly
-          const twoFAModal = document.getElementById('2fa-modal');
+          const twoFAModal = document.getElementById('twofa-modal');
           if (twoFAModal) {
             twoFAModal.classList.remove('hidden');
             twoFAModal.style.display = 'block';
