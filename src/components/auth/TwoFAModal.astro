@@ -407,7 +407,7 @@
       }, 1500);
     }
 
-    sendSMSCode() {
+    async sendSMSCode() {
       const phone = document.getElementById('sms-phone').value;
 
       if (!phone) {
@@ -417,14 +417,41 @@
 
       this.showLoading();
       
-      // Simulate SMS sending
-      setTimeout(() => {
+      try {
+        // Call the real industry authentication API
+        const response = await fetch('/api/v2/industry-auth/initiate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            phoneNumber: phone,
+            industry: window.tetrixAuthContext?.industry || 'healthcare',
+            organizationId: window.tetrixAuthContext?.organizationId || 'default-org',
+            method: 'sms'
+          })
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+          // Store session ID for verification
+          this.sessionId = result.sessionId;
+          this.hideLoading();
+          document.getElementById('sms-code-input').classList.remove('hidden');
+          console.log('✅ SMS code sent successfully:', result);
+        } else {
+          this.hideLoading();
+          this.showError(result.error || 'Failed to send SMS code');
+        }
+      } catch (error) {
+        console.error('❌ SMS code sending failed:', error);
         this.hideLoading();
-        document.getElementById('sms-code-input').classList.remove('hidden');
-      }, 2000);
+        this.showError('Network error. Please try again.');
+      }
     }
 
-    verifySMSCode() {
+    async verifySMSCode() {
       const code = document.getElementById('sms-code').value;
 
       if (!code || code.length !== 6) {
@@ -432,21 +459,79 @@
         return;
       }
 
+      if (!this.sessionId) {
+        this.showError('No active session. Please request a new code.');
+        return;
+      }
+
       this.showLoading();
       
-      // Simulate SMS verification
-      setTimeout(() => {
-        this.handleAuthResponse({ success: true });
-      }, 1500);
+      try {
+        // Call the real industry authentication verification API
+        const response = await fetch('/api/v2/industry-auth/verify', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            sessionId: this.sessionId,
+            code: code,
+            deviceInfo: {
+              phoneNumber: document.getElementById('sms-phone').value
+            }
+          })
+        });
+
+        const result = await response.json();
+        
+        if (result.success && result.verified) {
+          console.log('✅ SMS verification successful:', result);
+          this.handleAuthResponse(result);
+        } else {
+          this.hideLoading();
+          this.showError(result.error || 'Invalid verification code');
+        }
+      } catch (error) {
+        console.error('❌ SMS verification failed:', error);
+        this.hideLoading();
+        this.showError('Network error. Please try again.');
+      }
     }
 
-    resendSMSCode() {
+    async resendSMSCode() {
       this.showLoading();
       
-      // Simulate resending SMS
-      setTimeout(() => {
+      try {
+        // Call the real industry authentication API to resend SMS
+        const response = await fetch('/api/v2/industry-auth/initiate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            phoneNumber: document.getElementById('sms-phone').value,
+            industry: window.tetrixAuthContext?.industry || 'healthcare',
+            organizationId: window.tetrixAuthContext?.organizationId || 'default-org',
+            method: 'sms'
+          })
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+          // Update session ID
+          this.sessionId = result.sessionId;
+          this.hideLoading();
+          console.log('✅ SMS code resent successfully:', result);
+        } else {
+          this.hideLoading();
+          this.showError(result.error || 'Failed to resend SMS code');
+        }
+      } catch (error) {
+        console.error('❌ SMS resend failed:', error);
         this.hideLoading();
-      }, 1000);
+        this.showError('Network error. Please try again.');
+      }
     }
 
     handleWebAuthn() {
@@ -543,8 +628,12 @@
     }
 
     redirectToDashboard() {
-      // Redirect to dashboard
-      window.location.href = '/dashboards/client';
+      // Get dashboard URL from auth context or use default
+      const industry = window.tetrixAuthContext?.industry || 'healthcare';
+      const dashboardUrl = `/dashboards/${industry}`;
+      
+      console.log('🔄 Redirecting to dashboard:', dashboardUrl);
+      window.location.href = dashboardUrl;
     }
 
     closeModal() {

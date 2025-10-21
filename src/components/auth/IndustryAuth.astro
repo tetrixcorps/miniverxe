@@ -272,6 +272,15 @@
           // This will be handled by the 2FA modal itself
         };
         
+        // Set up authentication context for 2FA modal
+        window.tetrixAuthContext = {
+          industry: industry,
+          role: role,
+          organization: organization,
+          organizationId: `org_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+        };
+        console.log('✅ Auth context set for 2FA:', window.tetrixAuthContext);
+        
         // Hide Industry Auth modal
         const industryModal = document.getElementById('industry-auth-modal');
         if (industryModal) {
