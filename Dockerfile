@@ -2,25 +2,19 @@
 # This completely bypasses the Heroku shim layer and buildpack caching
 # DigitalOcean App Platform will automatically use this instead of buildpacks
 
-FROM node:20-slim
+FROM node:20
 
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies and pnpm
-RUN apt-get update && apt-get install -y \
-    python3 \
-    make \
-    g++ \
-    curl \
-    && rm -rf /var/lib/apt/lists/* \
-    && npm install -g pnpm@10.18.3
+# Install pnpm globally
+RUN npm install -g pnpm@10.18.3
 
 # Copy package files first for better Docker layer caching
 COPY package.json pnpm-lock.yaml ./
 
 # Install dependencies with no cache to ensure fresh install
-RUN pnpm install --frozen-lockfile --force --no-optional
+RUN pnpm install --frozen-lockfile
 
 # Copy source code
 COPY . .
