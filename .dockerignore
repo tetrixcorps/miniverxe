@@ -1,3 +1,6 @@
+# Docker ignore file for TETRIX Authentication System
+# This optimizes Docker builds by excluding unnecessary files
+
 # Ignore cache directories
 node_modules/.cache
 .pnpm-store
@@ -39,8 +42,22 @@ __tests__/
 docs/
 *.md
 
-# Ignore other services
+# Ignore other services (not needed for main app)
 services/
 campaign/
 code-academy-backend/
 open-webui/
+
+# Ignore Docker files (avoid recursion)
+Dockerfile*
+docker-compose*.yml
+
+# Ignore CI/CD files
+.github/
+.gitlab-ci.yml
+.travis.yml
+.circleci/
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
