@@ -4,7 +4,7 @@
   "description": "Enterprise authentication system with 2FA integration",
   "type": "module",
   "scripts": {
-    "prebuild": "rm -rf node_modules",
+    "prebuild": "echo 'Prebuild: Clearing cache directories' && rm -rf dist .astro node_modules/.cache",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
