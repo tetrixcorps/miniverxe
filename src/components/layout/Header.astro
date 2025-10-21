@@ -373,25 +373,35 @@ import JoRoMiIntegration from '../integration/JoRoMiIntegration.astro';
             setTimeout(() => {
               tryOpenIndustryAuth(attempts + 1, maxAttempts);
             }, 300);
-      } else {
-        console.error('❌ [VERBOSE] Header: Industry Auth modal still not available after waiting');
-        console.error('❌ [VERBOSE] Header: Final failure state:', {
-          attempts: attempts,
-          maxAttempts,
-          openIndustryAuthModal: typeof window.openIndustryAuthModal,
-          availableFunctions: Object.keys(window).filter(k => k.includes('Industry') || k.includes('Auth')),
-          allWindowKeys: Object.keys(window).slice(0, 30),
-          scripts: Array.from(document.querySelectorAll('script')).map(s => ({
-            src: s.src,
-            type: s.type,
-            async: s.async,
-            defer: s.defer,
-            readyState: s.readyState
-          })),
-          timestamp: new Date().toISOString()
-        });
-        alert('Authentication service is temporarily unavailable. Please try again later.');
-      }
+          } else {
+            console.error('❌ [VERBOSE] Header: Industry Auth modal still not available after waiting');
+            console.error('❌ [VERBOSE] Header: Final failure state:', {
+              attempts: attempts,
+              maxAttempts,
+              openIndustryAuthModal: typeof window.openIndustryAuthModal,
+              availableFunctions: Object.keys(window).filter(k => k.includes('Industry') || k.includes('Auth')),
+              allWindowKeys: Object.keys(window).slice(0, 30),
+              scripts: Array.from(document.querySelectorAll('script')).map(s => ({
+                src: s.src,
+                type: s.type,
+                async: s.async,
+                defer: s.defer,
+                readyState: s.readyState
+              })),
+              timestamp: new Date().toISOString()
+            });
+            
+            // Try alternative approach - check if modal exists and open it directly
+            const modal = document.getElementById('industry-auth-modal');
+            if (modal) {
+              console.log('🔄 [FALLBACK] Header: Opening modal directly via DOM manipulation');
+              modal.classList.remove('hidden');
+              modal.style.display = 'block';
+              return;
+            }
+            
+            alert('Authentication service is temporarily unavailable. Please try again later.');
+          }
     }
     
         // Add initial delay to allow module scripts to load

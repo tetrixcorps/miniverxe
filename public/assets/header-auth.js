@@ -175,6 +175,17 @@
             })),
             timestamp: new Date().toISOString()
           });
+          
+          // Try alternative approach - check if modal exists and open it directly
+          const modal = document.getElementById('industry-auth-modal');
+          if (modal) {
+            console.log('🔄 [FALLBACK] Opening modal directly via DOM manipulation');
+            modal.classList.remove('hidden');
+            modal.style.display = 'block';
+            closeMenuIfOpen();
+            return;
+          }
+          
           alert('Authentication service is temporarily unavailable. Please try again later.');
         }
       }
