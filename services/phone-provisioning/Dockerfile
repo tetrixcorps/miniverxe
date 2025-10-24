@@ -1,17 +1,24 @@
 # TETRIX Phone Provisioning Service Dockerfile
 FROM node:20-alpine
 
-# Install pnpm
-RUN npm install -g pnpm
+# Install pnpm and curl
+RUN npm install -g pnpm && apk add --no-cache curl
 
 # Set working directory
 WORKDIR /app
 
 # Copy package files
-COPY package.json pnpm-lock.yaml ./
+COPY package.json ./
 
-# Install dependencies
-RUN pnpm install --frozen-lockfile
+# Install dependencies with multiple retry attempts
+RUN for i in 1 2 3; do \
+        pnpm config set fetch-retries 10 && \
+        pnpm config set fetch-retry-factor 2 && \
+        pnpm config set fetch-retry-mintimeout 10000 && \
+        pnpm config set fetch-retry-maxtimeout 120000 && \
+        pnpm install --frozen-lockfile=false && break || \
+        (echo "Attempt $i failed, retrying..." && sleep 10); \
+    done
 
 # Copy source code
 COPY . .

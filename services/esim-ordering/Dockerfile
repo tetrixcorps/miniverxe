@@ -8,10 +8,14 @@ RUN npm install -g pnpm
 WORKDIR /app
 
 # Copy package files
-COPY package.json pnpm-lock.yaml ./
+COPY package.json ./
 
-# Install dependencies
-RUN pnpm install --frozen-lockfile
+# Install dependencies with retry configuration
+RUN pnpm config set fetch-retries 5 && \
+    pnpm config set fetch-retry-factor 2 && \
+    pnpm config set fetch-retry-mintimeout 10000 && \
+    pnpm config set fetch-retry-maxtimeout 60000 && \
+    pnpm install --frozen-lockfile=false
 
 # Copy source code
 COPY . .

@@ -54,3 +54,46 @@ coverage/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Temporary and debug files
+*.tmp
+*.temp
+debug-*.html
+test-*.html
+*-test.html
+comprehensive-*.html
+simple-*.html
+final-*.html
+direct-*.html
+esim-*.html
+vpn-*.html
+
+# Test artifacts
+test-results/
+playwright-report/
+coverage/
+screenshots/
+videos/
+
+# Build artifacts
+dist/
+build/
+.astro/
+
+# Python virtual environment
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Logs and reports
+*.log
+monitoring-report-*.txt
+debug-report-*.json
+build-error.json
+build-report.json
+
+# Secrets and sensitive files
+secrets-patterns.txt
+bfg-secrets.txt
+bfg.jar

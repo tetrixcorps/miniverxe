@@ -25,7 +25,7 @@ const createCourseSchema = Joi.object({
   tags: Joi.array().items(Joi.string()).default([]),
   prerequisites: Joi.array().items(Joi.string()).default([]),
   learningOutcomes: Joi.array().items(Joi.string()).default([]),
-  instructorId: Joi.string().cuid().optional(),
+  instructorId: Joi.string().uuid().optional(),
   instructorName: Joi.string().max(100).optional(),
   instructorBio: Joi.string().max(1000).optional(),
   instructorAvatar: Joi.string().uri().optional(),
