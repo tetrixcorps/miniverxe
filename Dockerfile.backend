@@ -1,0 +1,72 @@
+# TETRIX Backend Dockerfile - Multi-stage build for optimization
+FROM node:20-alpine AS base
+
+# Install curl, wget, and OpenSSL for Prisma
+RUN apk add --no-cache curl wget openssl python3 make g++
+
+# Install pnpm globally
+RUN npm install -g pnpm@10.18.3
+
+# Stage 1: Build stage (includes dev dependencies)
+FROM base AS builder
+
+WORKDIR /app
+
+# Copy root package files (for monorepo)
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# Copy backend package files
+COPY backend/package*.json ./backend/
+
+# Install ALL dependencies using pnpm (monorepo)
+RUN pnpm install --frozen-lockfile
+
+# Copy source code and config files
+COPY backend/src ./backend/src
+COPY prisma ./prisma
+COPY backend/tsconfig.json ./backend/
+COPY backend/tsconfig.simple.json ./backend/
+
+# Generate Prisma client (from backend directory)
+WORKDIR /app/backend
+RUN npx prisma generate --schema=../prisma/schema.prisma
+
+# Build the application
+RUN pnpm run build
+
+# Stage 2: Production stage
+FROM base AS production
+
+WORKDIR /app
+
+# Copy package files
+COPY backend/package*.json ./
+
+# Install production dependencies using pnpm
+RUN pnpm install --frozen-lockfile --prod
+
+# Copy built application from builder stage
+COPY --from=builder /app/backend/dist ./dist
+# Copy Prisma schema for runtime
+COPY --from=builder /app/prisma ./prisma
+
+# Copy the generated Prisma client from builder stage
+COPY --from=builder /app/backend/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/backend/node_modules/@prisma ./node_modules/@prisma
+
+# Expose port
+EXPOSE 3001
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=3001
+ENV HOST=0.0.0.0
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD curl -f http://localhost:3001/health || exit 1
+
+# Start the application
+WORKDIR /app
+CMD ["node", "dist/server-with-db.js"]
+
