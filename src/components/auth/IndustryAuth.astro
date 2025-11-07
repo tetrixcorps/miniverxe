@@ -46,7 +46,7 @@
         <label class="block text-sm font-medium text-gray-700 mb-3">Organization</label>
         <input 
           type="text" 
-          id="organization-input" 
+          id="industry-organization-input" 
           placeholder="Enter your organization name"
           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent"
         />
@@ -81,6 +81,20 @@
           class="flex-1 px-4 py-3 bg-brand-red text-white rounded-lg hover:bg-red-700 transition-colors"
         >
           Access Dashboard
+        </button>
+      </div>
+
+      <!-- New User Registration Link -->
+      <div class="text-center mt-6 pt-6 border-t border-gray-200">
+        <p class="text-sm text-gray-600 mb-3">
+          New to TETRIX? Create your account to get started.
+        </p>
+        <button 
+          type="button" 
+          id="new-user-register-btn" 
+          class="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-300 shadow-lg"
+        >
+          Create New Account
         </button>
       </div>
 
@@ -159,17 +173,19 @@
   };
 
   // Industry dashboard mappings (fallback)
+  // Updated to route to consolidated dashboards with HubSpot/Salesforce integration
   const industryDashboards = {
     healthcare: '/dashboards/healthcare',
-    construction: '/dashboards/construction',
-    logistics: '/dashboards/logistics',
+    construction: '/dashboards/construction-consolidated',
+    logistics: '/dashboards/logistics-consolidated',
     government: '/dashboards/government',
     education: '/dashboards/education',
-    retail: '/dashboards/retail',
+    retail: '/dashboards/retail-consolidated',
     hospitality: '/dashboards/hospitality',
     wellness: '/dashboards/wellness',
     beauty: '/dashboards/beauty',
-    legal: '/dashboards/legal'
+    legal: '/dashboards/legal-consolidated',
+    marketing: '/dashboards/marketing-consolidated'
   };
 
   // Load dashboard routing service
@@ -249,7 +265,7 @@
       console.log('handleLogin: Login button clicked');
       const industry = (industrySelect as HTMLSelectElement)?.value;
       const role = (roleSelect as HTMLSelectElement)?.value;
-      const organizationInput = document.getElementById('organization-input') as HTMLInputElement;
+      const organizationInput = document.getElementById('industry-organization-input') as HTMLInputElement;
       const organization = organizationInput?.value;
 
       console.log('handleLogin: Form values:', { industry, role, organization });
@@ -379,12 +395,33 @@
     // Cancel handler
     cancelBtn?.addEventListener('click', () => {
       modal?.classList.add('hidden');
+      modal?.classList.remove('modal-open');
+    });
+
+    // New user registration handler
+    const newUserRegisterBtn = document.getElementById('new-user-register-btn');
+    newUserRegisterBtn?.addEventListener('click', () => {
+      console.log('🔧 New user registration button clicked');
+      // Hide industry auth modal
+      modal?.classList.add('hidden');
+      modal?.classList.remove('modal-open');
+      
+      // Open registration modal
+      if (window.openRegistrationModal) {
+        window.openRegistrationModal();
+      } else {
+        console.error('Registration modal function not available');
+        alert('Registration service is temporarily unavailable. Please try again later.');
+      }
     });
 
     // Close modal on outside click
     modal?.addEventListener('click', (e) => {
       if (e.target === modal) {
+        console.log('🔧 Modal closed by outside click');
         modal.classList.add('hidden');
+        modal.classList.remove('modal-open');
+        modal.style.display = 'none';
       }
     });
   }
@@ -393,15 +430,49 @@
   window.openIndustryAuthModal = function() {
     const modal = document.getElementById('industry-auth-modal');
     if (modal) {
+      console.log('🔧 Opening Industry Auth modal...');
+      console.log('🔧 Modal before opening:', {
+        hasHidden: modal.classList.contains('hidden'),
+        display: modal.style.display,
+        className: modal.className
+      });
+      
       modal.classList.remove('hidden');
-      console.log('Industry Auth modal opened');
+      modal.classList.add('modal-open');
+      modal.style.display = 'block';
+      
+      console.log('✅ Industry Auth modal opened and should be visible');
+      console.log('🔧 Modal after opening:', {
+        hasHidden: modal.classList.contains('hidden'),
+        display: modal.style.display,
+        className: modal.className
+      });
       
       // Debug: Test modal functionality
       if (window.industryAuthDebugger) {
         window.industryAuthDebugger.testModalFunctionality();
       }
+      
+      // Prevent immediate closing by adding a small delay
+      setTimeout(() => {
+        console.log('🔧 Modal state after delay:', {
+          hasHidden: modal.classList.contains('hidden'),
+          display: modal.style.display,
+          visible: !modal.classList.contains('hidden') && modal.style.display !== 'none',
+          className: modal.className
+        });
+        
+        // If modal is still hidden, try to force it visible
+        if (modal.classList.contains('hidden') || modal.style.display === 'none') {
+          console.log('🔧 Modal appears to be hidden, attempting to force visible...');
+          modal.classList.remove('hidden');
+          modal.style.display = 'block';
+          modal.style.visibility = 'visible';
+          modal.style.opacity = '1';
+        }
+      }, 100);
     } else {
-      console.error('Industry Auth modal element not found');
+      console.error('❌ Industry Auth modal element not found');
     }
   };
   
@@ -531,9 +602,26 @@
   /* Ensure proper z-index stacking */
   #industry-auth-modal {
     z-index: 40;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
   }
   
   #2fa-modal {
     z-index: 100;
+  }
+  
+  /* Debug styles for modal visibility */
+  #industry-auth-modal:not(.hidden) {
+    display: block !important;
+  }
+  
+  /* Force modal visibility when opened */
+  #industry-auth-modal.modal-open {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 </style>

@@ -35,21 +35,38 @@
             <p class="text-gray-600 text-sm">We'll send you a verification code via SMS or Voice call</p>
           </div>
 
-          <form id="phone-form" class="space-y-4">
+          <form id="2fa-phone-form" class="space-y-4">
             <div>
-              <label for="phone-number" class="block text-sm font-medium text-gray-700 mb-2">
+              <label for="2fa-country-code" class="block text-sm font-medium text-gray-700 mb-2">
+                Country
+              </label>
+              <select
+                id="2fa-country-code"
+                name="countryCode"
+                autocomplete="country"
+                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors text-lg font-medium bg-white shadow-sm text-gray-900"
+                style="z-index: 10; position: relative;"
+                required
+              >
+                <option value="">Select Country</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="2fa-phone-number" class="block text-sm font-medium text-gray-700 mb-2">
                 Phone Number
               </label>
               <input
                 type="tel"
-                id="phone-number"
+                id="2fa-phone-number"
                 name="phoneNumber"
-                placeholder="+1 (555) 123-4567, +44 20 7946 0958, +33 1 23 45 67 89, +86 138 0013 8000"
+                placeholder="Enter your phone number"
+                autocomplete="tel"
                 class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors text-lg font-medium bg-white shadow-sm text-gray-900 placeholder-gray-500"
                 style="z-index: 10; position: relative;"
                 required
               >
-              <p class="text-xs text-gray-500 mt-1">Include country code (e.g., +1 for US, +44 for UK, +33 for France, +86 for China, +91 for India)</p>
+              <p class="text-xs text-gray-500 mt-1">Numbers only; formatted automatically for the selected country</p>
             </div>
 
             <div>
@@ -106,15 +123,16 @@
 
           <form id="code-form" class="space-y-4">
             <div>
-              <label for="verification-code" class="block text-sm font-medium text-gray-700 mb-2">
+              <label for="2fa-verification-code" class="block text-sm font-medium text-gray-700 mb-2">
                 Verification Code
               </label>
               <input
                 type="text"
-                id="verification-code"
+                id="2fa-verification-code"
                 name="code"
                 placeholder="123456"
                 maxlength="6"
+                autocomplete="one-time-code"
                 class="w-full px-4 py-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors text-center text-3xl font-mono tracking-widest bg-white shadow-sm text-gray-900 placeholder-gray-500"
                 style="z-index: 10; position: relative;"
                 required
@@ -123,7 +141,7 @@
 
             <button
               type="submit"
-              id="verify-code-btn"
+              id="2fa-verify-code-btn"
               class="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-4 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-lg"
             >
               <span id="verify-code-text">Verify Code</span>
@@ -230,6 +248,89 @@
       
       this.initializeEventListeners();
       this.updateAuthContext();
+      this.loadCountries();
+      this.initPhoneFormatting();
+    }
+    async loadCountries() {
+      try {
+        const res = await fetch('/api/v2/auth/countries');
+        const data = await res.json();
+        const select = document.getElementById('2fa-country-code') as HTMLSelectElement;
+        if (select && data?.countries?.length) {
+          select.innerHTML = '<option value="">Select Country</option>';
+          data.countries.forEach((c: any) => {
+            const opt = document.createElement('option');
+            opt.value = c.code || c.callingCode || '';
+            opt.textContent = `${c.name || c.countryName} (${c.code || c.callingCode})`;
+            select.appendChild(opt);
+          });
+        }
+      } catch (e) {
+        // Fallback minimal set
+        const select = document.getElementById('2fa-country-code') as HTMLSelectElement;
+        if (select) {
+          const fallback = [
+            { code: '+1', name: 'United States' },
+            { code: '+44', name: 'United Kingdom' },
+            { code: '+33', name: 'France' },
+            { code: '+49', name: 'Germany' },
+            { code: '+81', name: 'Japan' }
+          ];
+          select.innerHTML = '<option value="">Select Country</option>';
+          fallback.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c.code;
+            opt.textContent = `${c.name} (${c.code})`;
+            select.appendChild(opt);
+          });
+        }
+      }
+    }
+
+    async initPhoneFormatting() {
+      const phoneInput = document.getElementById('2fa-phone-number') as HTMLInputElement;
+      const countrySelect = document.getElementById('2fa-country-code') as HTMLSelectElement;
+      if (!phoneInput || !countrySelect) return;
+
+      let lib: any = null;
+      const loadLib = async () => {
+        if (lib) return lib;
+        try { lib = await import('libphonenumber-js'); return lib; } catch { return null; }
+      };
+
+      const codeToIso: Record<string,string> = { '+1':'US', '+44':'GB', '+33':'FR', '+49':'DE', '+81':'JP', '+61':'AU', '+91':'IN', '+86':'CN' };
+
+      const format = async (raw: string, cc: string) => {
+        if (!raw || !cc) return raw;
+        const digits = raw.replace(/\D/g, '');
+        const L = await loadLib();
+        if (L && L.AsYouType) {
+          const iso = codeToIso[cc] || 'US';
+          const as = new L.AsYouType(iso);
+          return as.input(digits) || raw;
+        }
+        return raw;
+      };
+
+      let t: any = null; let busy = false;
+      phoneInput.addEventListener('input', () => {
+        if (busy) return;
+        if (t) clearTimeout(t);
+        t = setTimeout(async () => {
+          busy = true;
+          const f = await format(phoneInput.value, countrySelect.value);
+          if (f && f !== phoneInput.value) phoneInput.value = f;
+          busy = false;
+        }, 120);
+      });
+
+      countrySelect.addEventListener('change', async () => {
+        const f = await format(phoneInput.value, countrySelect.value);
+        if (f) phoneInput.value = f;
+      });
+
+      // Basic focus style assurance
+      phoneInput.style.setProperty('-webkit-text-fill-color', '#111827', 'important');
     }
 
     updateAuthContext() {
@@ -294,7 +395,7 @@
 
     initializeEventListeners() {
       // Phone form submission
-      document.getElementById('phone-form')?.addEventListener('submit', (e) => {
+      document.getElementById('2fa-phone-form')?.addEventListener('submit', (e) => {
         e.preventDefault();
         this.handlePhoneSubmit();
       });
@@ -353,14 +454,14 @@
       });
 
       // Auto-format phone number
-      document.getElementById('phone-number')?.addEventListener('input', (e) => {
+      document.getElementById('2fa-phone-number')?.addEventListener('input', (e) => {
         if (e.target instanceof HTMLInputElement) {
           this.formatPhoneNumber(e.target);
         }
       });
 
       // Auto-submit on 6 digits
-      document.getElementById('verification-code')?.addEventListener('input', (e) => {
+      document.getElementById('2fa-verification-code')?.addEventListener('input', (e) => {
         if (e.target instanceof HTMLInputElement && e.target.value.length === 6) {
           this.handleCodeSubmit();
         }
@@ -387,27 +488,117 @@
       let digits = cleanValue.slice(1).replace(/\D/g, '');
       
       if (digits.length > 0) {
-        // Handle US numbers (10 digits) - add +1
-        if (digits.length === 10) {
-          value = `+1 (${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+        // Handle US/Canada numbers (11 digits starting with 1)
+        if (digits.startsWith('1') && digits.length <= 11) {
+          if (digits.length <= 1) {
+            value = `+1`;
+          } else if (digits.length <= 4) {
+            value = `+1 (${digits.slice(1)})`;
+          } else if (digits.length <= 7) {
+            value = `+1 (${digits.slice(1, 4)}) ${digits.slice(4)}`;
+          } else {
+            value = `+1 (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
+          }
         }
-        // Handle US numbers (11 digits starting with 1)
-        else if (digits.length === 11 && digits.startsWith('1')) {
-          value = `+1 (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
+        // Handle UK numbers (44)
+        else if (digits.startsWith('44')) {
+          if (digits.length <= 2) {
+            value = `+44`;
+          } else if (digits.length <= 4) {
+            value = `+44 ${digits.slice(2)}`;
+          } else if (digits.length <= 7) {
+            value = `+44 ${digits.slice(2, 4)} ${digits.slice(4)}`;
+          } else if (digits.length <= 10) {
+            value = `+44 ${digits.slice(2, 4)} ${digits.slice(4, 7)} ${digits.slice(7)}`;
+          } else {
+            value = `+44 ${digits.slice(2, 4)} ${digits.slice(4, 7)} ${digits.slice(7, 10)} ${digits.slice(10)}`;
+          }
         }
-        // Handle other international numbers - more flexible formatting
-        else if (digits.length <= 3) {
-          value = `+${digits}`;
-        } else if (digits.length <= 6) {
-          value = `+${digits.slice(0, 1)} (${digits.slice(1, 4)}) ${digits.slice(4)}`;
-        } else if (digits.length <= 10) {
-          value = `+${digits.slice(0, 1)} (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
-        } else if (digits.length <= 12) {
-          // Handle longer international numbers
-          value = `+${digits.slice(0, 2)} (${digits.slice(2, 5)}) ${digits.slice(5, 8)}-${digits.slice(8)}`;
-        } else {
-          // Very long numbers - just add + and basic formatting
-          value = `+${digits.slice(0, 2)} (${digits.slice(2, 5)}) ${digits.slice(5, 8)}-${digits.slice(8, 12)}`;
+        // Handle France numbers (33)
+        else if (digits.startsWith('33')) {
+          if (digits.length <= 2) {
+            value = `+33`;
+          } else if (digits.length <= 4) {
+            value = `+33 ${digits.slice(2)}`;
+          } else if (digits.length <= 6) {
+            value = `+33 ${digits.slice(2, 3)} ${digits.slice(3)}`;
+          } else if (digits.length <= 8) {
+            value = `+33 ${digits.slice(2, 3)} ${digits.slice(3, 5)} ${digits.slice(5)}`;
+          } else {
+            value = `+33 ${digits.slice(2, 3)} ${digits.slice(3, 5)} ${digits.slice(5, 7)} ${digits.slice(7)}`;
+          }
+        }
+        // Handle Germany numbers (49)
+        else if (digits.startsWith('49')) {
+          if (digits.length <= 2) {
+            value = `+49`;
+          } else if (digits.length <= 4) {
+            value = `+49 ${digits.slice(2)}`;
+          } else if (digits.length <= 7) {
+            value = `+49 ${digits.slice(2, 4)} ${digits.slice(4)}`;
+          } else {
+            value = `+49 ${digits.slice(2, 4)} ${digits.slice(4, 7)} ${digits.slice(7)}`;
+          }
+        }
+        // Handle Australia numbers (61)
+        else if (digits.startsWith('61')) {
+          if (digits.length <= 2) {
+            value = `+61`;
+          } else if (digits.length <= 4) {
+            value = `+61 ${digits.slice(2)}`;
+          } else if (digits.length <= 7) {
+            value = `+61 ${digits.slice(2, 3)} ${digits.slice(3)}`;
+          } else {
+            value = `+61 ${digits.slice(2, 3)} ${digits.slice(3, 7)} ${digits.slice(7)}`;
+          }
+        }
+        // Handle Japan numbers (81)
+        else if (digits.startsWith('81')) {
+          if (digits.length <= 2) {
+            value = `+81`;
+          } else if (digits.length <= 4) {
+            value = `+81 ${digits.slice(2)}`;
+          } else if (digits.length <= 7) {
+            value = `+81 ${digits.slice(2, 3)} ${digits.slice(3)}`;
+          } else {
+            value = `+81 ${digits.slice(2, 3)} ${digits.slice(3, 7)} ${digits.slice(7)}`;
+          }
+        }
+        // Handle India numbers (91)
+        else if (digits.startsWith('91')) {
+          if (digits.length <= 2) {
+            value = `+91`;
+          } else if (digits.length <= 4) {
+            value = `+91 ${digits.slice(2)}`;
+          } else if (digits.length <= 7) {
+            value = `+91 ${digits.slice(2, 5)} ${digits.slice(5)}`;
+          } else {
+            value = `+91 ${digits.slice(2, 5)} ${digits.slice(5, 7)} ${digits.slice(7)}`;
+          }
+        }
+        // Handle Brazil numbers (55)
+        else if (digits.startsWith('55')) {
+          if (digits.length <= 2) {
+            value = `+55`;
+          } else if (digits.length <= 4) {
+            value = `+55 ${digits.slice(2)}`;
+          } else if (digits.length <= 7) {
+            value = `+55 ${digits.slice(2, 4)} ${digits.slice(4)}`;
+          } else {
+            value = `+55 ${digits.slice(2, 4)} ${digits.slice(4, 9)} ${digits.slice(9)}`;
+          }
+        }
+        // Generic formatting for other countries
+        else {
+          if (digits.length <= 2) {
+            value = `+${digits.slice(0, 2)}`;
+          } else if (digits.length <= 4) {
+            value = `+${digits.slice(0, 2)} ${digits.slice(2)}`;
+          } else if (digits.length <= 7) {
+            value = `+${digits.slice(0, 2)} ${digits.slice(2, 5)} ${digits.slice(5)}`;
+          } else {
+            value = `+${digits.slice(0, 2)} ${digits.slice(2, 5)} ${digits.slice(5, 8)} ${digits.slice(8)}`;
+          }
         }
       } else {
         value = '+';
@@ -416,61 +607,46 @@
       input.value = value;
     }
 
-    validatePhoneNumber(phoneNumber: string): { isValid: boolean; error?: string; formatted?: string } {
-      if (!phoneNumber) {
-        return { isValid: false, error: 'Phone number is required' };
+    async validatePhoneNumber(phoneNumber: string): Promise<{ isValid: boolean; error?: string; formatted?: string }> {
+      const countryCodeSelect = document.getElementById('2fa-country-code') as HTMLSelectElement;
+      const countryCode = countryCodeSelect?.value || '';
+      const raw = (countryCode ? '' : '+') + phoneNumber.replace(/\D/g, '');
+      const full = countryCode ? `${countryCode}${phoneNumber.replace(/\D/g,'')}` : raw;
+      try {
+        const L = await import('libphonenumber-js');
+        const codeToIso: Record<string,string> = { '+1':'US', '+44':'GB', '+33':'FR', '+49':'DE', '+81':'JP', '+61':'AU', '+91':'IN', '+86':'CN' };
+        const iso = codeToIso[countryCode] || 'US';
+        const parsed = L.parsePhoneNumber(full, iso as any);
+        if (parsed && parsed.isValid()) {
+          return { isValid: true, formatted: parsed.format('E.164') };
+        }
+        return { isValid: false, error: 'Invalid phone number for selected country' };
+      } catch {
+        // Fallback E.164 length check
+        const digits = full.replace(/\D/g,'');
+        if (digits.length >= 7 && digits.length <= 15) return { isValid: true, formatted: `+${digits}` };
+        return { isValid: false, error: 'Invalid phone number format' };
       }
-
-      // Remove all non-digit characters except +
-      let cleanPhone = phoneNumber.replace(/[^\d+]/g, '');
-      
-      // Remove double plus signs
-      if (cleanPhone.startsWith('++')) {
-        cleanPhone = cleanPhone.substring(1);
-      }
-      
-      // Ensure it starts with +
-      if (!cleanPhone.startsWith('+')) {
-        cleanPhone = '+' + cleanPhone;
-      }
-      
-      // Extract digits after the +
-      const digits = cleanPhone.slice(1).replace(/\D/g, '');
-      
-      // Validate E.164 format: + followed by 1-15 digits, first digit cannot be 0
-      if (digits.length < 7 || digits.length > 15 || digits.startsWith('0')) {
-        return { 
-          isValid: false, 
-          error: 'Invalid phone number format. Examples: +1 (555) 123-4567, +44 20 7946 0958, +33 1 23 45 67 89, +86 138 0013 8000' 
-        };
-      }
-
-      // Additional validation for US numbers
-      if (digits.startsWith('1') && digits.length !== 11) {
-        return { 
-          isValid: false, 
-          error: 'US/Canada numbers must be 11 digits (including country code 1)' 
-        };
-      }
-
-      return { isValid: true, formatted: cleanPhone };
     }
 
     async handlePhoneSubmit() {
-      const phoneInput = document.getElementById('phone-number') as HTMLInputElement;
+      const phoneInput = document.getElementById('2fa-phone-number') as HTMLInputElement;
       const methodSelect = document.getElementById('verification-method') as HTMLSelectElement;
+      const countrySelect = document.getElementById('2fa-country-code') as HTMLSelectElement;
       
       // Extract phone number with proper international formatting
       let phoneValue = phoneInput?.value || '';
-      
-      // Use standardized phone validation
-      const phoneValidation = this.validatePhoneNumber(phoneValue);
+      if (!countrySelect?.value) {
+        this.showError('Please select your country');
+        return;
+      }
+      const phoneValidation = await this.validatePhoneNumber(phoneValue);
       if (!phoneValidation.isValid) {
         this.showError(phoneValidation.error || 'Invalid phone number format');
         return;
       }
 
-      this.phoneNumber = phoneValidation.formatted!; // Keep + prefix for consistency
+      this.phoneNumber = phoneValidation.formatted!;
       this.method = methodSelect?.value || 'sms';
 
       this.setLoading('send-code', true);
@@ -521,7 +697,7 @@
     }
 
     async handleCodeSubmit() {
-      const codeInput = document.getElementById('verification-code') as HTMLInputElement;
+      const codeInput = document.getElementById('2fa-verification-code') as HTMLInputElement;
       const code = codeInput?.value || '';
 
       if (!code || code.length !== 6) {
@@ -947,7 +1123,7 @@
       }
       
       // Reset forms
-      const phoneForm = document.getElementById('phone-form') as HTMLFormElement;
+      const phoneForm = document.getElementById('2fa-phone-form') as HTMLFormElement;
       const codeForm = document.getElementById('code-form') as HTMLFormElement;
       phoneForm?.reset();
       codeForm?.reset();
@@ -1105,8 +1281,8 @@
   }
 
   /* Input focus improvements */
-  #phone-number:focus,
-  #verification-code:focus,
+  #2fa-phone-number:focus,
+  #2fa-verification-code:focus,
   #verification-method:focus {
     transform: scale(1.02);
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
@@ -1115,8 +1291,8 @@
   }
 
   /* Ensure input text is visible */
-    #phone-number,
-    #verification-code,
+    #2fa-phone-number,
+    #2fa-verification-code,
     #verification-method {
       color: #111827 !important;
       background-color: #ffffff !important;
@@ -1125,8 +1301,8 @@
       border: 2px solid #d1d5db !important;
     }
     
-    #phone-number:focus,
-    #verification-code:focus,
+    #2fa-phone-number:focus,
+    #2fa-verification-code:focus,
     #verification-method:focus {
       border-color: #ef4444 !important;
       box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
