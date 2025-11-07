@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+<<<<<<< HEAD
   # Main TETRIX Application
   tetrix-app:
     build:
@@ -203,8 +204,127 @@ volumes:
   postgres_data:
     driver: local
   redis_data:
+=======
+  # TETRIX Main Website (Astro)
+  tetrix-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    restart: unless-stopped
+    ports:
+      - "8082:8080"
+    env_file:
+      - docker.env
+    environment:
+      - NODE_ENV=production
+      - PORT=8080
+      - HOST=0.0.0.0
+      - DATABASE_URL=${DATABASE_URL:-postgresql://tetrix_user:tetrix_password@tetrix-db:5432/tetrix_auth}
+      - TELNYX_API_KEY=${TELNYX_API_KEY}
+      - TELNYX_VERIFY_PROFILE_ID=${TELNYX_VERIFY_PROFILE_ID}
+      - TELNYX_PROFILE_ID=${TELNYX_PROFILE_ID}
+      - TELNYX_VERIFY_PUBLIC_KEY=${TELNYX_VERIFY_PUBLIC_KEY}
+      - TELNYX_MESSAGING_API_KEY=${TELNYX_MESSAGING_API_KEY}
+      - TELNYX_MESSAGING_PROFILE_ID=${TELNYX_MESSAGING_PROFILE_ID}
+      - TELNYX_FROM_NUMBER=${TELNYX_FROM_NUMBER}
+      - TELNYX_API_URL=${TELNYX_API_URL}
+      - WEBHOOK_BASE_URL=${WEBHOOK_BASE_URL}
+    depends_on:
+      - tetrix-backend
+    networks:
+      - tetrix-network
+    healthcheck:
+      test: ["CMD", "sh", "-c", "wget --no-verbose --tries=1 --spider http://localhost:8080/ || curl -f http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # TETRIX Backend API
+  tetrix-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    restart: unless-stopped
+    ports:
+      - "3000:3001"
+    env_file:
+      - docker.env
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL:-postgresql://tetrix_user:tetrix_password@tetrix-db:5432/tetrix_auth}
+      - JWT_SECRET=${JWT_SECRET:-tetrix-jwt-secret-key-2024-production}
+      - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET:-tetrix-refresh-secret-key-2024-production}
+      - TELNYX_API_KEY=${TELNYX_API_KEY}
+      - TELNYX_VERIFY_PROFILE_ID=${TELNYX_VERIFY_PROFILE_ID:-49000199-7882-f4ce-6514-a67c8190f107}
+      - TELNYX_VERIFY_PUBLIC_KEY=${TELNYX_VERIFY_PUBLIC_KEY}
+      - TELNYX_MESSAGING_API_KEY=${TELNYX_MESSAGING_API_KEY}
+      - TELNYX_MESSAGING_PROFILE_ID=${TELNYX_MESSAGING_PROFILE_ID}
+      - TELNYX_FROM_NUMBER=${TELNYX_FROM_NUMBER}
+      - TELNYX_API_URL=${TELNYX_API_URL}
+      - TELNYX_WEBHOOK_SECRET=${TELNYX_WEBHOOK_SECRET}
+      - WEBHOOK_BASE_URL=${WEBHOOK_BASE_URL}
+      - CORS_ORIGIN=${CORS_ORIGIN}
+      - FRAUD_DETECTION_ENABLED=${FRAUD_DETECTION_ENABLED}
+      - RATE_LIMITING_ENABLED=${RATE_LIMITING_ENABLED}
+      - AUDIT_LOGGING_ENABLED=${AUDIT_LOGGING_ENABLED}
+      - CROSS_PLATFORM_SESSION_SECRET=${CROSS_PLATFORM_SESSION_SECRET}
+      - REDIS_URL=${REDIS_URL}
+      - PORT=3001
+      - HOST=0.0.0.0
+    depends_on:
+      - tetrix-db
+    networks:
+      - tetrix-network
+    healthcheck:
+      test: ["CMD", "sh", "-c", "wget --no-verbose --tries=1 --spider http://localhost:3001/health || curl -f http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # PostgreSQL Database
+  tetrix-db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=tetrix_auth
+      - POSTGRES_USER=tetrix_user
+      - POSTGRES_PASSWORD=tetrix_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - tetrix_db_data:/var/lib/postgresql/data
+    networks:
+      - tetrix-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tetrix_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for session storage
+  tetrix-redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - tetrix_redis_data:/data
+    networks:
+      - tetrix-network
+
+volumes:
+  tetrix_db_data:
+    driver: local
+  tetrix_redis_data:
+>>>>>>> main
     driver: local
 
 networks:
   tetrix-network:
+<<<<<<< HEAD
     driver: bridge
+=======
+    driver: bridge
+>>>>>>> main

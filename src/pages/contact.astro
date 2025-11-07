@@ -401,7 +401,7 @@ import MainLayout from '../components/layout/MainLayout.astro';
               <p class="text-sm opacity-90">AI Super Agent Online</p>
             </div>
           </div>
-          <button onclick="closeJoRoMiChat()" class="text-white hover:text-gray-200 transition-colors">
+          <button id="joromi-close-button" class="text-white hover:text-gray-200 transition-colors">
             ✕
           </button>
         </div>
@@ -419,10 +419,9 @@ import MainLayout from '../components/layout/MainLayout.astro';
               id="joromi-message-input"
               placeholder="Ask JoRoMi anything..."
               class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-              onkeypress="handleKeyPress(event)"
             />
             <button
-              onclick="sendJoRoMiMessage()"
+              id="joromi-send-button"
               class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-colors"
             >
               Send
@@ -431,6 +430,28 @@ import MainLayout from '../components/layout/MainLayout.astro';
         </div>
       </div>
     `;
+
+    // Attach event listeners programmatically
+    const messageInput = document.getElementById('joromi-message-input');
+    const sendButton = document.getElementById('joromi-send-button');
+    const closeButton = document.getElementById('joromi-close-button');
+
+    if (messageInput) {
+      messageInput.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter' && !event.shiftKey) {
+          event.preventDefault();
+          sendJoRoMiMessage();
+        }
+      });
+    }
+
+    if (sendButton) {
+      sendButton.addEventListener('click', sendJoRoMiMessage);
+    }
+
+    if (closeButton) {
+      closeButton.addEventListener('click', closeJoRoMiChat);
+    }
   }
 
   // Render individual message
@@ -490,16 +511,16 @@ import MainLayout from '../components/layout/MainLayout.astro';
     window.messages = [];
   }
 
-  // Handle key press
-  function handleKeyPress(event) {
+  // Handle key press (exposed globally)
+  window.handleKeyPress = function handleKeyPress(event) {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       sendJoRoMiMessage();
     }
   }
 
-  // Send message with enhanced backend service knowledge
-  async function sendJoRoMiMessage() {
+  // Send message with streaming support (exposed globally)
+  window.sendJoRoMiMessage = async function sendJoRoMiMessage() {
     const input = document.getElementById('joromi-message-input');
     const message = input.value.trim();
     
@@ -518,8 +539,124 @@ import MainLayout from '../components/layout/MainLayout.astro';
     input.value = '';
     updateMessagesDisplay();
     
+    // Create streaming AI message placeholder
+    const aiMessageId = `ai-${Date.now()}`;
+    const aiMessage = {
+      id: aiMessageId,
+      role: 'assistant',
+      content: '',
+      timestamp: new Date().toISOString(),
+      type: 'text',
+      agentId: 'joromi-general',
+      isStreaming: true
+    };
+    
+    window.messages.push(aiMessage);
+    updateMessagesDisplay();
+    
     try {
-      // First try JoRoMi API
+      // Use streaming endpoint for real-time responses
+      const response = await fetch(`/api/v1/joromi/sessions/${window.currentSession.id}/stream`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: message,
+          role: 'user',
+          agentId: 'joromi-general'
+        })
+      });
+
+      if (response.ok && response.body) {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        console.log('📡 SSE stream started, reading events...');
+
+        while (true) {
+          const { done, value } = await reader.read();
+          
+          if (done) {
+            console.log('📡 SSE stream completed');
+            break;
+          }
+
+          buffer += decoder.decode(value, { stream: true });
+          
+          // SSE events are separated by \n\n (double newline)
+          const events = buffer.split('\n\n');
+          // Keep the last incomplete event in buffer
+          buffer = events.pop() || '';
+
+          for (const event of events) {
+            if (!event.trim()) continue;
+            
+            let eventType = 'message'; // default SSE event type
+            let eventData = null;
+            
+            // Parse event lines
+            const lines = event.split('\n');
+            for (const line of lines) {
+              if (line.startsWith('event: ')) {
+                eventType = line.substring(7).trim();
+                console.log(`📡 SSE event type: ${eventType}`);
+              } else if (line.startsWith('data: ')) {
+                try {
+                  eventData = JSON.parse(line.substring(6));
+                  console.log(`📡 SSE data received:`, eventData);
+                } catch (parseError) {
+                  console.error('❌ Error parsing SSE data:', parseError, 'Raw data:', line.substring(6));
+                  continue;
+                }
+              }
+            }
+            
+            // Handle different event types
+            if (eventData) {
+              if (eventType === 'chunk' && eventData.content) {
+                // Stream chunk - append content word by word
+                aiMessage.content += eventData.content;
+                updateMessagesDisplay();
+                console.log(`📡 Chunk received: "${eventData.content}" (total: ${aiMessage.content.length} chars)`);
+              } else if (eventType === 'complete' && eventData.message) {
+                // Complete message - finalize
+                aiMessage.id = eventData.message.id;
+                aiMessage.content = eventData.message.content;
+                aiMessage.timestamp = eventData.message.timestamp;
+                aiMessage.agentId = eventData.message.agentId;
+                aiMessage.isStreaming = false;
+                updateMessagesDisplay();
+                console.log('✅ SSE message complete:', aiMessage);
+                
+                // Update session
+                if (eventData.session) {
+                  window.currentSession = eventData.session;
+                }
+              } else if (eventType === 'start') {
+                console.log('📡 SSE stream started, message ID:', eventData.messageId);
+              }
+            }
+          }
+        }
+      } else {
+        console.warn('⚠️ SSE stream not available, falling back to non-streaming endpoint');
+        // Fallback to non-streaming endpoint
+        await sendToNonStreamingFallback(message);
+      }
+    } catch (error) {
+      console.error('Error streaming message via JoRoMi API, trying fallback:', error);
+      // Remove streaming placeholder
+      window.messages = window.messages.filter(m => m.id !== aiMessageId);
+      // Fallback to enhanced responses
+      await sendToEnhancedFallback(message);
+    }
+  }
+
+  // Fallback to non-streaming endpoint
+  async function sendToNonStreamingFallback(message) {
+    try {
       const response = await fetch(`/api/v1/joromi/sessions/${window.currentSession.id}/messages`, {
         method: 'POST',
         headers: {
@@ -533,27 +670,34 @@ import MainLayout from '../components/layout/MainLayout.astro';
       });
 
       if (response.ok) {
-        const data = await response.json();
-        
-        // Add AI response
-        const aiMessage = {
-          id: data.aiResponse.id,
-          role: 'assistant',
-          content: data.aiResponse.content,
-          timestamp: data.aiResponse.timestamp,
-          type: 'text',
-          agentId: data.aiResponse.agentId
-        };
-        
-        window.messages.push(aiMessage);
-        updateMessagesDisplay();
-      } else {
-        // Fallback to enhanced responses
-        await sendToEnhancedFallback(message);
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          const text = await response.text();
+          if (text && text.trim().length > 0) {
+            const data = JSON.parse(text);
+            
+            // Remove streaming placeholder
+            window.messages = window.messages.filter(m => m.isStreaming !== true);
+            
+            // Add AI response
+            const aiMessage = {
+              id: data.aiResponse.id,
+              role: 'assistant',
+              content: data.aiResponse.content,
+              timestamp: data.aiResponse.timestamp,
+              type: 'text',
+              agentId: data.aiResponse.agentId
+            };
+            
+            window.messages.push(aiMessage);
+            updateMessagesDisplay();
+          }
+        }
       }
     } catch (error) {
-      console.error('Error sending message via JoRoMi API, trying enhanced fallback:', error);
-      // Fallback to enhanced responses
+      console.error('Error with non-streaming fallback:', error);
+      // Remove streaming placeholder
+      window.messages = window.messages.filter(m => m.isStreaming !== true);
       await sendToEnhancedFallback(message);
     }
   }

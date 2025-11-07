@@ -1,0 +1,75 @@
+# TETRIX Backend Dockerfile - Multi-stage build for optimization
+FROM node:20-alpine AS base
+
+# Install curl, wget, and OpenSSL for Prisma
+RUN apk add --no-cache curl wget openssl python3 make g++
+
+# Note: Backend uses npm, not pnpm
+
+# Stage 1: Build stage (includes dev dependencies)
+FROM base AS builder
+
+WORKDIR /app
+
+# Copy backend package files (backend uses npm, not pnpm)
+COPY backend/package*.json ./backend/
+
+# Install ALL dependencies using npm (backend uses npm)
+WORKDIR /app/backend
+RUN npm ci
+
+# Copy source code and config files
+COPY backend/src ./src
+COPY prisma ../prisma
+COPY backend/tsconfig.json ./
+COPY backend/tsconfig.simple.json ./
+
+# Generate Prisma client (from backend directory)
+WORKDIR /app/backend
+RUN ./node_modules/.bin/prisma generate --schema=../prisma/schema.prisma
+
+# Build the application
+WORKDIR /app/backend
+RUN npm run build
+
+# Stage 2: Production stage
+FROM base AS production
+
+WORKDIR /app
+
+# Copy backend package files
+COPY backend/package*.json ./backend/
+
+# Install production dependencies using npm
+WORKDIR /app/backend
+RUN npm ci --only=production
+
+# Copy Prisma schema for runtime (to backend directory)
+COPY --from=builder /app/prisma ../prisma
+
+# Copy built application from builder stage
+COPY --from=builder /app/backend/dist ./dist
+
+# Set working directory to backend for runtime
+WORKDIR /app/backend
+
+# Copy Prisma client from backend node_modules (since backend uses npm)
+RUN --mount=from=builder,source=/app/backend,target=/builder \
+    cp -r /builder/node_modules/.prisma ./node_modules/ && \
+    cp -r /builder/node_modules/@prisma ./node_modules/
+
+# Expose port
+EXPOSE 3001
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=3001
+ENV HOST=0.0.0.0
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD curl -f http://localhost:3001/health || exit 1
+
+# Start the application (already in /app/backend from above)
+CMD ["node", "dist/server-with-db.js"]
+

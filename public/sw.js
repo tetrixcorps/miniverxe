@@ -76,12 +76,16 @@ self.addEventListener('fetch', (event) => {
 
         return fetch(request)
           .then((response) => {
-            // Cache successful responses
-            if (response.status === 200) {
+            // Cache successful GET responses only (Cache API doesn't support POST/PUT/DELETE)
+            if (response.status === 200 && request.method === 'GET') {
               const responseClone = response.clone();
               caches.open(CACHE_NAME)
                 .then((cache) => {
                   cache.put(request, responseClone);
+                })
+                .catch((error) => {
+                  // Silently fail cache operations (non-critical)
+                  console.debug('Cache put failed (non-critical):', error);
                 });
             }
             return response;

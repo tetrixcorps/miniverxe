@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+<<<<<<< HEAD
 
 // Mock session storage (in production, use a database)
 const joromiSessions = new Map();
@@ -24,6 +25,9 @@ const JOROMI_AGENTS = [
     greeting: 'Welcome! I\'m JoRoMi Sales Assistant. I can provide detailed information about our enterprise solutions, pricing, and help you find the perfect plan for your business needs.'
   }
 ];
+=======
+import { joromiSessions } from '../../storage';
+>>>>>>> main
 
 // Generate AI response based on message and agent
 function generateJoRoMiResponse(message: string, agentId: string = 'joromi-general'): string {
@@ -189,3 +193,7 @@ export const POST: APIRoute = async ({ params, request }) => {
     });
   }
 };
+<<<<<<< HEAD
+=======
+
+>>>>>>> main

@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+<<<<<<< HEAD
 
 // Mock session storage for JoRoMi
 const joromiSessions = new Map();
@@ -24,6 +25,9 @@ const JOROMI_AGENTS = [
     greeting: 'Welcome! I\'m JoRoMi Sales Assistant. I can provide detailed information about our enterprise solutions, pricing, and help you find the perfect plan for your business needs.'
   }
 ];
+=======
+import { joromiSessions, JOROMI_AGENTS } from './storage';
+>>>>>>> main
 
 // GET /api/v1/joromi/sessions - List available agents or get specific session
 export const GET: APIRoute = async ({ url }) => {
@@ -140,3 +144,7 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 };
+<<<<<<< HEAD
+=======
+
+>>>>>>> main
