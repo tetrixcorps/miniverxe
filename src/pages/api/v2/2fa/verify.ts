@@ -3,7 +3,51 @@ import { enterprise2FAService } from '../../../../services/enterprise2FAService'
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
 
 // Enhanced 2FA verification endpoint using Telnyx Verify API
+// In local development, this proxies to the backend server for consistency with droplet deployment
 export const POST: APIRoute = async ({ request, locals }) => {
+  const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  
+  // Check if we should proxy to backend (local dev or when BACKEND_URL is set)
+  // On droplet, DOCKER_ENV=true routes through the catch-all proxy, but locally we need to proxy here
+  const isDocker = process.env.NODE_ENV === 'production' && process.env.DOCKER_ENV === 'true';
+  const backendUrl = process.env.BACKEND_URL || 'http://localhost:3000';
+  
+  // Always proxy to backend in local development (when not in Docker production)
+  // This ensures consistency with droplet deployment behavior
+  if (!isDocker) {
+    // Proxy to backend for consistency with droplet deployment
+    console.log(`🔄 [${requestId}] Proxying verify to backend: ${backendUrl}/api/v2/2fa/verify`);
+    
+    try {
+      const body = await request.text();
+      const response = await fetch(`${backendUrl}/api/v2/2fa/verify`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': request.headers.get('content-type') || 'application/json',
+          'User-Agent': request.headers.get('user-agent') || 'TetrixAuthProxy/1.0',
+          'Accept': request.headers.get('accept') || 'application/json',
+        },
+        body: body
+      });
+      
+      const data = await response.text();
+      
+      return new Response(data, {
+        status: response.status,
+        headers: {
+          'Content-Type': response.headers.get('content-type') || 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        }
+      });
+    } catch (error) {
+      console.error(`❌ [${requestId}] Backend proxy failed:`, error);
+      // Fall through to local service as fallback
+      console.log(`⚠️ [${requestId}] Falling back to local 2FA service`);
+    }
+  }
+  
   try {
     // Use parsed body from middleware if available
     let body: any = {};

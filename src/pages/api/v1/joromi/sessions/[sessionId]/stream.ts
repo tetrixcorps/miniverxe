@@ -122,15 +122,41 @@ export const POST: APIRoute = async ({ params, request }) => {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
         'Connection': 'keep-alive',
-        'X-Accel-Buffering': 'no' // Disable nginx buffering
+        'X-Accel-Buffering': 'no', // Disable nginx buffering
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Expose-Headers': 'Content-Type'
       }
     });
 
   } catch (error) {
     console.error('Error streaming JoRoMi message:', error);
-    return new Response(`Error: ${error instanceof Error ? error.message : 'Failed to stream message'}`, { 
-      status: 500 
+    return new Response(JSON.stringify({ 
+      error: error instanceof Error ? error.message : 'Failed to stream message',
+      success: false
+    }), { 
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      }
     });
   }
+};
+
+// Handle OPTIONS for CORS preflight
+export const OPTIONS: APIRoute = async () => {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Max-Age': '86400'
+    }
+  });
 };
 
