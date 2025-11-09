@@ -7,20 +7,24 @@ import { parsePhoneNumberFromString } from 'libphonenumber-js';
 export const POST: APIRoute = async ({ request, locals }) => {
   const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   
-  // Check if we should proxy to backend (local dev or when BACKEND_URL is set)
-  // On droplet, DOCKER_ENV=true routes through the catch-all proxy, but locally we need to proxy here
+  // Check if we should proxy to backend
+  // In Docker, always proxy to backend. In local dev, proxy if BACKEND_URL is set.
   const isDocker = process.env.NODE_ENV === 'production' && process.env.DOCKER_ENV === 'true';
   const backendUrl = process.env.BACKEND_URL || 'http://localhost:3000';
   
-  // Always proxy to backend in local development (when not in Docker production)
+  // Always proxy to backend when BACKEND_URL is set or when in Docker
   // This ensures consistency with droplet deployment behavior
-  if (!isDocker) {
-    // Proxy to backend for consistency with droplet deployment
-    console.log(`🔄 [${requestId}] Proxying verify to backend: ${backendUrl}/api/v2/2fa/verify`);
+  if (process.env.BACKEND_URL || isDocker) {
+    // Proxy to backend for consistency with droplet deployment behavior
+    const targetUrl = isDocker 
+      ? `http://tetrix-backend:3001/api/v2/2fa/verify`
+      : `${backendUrl}/api/v2/2fa/verify`;
+    
+    console.log(`🔄 [${requestId}] Proxying verify to backend: ${targetUrl}`);
     
     try {
       const body = await request.text();
-      const response = await fetch(`${backendUrl}/api/v2/2fa/verify`, {
+      const response = await fetch(targetUrl, {
         method: 'POST',
         headers: {
           'Content-Type': request.headers.get('content-type') || 'application/json',

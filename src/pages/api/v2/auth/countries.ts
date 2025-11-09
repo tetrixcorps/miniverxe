@@ -1,7 +1,56 @@
 import type { APIRoute } from 'astro';
 
 // Get supported countries for phone formatting
-export const GET: APIRoute = async () => {
+// In Docker, proxy to backend; otherwise use local list
+export const GET: APIRoute = async ({ request }) => {
+  // Check if we should proxy to backend
+  const isDocker = process.env.NODE_ENV === 'production' && process.env.DOCKER_ENV === 'true';
+  const backendUrl = process.env.BACKEND_URL || 'http://localhost:3000';
+  
+  // Always proxy to backend when BACKEND_URL is set or when in Docker
+  if (process.env.BACKEND_URL || isDocker) {
+    const targetUrl = isDocker 
+      ? `http://tetrix-backend:3001/api/v2/auth/countries`
+      : `${backendUrl}/api/v2/auth/countries`;
+    
+    console.log(`🔄 [COUNTRIES] Attempting to proxy to backend: ${targetUrl}`);
+    
+    try {
+      const response = await fetch(targetUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': request.headers.get('user-agent') || 'TetrixAuthProxy/1.0',
+          'Accept': request.headers.get('accept') || 'application/json',
+        },
+        // Add timeout to prevent hanging
+        signal: AbortSignal.timeout(5000) // 5 second timeout
+      });
+      
+      // Only return backend response if it's successful (200-299)
+      if (response.ok) {
+        const data = await response.text();
+        console.log(`✅ [COUNTRIES] Successfully proxied from backend`);
+        return new Response(data, {
+          status: response.status,
+          headers: {
+            'Content-Type': response.headers.get('content-type') || 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          }
+        });
+      } else {
+        // Backend returned error status, fall through to local list
+        console.warn(`⚠️ [COUNTRIES] Backend returned ${response.status}, falling back to local list`);
+      }
+    } catch (error) {
+      console.error(`❌ [COUNTRIES] Backend proxy failed:`, error instanceof Error ? error.message : error);
+      // Fall through to local list as fallback
+      console.log(`⚠️ [COUNTRIES] Falling back to local countries list`);
+    }
+  }
+  
   try {
     const countries = [
       { code: '+1', name: 'United States', countryCode: 'US' },
@@ -77,7 +126,12 @@ export const GET: APIRoute = async () => {
       message: `Supported countries for phone verification. Showing ${countries.length} most common.`
     }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      }
     });
   } catch (error) {
     console.error('Countries fetch error:', error);
@@ -87,8 +141,26 @@ export const GET: APIRoute = async () => {
       message: 'An error occurred while fetching supported countries'
     }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      }
     });
   }
+};
+
+// Handle CORS preflight requests
+export const OPTIONS: APIRoute = async () => {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Max-Age': '86400'
+    }
+  });
 };
 

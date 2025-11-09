@@ -9,14 +9,191 @@ export const GET: APIRoute = async ({ request, params }) => {
   const hostname = request.headers.get('host') || '';
   const path = params.path || '';
   
-  // Check if this is an authentication request that needs proxying
-  if (path.includes('v2/2fa/') || path.includes('v2/industry-auth/') || path.includes('dashboards/')) {
-    const productionUrl = `https://tetrix-minimal-uzzxn.ondigitalocean.app/api/${path}${url.search}`;
+  // Skip catch-all for specific frontend API routes that have dedicated route files
+  // These routes are handled by specific files and should not go through the catch-all
+  // In Astro, more specific routes take precedence, so if we reach here, the route file might not exist
+  // But we should still let Astro handle it by returning a 404 that indicates the route should be handled elsewhere
+  const specificRoutes = [
+    'v2/auth/countries',  // Handled by src/pages/api/v2/auth/countries.ts
+    'v1/joromi',  // JoRoMi API routes
+    'v1/joromi/sessions',  // JoRoMi sessions
+  ];
+  
+  // Check if this path matches any specific route pattern
+  const isSpecificRoute = specificRoutes.some(route => path === route || path.startsWith(route + '/'));
+  
+  if (isSpecificRoute) {
+    // This should never be reached if the specific route exists in the build
+    // Return 404 to indicate the route should be handled by a specific file
+    // If the specific route file exists, Astro will handle it before this catch-all
+    console.warn(`⚠️ [CATCH-ALL] Specific route matched but handler not found: /api/${path}`);
+    return new Response(JSON.stringify({
+      error: "Route not found",
+      path: `/api/${path}`,
+      message: "This route should be handled by a specific route handler. If you see this, the route file may not be in the build output."
+    }), {
+      status: 404,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+  
+  // HYBRID ROUTING SYSTEM: Handles both local development and production (Docker/droplet)
+  // Determine environment and routing strategy
+  const isLocalDev = hostname.includes('localhost') || hostname.includes('127.0.0.1');
+  const isDocker = hostname.includes('tetrix-frontend') || process.env.TETRIX_BACKEND_URL || process.env.DATABASE_URL?.includes('tetrix-db');
+  const backendUrl = process.env.TETRIX_BACKEND_URL || process.env.BACKEND_URL || 'http://tetrix-backend:3001';
+  const externalProductionUrl = process.env.EXTERNAL_API_URL || 'https://tetrix-minimal-uzzxn.ondigitalocean.app';
+  
+  // Dashboard SSE streams need special handling - proxy to backend
+  const isDashboardStream = path.startsWith('dashboard/') && path.endsWith('/stream');
+  
+  if (isDashboardStream) {
+    if (isDocker && backendUrl) {
+      const backendTarget = `${backendUrl}/api/${path}${url.search}`;
+      console.log(`🔄 [SSE-PROXY] Proxying SSE stream to backend: ${backendTarget}`);
+      
+      try {
+        // Forward the request to backend SSE endpoint
+        const response = await fetch(backendTarget, {
+          method: 'GET',
+          headers: {
+            'Accept': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'User-Agent': request.headers.get('user-agent') || 'TetrixSSEProxy/1.0',
+            // Forward user ID if present in query params
+            ...(url.searchParams.get('userId') ? { 'X-User-ID': url.searchParams.get('userId')! } : {}),
+          }
+        });
+        
+        if (!response.ok || !response.body) {
+          return new Response(JSON.stringify({
+            error: 'SSE stream setup failed',
+            status: response.status,
+            statusText: response.statusText
+          }), {
+            status: response.status || 500,
+            headers: { 'Content-Type': 'application/json' }
+          });
+        }
+        
+        // Return streaming response with proper SSE headers
+        return new Response(response.body, {
+          status: response.status,
+          headers: {
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive',
+            'X-Accel-Buffering': 'no',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-User-ID',
+          }
+        });
+      } catch (error) {
+        console.error('❌ [SSE-PROXY] Error proxying SSE stream:', error);
+        return new Response(JSON.stringify({
+          error: 'SSE stream unavailable',
+          message: error instanceof Error ? error.message : String(error)
+        }), {
+          status: 503,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+    }
     
-    console.log(`🔄 [AUTH-PROXY] Redirecting authentication request to: ${productionUrl}`);
+    // Fallback for non-Docker environments
+    return new Response(JSON.stringify({
+      error: 'SSE streams require backend connection',
+      message: 'Dashboard streams are only available when connected to backend service'
+    }), {
+      status: 503,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+  
+  // Routes that should be handled by specific Astro API handlers or proxied
+  const authRoutes = path.includes('v2/2fa/') || path.includes('v2/industry-auth/') || path.includes('dashboards/');
+  
+  if (authRoutes) {
+    // STRATEGY 1: Local Development - Let Astro API route handlers take precedence
+    if (isLocalDev && !isDocker) {
+      console.log(`📝 [AUTH-PROXY] Local dev detected - allowing Astro route handler for ${path}`);
+      return new Response(JSON.stringify({ 
+        error: 'Not found',
+        message: 'This route should be handled by a specific Astro API handler',
+        path: `/api/${path}`
+      }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // STRATEGY 2: Docker/Production - Proxy to internal backend service
+    if (isDocker && backendUrl) {
+      const backendTarget = `${backendUrl}/api/${path}${url.search}`;
+      console.log(`🔄 [AUTH-PROXY] Docker/production detected - proxying to backend: ${backendTarget}`);
+      
+      try {
+        const response = await fetch(backendTarget, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'User-Agent': request.headers.get('user-agent') || 'TetrixAuthProxy/1.0',
+            'Accept': request.headers.get('accept') || 'application/json',
+          }
+        });
+        
+        const data = await response.text();
+        
+        return new Response(data, {
+          status: response.status,
+          headers: {
+            'Content-Type': response.headers.get('content-type') || 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          }
+        });
+      } catch (error) {
+        console.error('❌ [AUTH-PROXY] Error proxying to backend service:', error);
+        // Fallback: Try external production URL as last resort
+        console.log(`🔄 [AUTH-PROXY] Fallback: Trying external production URL`);
+        const fallbackUrl = `${externalProductionUrl}/api/${path}${url.search}`;
+        try {
+          const fallbackResponse = await fetch(fallbackUrl, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'User-Agent': request.headers.get('user-agent') || 'TetrixAuthProxy/1.0',
+            }
+          });
+          const fallbackData = await fallbackResponse.text();
+          return new Response(fallbackData, {
+            status: fallbackResponse.status,
+            headers: {
+              'Content-Type': fallbackResponse.headers.get('content-type') || 'application/json',
+              'Access-Control-Allow-Origin': '*',
+            }
+          });
+        } catch (fallbackError) {
+          return new Response(JSON.stringify({ 
+            error: 'Authentication service unavailable',
+            message: 'Could not connect to backend service or external API',
+            details: error instanceof Error ? error.message : String(error)
+          }), {
+            status: 503,
+            headers: { 'Content-Type': 'application/json' }
+          });
+        }
+      }
+    }
+    
+    // STRATEGY 3: Fallback - External production URL (only if explicitly configured)
+    const externalUrl = `${externalProductionUrl}/api/${path}${url.search}`;
+    console.log(`🔄 [AUTH-PROXY] Using external production URL: ${externalUrl}`);
     
     try {
-      const response = await fetch(productionUrl, {
+      const response = await fetch(externalUrl, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -37,9 +214,13 @@ export const GET: APIRoute = async ({ request, params }) => {
         }
       });
     } catch (error) {
-      console.error('❌ [AUTH-PROXY] Error proxying authentication request:', error);
-      return new Response(JSON.stringify({ error: 'Authentication proxy failed' }), {
-        status: 500,
+      console.error('❌ [AUTH-PROXY] Error proxying to external URL:', error);
+      return new Response(JSON.stringify({ 
+        error: 'Authentication service unavailable',
+        message: 'Could not connect to authentication service',
+        details: error instanceof Error ? error.message : String(error)
+      }), {
+        status: 503,
         headers: { 'Content-Type': 'application/json' }
       });
     }
@@ -145,17 +326,105 @@ export const POST: APIRoute = async ({ request, params }) => {
   const hostname = request.headers.get('host') || '';
   const path = params.path || '';
   
-  // Check if this is an authentication request that needs proxying
-  if (path.includes('v2/2fa/') || path.includes('v2/industry-auth/') || path.includes('dashboards/')) {
-    const productionUrl = `https://tetrix-minimal-uzzxn.ondigitalocean.app/api/${path}${url.search}`;
+  // HYBRID ROUTING SYSTEM: Handles both local development and production (Docker/droplet)
+  // Determine environment and routing strategy
+  const isLocalDev = hostname.includes('localhost') || hostname.includes('127.0.0.1');
+  const isDocker = hostname.includes('tetrix-frontend') || process.env.TETRIX_BACKEND_URL || process.env.DATABASE_URL?.includes('tetrix-db');
+  const backendUrl = process.env.TETRIX_BACKEND_URL || process.env.BACKEND_URL || 'http://tetrix-backend:3001';
+  const externalProductionUrl = process.env.EXTERNAL_API_URL || 'https://tetrix-minimal-uzzxn.ondigitalocean.app';
+  
+  // Routes that should be handled by specific Astro API handlers or proxied
+  const authRoutes = path.includes('v2/2fa/') || path.includes('v2/industry-auth/') || path.includes('dashboards/');
+  
+  if (authRoutes) {
+    // STRATEGY 1: Local Development - Let Astro API route handlers take precedence
+    if (isLocalDev && !isDocker) {
+      console.log(`📝 [AUTH-PROXY] Local dev detected - allowing Astro route handler for ${path}`);
+      return new Response(JSON.stringify({ 
+        error: 'Not found',
+        message: 'This route should be handled by a specific Astro API handler',
+        path: `/api/${path}`
+      }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
     
-    console.log(`🔄 [AUTH-PROXY] Redirecting authentication POST request to: ${productionUrl}`);
+    // STRATEGY 2: Docker/Production - Proxy to internal backend service
+    if (isDocker && backendUrl) {
+      const backendTarget = `${backendUrl}/api/${path}${url.search}`;
+      console.log(`🔄 [AUTH-PROXY] Docker/production detected - proxying to backend: ${backendTarget}`);
+      
+      try {
+        // Get the request body for POST requests
+        const body = await request.text();
+        
+        const response = await fetch(backendTarget, {
+          method: 'POST',
+          headers: {
+            'Content-Type': request.headers.get('content-type') || 'application/json',
+            'User-Agent': request.headers.get('user-agent') || 'TetrixAuthProxy/1.0',
+            'Accept': request.headers.get('accept') || 'application/json',
+          },
+          body: body
+        });
+        
+        const data = await response.text();
+        
+        return new Response(data, {
+          status: response.status,
+          headers: {
+            'Content-Type': response.headers.get('content-type') || 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          }
+        });
+      } catch (error) {
+        console.error('❌ [AUTH-PROXY] Error proxying to backend service:', error);
+        // Fallback: Try external production URL as last resort
+        console.log(`🔄 [AUTH-PROXY] Fallback: Trying external production URL`);
+        const fallbackUrl = `${externalProductionUrl}/api/${path}${url.search}`;
+        const body = await request.text();
+        try {
+          const fallbackResponse = await fetch(fallbackUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': request.headers.get('content-type') || 'application/json',
+              'User-Agent': request.headers.get('user-agent') || 'TetrixAuthProxy/1.0',
+            },
+            body: body
+          });
+          const fallbackData = await fallbackResponse.text();
+          return new Response(fallbackData, {
+            status: fallbackResponse.status,
+            headers: {
+              'Content-Type': fallbackResponse.headers.get('content-type') || 'application/json',
+              'Access-Control-Allow-Origin': '*',
+            }
+          });
+        } catch (fallbackError) {
+          return new Response(JSON.stringify({ 
+            error: 'Authentication service unavailable',
+            message: 'Could not connect to backend service or external API',
+            details: error instanceof Error ? error.message : String(error)
+          }), {
+            status: 503,
+            headers: { 'Content-Type': 'application/json' }
+          });
+        }
+      }
+    }
+    
+    // STRATEGY 3: Fallback - External production URL (only if explicitly configured)
+    const externalUrl = `${externalProductionUrl}/api/${path}${url.search}`;
+    console.log(`🔄 [AUTH-PROXY] Using external production URL: ${externalUrl}`);
     
     try {
-      // Get the request body
+      // Get the request body for POST requests
       const body = await request.text();
       
-      const response = await fetch(productionUrl, {
+      const response = await fetch(externalUrl, {
         method: 'POST',
         headers: {
           'Content-Type': request.headers.get('content-type') || 'application/json',
@@ -177,9 +446,13 @@ export const POST: APIRoute = async ({ request, params }) => {
         }
       });
     } catch (error) {
-      console.error('❌ [AUTH-PROXY] Error proxying authentication POST request:', error);
-      return new Response(JSON.stringify({ error: 'Authentication proxy failed' }), {
-        status: 500,
+      console.error('❌ [AUTH-PROXY] Error proxying to external URL:', error);
+      return new Response(JSON.stringify({ 
+        error: 'Authentication service unavailable',
+        message: 'Could not connect to authentication service',
+        details: error instanceof Error ? error.message : String(error)
+      }), {
+        status: 503,
         headers: { 'Content-Type': 'application/json' }
       });
     }
