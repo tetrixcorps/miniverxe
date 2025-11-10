@@ -99,9 +99,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
       return createErrorResponse('verificationId, code, and phoneNumber are required', 400);
     }
 
-    // Validate code format (6 digits)
-    if (!/^\d{6}$/.test(code)) {
-      return createErrorResponse('Code must be 6 digits', 400);
+    // Validate code format (5 digits - Telnyx Verify API uses 5-digit codes)
+    const cleanedCode = String(code).replace(/\D/g, ''); // Remove all non-digits
+    if (!cleanedCode || cleanedCode.length !== 5 || !/^\d{5}$/.test(cleanedCode)) {
+      return createErrorResponse('Code must be 5 digits', 400);
     }
 
     // Normalize phone number to E.164 format for verification
@@ -131,8 +132,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     
     const e164 = cleanPhone; // Use the cleaned E.164 format
 
-    // Verify code
-    const result = await enterprise2FAService.verifyCode(verificationId, code, e164);
+    // Verify code (use cleaned code)
+    const result = await enterprise2FAService.verifyCode(verificationId, cleanedCode, e164);
 
     if (result.verified) {
       return createSuccessResponse({

@@ -42,18 +42,26 @@ export class IndustryAuthDebugger {
     this.log('IndustryAuthDebugger', 'loading', 'Starting modal functionality test');
 
     try {
-      // Test 1: Check if modal element exists
-      const modal = document.getElementById('industry-auth-modal');
+      // Test 1: Check if modal element exists (try unified-auth-modal first, then industry-auth-modal)
+      const modal = document.getElementById('unified-auth-modal') || document.getElementById('industry-auth-modal');
       this.log('Modal Element', modal ? 'loaded' : 'error', {
         exists: !!modal,
         className: modal?.className,
         hidden: modal?.classList.contains('hidden')
       });
 
-      // Test 2: Check if openIndustryAuthModal function exists
-      const hasFunction = typeof window.openIndustryAuthModal === 'function';
-      this.log('openIndustryAuthModal Function', hasFunction ? 'loaded' : 'error', {
-        available: hasFunction,
+      // Test 2: Check if openUnifiedAuthModal function exists (preferred) or openIndustryAuthModal (fallback)
+      const hasUnifiedFunction = typeof window.openUnifiedAuthModal === 'function';
+      const hasIndustryFunction = typeof window.openIndustryAuthModal === 'function';
+      const hasFunction = hasUnifiedFunction || hasIndustryFunction;
+      
+      this.log('openUnifiedAuthModal Function', hasUnifiedFunction ? 'loaded' : 'error', {
+        available: hasUnifiedFunction,
+        type: typeof window.openUnifiedAuthModal
+      });
+      
+      this.log('openIndustryAuthModal Function (legacy)', hasIndustryFunction ? 'loaded' : 'error', {
+        available: hasIndustryFunction,
         type: typeof window.openIndustryAuthModal
       });
 
@@ -61,8 +69,12 @@ export class IndustryAuthDebugger {
       if (hasFunction && modal) {
         this.log('Modal Test', 'loading', 'Testing modal open/close');
         
-        // Open modal
-        window.openIndustryAuthModal();
+        // Open modal - prefer UnifiedAuthModal
+        if (hasUnifiedFunction) {
+          window.openUnifiedAuthModal();
+        } else if (hasIndustryFunction) {
+          window.openIndustryAuthModal();
+        }
         await new Promise(resolve => setTimeout(resolve, 100));
         
         const isVisible = !modal.classList.contains('hidden');

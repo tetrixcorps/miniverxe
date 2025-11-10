@@ -741,8 +741,13 @@
     window.industryAuthModal = new IndustryAuthModal();
   });
 
-  // Global function to open modal
+  // Global function to open modal - redirect to UnifiedAuthModal
   window.openIndustryAuth = () => {
-    window.industryAuthModal?.open();
+    if (typeof window.openUnifiedAuthModal === 'function') {
+      window.openUnifiedAuthModal();
+    } else {
+      console.warn('openUnifiedAuthModal not available, falling back to industryAuthModal');
+      window.industryAuthModal?.open();
+    }
   };
 </script>

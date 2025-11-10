@@ -40,13 +40,21 @@ export const POST: APIRoute = async ({ params, request }) => {
     const { sessionId } = params;
     
     if (!sessionId) {
+      console.error('❌ [STREAM] No sessionId in params:', params);
       return new Response('Session ID is required', { status: 400 });
     }
 
+    console.log(`🔍 [STREAM] Looking for session: ${sessionId}`);
+    console.log(`📊 [STREAM] Storage size: ${joromiSessions.size}`);
+    console.log(`📋 [STREAM] Available sessions:`, Array.from(joromiSessions.keys()));
+
     const session = joromiSessions.get(sessionId);
     if (!session) {
+      console.error(`❌ [STREAM] Session not found: ${sessionId}`);
       return new Response('Session not found', { status: 404 });
     }
+    
+    console.log(`✅ [STREAM] Session found: ${sessionId}`);
 
     const body = await request.json();
     const { message, role = 'user', agentId = session.agentId } = body;

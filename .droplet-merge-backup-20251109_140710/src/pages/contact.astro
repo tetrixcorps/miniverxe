@@ -1,0 +1,856 @@
+---
+import MainLayout from '../components/layout/MainLayout.astro';
+---
+
+<MainLayout title="Contact Us - TETRIX">
+  <div class="min-h-screen bg-gradient-to-br from-brand-red via-brand-orange to-brand-yellow">
+    <!-- Hero Section -->
+    <section class="py-20 px-4 relative overflow-hidden">
+      <!-- Background Pattern -->
+      <div class="absolute inset-0 bg-gradient-to-br from-brand-red/90 via-brand-orange/90 to-brand-yellow/90"></div>
+      <div class="absolute inset-0 opacity-30">
+        <div class="absolute inset-0 bg-white/10"></div>
+      </div>
+      
+      <div class="max-w-7xl mx-auto text-center relative z-10">
+        <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">
+          Enterprise
+          <span class="text-brand-yellow">Contact Center</span>
+        </h1>
+        <p class="text-xl text-white/90 mb-8 max-w-3xl mx-auto">
+          Connect with our enterprise team. Chat with JoRoMi, our AI Super Agent, or reach out directly for mission-critical support and solutions.
+        </p>
+        
+        <!-- Contact Statistics -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 max-w-4xl mx-auto">
+          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/30">
+            <div class="text-2xl font-bold text-white">24/7</div>
+            <div class="text-sm text-white/80">Enterprise Support</div>
+          </div>
+          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/30">
+            <div class="text-2xl font-bold text-white">Under 1hr</div>
+            <div class="text-sm text-white/80">Response Time</div>
+          </div>
+          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/30">
+            <div class="text-2xl font-bold text-white">99.9%</div>
+            <div class="text-sm text-white/80">Uptime SLA</div>
+          </div>
+          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/30">
+            <div class="text-2xl font-bold text-white">SOC II</div>
+            <div class="text-sm text-white/80">Compliant</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Form Section -->
+    <section class="py-20 px-4 bg-white">
+      <div class="max-w-7xl mx-auto">
+        <!-- Success Message -->
+        <div id="success-message" class="max-w-xl mx-auto bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6 hidden">
+          <p class="font-semibold">Thank you for your message!</p>
+          <p>We'll get back to you within 24 hours.</p>
+        </div>
+
+        <!-- Error Message -->
+        <div id="error-message" class="max-w-xl mx-auto bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6 hidden">
+          <p class="font-semibold">Oops! Something went wrong.</p>
+          <p id="error-text">Please try again or contact us directly.</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-12">
+          <!-- Contact Form -->
+          <div class="bg-gradient-to-br from-brand-red/5 to-brand-orange/5 rounded-xl p-8 shadow-lg border border-brand-red/20">
+            <h2 class="text-3xl font-bold mb-6 text-gray-900">Send us a Message</h2>
+            <form id="contact-form" class="space-y-6" aria-label="Contact form">
+              <div>
+                <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+                  Full Name
+                </label>
+                <input 
+                  type="text" 
+                  name="name" 
+                  id="name" 
+                  required 
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors"
+                  placeholder="Enter your full name"
+                />
+              </div>
+              <div>
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                  Email Address
+                </label>
+                <input 
+                  type="email" 
+                  name="email" 
+                  id="email" 
+                  required 
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors"
+                  placeholder="Enter your email address"
+                />
+              </div>
+              <div>
+                <label for="company" class="block text-sm font-medium text-gray-700 mb-2">
+                  Company (Optional)
+                </label>
+                <input 
+                  type="text" 
+                  name="company" 
+                  id="company" 
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors"
+                  placeholder="Enter your company name"
+                />
+              </div>
+              <div>
+                <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">
+                  Subject
+                </label>
+                <input 
+                  type="text" 
+                  name="subject" 
+                  id="subject" 
+                  required 
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors"
+                  placeholder="What is this regarding?"
+                />
+              </div>
+              <div>
+                <label for="message" class="block text-sm font-medium text-gray-700 mb-2">
+                  Message
+                </label>
+                <textarea 
+                  name="message" 
+                  id="message" 
+                  required 
+                  rows="4" 
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors"
+                  placeholder="Tell us about your enterprise needs..."
+                ></textarea>
+              </div>
+              <button 
+                type="submit" 
+                id="submit-btn" 
+                class="w-full bg-brand-red text-white px-6 py-4 rounded-lg font-semibold hover:bg-brand-red/90 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-red shadow-lg"
+              >
+                <span id="submit-text">Send Message</span>
+                <span id="loading-text" class="hidden">Sending...</span>
+              </button>
+            </form>
+          </div>
+          
+          <!-- JoRoMi Live Chat Section -->
+          <div class="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-8 shadow-lg border border-purple-200">
+            <div class="text-center mb-8">
+              <div class="w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+                <img 
+                  src="/images/joromi-base-logo.jpg" 
+                  alt="JoRoMi AI Super Agent Logo" 
+                  class="w-full h-full object-contain rounded-lg shadow-lg border-2 border-purple-200"
+                  onerror="this.onerror=null; this.src='/images/joromi-base-logo.jpg'; this.style.display='block';"
+                  loading="eager"
+                />
+              </div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-4">Chat with JoRoMi</h2>
+              <p class="text-gray-600 mb-6">
+                Our AI Super Agent is available 24/7 to help with enterprise inquiries, technical support, and solution recommendations.
+              </p>
+            </div>
+            
+            <!-- JoRoMi Features -->
+            <div class="space-y-4 mb-8">
+              <div class="flex items-center">
+                <span class="text-green-600 mr-3">&check;</span>
+                <span class="text-gray-700">Instant responses to enterprise queries</span>
+              </div>
+              <div class="flex items-center">
+                <span class="text-green-600 mr-3">&check;</span>
+                <span class="text-gray-700">Technical support and troubleshooting</span>
+              </div>
+              <div class="flex items-center">
+                <span class="text-green-600 mr-3">&check;</span>
+                <span class="text-gray-700">Solution recommendations and pricing</span>
+              </div>
+              <div class="flex items-center">
+                <span class="text-green-600 mr-3">&check;</span>
+                <span class="text-gray-700">Escalation to human experts when needed</span>
+              </div>
+            </div>
+
+            <!-- JoRoMi Chat Widget -->
+            <div class="bg-white rounded-lg p-4 border border-purple-200">
+              <div id="joromi-chat-widget" class="min-h-[400px]">
+                <div class="flex flex-col items-center justify-center h-full min-h-[400px] text-center">
+                  <div class="w-16 h-16 mb-4 flex items-center justify-center">
+                    <img 
+                      src="/images/joromi-base-logo.jpg" 
+                      alt="JoRoMi AI Super Agent Logo" 
+                      class="w-full h-full object-contain rounded-lg shadow-md border border-purple-200"
+                      onerror="this.onerror=null; this.src='/images/joromi-base-logo.jpg'; this.style.display='block';"
+                      loading="eager"
+                    />
+                  </div>
+                  <h3 class="text-xl font-bold text-gray-900 mb-2">JoRoMi AI Super Agent</h3>
+                  <p class="text-gray-600 mb-4">Our AI Super Agent is ready to help you with enterprise inquiries and technical support.</p>
+                  <div class="space-y-2 text-sm text-gray-500 mb-6">
+                    <p>• Instant responses to enterprise queries</p>
+                    <p>• Technical support and troubleshooting</p>
+                    <p>• Solution recommendations and pricing</p>
+                    <p>• Escalation to human experts when needed</p>
+                  </div>
+                  <button 
+                    onclick="startJoRoMiChat()"
+                    class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-colors"
+                  >
+                    Start Chat with JoRoMi
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Enterprise Contact Information -->
+    <section class="py-20 px-4 bg-gray-50">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl font-bold text-center text-gray-900 mb-16">
+          Enterprise Contact Information
+        </h2>
+        <div class="grid md:grid-cols-3 gap-8">
+          <!-- Phone Support -->
+          <div class="bg-white p-8 rounded-xl shadow-lg text-center">
+            <div class="w-16 h-16 bg-brand-red rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl text-white">📞</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Phone Support</h3>
+            <p class="text-gray-600 mb-4">24/7 Enterprise Support</p>
+            <p class="text-brand-red font-semibold">+1-888-804-6762</p>
+          </div>
+
+          <!-- Email Support -->
+          <div class="bg-white p-8 rounded-xl shadow-lg text-center">
+            <div class="w-16 h-16 bg-brand-orange rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl text-white">✉️</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Email Support</h3>
+            <p class="text-gray-600 mb-4">Enterprise Inquiries</p>
+            <p class="text-brand-orange font-semibold">support@tetrixcorp.com</p>
+          </div>
+
+          <!-- Emergency Support -->
+          <div class="bg-white p-8 rounded-xl shadow-lg text-center">
+            <div class="w-16 h-16 bg-brand-yellow rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl text-brand-dark">🚨</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Emergency Support</h3>
+            <p class="text-gray-600 mb-4">Critical Issues Only</p>
+            <p class="text-brand-yellow font-semibold">emergency@tetrixcorp.com</p>
+          </div>
+        </div>
+
+        <!-- Office Address -->
+        <div class="mt-16 bg-white p-8 rounded-xl shadow-lg text-center">
+          <div class="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span class="text-2xl text-white">🏢</span>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-2">TETRIX Corporation</h3>
+          <p class="text-gray-600 mb-2">Enterprise Communications & AI Solutions</p>
+          <p class="text-gray-700 font-semibold">
+            4330 Hazelton Street<br>
+            Houston, TX 77035<br>
+            United States of America
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 px-4 bg-gradient-to-br from-brand-red via-brand-orange to-brand-yellow">
+      <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-4xl font-bold text-white mb-8">
+          Ready to Transform Your Enterprise?
+        </h2>
+        <p class="text-xl text-white/90 mb-8">
+          Join 500+ enterprise companies already using TETRIX for mission-critical operations.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="/solutions" class="bg-white text-brand-red px-8 py-4 rounded-lg font-semibold hover:bg-white/90 transition-colors shadow-lg">
+            View Solutions
+          </a>
+          <a href="/pricing" class="bg-white/20 text-white px-8 py-4 rounded-lg font-semibold border-2 border-white/30 hover:bg-white/30 transition-colors">
+            View Pricing
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
+</MainLayout>
+
+<script>
+  // Enhanced JoRoMi Chat Integration with Backend Service Knowledge
+  window.initializeJoRoMiChatWidget = function initializeJoRoMiChatWidget() {
+    console.log('Initializing enhanced JoRoMi Chat...');
+    
+    const chatContainer = document.getElementById('joromi-chat-widget');
+    if (!chatContainer) {
+      console.error('Chat container not found!');
+      return;
+    }
+    
+    // Show the initial chat interface
+    renderInitialChatInterface();
+  }
+
+  // Render initial chat interface
+  function renderInitialChatInterface() {
+    const chatContainer = document.getElementById('joromi-chat-widget');
+    if (!chatContainer) return;
+
+    chatContainer.innerHTML = `
+      <div class="flex flex-col items-center justify-center h-full min-h-[400px] text-center">
+        <div class="w-16 h-16 mb-4 flex items-center justify-center">
+          <img 
+            src="/images/joromi-base-logo.jpg" 
+            alt="JoRoMi AI Super Agent Logo" 
+            class="w-full h-full object-contain rounded-lg shadow-md border border-purple-200"
+            onerror="this.onerror=null; this.src='/images/joromi-base-logo.jpg'; this.style.display='block';"
+            loading="eager"
+          />
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">JoRoMi AI Super Agent</h3>
+        <p class="text-gray-600 mb-4">Our AI Super Agent is ready to help you with enterprise inquiries and technical support.</p>
+        <div class="space-y-2 text-sm text-gray-500 mb-6">
+          <p>• Instant responses to enterprise queries</p>
+          <p>• Technical support and troubleshooting</p>
+          <p>• Solution recommendations and pricing</p>
+          <p>• Escalation to human experts when needed</p>
+        </div>
+        <button 
+          onclick="startJoRoMiChat()"
+          class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-colors"
+        >
+          Start Chat with JoRoMi
+        </button>
+      </div>
+    `;
+  }
+
+  // Start JoRoMi Chat
+  window.startJoRoMiChat = async function startJoRoMiChat() {
+    const chatContainer = document.getElementById('joromi-chat-widget');
+    if (!chatContainer) return;
+
+    try {
+      // Show loading state
+      chatContainer.innerHTML = `
+        <div class="flex flex-col items-center justify-center h-full min-h-[400px] text-center">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mb-4"></div>
+          <p class="text-gray-600">Starting JoRoMi AI Super Agent...</p>
+        </div>
+      `;
+
+      // Create session
+      const response = await fetch('/api/v1/joromi/sessions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: `contact-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          agentId: 'joromi-general',
+          channel: 'chat'
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        window.currentSession = data.session;
+        window.messages = data.session.messages || [];
+        renderChatInterface();
+      } else {
+        throw new Error('Failed to start chat session');
+      }
+    } catch (error) {
+      console.error('Error starting chat:', error);
+      chatContainer.innerHTML = `
+        <div class="flex flex-col items-center justify-center h-full min-h-[400px] text-center">
+          <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+            <span class="text-2xl text-red-600">⚠️</span>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-2">Connection Error</h3>
+          <p class="text-gray-600 mb-4">Unable to start JoRoMi chat. Please try again.</p>
+          <button 
+            onclick="startJoRoMiChat()"
+            class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      `;
+    }
+  }
+
+  // Render chat interface
+  function renderChatInterface() {
+    const chatContainer = document.getElementById('joromi-chat-widget');
+    if (!chatContainer) return;
+
+    chatContainer.innerHTML = `
+      <div class="h-96 flex flex-col">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-4 rounded-t-lg flex justify-between items-center">
+          <div class="flex items-center space-x-2">
+            <span class="text-lg">⚡</span>
+            <div>
+              <h3 class="font-semibold">JoRoMi</h3>
+              <p class="text-sm opacity-90">AI Super Agent Online</p>
+            </div>
+          </div>
+          <button id="joromi-close-button" class="text-white hover:text-gray-200 transition-colors">
+            ✕
+          </button>
+        </div>
+
+        <!-- Messages -->
+        <div id="joromi-messages" class="flex-1 overflow-y-auto p-4 space-y-2 bg-gray-50">
+          ${window.messages.map(message => renderMessage(message)).join('')}
+        </div>
+
+        <!-- Input -->
+        <div class="p-4 border-t border-gray-200 bg-white">
+          <div class="flex space-x-2">
+            <input
+              type="text"
+              id="joromi-message-input"
+              placeholder="Ask JoRoMi anything..."
+              class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            />
+            <button
+              id="joromi-send-button"
+              class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-colors"
+            >
+              Send
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Attach event listeners programmatically
+    const messageInput = document.getElementById('joromi-message-input');
+    const sendButton = document.getElementById('joromi-send-button');
+    const closeButton = document.getElementById('joromi-close-button');
+
+    if (messageInput) {
+      messageInput.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter' && !event.shiftKey) {
+          event.preventDefault();
+          sendJoRoMiMessage();
+        }
+      });
+    }
+
+    if (sendButton) {
+      sendButton.addEventListener('click', sendJoRoMiMessage);
+    }
+
+    if (closeButton) {
+      closeButton.addEventListener('click', closeJoRoMiChat);
+    }
+  }
+
+  // Render individual message
+  function renderMessage(message) {
+    const isUser = message.role === 'user';
+    const isJoRoMi = message.role === 'assistant';
+    const isStreaming = message.isStreaming;
+    
+    return `
+      <div class="flex ${isUser ? 'justify-end' : 'justify-start'}">
+        <div class="max-w-xs px-3 py-2 rounded-lg ${
+          isUser 
+            ? 'bg-blue-600 text-white' 
+            : isJoRoMi
+            ? 'bg-gradient-to-r from-purple-100 to-blue-100 text-purple-800 border border-purple-200'
+            : 'bg-gray-100 text-gray-800'
+        }">
+          ${isJoRoMi ? '<div class="flex items-center space-x-1 mb-1"><span class="text-xs font-semibold text-purple-600">🤖 JoRoMi</span></div>' : ''}
+          <p class="text-sm">${message.content}${isStreaming ? '<span class="inline-block w-2 h-2 bg-purple-500 rounded-full animate-pulse ml-1"></span>' : ''}</p>
+          <p class="text-xs opacity-70 mt-1">${new Date(message.timestamp).toLocaleTimeString()}</p>
+        </div>
+      </div>
+    `;
+  }
+
+  // Close chat
+  window.closeJoRoMiChat = function closeJoRoMiChat() {
+    const chatContainer = document.getElementById('joromi-chat-widget');
+    if (!chatContainer) return;
+
+    chatContainer.innerHTML = `
+      <div class="flex flex-col items-center justify-center h-full min-h-[400px] text-center">
+        <div class="w-16 h-16 mb-4 flex items-center justify-center">
+          <img 
+            src="/images/joromi-base-logo.jpg" 
+            alt="JoRoMi AI Super Agent Logo" 
+            class="w-full h-full object-contain rounded-lg shadow-md border border-purple-200"
+            onerror="this.onerror=null; this.src='/images/joromi-base-logo.jpg'; this.style.display='block';"
+            loading="eager"
+          />
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">JoRoMi AI Super Agent</h3>
+        <p class="text-gray-600 mb-4">Our AI Super Agent is ready to help you with enterprise inquiries and technical support.</p>
+        <div class="space-y-2 text-sm text-gray-500 mb-6">
+          <p>• Instant responses to enterprise queries</p>
+          <p>• Technical support and troubleshooting</p>
+          <p>• Solution recommendations and pricing</p>
+          <p>• Escalation to human experts when needed</p>
+        </div>
+        <button 
+          onclick="startJoRoMiChat()"
+          class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-colors"
+        >
+          Start Chat with JoRoMi
+        </button>
+      </div>
+    `;
+    window.currentSession = null;
+    window.messages = [];
+  }
+
+  // Handle key press (exposed globally)
+  window.handleKeyPress = function handleKeyPress(event) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      sendJoRoMiMessage();
+    }
+  }
+
+  // Send message with streaming support (exposed globally)
+  window.sendJoRoMiMessage = async function sendJoRoMiMessage() {
+    const input = document.getElementById('joromi-message-input');
+    const message = input.value.trim();
+    
+    if (!message || !window.currentSession) return;
+
+    // Add user message
+    const userMessage = {
+      id: `user-${Date.now()}`,
+      role: 'user',
+      content: message,
+      timestamp: new Date().toISOString(),
+      type: 'text'
+    };
+    
+    window.messages.push(userMessage);
+    input.value = '';
+    updateMessagesDisplay();
+    
+    // Create streaming AI message placeholder
+    const aiMessageId = `ai-${Date.now()}`;
+    const aiMessage = {
+      id: aiMessageId,
+      role: 'assistant',
+      content: '',
+      timestamp: new Date().toISOString(),
+      type: 'text',
+      agentId: 'joromi-general',
+      isStreaming: true
+    };
+    
+    window.messages.push(aiMessage);
+    updateMessagesDisplay();
+    
+    try {
+      // Use streaming endpoint for real-time responses
+      const response = await fetch(`/api/v1/joromi/sessions/${window.currentSession.id}/stream`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: message,
+          role: 'user',
+          agentId: 'joromi-general'
+        }),
+        // Ensure CORS is handled properly
+        mode: 'cors',
+        credentials: 'omit'
+      });
+
+      if (response.ok && response.body) {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        console.log('📡 SSE stream started, reading events...');
+
+        while (true) {
+          const { done, value } = await reader.read();
+          
+          if (done) {
+            console.log('📡 SSE stream completed');
+            break;
+          }
+
+          buffer += decoder.decode(value, { stream: true });
+          
+          // SSE events are separated by \n\n (double newline)
+          const events = buffer.split('\n\n');
+          // Keep the last incomplete event in buffer
+          buffer = events.pop() || '';
+
+          for (const event of events) {
+            if (!event.trim()) continue;
+            
+            let eventType = 'message'; // default SSE event type
+            let eventData = null;
+            
+            // Parse event lines
+            const lines = event.split('\n');
+            for (const line of lines) {
+              if (line.startsWith('event: ')) {
+                eventType = line.substring(7).trim();
+                console.log(`📡 SSE event type: ${eventType}`);
+              } else if (line.startsWith('data: ')) {
+                try {
+                  eventData = JSON.parse(line.substring(6));
+                  console.log(`📡 SSE data received:`, eventData);
+                } catch (parseError) {
+                  console.error('❌ Error parsing SSE data:', parseError, 'Raw data:', line.substring(6));
+                  continue;
+                }
+              }
+            }
+            
+            // Handle different event types
+            if (eventData) {
+              if (eventType === 'chunk' && eventData.content) {
+                // Stream chunk - append content word by word
+                aiMessage.content += eventData.content;
+                updateMessagesDisplay();
+                console.log(`📡 Chunk received: "${eventData.content}" (total: ${aiMessage.content.length} chars)`);
+              } else if (eventType === 'complete' && eventData.message) {
+                // Complete message - finalize
+                aiMessage.id = eventData.message.id;
+                aiMessage.content = eventData.message.content;
+                aiMessage.timestamp = eventData.message.timestamp;
+                aiMessage.agentId = eventData.message.agentId;
+                aiMessage.isStreaming = false;
+                updateMessagesDisplay();
+                console.log('✅ SSE message complete:', aiMessage);
+                
+                // Update session
+                if (eventData.session) {
+                  window.currentSession = eventData.session;
+                }
+              } else if (eventType === 'start') {
+                console.log('📡 SSE stream started, message ID:', eventData.messageId);
+              }
+            }
+          }
+        }
+      } else {
+        console.warn('⚠️ SSE stream not available, falling back to non-streaming endpoint');
+        // Fallback to non-streaming endpoint
+        await sendToNonStreamingFallback(message);
+      }
+    } catch (error) {
+      console.error('Error streaming message via JoRoMi API, trying fallback:', error);
+      // Remove streaming placeholder
+      window.messages = window.messages.filter(m => m.id !== aiMessageId);
+      // Fallback to enhanced responses
+      await sendToEnhancedFallback(message);
+    }
+  }
+
+  // Fallback to non-streaming endpoint
+  async function sendToNonStreamingFallback(message) {
+    try {
+      const response = await fetch(`/api/v1/joromi/sessions/${window.currentSession.id}/messages`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: message,
+          role: 'user',
+          agentId: 'joromi-general'
+        })
+      });
+
+      if (response.ok) {
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          const text = await response.text();
+          if (text && text.trim().length > 0) {
+            const data = JSON.parse(text);
+            
+            // Remove streaming placeholder
+            window.messages = window.messages.filter(m => m.isStreaming !== true);
+            
+            // Add AI response
+            const aiMessage = {
+              id: data.aiResponse.id,
+              role: 'assistant',
+              content: data.aiResponse.content,
+              timestamp: data.aiResponse.timestamp,
+              type: 'text',
+              agentId: data.aiResponse.agentId
+            };
+            
+            window.messages.push(aiMessage);
+            updateMessagesDisplay();
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error with non-streaming fallback:', error);
+      // Remove streaming placeholder
+      window.messages = window.messages.filter(m => m.isStreaming !== true);
+      await sendToEnhancedFallback(message);
+    }
+  }
+
+  // Enhanced fallback with TETRIX backend service knowledge
+  async function sendToEnhancedFallback(message) {
+    try {
+      const prompt = `You are JoRoMi, an AI Super Agent for TETRIX enterprise communication platform. You help customers with:
+
+TETRIX Backend Services:
+- IVR System: Interactive Voice Response with TeXML integration, voice recognition, intelligent call routing
+- Unified Messaging: Multi-channel communication (SMS, email, voice, chat) across all channels
+- Marketing Campaigns: AI-powered marketing automation with 3x higher engagement and 450% average ROI
+- IoT Telematics: Real-time tracking, driver communication, delivery management for fleet operations
+- Voice API: Enterprise voice calling with global coverage, TeXML integration, real-time transcription
+- 2FA Service: Secure two-factor authentication via SMS and voice calls
+- Phone Provisioning: Phone number provisioning, porting, and management with global coverage
+- Data Labeling: Human-in-the-loop data annotation and quality assurance for ML models
+- AI Engine: Enterprise AI with machine learning models, NLP, and computer vision
+- JoRoMi AI: Multi-agent AI system with specialized capabilities for sales, support, technical assistance
+- RPA Services: Robotic Process Automation for business workflow automation
+- Epic FHIR Integration: Healthcare data integration with Epic EHR systems
+- CRM Integrations: Salesforce, HubSpot, Clio, MyCase integrations
+- Enterprise Workflows: Automated business processes across multiple industries
+
+Pricing: Starter ($2,999/month), Growth ($7,999/month), Enterprise ($19,999/month)
+Support: 24/7 enterprise support, under 1hr response time, 99.9% uptime SLA, SOC II compliant
+Contact: +1-888-804-6762, support@tetrixcorp.com, emergency@tetrixcorp.com
+
+User message: ${message}
+
+Please provide a helpful, professional response that addresses their inquiry with specific information about our services. Be concise but informative.`;
+
+      // Create a streaming AI message
+      const aiMessageId = `enhanced-${Date.now()}`;
+      const aiMessage = {
+        id: aiMessageId,
+        role: 'assistant',
+        content: '',
+        timestamp: new Date().toISOString(),
+        type: 'text',
+        agentId: 'joromi-general',
+        isStreaming: true
+      };
+      
+      window.messages.push(aiMessage);
+      updateMessagesDisplay();
+
+      // Simulate streaming response with enhanced knowledge
+      const responses = [
+        "I understand your inquiry about our enterprise services. Let me help you with that.",
+        "Based on your question, here's what I can tell you about TETRIX:",
+        "Our enterprise communication platform offers several solutions:",
+        "For your specific needs, I recommend:",
+        "I can connect you with our team for:",
+        "Here's how TETRIX can help your enterprise:"
+      ];
+      
+      const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+      
+      // Simulate typing effect
+      for (let i = 0; i < randomResponse.length; i++) {
+        aiMessage.content += randomResponse[i];
+        updateMessagesDisplay();
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+      
+      aiMessage.isStreaming = false;
+      updateMessagesDisplay();
+    } catch (error) {
+      console.error('Error with enhanced fallback:', error);
+      
+      // Final fallback - enhanced response
+      const fallbackMessage = {
+        id: `fallback-${Date.now()}`,
+        role: 'assistant',
+        content: "Thank you for your message! I'm JoRoMi, your AI Super Agent for TETRIX enterprise communication platform. I can help you with information about our IVR systems, unified messaging, marketing campaigns, IoT telematics, voice APIs, 2FA services, and more. Our enterprise solutions start at $2,999/month with 24/7 support. What specific service would you like to know more about?",
+        timestamp: new Date().toISOString(),
+        type: 'text',
+        agentId: 'joromi-general'
+      };
+      
+      window.messages.push(fallbackMessage);
+      updateMessagesDisplay();
+    }
+  }
+
+  // Update messages display
+  function updateMessagesDisplay() {
+    const messagesContainer = document.getElementById('joromi-messages');
+    if (messagesContainer) {
+      messagesContainer.innerHTML = window.messages.map(message => renderMessage(message)).join('');
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+  }
+
+  // Contact form handling
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('contact-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const submitText = document.getElementById('submit-text');
+    const loadingText = document.getElementById('loading-text');
+    const successMessage = document.getElementById('success-message');
+    const errorMessage = document.getElementById('error-message');
+    const errorText = document.getElementById('error-text');
+
+    if (form) {
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Show loading state
+        submitBtn.disabled = true;
+        submitText.classList.add('hidden');
+        loadingText.classList.remove('hidden');
+        successMessage.classList.add('hidden');
+        errorMessage.classList.add('hidden');
+
+        try {
+          const formData = new FormData(form);
+          const data = Object.fromEntries(formData);
+          
+          // Simulate form submission (replace with actual API call)
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          
+          // Show success message
+          successMessage.classList.remove('hidden');
+          form.reset();
+          
+        } catch (error) {
+          console.error('Error submitting form:', error);
+          errorText.textContent = 'There was an error sending your message. Please try again.';
+          errorMessage.classList.remove('hidden');
+        } finally {
+          // Reset button state
+          submitBtn.disabled = false;
+          submitText.classList.remove('hidden');
+          loadingText.classList.add('hidden');
+        }
+      });
+    }
+
+    // Initialize JoRoMi Chat Widget
+    initializeJoRoMiChatWidget();
+  });
+</script>

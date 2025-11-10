@@ -1,6 +1,19 @@
 import type { APIRoute } from 'astro';
 import { joromiSessions, JOROMI_AGENTS } from './storage';
 
+// Handle OPTIONS for CORS preflight
+export const OPTIONS: APIRoute = async () => {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Max-Age': '86400'
+    }
+  });
+};
+
 // GET /api/v1/joromi/sessions - List available agents or get specific session
 export const GET: APIRoute = async ({ url }) => {
   try {
@@ -15,7 +28,12 @@ export const GET: APIRoute = async ({ url }) => {
           error: 'Session not found'
         }), {
           status: 404,
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+          }
         });
       }
       
@@ -24,7 +42,12 @@ export const GET: APIRoute = async ({ url }) => {
         session: session
       }), {
         status: 200,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+        }
       });
     }
     
@@ -34,7 +57,12 @@ export const GET: APIRoute = async ({ url }) => {
       agents: JOROMI_AGENTS
     }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      }
     });
     
   } catch (error) {
@@ -44,7 +72,12 @@ export const GET: APIRoute = async ({ url }) => {
       error: 'Internal server error'
     }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      }
     });
   }
 };
@@ -61,7 +94,12 @@ export const POST: APIRoute = async ({ request }) => {
         error: 'User ID is required'
       }), {
         status: 400,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+        }
       });
     }
     
@@ -83,6 +121,9 @@ export const POST: APIRoute = async ({ request }) => {
     
     // Store session
     joromiSessions.set(sessionId, session);
+    console.log(`✅ [SESSIONS] Created session: ${sessionId}`);
+    console.log(`📊 [SESSIONS] Storage size: ${joromiSessions.size}`);
+    console.log(`📋 [SESSIONS] All sessions:`, Array.from(joromiSessions.keys()));
     
     // Add greeting message
     if (agent) {
@@ -102,7 +143,12 @@ export const POST: APIRoute = async ({ request }) => {
       session: session
     }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      }
     });
     
   } catch (error) {
@@ -112,7 +158,12 @@ export const POST: APIRoute = async ({ request }) => {
       error: 'Failed to create session'
     }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      }
     });
   }
 };

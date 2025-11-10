@@ -94,106 +94,48 @@
     }
 
     function openIndustryAuth() {
-      console.log('🔧 openIndustryAuth called');
-      console.log('🔧 [VERBOSE] Current window state:', {
-        userAgent: navigator.userAgent,
-        url: window.location.href,
-        readyState: document.readyState,
-        timestamp: new Date().toISOString()
-      });
+      console.log('🔧 openIndustryAuth called - redirecting to UnifiedAuthModal');
       
-      // Enhanced retry logic with comprehensive error logging
-      function tryOpenIndustryAuth(attempts = 0, maxAttempts = 10) { // Reduced for faster response
-        console.log(`🔧 [VERBOSE] Attempting to open Industry Auth modal (attempt ${attempts + 1}/${maxAttempts})`);
-        console.log(`🔧 [VERBOSE] Current attempt details:`, {
-          attempt: attempts + 1,
-          maxAttempts,
-          timestamp: new Date().toISOString(),
-          windowFunctions: Object.keys(window).filter(k => k.includes('Industry') || k.includes('Auth') || k.includes('open')),
-          documentReadyState: document.readyState,
-          scriptsLoaded: document.querySelectorAll('script').length
-        });
-        
-        if (typeof window.openIndustryAuthModal === 'function') {
-          console.log('✅ [VERBOSE] Industry Auth modal function found, opening...');
-          console.log('✅ [VERBOSE] Function details:', {
-            functionType: typeof window.openIndustryAuthModal,
-            functionName: 'openIndustryAuthModal',
-            functionExists: true,
-            timestamp: new Date().toISOString()
-          });
-          
-          try {
-            window.openIndustryAuthModal();
-            closeMenuIfOpen();
-            console.log('✅ [VERBOSE] Industry Auth modal opened successfully');
-            console.log('✅ [VERBOSE] Modal state after opening:', {
-              modalElement: document.getElementById('industry-auth-modal'),
-              modalVisible: document.getElementById('industry-auth-modal')?.classList.contains('hidden') === false,
-              timestamp: new Date().toISOString()
-            });
-          } catch (error) {
-            console.error('❌ [VERBOSE] Error opening Industry Auth modal:', {
-              error: error,
-              message: error.message,
-              stack: error.stack,
-              name: error.name,
-              timestamp: new Date().toISOString(),
-              windowState: {
-                userAgent: navigator.userAgent,
-                url: window.location.href,
-                readyState: document.readyState
-              }
-            });
-            alert('Authentication service encountered an error. Please try again later.');
-          }
-        } else if (attempts < maxAttempts) {
-          console.log(`⏳ [VERBOSE] Industry Auth modal not available, waiting... (attempt ${attempts + 1}/${maxAttempts})`);
-          console.log(`⏳ [VERBOSE] Current window state:`, {
-            openIndustryAuthModal: typeof window.openIndustryAuthModal,
-            allWindowFunctions: Object.keys(window).filter(k => k.includes('open') || k.includes('Industry') || k.includes('Auth')),
-            scripts: Array.from(document.querySelectorAll('script')).map(s => s.src || s.textContent?.substring(0, 100)),
-            timestamp: new Date().toISOString()
-          });
-          
-          setTimeout(() => {
-            tryOpenIndustryAuth(attempts + 1, maxAttempts);
-          }, 100); // Reduced delay for faster response
-        } else {
-          console.error('❌ [VERBOSE] Industry Auth modal still not available after waiting');
-          console.error('❌ [VERBOSE] Final failure state:', {
-            attempts: attempts,
-            maxAttempts,
-            openIndustryAuthModal: typeof window.openIndustryAuthModal,
-            availableFunctions: Object.keys(window).filter(k => k.includes('Industry') || k.includes('Auth')),
-            allWindowKeys: Object.keys(window).slice(0, 20), // First 20 keys
-            scripts: Array.from(document.querySelectorAll('script')).map(s => ({
-              src: s.src,
-              type: s.type,
-              async: s.async,
-              defer: s.defer
-            })),
-            timestamp: new Date().toISOString()
-          });
-          
-          // Try alternative approach - check if modal exists and open it directly
-          const modal = document.getElementById('industry-auth-modal');
-          if (modal) {
-            console.log('🔄 [FALLBACK] Opening modal directly via DOM manipulation');
-            modal.classList.remove('hidden');
-            modal.style.display = 'block';
-            closeMenuIfOpen();
-            return;
-          }
-          
-          alert('Authentication service is temporarily unavailable. Please try again later.');
+      // Use UnifiedAuthModal instead of IndustryAuthModal
+      if (typeof window.openUnifiedAuthModal === 'function') {
+        console.log('✅ openUnifiedAuthModal function found, opening...');
+        try {
+          window.openUnifiedAuthModal();
+          closeMenuIfOpen();
+          console.log('✅ Unified Auth modal opened successfully');
+          return;
+        } catch (error) {
+          console.error('❌ Error opening Unified Auth modal:', error);
+          alert('Authentication service encountered an error. Please try again later.');
+          return;
         }
       }
       
-      // Add minimal delay to allow module scripts to load
-      setTimeout(() => {
-        tryOpenIndustryAuth();
-      }, 100); // Reduced initial delay
+      // Fallback: Try openClientLogin if available
+      if (typeof window.openClientLogin === 'function') {
+        console.log('🔄 Falling back to openClientLogin');
+        try {
+          window.openClientLogin();
+          closeMenuIfOpen();
+          return;
+        } catch (error) {
+          console.error('❌ Error with openClientLogin:', error);
+        }
+      }
+      
+      // Final fallback: Try to open modal directly
+      const modal = document.getElementById('unified-auth-modal');
+      if (modal) {
+        console.log('🔄 Opening unified-auth-modal directly via DOM');
+        modal.classList.remove('hidden');
+        modal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        closeMenuIfOpen();
+        return;
+      }
+      
+      console.error('❌ Unified Auth modal not available');
+      alert('Authentication service is temporarily unavailable. Please refresh the page and try again.');
     }
 
     // Code Academy buttons

@@ -197,6 +197,16 @@ export const POST: APIRoute = async ({ request, locals }) => {
       sessionId
     });
 
+    // CRITICAL: Log the verification object structure BEFORE using it
+    console.log(`🔍 [${requestId}] Verification object structure:`, {
+      verification,
+      verificationType: typeof verification,
+      verificationKeys: verification ? Object.keys(verification) : 'N/A',
+      verificationId: verification?.verificationId,
+      hasVerificationId: !!verification?.verificationId,
+      verificationIdType: typeof verification?.verificationId
+    });
+    
     console.log(`✅ [${requestId}] Verification initiated successfully:`, {
       verificationId: verification.verificationId,
       phoneNumber: verification.phoneNumber,
@@ -207,13 +217,59 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const responseTime = Date.now() - startTime;
     console.log(`⏱️ [${requestId}] Total request time: ${responseTime}ms`);
 
-    return createSuccessResponse({
+    // CRITICAL: Validate verification object before using it
+    if (!verification || !verification.verificationId) {
+      console.error(`❌ [${requestId}] CRITICAL ERROR: verification object is invalid:`, {
+        verification,
+        hasVerification: !!verification,
+        verificationId: verification?.verificationId,
+        verificationKeys: verification ? Object.keys(verification) : 'N/A',
+        verificationType: typeof verification
+      });
+      throw new Error('Verification object is missing or invalid. verificationId is required.');
+    }
+    
+    // Prepare response data
+    const responseData = {
       verificationId: verification.verificationId,
       message: `Verification ${method.toUpperCase()} sent successfully`,
       estimatedDelivery: method === 'sms' ? '30-60 seconds' : '10-30 seconds',
       requestId,
       responseTime
+    };
+    
+    // CRITICAL: Log what we're about to send
+    console.log(`📤 [${requestId}] Preparing response data:`, {
+      verificationId: responseData.verificationId,
+      hasVerificationId: !!responseData.verificationId,
+      verificationObject: verification,
+      verificationKeys: Object.keys(verification),
+      responseDataKeys: Object.keys(responseData),
+      responseDataStringified: JSON.stringify(responseData)
     });
+    
+    // CRITICAL: Validate responseData before sending
+    if (!responseData.verificationId) {
+      console.error(`❌ [${requestId}] CRITICAL ERROR: responseData.verificationId is missing!`, {
+        responseData,
+        verification,
+        verificationId: verification.verificationId
+      });
+      throw new Error('Cannot send response: verificationId is missing from responseData');
+    }
+    
+    const response = createSuccessResponse(responseData);
+    
+    // Log the actual response body being sent
+    const responseBody = JSON.stringify({
+      success: true,
+      ...responseData,
+      timestamp: new Date().toISOString()
+    });
+    console.log(`📤 [${requestId}] Response body being sent:`, responseBody);
+    console.log(`📤 [${requestId}] Response body parsed:`, JSON.parse(responseBody));
+    
+    return response;
 
   } catch (error) {
     const responseTime = Date.now() - startTime;

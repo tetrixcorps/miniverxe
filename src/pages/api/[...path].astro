@@ -326,6 +326,32 @@ export const POST: APIRoute = async ({ request, params }) => {
   const hostname = request.headers.get('host') || '';
   const path = params.path || '';
   
+  // Skip catch-all for specific frontend API routes that have dedicated route files
+  // These routes are handled by specific files and should not go through the catch-all
+  const specificRoutes = [
+    'v2/auth/countries',  // Handled by src/pages/api/v2/auth/countries.ts
+    'v1/joromi',  // JoRoMi API routes
+    'v1/joromi/sessions',  // JoRoMi sessions
+  ];
+  
+  // Check if this path matches any specific route pattern
+  const isSpecificRoute = specificRoutes.some(route => path === route || path.startsWith(route + '/'));
+  
+  if (isSpecificRoute) {
+    // This should never be reached if the specific route exists in the build
+    // Return 404 to indicate the route should be handled by a specific file
+    // If the specific route file exists, Astro will handle it before this catch-all
+    console.warn(`⚠️ [CATCH-ALL POST] Specific route matched but handler not found: /api/${path}`);
+    return new Response(JSON.stringify({
+      error: "Route not found",
+      path: `/api/${path}`,
+      message: "This route should be handled by a specific route handler. If you see this, the route file may not be in the build output."
+    }), {
+      status: 404,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+  
   // HYBRID ROUTING SYSTEM: Handles both local development and production (Docker/droplet)
   // Determine environment and routing strategy
   const isLocalDev = hostname.includes('localhost') || hostname.includes('127.0.0.1');

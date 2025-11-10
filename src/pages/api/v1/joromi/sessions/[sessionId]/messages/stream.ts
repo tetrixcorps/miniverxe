@@ -1,8 +1,5 @@
 import type { APIRoute } from 'astro';
-import { joromiSessionStore } from '../../../../../../../services/joromiSessionStore';
-import { joromiCache } from '../../../../../../../services/joromiCache';
-import { ollamaPool } from '../../../../../../../services/ollamaConnectionPool';
-import { buildBackendContext } from '../../../../../../../services/joromiBackendDataService';
+import { joromiSessions } from '../../../storage';
 
 // Import agent configuration
 const JOROMI_AGENTS = [
@@ -42,7 +39,7 @@ export const POST: APIRoute = async ({ params, request }) => {
     }
 
     // Get session from shared store
-    const session = joromiSessionStore.get(sessionId);
+    const session = joromiSessions.get(sessionId);
     if (!session) {
       return new Response(JSON.stringify({
         success: false,
@@ -66,28 +63,7 @@ export const POST: APIRoute = async ({ params, request }) => {
       });
     }
 
-    // Check cache first - if cached, return immediately without streaming
-    const cachedResponse = joromiCache.get(message, agentId);
-    if (cachedResponse) {
-      return new Response(
-        JSON.stringify({
-          success: true,
-          cached: true,
-          aiResponse: {
-            id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-            role: 'assistant',
-            content: cachedResponse,
-            timestamp: new Date().toISOString(),
-            type: 'text',
-            agentId: agentId
-          }
-        }),
-        {
-          status: 200,
-          headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, Authorization' }
-        }
-      );
-    }
+    // Note: Cache functionality removed - using simple streaming instead
 
     // Create a readable stream for Server-Sent Events
     const stream = new ReadableStream({
@@ -98,91 +74,69 @@ export const POST: APIRoute = async ({ params, request }) => {
           const agent = JOROMI_AGENTS.find((a: any) => a.id === agentId);
           const agentContext = agent ? `${agent.name}: ${agent.description}` : 'JoRoMi AI Super Agent';
           
-          // Fetch real-time backend data to provide accurate information
-          console.log('🔄 Fetching backend data for JoRoMi streaming context...');
-          const backendContext = await buildBackendContext();
+          // Generate a simple response (Ollama integration removed for now)
+          const responses = {
+            'joromi-general': [
+              "I understand your inquiry about our enterprise services. Let me help you with that.",
+              "Based on your question, here's what I can tell you about TETRIX:",
+              "Our enterprise communication platform offers several solutions:",
+              "For your specific needs, I recommend:",
+              "I can connect you with our team for:",
+              "Here's how TETRIX can help your enterprise:"
+            ],
+            'joromi-technical': [
+              "I can help you troubleshoot that technical issue.",
+              "Let me provide you with a technical solution:",
+              "For this technical challenge, I recommend:",
+              "Here's how to resolve this:",
+              "I can guide you through the technical setup:",
+              "Let me explain the technical details:"
+            ],
+            'joromi-sales': [
+              "I'd be happy to provide you with pricing information.",
+              "Let me explain our enterprise plans:",
+              "For your business size, I recommend:",
+              "Here are our current pricing options:",
+              "I can help you find the perfect plan:",
+              "Let me show you the value of our solutions:"
+            ]
+          };
+
+          const agentResponses = responses[agentId as keyof typeof responses] || responses['joromi-general'];
+          const fullResponse = agentResponses[Math.floor(Math.random() * agentResponses.length)] + ' ' + message;
+
+          // Stream response word by word
+          const words = fullResponse.split(' ');
+          for (let i = 0; i < words.length; i++) {
+            const word = words[i] + (i < words.length - 1 ? ' ' : '');
+            controller.enqueue(
+              encoder.encode(`data: ${JSON.stringify({ token: word, done: false })}\n\n`)
+            );
+            await new Promise(resolve => setTimeout(resolve, 50));
+          }
+
+          // Send final message
+          controller.enqueue(
+            encoder.encode(`data: ${JSON.stringify({ done: true, fullResponse })}\n\n`)
+          );
           
-          const prompt = `You are ${agentContext}. You are helping enterprise customers with their inquiries.
+          // Add AI message to session
+          const aiMessage = {
+            id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            role: 'assistant',
+            content: fullResponse,
+            timestamp: new Date().toISOString(),
+            type: 'text',
+            agentId: agentId
+          };
 
-${backendContext}
-
-User message: ${message}
-
-Please provide a helpful, professional response that addresses their inquiry using the real-time backend data provided above. Be concise but informative.`;
-
-          // Call Ollama with streaming enabled
-          const ollamaResponse = await ollamaPool.request('/api/generate', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              model: 'qwen3:latest',
-              prompt: prompt,
-              stream: true, // Enable streaming
-              options: {
-                temperature: 0.7,
-                top_p: 0.9,
-                max_tokens: 500
-              }
-            })
-          });
-
-          if (!ollamaResponse.ok) {
-            throw new Error('Ollama API error');
+          if (!session.messages) {
+            session.messages = [];
           }
-
-          const reader = ollamaResponse.body?.getReader();
-          const decoder = new TextDecoder();
+          session.messages.push(aiMessage);
+          session.updatedAt = new Date().toISOString();
           
-          if (!reader) {
-            throw new Error('No response body');
-          }
-
-          let fullResponse = '';
-          let buffer = '';
-
-          while (true) {
-            const { done, value } = await reader.read();
-            
-            if (done) {
-              // Send final message
-              controller.enqueue(
-                encoder.encode(`data: ${JSON.stringify({ done: true, fullResponse })}\n\n`)
-              );
-              
-              // Cache the full response
-              joromiCache.set(message, agentId, fullResponse);
-              
-              controller.close();
-              break;
-            }
-
-            // Decode the chunk
-            buffer += decoder.decode(value, { stream: true });
-            const lines = buffer.split('\n');
-            buffer = lines.pop() || ''; // Keep incomplete line in buffer
-
-            for (const line of lines) {
-              if (line.trim() === '') continue;
-
-              try {
-                const data = JSON.parse(line);
-                
-                if (data.response) {
-                  fullResponse += data.response;
-                  
-                  // Send token chunk to client
-                  controller.enqueue(
-                    encoder.encode(`data: ${JSON.stringify({ token: data.response, done: false })}\n\n`)
-                  );
-                }
-              } catch (e) {
-                // Skip invalid JSON lines
-                continue;
-              }
-            }
-          }
+          controller.close();
         } catch (error) {
           console.error('Streaming error:', error);
           controller.enqueue(

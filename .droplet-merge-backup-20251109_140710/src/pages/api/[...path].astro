@@ -1,0 +1,379 @@
+---
+// API Gateway - Routes all API requests to appropriate services
+import type { APIRoute } from 'astro';
+
+export const prerender = false;
+
+export const GET: APIRoute = async ({ request, params }) => {
+  const url = new URL(request.url);
+  const hostname = request.headers.get('host') || '';
+  const path = params.path || '';
+  
+  // Check if this is an authentication request that needs proxying
+  if (path.includes('v2/2fa/') || path.includes('v2/industry-auth/') || path.includes('dashboards/')) {
+    const productionUrl = `https://tetrix-minimal-uzzxn.ondigitalocean.app/api/${path}${url.search}`;
+    
+    console.log(`🔄 [AUTH-PROXY] Redirecting authentication request to: ${productionUrl}`);
+    
+    try {
+      const response = await fetch(productionUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': request.headers.get('user-agent') || 'TetrixAuthProxy/1.0',
+          'Accept': request.headers.get('accept') || 'application/json',
+        }
+      });
+      
+      const data = await response.text();
+      
+      return new Response(data, {
+        status: response.status,
+        headers: {
+          'Content-Type': response.headers.get('content-type') || 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        }
+      });
+    } catch (error) {
+      console.error('❌ [AUTH-PROXY] Error proxying authentication request:', error);
+      return new Response(JSON.stringify({ error: 'Authentication proxy failed' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+  }
+  
+  // Route based on subdomain
+  if (hostname.startsWith('api.')) {
+    // API Gateway routing
+    return new Response(JSON.stringify({
+      service: 'TETRIX API Gateway',
+      subdomain: 'api',
+      path: path,
+      status: 'operational',
+      timestamp: new Date().toISOString(),
+      endpoints: {
+        '/health': 'Health check endpoint',
+        '/voice': 'Voice API services',
+        '/messaging': 'Messaging services',
+        '/auth': 'Authentication services',
+        '/projects': 'Project management',
+        '/users': 'User management'
+      }
+    }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      }
+    });
+  }
+  
+  if (hostname.startsWith('iot.')) {
+    // IoT Gateway routing
+    return new Response(JSON.stringify({
+      service: 'TETRIX IoT Gateway',
+      subdomain: 'iot',
+      path: path,
+      status: 'operational',
+      timestamp: new Date().toISOString(),
+      endpoints: {
+        '/devices': 'Device management',
+        '/telemetry': 'Telemetry data',
+        '/fleet': 'Fleet management',
+        '/analytics': 'IoT analytics',
+        '/alerts': 'Alert management'
+      }
+    }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      }
+    });
+  }
+  
+  if (hostname.startsWith('vpn.')) {
+    // VPN Gateway routing
+    return new Response(JSON.stringify({
+      service: 'TETRIX VPN Gateway',
+      subdomain: 'vpn',
+      path: path,
+      status: 'operational',
+      timestamp: new Date().toISOString(),
+      endpoints: {
+        '/status': 'VPN status',
+        '/config': 'VPN configuration',
+        '/users': 'VPN user management',
+        '/logs': 'Connection logs',
+        '/security': 'Security settings'
+      }
+    }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      }
+    });
+  }
+  
+  // Default API response
+  return new Response(JSON.stringify({
+    service: 'TETRIX Platform',
+    status: 'operational',
+    timestamp: new Date().toISOString(),
+    message: 'Welcome to TETRIX API Gateway'
+  }), {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    }
+  });
+};
+
+export const POST: APIRoute = async ({ request, params }) => {
+  const url = new URL(request.url);
+  const hostname = request.headers.get('host') || '';
+  const path = params.path || '';
+  
+  // Check if this is an authentication request that needs proxying
+  if (path.includes('v2/2fa/') || path.includes('v2/industry-auth/') || path.includes('dashboards/')) {
+    const productionUrl = `https://tetrix-minimal-uzzxn.ondigitalocean.app/api/${path}${url.search}`;
+    
+    console.log(`🔄 [AUTH-PROXY] Redirecting authentication POST request to: ${productionUrl}`);
+    
+    try {
+      // Get the request body
+      const body = await request.text();
+      
+      const response = await fetch(productionUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': request.headers.get('content-type') || 'application/json',
+          'User-Agent': request.headers.get('user-agent') || 'TetrixAuthProxy/1.0',
+          'Accept': request.headers.get('accept') || 'application/json',
+        },
+        body: body
+      });
+      
+      const data = await response.text();
+      
+      return new Response(data, {
+        status: response.status,
+        headers: {
+          'Content-Type': response.headers.get('content-type') || 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        }
+      });
+    } catch (error) {
+      console.error('❌ [AUTH-PROXY] Error proxying authentication POST request:', error);
+      return new Response(JSON.stringify({ error: 'Authentication proxy failed' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+  }
+  
+  // Handle voice webhooks specifically
+  if (path === 'voice/webhook') {
+    try {
+      const body = await request.json();
+      const { event_type, data } = body;
+      
+      console.log('Voice webhook received:', {
+        event_type,
+        call_control_id: data?.call_control_id,
+        from: data?.from,
+        to: data?.to,
+        timestamp: new Date().toISOString()
+      });
+
+      let twiMLResponse = '';
+
+      // Handle different event types
+      switch (event_type) {
+        case 'call.initiated':
+        case 'call.answered':
+          // Generate greeting with menu
+          twiMLResponse = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Say voice="alice">Welcome to TETRIX Enterprise Solutions. Press 1 for sales, 2 for support, 3 for billing, or 0 to speak with an operator.</Say>
+  <Gather numDigits="1" action="${process.env.WEBHOOK_BASE_URL || 'https://tetrixcorp.com'}/api/voice/webhook" method="POST" timeout="10">
+    <Say voice="alice">Please make your selection.</Say>
+  </Gather>
+  <Say voice="alice">We didn't receive any input. Please call back later. Goodbye.</Say>
+  <Hangup/>
+</Response>`;
+          break;
+        case 'call.gather.ended':
+          // Handle DTMF input
+          const dtmf = data?.digits || data?.dtmf;
+          if (dtmf) {
+            const webhookUrl = process.env.WEBHOOK_BASE_URL || 'https://tetrixcorp.com';
+            
+            switch (dtmf) {
+              case '1': // Sales
+                twiMLResponse = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Say voice="alice">Thank you for your interest in our sales department. Please hold while we connect you to a sales representative.</Say>
+  <Dial timeout="30" record="record-from-answer">
+    <Number>+1-888-804-6762</Number>
+  </Dial>
+  <Say voice="alice">The call could not be completed. Please try again later.</Say>
+  <Hangup/>
+</Response>`;
+                break;
+              case '2': // Support
+                twiMLResponse = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Say voice="alice">You have reached our technical support team. Please hold while we connect you to a support specialist.</Say>
+  <Dial timeout="30" record="record-from-answer">
+    <Number>+1-800-596-3057</Number>
+  </Dial>
+  <Say voice="alice">The call could not be completed. Please try again later.</Say>
+  <Hangup/>
+</Response>`;
+                break;
+              case '3': // Billing
+                twiMLResponse = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Say voice="alice">You have reached our billing department. Please hold while we connect you to a billing specialist.</Say>
+  <Dial timeout="30" record="record-from-answer">
+    <Number>+1-888-804-6762</Number>
+  </Dial>
+  <Say voice="alice">The call could not be completed. Please try again later.</Say>
+  <Hangup/>
+</Response>`;
+                break;
+              case '0': // Operator
+                twiMLResponse = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Say voice="alice">Please hold while we connect you to an operator.</Say>
+  <Dial timeout="30" record="record-from-answer">
+    <Number>+1-800-596-3057</Number>
+  </Dial>
+  <Say voice="alice">The call could not be completed. Please try again later.</Say>
+  <Hangup/>
+</Response>`;
+                break;
+              default: // Invalid
+                twiMLResponse = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Say voice="alice">Invalid selection. Please try again.</Say>
+  <Redirect>${webhookUrl}/api/voice/webhook</Redirect>
+</Response>`;
+            }
+          } else {
+            twiMLResponse = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Say voice="alice">Welcome to TETRIX Enterprise Solutions. Press 1 for sales, 2 for support, 3 for billing, or 0 to speak with an operator.</Say>
+  <Gather numDigits="1" action="${process.env.WEBHOOK_BASE_URL || 'https://tetrixcorp.com'}/api/voice/webhook" method="POST" timeout="10">
+    <Say voice="alice">Please make your selection.</Say>
+  </Gather>
+  <Say voice="alice">We didn't receive any input. Please call back later. Goodbye.</Say>
+  <Hangup/>
+</Response>`;
+          }
+          break;
+        case 'call.hangup':
+          // Call ended
+          twiMLResponse = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Hangup/>
+</Response>`;
+          break;
+        default:
+          console.log('Unhandled voice event:', event_type);
+          twiMLResponse = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Say voice="alice">Welcome to TETRIX Enterprise Solutions. Press 1 for sales, 2 for support, 3 for billing, or 0 to speak with an operator.</Say>
+  <Gather numDigits="1" action="${process.env.WEBHOOK_BASE_URL || 'https://tetrixcorp.com'}/api/voice/webhook" method="POST" timeout="10">
+    <Say voice="alice">Please make your selection.</Say>
+  </Gather>
+  <Say voice="alice">We didn't receive any input. Please call back later. Goodbye.</Say>
+  <Hangup/>
+</Response>`;
+      }
+
+      return new Response(twiMLResponse, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/xml; charset=utf-8',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'X-Content-Type-Options': 'nosniff'
+        }
+      });
+
+    } catch (error) {
+      console.error('Voice webhook processing failed:', error);
+      
+      // Always return TwiML for voice webhooks
+      const errorTwiML = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Say voice="alice">We're experiencing technical difficulties. Please try again later.</Say>
+  <Hangup/>
+</Response>`;
+      
+      return new Response(errorTwiML, {
+        status: 200, // Return 200 to avoid Telnyx retries
+        headers: {
+          'Content-Type': 'text/xml; charset=utf-8',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'X-Content-Type-Options': 'nosniff'
+        }
+      });
+    }
+  }
+  
+  // Handle POST requests based on subdomain
+  if (hostname.startsWith('api.')) {
+    // Process API requests
+    return new Response(JSON.stringify({
+      service: 'TETRIX API Gateway',
+      method: 'POST',
+      subdomain: 'api',
+      path: path,
+      status: 'processed',
+      timestamp: new Date().toISOString()
+    }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
+    });
+  }
+  
+  return new Response(JSON.stringify({
+    error: 'Method not supported',
+    status: 405
+  }), {
+    status: 405,
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+};
+
+export const OPTIONS: APIRoute = async ({ request }) => {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Max-Age': '86400'
+    }
+  });
+};
