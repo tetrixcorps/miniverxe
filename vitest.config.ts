@@ -5,12 +5,15 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: ['./src/test/setup.ts'],
+    setupFiles: ['./tests/setup.js', './src/test/setup.ts'],
     include: [
       'src/**/*.{test,spec}.{js,ts,jsx,tsx}',
       'src/components/auth/__tests__/**/*.{test,spec}.{js,ts}',
       'src/services/__tests__/**/*.{test,spec}.{js,ts}',
-      'src/pages/api/v2/2fa/__tests__/**/*.{test,spec}.{js,ts}'
+      'src/pages/api/v2/2fa/__tests__/**/*.{test,spec}.{js,ts}',
+      'tests/unit/**/*.{test,spec}.{js,ts}',
+      'tests/functional/**/*.{test,spec}.{js,ts}',
+      'tests/integration/**/*.{test,spec}.{js,ts}'
     ],
     exclude: [
       'node_modules',

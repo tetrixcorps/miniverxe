@@ -1,6 +1,21 @@
 ---
 // Unified Client Dashboard - MVP Implementation
 // Single dashboard with industry-specific sections
+// Refactored with modern UI/UX best practices and React Islands
+
+import DashboardMetrics from '../../components/dashboard/react/DashboardMetrics';
+import SalesforceWidget from '../../components/dashboard/react/SalesforceWidget';
+import HubSpotWidget from '../../components/dashboard/react/HubSpotWidget';
+import EpicWidget from '../../components/dashboard/react/EpicWidget';
+import FleetContactManagement from '../../components/dashboard/FleetContactManagement.astro';
+
+// Server-Side Logic: Fetch User Session
+const cookie = Astro.request.headers.get('cookie');
+const hasSession = cookie?.includes('tetrix_access_token') || cookie?.includes('better-auth.session_token');
+
+if (!hasSession) {
+  return Astro.redirect('/login?redirect=/dashboards/client');
+}
 ---
 
 <div class="min-h-screen bg-gray-50">
@@ -19,7 +34,11 @@
             <div class="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
             System Online
           </div>
-          <button id="refresh-btn" class="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+          <button 
+            onclick="window.location.reload()"
+            class="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+            aria-label="Refresh"
+          >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
             </svg>
@@ -34,7 +53,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <nav class="flex space-x-8" aria-label="Tabs">
         <button 
-          class="tab-button py-4 px-1 border-b-2 font-medium text-sm transition-colors" 
+          class="tab-button py-4 px-1 border-b-2 border-blue-500 text-blue-600 font-medium text-sm transition-colors" 
           data-industry="fleet"
           data-active="true"
         >
@@ -46,7 +65,7 @@
           </div>
         </button>
         <button 
-          class="tab-button py-4 px-1 border-b-2 font-medium text-sm transition-colors" 
+          class="tab-button py-4 px-1 border-b-2 border-transparent text-gray-500 font-medium text-sm transition-colors hover:text-gray-700 hover:border-gray-300" 
           data-industry="healthcare"
         >
           <div class="flex items-center">
@@ -57,7 +76,7 @@
           </div>
         </button>
         <button 
-          class="tab-button py-4 px-1 border-b-2 font-medium text-sm transition-colors" 
+          class="tab-button py-4 px-1 border-b-2 border-transparent text-gray-500 font-medium text-sm transition-colors hover:text-gray-700 hover:border-gray-300" 
           data-industry="legal"
         >
           <div class="flex items-center">
@@ -73,214 +92,60 @@
 
   <!-- Main Dashboard Content -->
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Universal Metrics -->
-    <div id="universal-metrics" class="mb-8">
-      <!-- Will be populated by JavaScript -->
-    </div>
-
     <!-- Industry-Specific Content -->
     <div id="industry-content">
+      
       <!-- Fleet Management Content -->
       <div id="fleet-content" class="industry-section" style="display: block;">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- Vehicle Status Overview -->
-          <div class="bg-white rounded-lg shadow p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Vehicle Status</h3>
-            <div class="space-y-3">
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600">Active Vehicles</span>
-                <span id="fleet-active" class="text-2xl font-bold text-green-600">24</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600">In Maintenance</span>
-                <span id="fleet-maintenance" class="text-2xl font-bold text-yellow-600">3</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600">Offline</span>
-                <span id="fleet-offline" class="text-2xl font-bold text-red-600">1</span>
-              </div>
-            </div>
+        <!-- Metrics -->
+        <div class="mb-8">
+          <DashboardMetrics client:load industry="logistics" />
           </div>
 
-          <!-- Driver Performance -->
-          <div class="bg-white rounded-lg shadow p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Driver Performance</h3>
-            <div class="space-y-3">
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600">Average Score</span>
-                <span id="fleet-driver-score" class="text-2xl font-bold text-blue-600">8.7</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600">Top Performers</span>
-                <span id="fleet-top-drivers" class="text-sm text-gray-500">5 drivers</span>
-              </div>
-            </div>
+        <!-- Management & Integrations -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div class="lg:col-span-2">
+             <FleetContactManagement industry="logistics" customerId="customer_123" />
           </div>
-
-          <!-- Fuel Efficiency -->
-          <div class="bg-white rounded-lg shadow p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Fuel Efficiency</h3>
-            <div class="space-y-3">
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600">Average MPG</span>
-                <span id="fleet-mpg" class="text-2xl font-bold text-green-600">12.4</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600">Cost Savings</span>
-                <span id="fleet-savings" class="text-2xl font-bold text-green-600">$2,340</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Recent Alerts -->
-        <div class="mt-8 bg-white rounded-lg shadow p-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Alerts</h3>
-          <div id="fleet-alerts" class="space-y-3">
-            <!-- Will be populated by JavaScript -->
+          <div class="space-y-6">
+            <SalesforceWidget client:visible />
+            <HubSpotWidget client:visible />
           </div>
         </div>
       </div>
 
       <!-- Healthcare Content -->
       <div id="healthcare-content" class="industry-section" style="display: none;">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- Patient Overview -->
-          <div class="bg-white rounded-lg shadow p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Patient Overview</h3>
-            <div class="space-y-3">
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600">Total Patients</span>
-                <span id="healthcare-patients" class="text-2xl font-bold text-blue-600">1,247</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600">New This Month</span>
-                <span id="healthcare-new" class="text-2xl font-bold text-green-600">89</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600">Appointments Today</span>
-                <span id="healthcare-appointments" class="text-2xl font-bold text-purple-600">23</span>
-              </div>
-            </div>
+        <!-- Metrics -->
+        <div class="mb-8">
+          <DashboardMetrics client:load industry="healthcare" />
           </div>
 
-          <!-- Revenue Dashboard -->
-          <div class="bg-white rounded-lg shadow p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Revenue</h3>
-            <div class="space-y-3">
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600">Monthly Revenue</span>
-                <span id="healthcare-revenue" class="text-2xl font-bold text-green-600">$45,230</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600">Insurance Claims</span>
-                <span id="healthcare-claims" class="text-2xl font-bold text-blue-600">156</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Clinical Metrics -->
-          <div class="bg-white rounded-lg shadow p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Clinical Metrics</h3>
-            <div class="space-y-3">
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600">Avg Satisfaction</span>
-                <span id="healthcare-satisfaction" class="text-2xl font-bold text-yellow-600">4.8</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600">Readmission Rate</span>
-                <span id="healthcare-readmission" class="text-2xl font-bold text-red-600">3.2%</span>
-              </div>
-            </div>
-          </div>
+        <!-- Integrations -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <EpicWidget client:visible />
+          <SalesforceWidget client:visible />
+          <HubSpotWidget client:visible />
         </div>
       </div>
 
       <!-- Legal Content -->
       <div id="legal-content" class="industry-section" style="display: none;">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- Case Overview -->
-          <div class="bg-white rounded-lg shadow p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Case Overview</h3>
-            <div class="space-y-3">
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600">Active Cases</span>
-                <span id="legal-cases" class="text-2xl font-bold text-blue-600">47</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600">Closed This Month</span>
-                <span id="legal-closed" class="text-2xl font-bold text-green-600">12</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600">Upcoming Deadlines</span>
-                <span id="legal-deadlines" class="text-2xl font-bold text-red-600">8</span>
-              </div>
-            </div>
+        <!-- Metrics -->
+        <div class="mb-8">
+          <DashboardMetrics client:load industry="legal" />
           </div>
 
-          <!-- Billing Dashboard -->
-          <div class="bg-white rounded-lg shadow p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Billing</h3>
-            <div class="space-y-3">
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600">Billable Hours</span>
-                <span id="legal-hours" class="text-2xl font-bold text-blue-600">142</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600">Monthly Revenue</span>
-                <span id="legal-revenue" class="text-2xl font-bold text-green-600">$28,400</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600">Outstanding Invoices</span>
-                <span id="legal-invoices" class="text-2xl font-bold text-yellow-600">$12,500</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Client Satisfaction -->
-          <div class="bg-white rounded-lg shadow p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Client Satisfaction</h3>
-            <div class="space-y-3">
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600">Average Rating</span>
-                <span id="legal-rating" class="text-2xl font-bold text-yellow-600">4.9</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600">Recent Feedback</span>
-                <span id="legal-feedback" class="text-sm text-gray-500">15 reviews</span>
-              </div>
-            </div>
-          </div>
+        <!-- Integrations -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <SalesforceWidget client:visible />
+          <HubSpotWidget client:visible />
         </div>
       </div>
+
     </div>
   </div>
 </div>
-
-<style>
-  .tab-button {
-    border-color: transparent;
-    color: #6b7280;
-  }
-  
-  .tab-button[data-active="true"] {
-    border-color: #3b82f6;
-    color: #3b82f6;
-  }
-  
-  .tab-button:hover {
-    color: #374151;
-    border-color: #d1d5db;
-  }
-  
-  .industry-section {
-    display: none;
-  }
-  
-  .industry-section.active {
-    display: block;
-  }
-</style>
 
 <script>
   // Dashboard functionality
@@ -297,13 +162,9 @@
     init() {
       this.setupEventListeners();
       this.updateUserRoleBadge();
-      this.loadDashboardData();
-      this.setupRealTimeUpdates();
     }
 
     detectUserRole(): string {
-      // In a real implementation, this would come from authentication
-      // For MVP, we'll use localStorage or URL parameters
       const urlParams = new URLSearchParams(window.location.search);
       const role = urlParams.get('role') || localStorage.getItem('userRole') || 'fleet_manager';
       
@@ -327,14 +188,6 @@
           }
         });
       });
-
-      // Refresh button
-      const refreshBtn = document.getElementById('refresh-btn');
-      if (refreshBtn) {
-        refreshBtn.addEventListener('click', () => {
-          this.loadDashboardData();
-        });
-      }
     }
 
     switchIndustry(industry: string) {
@@ -364,7 +217,6 @@
         contentSection.style.display = 'block';
       }
       this.currentIndustry = industry;
-      this.loadIndustryData(industry);
     }
 
     updateUserRoleBadge() {
@@ -373,184 +225,6 @@
         badge.textContent = this.userRole;
       }
     }
-
-    async loadDashboardData() {
-      try {
-        // Load universal metrics
-        await this.loadUniversalMetrics();
-        
-        // Load industry-specific data
-        await this.loadIndustryData(this.currentIndustry);
-      } catch (error) {
-        console.error('Failed to load dashboard data:', error);
-      }
-    }
-
-    async loadUniversalMetrics() {
-      // Mock universal metrics - in real implementation, this would fetch from API
-      const metrics = {
-        activeUsers: 1247,
-        totalRevenue: 125430,
-        systemUptime: 99.9,
-        recentActivity: [
-          { type: 'login', user: 'John Doe', time: '2 minutes ago' },
-          { type: 'data_export', user: 'Jane Smith', time: '5 minutes ago' },
-          { type: 'alert', user: 'System', time: '10 minutes ago' }
-        ],
-        notifications: [
-          { type: 'info', message: 'System maintenance scheduled for tonight', time: '1 hour ago' },
-          { type: 'warning', message: 'High data usage detected', time: '2 hours ago' }
-        ]
-      };
-
-      // Update universal metrics display
-      this.updateUniversalMetrics(metrics);
-    }
-
-    updateUniversalMetrics(metrics: any) {
-      // This would update the universal metrics section
-      // For now, we'll just log the data
-      console.log('Universal metrics loaded:', metrics);
-    }
-
-    async loadIndustryData(industry: string) {
-      const data = await this.fetchIndustryData(industry);
-      this.updateIndustryDisplay(industry, data);
-    }
-
-    async fetchIndustryData(industry: string) {
-      // Mock data - in real implementation, this would fetch from appropriate APIs
-      const mockData: Record<string, any> = {
-        fleet: {
-          active: 24,
-          maintenance: 3,
-          offline: 1,
-          driverScore: 8.7,
-          topDrivers: 5,
-          mpg: 12.4,
-          savings: 2340,
-          alerts: [
-            { type: 'maintenance', message: 'Vehicle #123 needs oil change', time: '2 hours ago', priority: 'medium' },
-            { type: 'violation', message: 'Driver exceeded speed limit', time: '4 hours ago', priority: 'high' },
-            { type: 'fuel', message: 'Low fuel alert for Vehicle #456', time: '6 hours ago', priority: 'low' }
-          ]
-        },
-        healthcare: {
-          patients: 1247,
-          new: 89,
-          appointments: 23,
-          revenue: 45230,
-          claims: 156,
-          satisfaction: 4.8,
-          readmission: 3.2
-        },
-        legal: {
-          cases: 47,
-          closed: 12,
-          deadlines: 8,
-          hours: 142,
-          revenue: 28400,
-          invoices: 12500,
-          rating: 4.9,
-          feedback: 15
-        }
-      };
-
-      return mockData[industry] || {};
-    }
-
-    updateIndustryDisplay(industry: string, data: any) {
-      // Update fleet metrics
-      if (industry === 'fleet') {
-        const activeEl = document.getElementById('fleet-active');
-        const maintenanceEl = document.getElementById('fleet-maintenance');
-        const offlineEl = document.getElementById('fleet-offline');
-        const driverScoreEl = document.getElementById('fleet-driver-score');
-        const topDriversEl = document.getElementById('fleet-top-drivers');
-        const mpgEl = document.getElementById('fleet-mpg');
-        const savingsEl = document.getElementById('fleet-savings');
-
-        if (activeEl) activeEl.textContent = String(data.active || 0);
-        if (maintenanceEl) maintenanceEl.textContent = String(data.maintenance || 0);
-        if (offlineEl) offlineEl.textContent = String(data.offline || 0);
-        if (driverScoreEl) driverScoreEl.textContent = String(data.driverScore || 0);
-        if (topDriversEl) topDriversEl.textContent = `${data.topDrivers || 0} drivers`;
-        if (mpgEl) mpgEl.textContent = String(data.mpg || 0);
-        if (savingsEl) savingsEl.textContent = `$${data.savings || 0}`;
-
-        // Update alerts
-        const alertsContainer = document.getElementById('fleet-alerts');
-        if (data.alerts && alertsContainer) {
-          alertsContainer.innerHTML = data.alerts.map((alert: any) => `
-            <div class="flex items-center justify-between p-3 bg-${this.getAlertColor(alert.priority)}-50 rounded-lg">
-              <div>
-                <p class="text-sm font-medium text-gray-900">${alert.message}</p>
-                <p class="text-xs text-gray-500">${alert.time}</p>
-              </div>
-              <span class="px-2 py-1 text-xs font-medium rounded-full bg-${this.getAlertColor(alert.priority)}-100 text-${this.getAlertColor(alert.priority)}-800">
-                ${alert.priority}
-              </span>
-            </div>
-          `).join('');
-        }
-      }
-
-      // Update healthcare metrics
-      if (industry === 'healthcare') {
-        const patientsEl = document.getElementById('healthcare-patients');
-        const newEl = document.getElementById('healthcare-new');
-        const appointmentsEl = document.getElementById('healthcare-appointments');
-        const revenueEl = document.getElementById('healthcare-revenue');
-        const claimsEl = document.getElementById('healthcare-claims');
-        const satisfactionEl = document.getElementById('healthcare-satisfaction');
-        const readmissionEl = document.getElementById('healthcare-readmission');
-
-        if (patientsEl) patientsEl.textContent = String(data.patients || 0);
-        if (newEl) newEl.textContent = String(data.new || 0);
-        if (appointmentsEl) appointmentsEl.textContent = String(data.appointments || 0);
-        if (revenueEl) revenueEl.textContent = `$${data.revenue || 0}`;
-        if (claimsEl) claimsEl.textContent = String(data.claims || 0);
-        if (satisfactionEl) satisfactionEl.textContent = String(data.satisfaction || 0);
-        if (readmissionEl) readmissionEl.textContent = `${data.readmission || 0}%`;
-      }
-
-      // Update legal metrics
-      if (industry === 'legal') {
-        const casesEl = document.getElementById('legal-cases');
-        const closedEl = document.getElementById('legal-closed');
-        const deadlinesEl = document.getElementById('legal-deadlines');
-        const hoursEl = document.getElementById('legal-hours');
-        const revenueEl = document.getElementById('legal-revenue');
-        const invoicesEl = document.getElementById('legal-invoices');
-        const ratingEl = document.getElementById('legal-rating');
-        const feedbackEl = document.getElementById('legal-feedback');
-
-        if (casesEl) casesEl.textContent = String(data.cases || 0);
-        if (closedEl) closedEl.textContent = String(data.closed || 0);
-        if (deadlinesEl) deadlinesEl.textContent = String(data.deadlines || 0);
-        if (hoursEl) hoursEl.textContent = String(data.hours || 0);
-        if (revenueEl) revenueEl.textContent = `$${data.revenue || 0}`;
-        if (invoicesEl) invoicesEl.textContent = `$${data.invoices || 0}`;
-        if (ratingEl) ratingEl.textContent = String(data.rating || 0);
-        if (feedbackEl) feedbackEl.textContent = `${data.feedback || 0} reviews`;
-      }
-    }
-
-    getAlertColor(priority: string) {
-      const colorMap: Record<string, string> = {
-        'high': 'red',
-        'medium': 'yellow',
-        'low': 'green'
-      };
-      return colorMap[priority] || 'gray';
-    }
-
-    setupRealTimeUpdates() {
-      // Set up real-time updates every 30 seconds
-      setInterval(() => {
-        this.loadDashboardData();
-      }, 30000);
-    }
   }
 
   // Initialize dashboard when DOM is loaded
@@ -558,3 +232,18 @@
     new ClientDashboard();
   });
 </script>
+
+<style>
+  .industry-section {
+    display: none;
+  }
+  
+  .industry-section[style*="display: block"] {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>

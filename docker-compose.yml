@@ -1,11 +1,12 @@
 version: "3.9"
 
 services:
-  # TETRIX Main Website (Astro)
+  # TETRIX Main Website (Astro Frontend)
   tetrix-frontend:
     build:
       context: .
       dockerfile: Dockerfile.frontend
+    container_name: tetrix-frontend
     restart: unless-stopped
     ports:
       - "8082:8080"
@@ -15,18 +16,15 @@ services:
       - NODE_ENV=production
       - PORT=8080
       - HOST=0.0.0.0
-      - DATABASE_URL=${DATABASE_URL:-postgresql://tetrix_user:tetrix_password@tetrix-db:5432/tetrix_auth}
-      - TELNYX_API_KEY=${TELNYX_API_KEY}
-      - TELNYX_VERIFY_PROFILE_ID=${TELNYX_VERIFY_PROFILE_ID}
-      - TELNYX_PROFILE_ID=${TELNYX_PROFILE_ID}
-      - TELNYX_VERIFY_PUBLIC_KEY=${TELNYX_VERIFY_PUBLIC_KEY}
-      - TELNYX_MESSAGING_API_KEY=${TELNYX_MESSAGING_API_KEY}
-      - TELNYX_MESSAGING_PROFILE_ID=${TELNYX_MESSAGING_PROFILE_ID}
-      - TELNYX_FROM_NUMBER=${TELNYX_FROM_NUMBER}
-      - TELNYX_API_URL=${TELNYX_API_URL}
-      - WEBHOOK_BASE_URL=${WEBHOOK_BASE_URL}
+      # Backend URL for API proxying
+      - BACKEND_URL=http://tetrix-backend:3001
+      - TETRIX_BACKEND_URL=http://tetrix-backend:3001
+      # Frontend URLs
+      - WEBHOOK_BASE_URL=${WEBHOOK_BASE_URL:-http://localhost:8082}
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:8082,http://localhost:3000}
     depends_on:
-      - tetrix-backend
+      tetrix-backend:
+        condition: service_healthy
     networks:
       - tetrix-network
     healthcheck:
@@ -36,40 +34,66 @@ services:
       retries: 3
       start_period: 60s
 
-  # TETRIX Backend API
+  # TETRIX Backend API (Express + Better Auth)
   tetrix-backend:
     build:
       context: .
       dockerfile: Dockerfile.backend
+    container_name: tetrix-backend
     restart: unless-stopped
     ports:
-      - "3000:3001"
+      - "3001:3001"
     env_file:
       - docker.env
     environment:
       - NODE_ENV=production
+      - PORT=3001
+      - HOST=0.0.0.0
+      
+      # Database Configuration
       - DATABASE_URL=${DATABASE_URL:-postgresql://tetrix_user:tetrix_password@tetrix-db:5432/tetrix_auth}
-      - JWT_SECRET=${JWT_SECRET:-tetrix-jwt-secret-key-2024-production}
-      - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET:-tetrix-refresh-secret-key-2024-production}
+      
+      # JWT Configuration
+      - JWT_SECRET=${JWT_SECRET:-tetrix-jwt-secret-key-2024-production-change-me}
+      - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET:-tetrix-refresh-secret-key-2024-production-change-me}
+      
+      # Better Auth Configuration
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET:-${JWT_SECRET:-tetrix-auth-secret-change-in-production}}
+      - BETTER_AUTH_URL=${BETTER_AUTH_URL:-http://localhost:3001}
+      - BETTER_AUTH_BASE_URL=${BETTER_AUTH_BASE_URL:-http://localhost:3001}
+      
+      # Telnyx Configuration
       - TELNYX_API_KEY=${TELNYX_API_KEY}
       - TELNYX_VERIFY_PROFILE_ID=${TELNYX_VERIFY_PROFILE_ID:-49000199-7882-f4ce-6514-a67c8190f107}
+      - TELNYX_PROFILE_ID=${TELNYX_PROFILE_ID:-${TELNYX_VERIFY_PROFILE_ID}}
       - TELNYX_VERIFY_PUBLIC_KEY=${TELNYX_VERIFY_PUBLIC_KEY}
       - TELNYX_MESSAGING_API_KEY=${TELNYX_MESSAGING_API_KEY}
       - TELNYX_MESSAGING_PROFILE_ID=${TELNYX_MESSAGING_PROFILE_ID}
       - TELNYX_FROM_NUMBER=${TELNYX_FROM_NUMBER}
-      - TELNYX_API_URL=${TELNYX_API_URL}
+      - TELNYX_API_URL=${TELNYX_API_URL:-https://api.telnyx.com/v2}
       - TELNYX_WEBHOOK_SECRET=${TELNYX_WEBHOOK_SECRET}
-      - WEBHOOK_BASE_URL=${WEBHOOK_BASE_URL}
-      - CORS_ORIGIN=${CORS_ORIGIN}
-      - FRAUD_DETECTION_ENABLED=${FRAUD_DETECTION_ENABLED}
-      - RATE_LIMITING_ENABLED=${RATE_LIMITING_ENABLED}
-      - AUDIT_LOGGING_ENABLED=${AUDIT_LOGGING_ENABLED}
-      - CROSS_PLATFORM_SESSION_SECRET=${CROSS_PLATFORM_SESSION_SECRET}
-      - REDIS_URL=${REDIS_URL}
-      - PORT=3001
-      - HOST=0.0.0.0
+      
+      # Webhook Configuration
+      - WEBHOOK_BASE_URL=${WEBHOOK_BASE_URL:-http://localhost:3001}
+      
+      # CORS Configuration
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:8082,http://localhost:3000,http://localhost:8080}
+      
+      # Security Features
+      - FRAUD_DETECTION_ENABLED=${FRAUD_DETECTION_ENABLED:-true}
+      - RATE_LIMITING_ENABLED=${RATE_LIMITING_ENABLED:-true}
+      - AUDIT_LOGGING_ENABLED=${AUDIT_LOGGING_ENABLED:-true}
+      
+      # Cross-Platform Session Configuration
+      - CROSS_PLATFORM_SESSION_SECRET=${CROSS_PLATFORM_SESSION_SECRET:-tetrix-cross-platform-session-secret-change-me}
+      
+      # Redis Configuration (optional, for session storage)
+      - REDIS_URL=${REDIS_URL:-redis://tetrix-redis:6379}
     depends_on:
-      - tetrix-db
+      tetrix-db:
+        condition: service_healthy
+      tetrix-redis:
+        condition: service_started
     networks:
       - tetrix-network
     healthcheck:
@@ -79,43 +103,58 @@ services:
       retries: 3
       start_period: 60s
 
-  # PostgreSQL Database
+  # PostgreSQL Database (Better Auth + Application Data)
   tetrix-db:
     image: postgres:15-alpine
+    container_name: tetrix-db
     restart: unless-stopped
     environment:
       - POSTGRES_DB=tetrix_auth
       - POSTGRES_USER=tetrix_user
       - POSTGRES_PASSWORD=tetrix_password
+      - POSTGRES_INITDB_ARGS=--encoding=UTF8 --locale=C
     ports:
       - "5433:5432"
     volumes:
       - tetrix_db_data:/var/lib/postgresql/data
+      # Optional: Mount init scripts for database setup
+      - ./scripts/db-init:/docker-entrypoint-initdb.d:ro
     networks:
       - tetrix-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U tetrix_user"]
+      test: ["CMD-SHELL", "pg_isready -U tetrix_user -d tetrix_auth"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 30s
 
-  # Redis for session storage
+  # Redis for Session Storage and Caching
   tetrix-redis:
     image: redis:7-alpine
+    container_name: tetrix-redis
     restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-tetrix_redis_password_change_me}
     ports:
       - "6379:6379"
     volumes:
       - tetrix_redis_data:/data
     networks:
       - tetrix-network
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a ${REDIS_PASSWORD:-tetrix_redis_password_change_me} ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
 
 volumes:
   tetrix_db_data:
     driver: local
+    name: tetrix_db_data
   tetrix_redis_data:
     driver: local
+    name: tetrix_redis_data
 
 networks:
   tetrix-network:
     driver: bridge
+    name: tetrix-network

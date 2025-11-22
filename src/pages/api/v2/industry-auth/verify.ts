@@ -1,93 +1,99 @@
-// Industry-Specific 2FA Authentication Verification API
-// Verifies 2FA code and returns access tokens for industry dashboards
-// Uses TETRIXIndustryAuthService for industry-specific logic
-
 import type { APIRoute } from 'astro';
-import { industryAuthService } from '../../../../services/TETRIXIndustryAuthService';
+import { DASHBOARD_ROUTES, DEFAULT_DASHBOARD } from '@/lib/dashboardRouting';
 
+/**
+ * Industry-Specific 2FA Verification API
+ * Proxies to the backend Unified Auth Service (Better Auth)
+ * Injects dashboardUrl based on industry for correct routing
+ */
 export const POST: APIRoute = async ({ request }) => {
+  // Determine backend URL
+  const isDocker = process.env.NODE_ENV === 'production' && process.env.DOCKER_ENV === 'true';
+  const backendUrl = process.env.BACKEND_URL || process.env.TETRIX_BACKEND_URL || 'http://localhost:3001';
+  
+  const targetUrl = isDocker 
+    ? `http://tetrix-backend:3001/api/v2/2fa/verify`
+    : `${backendUrl}/api/v2/2fa/verify`;
+
   try {
     const body = await request.json();
-    const { sessionId, code, deviceInfo } = body;
+    const { sessionId, code, deviceInfo, industry } = body;
 
     // Validate required fields
-    if (!sessionId || !code) {
+    if ((!sessionId && !body.verificationId) || !code) {
       return new Response(JSON.stringify({
         success: false,
-        error: 'Missing required fields: sessionId and code are required'
+        error: 'Missing required fields: verificationId/sessionId and code are required'
       }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
-    // Get client information
-    const clientIP = request.headers.get('x-forwarded-for') || 
-                    request.headers.get('x-real-ip') || 
-                    'unknown';
-    const userAgent = request.headers.get('user-agent') || 'unknown';
+    // Prepare body for backend
+    // Backend expects: verificationId, code, phoneNumber
+    const backendBody = {
+      ...body,
+      verificationId: body.verificationId || sessionId, // Support both
+      phoneNumber: body.phoneNumber || deviceInfo?.phoneNumber, // Ensure phone is passed
+    };
 
-    // Use industry auth service for 2FA verification
-    const result = await industryAuthService.verifyIndustry2FA(
-      sessionId,
-      code,
-      deviceInfo?.phoneNumber || 'unknown'
-    );
+    console.log(`🔄 [VERIFY] Proxying to backend: ${targetUrl}`);
 
-    if (result.success && result.verified) {
-      // Generate mock tokens for now
-      const accessToken = `tetrix_access_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      const refreshToken = `tetrix_refresh_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const response = await fetch(targetUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': request.headers.get('user-agent') || 'TetrixAuthProxy/1.0',
+      },
+      body: JSON.stringify(backendBody),
+    });
+
+    const result = await response.json();
+
+    if (response.ok && result.success) {
+      // Success! Now determine dashboard URL.
+      // Use industry from request OR from user profile if returned
+      const userIndustry = result.user?.industry || industry || 'healthcare';
+      const dashboardRoute = DASHBOARD_ROUTES[userIndustry] || DEFAULT_DASHBOARD;
+      const dashboardUrl = dashboardRoute.path;
+
+      // Inject dashboardUrl into the response
+      const finalResult = {
+        ...result,
+        dashboardUrl,
+        // Ensure tokens are present (backend might return 'token', 'session')
+        accessToken: result.token || result.session?.token,
+        refreshToken: result.refreshToken || result.session?.token // Fallback
+      };
       
-      const response = new Response(JSON.stringify({
-        success: true,
-        verified: true,
-        user: {
-          id: 'user_' + Date.now(),
-          email: 'user@tetrix.com',
-          phone: deviceInfo?.phoneNumber || 'unknown',
-          status: 'active'
-        },
-        organization: {
-          id: 'org_' + Date.now(),
-          name: 'TETRIX Organization',
-          industry: 'healthcare'
-        },
-        roles: ['user'],
-        permissions: ['read', 'write'],
-        dashboardUrl: '/dashboard',
-        accessToken: accessToken,
-        refreshToken: refreshToken,
-        expiresIn: 3600
-      }), {
+      // Prepare headers
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      const cookieHeader = response.headers.get('set-cookie');
+      if (cookieHeader) {
+        headers['Set-Cookie'] = cookieHeader;
+      }
+
+      const finalResponse = new Response(JSON.stringify(finalResult), {
         status: 200,
-        headers: { 'Content-Type': 'application/json' }
+        headers: headers
       });
 
-      // Set secure cookies
-      response.headers.set('Set-Cookie', [
-        `tetrix_access_token=${accessToken}; HttpOnly; Secure; SameSite=Strict; Max-Age=3600; Path=/`,
-        `tetrix_refresh_token=${refreshToken}; HttpOnly; Secure; SameSite=Strict; Max-Age=604800; Path=/`
-      ].join(', '));
-
-      return response;
+      return finalResponse;
     } else {
-      return new Response(JSON.stringify({
-        success: false,
-        verified: false,
-        error: result.error || '2FA verification failed'
-      }), {
-        status: 400,
+      // Forward error
+      return new Response(JSON.stringify(result), {
+        status: response.status,
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
   } catch (error) {
-    console.error('❌ Industry auth verification failed:', error);
+    console.error('❌ Industry auth verification proxy failed:', error);
     return new Response(JSON.stringify({
       success: false,
       verified: false,
-      error: 'Internal server error'
+      error: 'Internal server error during verification'
     }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }

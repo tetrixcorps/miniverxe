@@ -63,7 +63,7 @@ tetrix/
    ```bash
    npm run dev
    ```
-3. **Visit:** [http://localhost:4326](http://localhost:4326) (or the port shown in your terminal)
+3. **Visit:** [http://localhost:8082](http://localhost:8082) (or the port shown in your terminal)
 
 ## 🐳 Docker Support
 - A `Dockerfile` is included for containerized builds and deployment.

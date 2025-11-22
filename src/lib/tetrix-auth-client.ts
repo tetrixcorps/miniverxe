@@ -163,9 +163,14 @@ export class TetrixAuthClient {
         };
       }
 
+      // For verify endpoint, the backend returns { success, verified, user, session, token }
+      // We need to preserve this structure in result.data
+      // If data already has a 'data' property, use it; otherwise use the whole response
+      const responseData = data.data || data;
+      
       return {
         success: true,
-        data: data.data || data,
+        data: responseData,
         message: data.message,
       };
     } catch (error: any) {

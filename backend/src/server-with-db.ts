@@ -9,7 +9,11 @@ import dashboardRoutes from './routes/dashboard';
 import voiceRoutes from './routes/voice';
 import voiceMonitoringRoutes from './routes/voiceMonitoring';
 import enterprise2FARoutes from './routes/enterprise2FA';
+import unifiedAuthRoutes from './routes/unifiedAuth';
+import authLookupRoutes from './routes/authLookup';
 import cookieParser from 'cookie-parser';
+import { auth } from './auth';
+import { toNodeHandler } from 'better-auth/node';
 
 // Extend Express Request type
 declare global {
@@ -21,7 +25,9 @@ declare global {
 }
 
 const app = express();
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
+});
 
 // Middleware
 app.use(cors({
@@ -33,6 +39,9 @@ app.use(cors({
 
 app.use(express.json());
 app.use(cookieParser()); // Enable cookie parsing for session management
+
+// Better Auth API routes - handles all /api/auth/* endpoints
+app.all("/api/auth/*", toNodeHandler(auth));
 
 // Health check
 app.get('/health', (req, res) => {
@@ -74,7 +83,10 @@ const authenticateToken = (req: any, res: any, next: any) => {
   });
 };
 
-// User registration
+// LEGACY ROUTE - Email/Password registration (NOT COMPATIBLE WITH BETTER AUTH SCHEMA)
+// Better Auth uses phone-based authentication. This route is disabled.
+// Use /api/v2/2fa/initiate and /api/v2/2fa/verify instead
+/*
 app.post('/api/auth/register', async (req, res) => {
   try {
     const { email, password, first_name, last_name, phone, company, role } = req.body;
@@ -85,7 +97,7 @@ app.post('/api/auth/register', async (req, res) => {
     }
 
     // Check if user exists
-    const existingUser = await prisma.users.findUnique({
+    const existingUser = await prisma.user.findUnique({
       where: { email }
     });
 
@@ -97,7 +109,7 @@ app.post('/api/auth/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 12);
 
     // Create user
-    const user = await prisma.users.create({
+    const user = await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
@@ -134,8 +146,12 @@ app.post('/api/auth/register', async (req, res) => {
     return res.status(500).json({ error: 'Registration failed' });
   }
 });
+*/
 
-// User login
+// LEGACY ROUTE - Email/Password login (NOT COMPATIBLE WITH BETTER AUTH SCHEMA)
+// Better Auth uses phone-based authentication. This route is disabled.
+// Use /api/v2/2fa/initiate and /api/v2/2fa/verify instead
+/*
 app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -145,7 +161,7 @@ app.post('/api/auth/login', async (req, res) => {
     }
 
     // Find user
-    const user = await prisma.users.findUnique({
+    const user = await prisma.user.findUnique({
       where: { email }
     });
 
@@ -165,7 +181,7 @@ app.post('/api/auth/login', async (req, res) => {
     }
 
     // Update last login
-    await prisma.users.update({
+    await prisma.user.update({
       where: { id: user.id },
       data: { last_login_at: new Date() }
     });
@@ -195,8 +211,11 @@ app.post('/api/auth/login', async (req, res) => {
     return res.status(500).json({ error: 'Login failed' });
   }
 });
+*/
 
-// Phone verification initiation
+// LEGACY ROUTE - Phone verification (REPLACED BY BETTER AUTH)
+// Use /api/v2/2fa/initiate and /api/v2/2fa/verify instead
+/*
 app.post('/api/auth/verify/phone/initiate', async (req, res) => {
   try {
     const { phoneNumber, countryCode, verificationType = 'sms' } = req.body;
@@ -209,16 +228,14 @@ app.post('/api/auth/verify/phone/initiate', async (req, res) => {
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
-    // Store verification session
-    const session = await prisma.verification_sessions.create({
-      data: {
-        user_id: req.user?.userId || 'anonymous',
-        phone_number: phoneNumber,
+    // Store verification session using Better Auth Verification model
+    // Note: Better Auth handles verification internally, this is legacy code
+    // For now, we'll use a simple in-memory store or skip this
+    const session = {
+      id: `verify_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         verification_code: verificationCode,
-        method: verificationType,
         expires_at: expiresAt
-      }
-    });
+    };
 
     // In production, you would send the code via Telnyx API
     // For now, we'll return it in the response (development only)
@@ -234,8 +251,11 @@ app.post('/api/auth/verify/phone/initiate', async (req, res) => {
     return res.status(500).json({ error: 'Failed to initiate verification' });
   }
 });
+*/
 
-// Phone verification check
+// LEGACY ROUTE - Phone verification check (REPLACED BY BETTER AUTH)
+// Use /api/v2/2fa/verify instead
+/*
 app.post('/api/auth/verify/phone/check', async (req, res) => {
   try {
     const { verificationId, code } = req.body;
@@ -244,35 +264,26 @@ app.post('/api/auth/verify/phone/check', async (req, res) => {
       return res.status(400).json({ error: 'Verification ID and code required' });
     }
 
-    // Find verification session
-    const session = await prisma.verification_sessions.findUnique({
+    // Find verification session using Better Auth Verification model
+    // Note: Better Auth handles verification internally, this is legacy code
+    // For now, we'll use Better Auth's verification check
+    const verification = await prisma.verification.findUnique({
       where: { id: verificationId }
     });
 
-    if (!session) {
+    if (!verification) {
       return res.status(404).json({ error: 'Verification session not found' });
     }
 
     // Check if expired
-    if (new Date() > session.expires_at) {
+    if (new Date() > verification.expiresAt) {
       return res.status(400).json({ error: 'Verification code expired' });
     }
 
-    // Check if already verified
-    if (session.verified) {
-      return res.status(400).json({ error: 'Code already verified' });
-    }
-
     // Verify code
-    if (session.verification_code !== code) {
+    if (verification.value !== code) {
       return res.status(400).json({ error: 'Invalid verification code' });
     }
-
-    // Mark as verified
-    await prisma.verification_sessions.update({
-      where: { id: verificationId },
-      data: { verified: true }
-    });
 
     return res.json({
       success: true,
@@ -284,6 +295,7 @@ app.post('/api/auth/verify/phone/check', async (req, res) => {
     return res.status(500).json({ error: 'Failed to verify code' });
   }
 });
+*/
 
 // Get supported countries for phone formatting (200+ countries via Telnyx)
 app.get('/api/tetrix/auth/countries', (req, res) => {
@@ -353,7 +365,7 @@ app.get('/api/tetrix/auth/countries', (req, res) => {
 app.get('/api/dashboard/metrics/universal', authenticateToken, async (req, res) => {
   try {
     // Get user count
-    const userCount = await prisma.users.count();
+    const userCount = await prisma.user.count();
     
     return res.json({
       success: true,
@@ -454,16 +466,59 @@ app.use('/api/voice', voiceRoutes);
 // Voice monitoring routes
 app.use('/api/voice/monitoring', voiceMonitoringRoutes);
 
-// Enterprise 2FA routes - support both /api/enterprise-2fa and /api/v2/2fa for compatibility
+// Unified Auth routes (Better Auth + Enterprise 2FA) - primary endpoints
+app.use('/api/v2/2fa', unifiedAuthRoutes);
+
+// Auth lookup routes (user existence check)
+app.use('/api/v2/auth', authLookupRoutes);
+
+// Enterprise 2FA routes - legacy support (maintained for backward compatibility)
 app.use('/api/enterprise-2fa', enterprise2FARoutes);
-app.use('/api/v2/2fa', enterprise2FARoutes);
+
+// Better Auth routes - direct access to Better Auth endpoints
+// These are also available through unified routes above
 
 const PORT = parseInt(process.env['PORT'] || '3001');
 const HOST = process.env['HOST'] || '0.0.0.0';
 
-app.listen(PORT, HOST, () => {
-  console.log(`🚀 TETRIX Backend Server running on http://${HOST}:${PORT}`);
-  console.log(`📊 Health check: http://${HOST}:${PORT}/health`);
+// Test database connection before starting server
+async function startServer() {
+  try {
+    // Test Prisma connection
+    await prisma.$connect();
+    console.log('✅ Database connection established');
+    
+    // Start server
+    app.listen(PORT, HOST, () => {
+      console.log(`🚀 TETRIX Backend Server running on http://${HOST}:${PORT}`);
+      console.log(`📊 Health check: http://${HOST}:${PORT}/health`);
+      console.log(`🔐 Better Auth: http://${HOST}:${PORT}/api/auth`);
+      console.log(`🔍 User Lookup: http://${HOST}:${PORT}/api/v2/auth/lookup`);
+      console.log(`📱 Unified 2FA: http://${HOST}:${PORT}/api/v2/2fa`);
+    });
+  } catch (error) {
+    console.error('❌ Failed to start server:', error);
+    console.error('Error details:', error instanceof Error ? error.message : String(error));
+    process.exit(1);
+  }
+}
+
+// Handle graceful shutdown
+process.on('SIGINT', async () => {
+  console.log('\n🛑 Shutting down server...');
+  await prisma.$disconnect();
+  process.exit(0);
+});
+
+process.on('SIGTERM', async () => {
+  console.log('\n🛑 Shutting down server...');
+  await prisma.$disconnect();
+  process.exit(0);
+});
+
+startServer().catch((error) => {
+  console.error('❌ Fatal error starting server:', error);
+  process.exit(1);
 });
 
 export default app;

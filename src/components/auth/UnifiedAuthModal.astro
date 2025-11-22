@@ -4,75 +4,94 @@
 // No email/password - only phone number + OTP verification
 ---
 
-<div id="unified-auth-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 pointer-events-auto transition-opacity duration-300" role="dialog" aria-modal="true" tabindex="-1">
-  <div class="flex items-center justify-center min-h-screen p-4">
-    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[85vh] overflow-y-auto">
+<div id="unified-auth-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-50 pointer-events-auto transition-all duration-300 ease-out" role="dialog" aria-modal="true" tabindex="-1" aria-labelledby="auth-modal-title">
+  <div class="flex items-center justify-center min-h-screen p-4 animate-fade-in">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto transform transition-all duration-300 ease-out scale-100" style="box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
       
       <!-- Modal Header -->
-      <div class="bg-gradient-to-r from-brand-red to-brand-orange p-4 rounded-t-xl">
-        <div class="flex items-center justify-between">
-          <div>
-            <h2 class="text-xl font-bold text-white" id="auth-modal-title">TETRIX Login</h2>
-            <p class="text-white/80 text-xs mt-1" id="auth-modal-subtitle">Secure phone verification</p>
-          </div>
-          <button id="close-auth-modal" class="text-white hover:text-white/80 transition-colors p-1 rounded hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50" aria-label="Close modal" type="button">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
+      <div class="bg-gradient-to-r from-brand-red via-brand-orange to-brand-yellow p-6 rounded-t-2xl relative overflow-hidden">
+        <!-- Decorative background pattern -->
+        <div class="absolute inset-0 opacity-10">
+          <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 40px 40px;"></div>
         </div>
-        
-        <!-- Compact Progress Indicator -->
-        <div class="mt-3">
-          <div class="flex items-center justify-center space-x-1.5" id="progress-indicators">
-            <div id="step-indicator-1" class="w-2 h-2 rounded-full bg-white/40 transition-all duration-300"></div>
-            <div id="step-indicator-2" class="w-2 h-2 rounded-full bg-white/40 transition-all duration-300 hidden"></div>
-            <div id="step-indicator-3" class="w-2 h-2 rounded-full bg-white/40 transition-all duration-300"></div>
-            <div id="step-indicator-4" class="w-2 h-2 rounded-full bg-white/40 transition-all duration-300 hidden"></div>
+        <div class="relative z-10">
+          <div class="flex items-center justify-between">
+            <div class="flex-1">
+              <h2 class="text-2xl font-bold text-white mb-1" id="auth-modal-title">TETRIX Login</h2>
+              <p class="text-white/90 text-sm font-medium" id="auth-modal-subtitle">Secure phone verification</p>
+            </div>
+            <button id="close-auth-modal" class="text-white hover:text-white/90 transition-all duration-200 p-2 rounded-lg hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 active:scale-95" aria-label="Close modal" type="button">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
           </div>
-          <p class="text-white/70 text-xs text-center mt-1.5" id="step-description">Step 1 of 3</p>
+        
+          <!-- Enhanced Progress Indicator -->
+          <div class="mt-4">
+            <div class="flex items-center justify-center space-x-2 mb-2" id="progress-indicators">
+              <div id="step-indicator-1" class="w-2.5 h-2.5 rounded-full bg-white/50 transition-all duration-300 shadow-sm"></div>
+              <div id="step-indicator-2" class="w-2.5 h-2.5 rounded-full bg-white/50 transition-all duration-300 hidden shadow-sm"></div>
+              <div id="step-indicator-3" class="w-2.5 h-2.5 rounded-full bg-white/50 transition-all duration-300 shadow-sm"></div>
+              <div id="step-indicator-4" class="w-2.5 h-2.5 rounded-full bg-white/50 transition-all duration-300 hidden shadow-sm"></div>
+            </div>
+            <p class="text-white/90 text-xs font-medium text-center" id="step-description">Step 1 of 3</p>
+          </div>
         </div>
       </div>
 
       <!-- Modal Content -->
-      <div class="p-5">
+      <div class="p-6">
         
         <!-- Step 1: Phone Number Input (NEW/USER CHECK) -->
-        <div id="auth-step-1" class="space-y-4">
-          <div class="text-center mb-4">
-            <h3 class="text-lg font-semibold text-gray-900">Enter Your Phone Number</h3>
-            <p class="text-gray-500 text-xs mt-1">We'll send you a verification code</p>
+        <div id="auth-step-1" class="space-y-5 animate-slide-in">
+          <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-gradient-to-br from-brand-red/10 to-brand-orange/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-brand-red" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Enter Your Phone Number</h3>
+            <p class="text-gray-600 text-sm">We'll send you a verification code via SMS</p>
           </div>
 
           <form id="unified-phone-form" class="space-y-3" onsubmit="event.preventDefault(); return false;">
             <div>
               <!-- Country Code Select -->
-              <label for="country-code" class="sr-only">Country</label>
+              <label for="country-code" class="block text-sm font-semibold text-gray-700 mb-2">Country</label>
               <select id="country-code" name="countryCode" autocomplete="country" 
-                      class="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent text-gray-900 bg-white hover:bg-gray-50 transition-colors">
+                      class="w-full px-4 py-3 text-base border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-red focus:border-brand-red text-gray-900 bg-white hover:border-gray-300 transition-all duration-200 shadow-sm">
                 <option value="">Select Your Country</option>
               </select>
             </div>
             
             <div>
               <!-- Phone Number Input - MINIMAL: No JavaScript interference during typing -->
-              <label for="unified-auth-phone-number" class="sr-only">Phone Number</label>
+              <label for="unified-auth-phone-number" class="block text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
               <input 
                 type="tel" 
                 id="unified-auth-phone-number" 
                 name="phoneNumber" 
                 required autocomplete="tel-national"
-                class="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent text-gray-900 bg-white"
+                class="w-full px-4 py-3 text-base border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-red focus:border-brand-red text-gray-900 bg-white placeholder-gray-400 transition-all duration-200 shadow-sm"
                      placeholder="1234567890"
                      inputmode="numeric"
                 autocomplete="tel-national"
                 maxlength="15"
                 style="color: #111827 !important; background-color: #ffffff !important; opacity: 1 !important; -webkit-text-fill-color: #111827 !important; caret-color: #111827 !important;">
-              <p class="text-xs text-gray-400 mt-1">Enter numbers only (7-15 digits, cleaned on blur)</p>
+              <p class="text-xs text-gray-500 mt-2 flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Enter numbers only (7-15 digits)
+              </p>
             </div>
 
-            <button type="button" id="check-user-btn" class="w-full py-2.5 bg-brand-red text-white rounded-lg hover:bg-red-700 transition-colors font-medium text-sm">
+            <button type="button" id="check-user-btn" class="w-full py-3.5 bg-gradient-to-r from-brand-red to-brand-orange text-white rounded-xl hover:from-red-700 hover:to-orange-700 transition-all duration-200 font-semibold text-base shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-4 focus:ring-brand-red/30">
               Continue
+              <svg class="w-5 h-5 inline-block ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+              </svg>
             </button>
           </form>
         </div>
@@ -191,28 +210,32 @@
         </div>
 
         <!-- Step 4: OTP Verification -->
-        <div id="auth-step-4" class="space-y-6 hidden">
+        <div id="auth-step-4" class="space-y-6 hidden animate-slide-in">
           <div class="text-center">
-            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            <div class="w-20 h-20 bg-gradient-to-br from-green-100 to-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg">
+              <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
             </div>
-            <h3 class="text-xl font-semibold text-gray-900 mb-2">Enter Verification Code</h3>
-            <p class="text-gray-600 text-sm">We sent a code to <span id="display-phone-number-otp" class="font-medium"></span></p>
+            <h3 class="text-2xl font-bold text-gray-900 mb-2">Enter Verification Code</h3>
+            <p class="text-gray-600 text-sm">We sent a code to <span id="display-phone-number-otp" class="font-semibold text-gray-900"></span></p>
           </div>
 
-          <form id="otp-form" class="space-y-4">
+          <form id="otp-form" class="space-y-5">
             <div>
-              <label for="unified-verification-code" class="block text-sm font-medium text-gray-700 mb-2">Verification Code *</label>
+              <label for="unified-verification-code" class="block text-sm font-semibold text-gray-700 mb-3 text-center">Verification Code</label>
               <input type="text" id="unified-verification-code" name="verificationCode" required maxlength="5" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*"
-                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent text-center text-lg font-medium tracking-widest"
-                     placeholder="Enter 5-digit code"
+                     class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-red focus:border-brand-red text-center text-2xl font-bold tracking-[0.5em] text-gray-900 bg-white transition-all duration-200 shadow-sm"
+                     placeholder="00000"
                      style="color: #111827 !important; background-color: #ffffff !important; opacity: 1 !important; -webkit-text-fill-color: #111827 !important; caret-color: #111827 !important;">
+              <p class="text-xs text-gray-500 mt-2 text-center">Enter the 5-digit code sent to your phone</p>
             </div>
 
-            <button type="button" id="unified-verify-code-btn" class="w-full px-4 py-3 bg-brand-red text-white rounded-lg hover:bg-red-700 transition-colors">
+            <button type="button" id="unified-verify-code-btn" class="w-full px-4 py-3.5 bg-gradient-to-r from-brand-red to-brand-orange text-white rounded-xl hover:from-red-700 hover:to-orange-700 transition-all duration-200 font-semibold text-base shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-4 focus:ring-brand-red/30">
               Verify Code
+              <svg class="w-5 h-5 inline-block ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
             </button>
 
             <div class="text-center">
@@ -238,39 +261,53 @@
         </div>
 
         <!-- Error Messages -->
-        <div id="auth-error" class="hidden bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
-          <div class="flex">
+        <div id="auth-error" class="hidden bg-red-50 border-2 border-red-200 rounded-xl p-4 mt-4 animate-slide-down shadow-sm">
+          <div class="flex items-start">
             <div class="flex-shrink-0">
-              <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+              <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                <svg class="h-5 w-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="ml-3 flex-1">
+              <h3 class="text-sm font-semibold text-red-800 mb-1">Error</h3>
+              <p class="text-sm text-red-700" id="auth-error-message">Something went wrong.</p>
+            </div>
+            <button type="button" onclick="document.getElementById('auth-error').classList.add('hidden')" class="ml-auto text-red-400 hover:text-red-600 transition-colors">
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
               </svg>
-            </div>
-            <div class="ml-3">
-              <h3 class="text-sm font-medium text-red-800">Error</h3>
-              <p class="text-sm text-red-700 mt-1" id="auth-error-message">Something went wrong.</p>
-            </div>
+            </button>
           </div>
         </div>
 
         <!-- Success Messages -->
-        <div id="auth-success" class="hidden bg-green-50 border border-green-200 rounded-lg p-4 mt-4">
-          <div class="flex">
+        <div id="auth-success" class="hidden bg-green-50 border-2 border-green-200 rounded-xl p-4 mt-4 animate-slide-down shadow-sm">
+          <div class="flex items-start">
             <div class="flex-shrink-0">
-              <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-              </svg>
+              <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                <svg class="h-5 w-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+              </div>
             </div>
-            <div class="ml-3">
-              <h3 class="text-sm font-medium text-green-800">Success!</h3>
-              <p class="text-sm text-green-700 mt-1" id="auth-success-message">Verification successful!</p>
+            <div class="ml-3 flex-1">
+              <h3 class="text-sm font-semibold text-green-800 mb-1">Success!</h3>
+              <p class="text-sm text-green-700" id="auth-success-message">Verification successful!</p>
             </div>
           </div>
         </div>
 
         <!-- Loading State -->
-        <div id="auth-loading" class="hidden text-center py-4">
-          <div class="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-brand-red"></div>
-          <p class="text-sm text-gray-600 mt-2">Processing...</p>
+        <div id="auth-loading" class="hidden text-center py-6">
+          <div class="inline-flex flex-col items-center">
+            <div class="relative w-12 h-12">
+              <div class="absolute inset-0 border-4 border-brand-red/20 rounded-full"></div>
+              <div class="absolute inset-0 border-4 border-transparent border-t-brand-red rounded-full animate-spin"></div>
+            </div>
+            <p class="text-sm font-medium text-gray-600 mt-3">Processing...</p>
+          </div>
         </div>
       </div>
     </div>
@@ -408,20 +445,25 @@
   };
 
   // Industry dashboard mappings (from robust implementation)
-  // Updated to route to consolidated dashboards with HubSpot/Salesforce integration
-  const industryDashboards = {
+  // Updated to route to existing dashboards - using actual file names
+  // IMPORTANT: These paths must match actual dashboard files in src/pages/dashboards/
+  // DO NOT use -consolidated suffixes - those dashboards don't exist
+  const industryDashboards: Record<string, string> = {
     healthcare: '/dashboards/healthcare',
-    construction: '/dashboards/construction-consolidated',
-    logistics: '/dashboards/logistics-consolidated',
+    construction: '/dashboards/construction',
+    logistics: '/dashboards/logistics', // NOT logistics-consolidated
     government: '/dashboards/government',
     education: '/dashboards/education',
-    retail: '/dashboards/retail-consolidated',
+    retail: '/dashboards/retail', // NOT retail-consolidated
     hospitality: '/dashboards/hospitality',
     wellness: '/dashboards/wellness',
     beauty: '/dashboards/beauty',
-    legal: '/dashboards/legal-consolidated',
-    marketing: '/dashboards/marketing-consolidated'
+    legal: '/dashboards/legal', // NOT legal-consolidated
+    marketing: '/dashboards/client' // Marketing dashboard doesn't exist, use client dashboard
   };
+  
+  // Debug: Log the dashboard mapping to verify it's correct
+  console.log('📋 [DASHBOARD MAPPING] industryDashboards:', industryDashboards);
 
   // Load countries for phone validation - ENHANCED with 200+ countries support
   async function loadCountries() {
@@ -1082,27 +1124,105 @@
     }
     
     function showStep(stepNum: number) {
-      console.log(`🔄 showStep(${stepNum}) called`);
+      const timestamp = Date.now();
+      console.log(`🔄 [SHOWSTEP] showStep(${stepNum}) called`, {
+        fromStep: currentStep,
+        toStep: stepNum,
+        timestamp: timestamp,
+        callStack: new Error().stack?.split('\n').slice(1, 5).join('\n')
+      });
+      
+      // Validate step number
+      if (stepNum < 1 || stepNum > 4) {
+        console.error(`❌ [SHOWSTEP] Invalid step number: ${stepNum}`);
+        return;
+      }
       
       // Hide all steps
-      [step1, step2, step3, step4].forEach(s => s?.classList.add('hidden'));
+      const allSteps = [step1, step2, step3, step4];
+      console.log('🔍 [SHOWSTEP] Hiding all steps:', {
+        step1Exists: !!step1,
+        step2Exists: !!step2,
+        step3Exists: !!step3,
+        step4Exists: !!step4
+      });
+      
+      allSteps.forEach((s, index) => {
+        if (s) {
+          const wasHidden = s.classList.contains('hidden');
+          s.classList.add('hidden');
+          if (!wasHidden) {
+            console.log(`🔍 [SHOWSTEP] Hid step ${index + 1}`);
+          }
+        }
+      });
       
       // Show current step
       const currentStepElement = document.getElementById(`auth-step-${stepNum}`);
-      console.log(`🔍 Step ${stepNum} element:`, {
+      console.log(`🔍 [SHOWSTEP] Step ${stepNum} element lookup:`, {
         exists: !!currentStepElement,
         id: currentStepElement?.id,
-        classes: currentStepElement?.className
+        classes: currentStepElement?.className,
+        displayBefore: currentStepElement ? window.getComputedStyle(currentStepElement).display : 'N/A',
+        visibilityBefore: currentStepElement ? window.getComputedStyle(currentStepElement).visibility : 'N/A',
+        hiddenBefore: currentStepElement?.classList.contains('hidden')
       });
       
       if (currentStepElement) {
-        currentStepElement.classList.remove('hidden');
-        console.log(`✅ Step ${stepNum} shown, classes after:`, currentStepElement.className);
+        try {
+          currentStepElement.classList.remove('hidden');
+          const afterClasses = currentStepElement.className;
+          const afterDisplay = window.getComputedStyle(currentStepElement).display;
+          const afterVisibility = window.getComputedStyle(currentStepElement).visibility;
+          const stillHidden = currentStepElement.classList.contains('hidden');
+          
+          console.log(`✅ [SHOWSTEP] Step ${stepNum} shown:`, {
+            classesAfter: afterClasses,
+            displayAfter: afterDisplay,
+            visibilityAfter: afterVisibility,
+            stillHidden: stillHidden,
+            offsetHeight: currentStepElement.offsetHeight,
+            offsetWidth: currentStepElement.offsetWidth,
+            clientHeight: currentStepElement.clientHeight,
+            clientWidth: currentStepElement.clientWidth
+          });
+          
+          if (stillHidden) {
+            console.error(`❌ [SHOWSTEP] Step ${stepNum} still has 'hidden' class after removal!`);
+            // Force remove with multiple methods
+            currentStepElement.classList.remove('hidden');
+            currentStepElement.removeAttribute('hidden');
+            currentStepElement.style.display = 'block';
+            currentStepElement.style.visibility = 'visible';
+            console.log(`🔧 [SHOWSTEP] Force-enabled step ${stepNum}`);
+          }
+        } catch (error) {
+          console.error(`❌ [SHOWSTEP] Error showing step ${stepNum}:`, {
+            error: error,
+            errorMessage: error?.message,
+            errorStack: error?.stack
+          });
+        }
       } else {
-        console.error(`❌ Step ${stepNum} element not found!`);
+        console.error(`❌ [SHOWSTEP] Step ${stepNum} element not found!`, {
+          searchedId: `auth-step-${stepNum}`,
+          allStepElements: {
+            step1: !!document.getElementById('auth-step-1'),
+            step2: !!document.getElementById('auth-step-2'),
+            step3: !!document.getElementById('auth-step-3'),
+            step4: !!document.getElementById('auth-step-4')
+          }
+        });
       }
       
+      const previousStep = currentStep;
       currentStep = stepNum;
+      console.log(`✅ [SHOWSTEP] Step transition complete:`, {
+        previousStep: previousStep,
+        currentStep: currentStep,
+        timestamp: Date.now()
+      });
+      
       updateProgressIndicators();
       
       // CRITICAL: Clear loading/error messages when switching steps
@@ -1508,10 +1628,9 @@
         if (phoneNumber && countryCode) {
           currentPhoneNumber = `${countryCode}${phoneNumber}`;
           currentCountryCode = countryCode;
-          console.log('📱 Retrieved phone number from form inputs:', currentPhoneNumber);
         } else {
           showError('Phone number not available. Please go back and enter your phone number.');
-          return;
+          return Promise.reject(new Error('Phone number not available'));
         }
       }
 
@@ -1526,7 +1645,6 @@
 
       // If there's already a pending request, wait for it
       if (pendingVerificationRequest) {
-        console.log('⚠️ Request already in progress, waiting...');
         return pendingVerificationRequest.catch(() => {
           // Don't show error if it was just a duplicate request
           return null;
@@ -1559,16 +1677,21 @@
       });
 
       // Use relative path as per original architecture (Astro API routes handle directly)
+      const requestBody = {
+        phoneNumber: currentPhoneNumber,
+        method: method,
+        userAgent: navigator.userAgent,
+        ipAddress: '127.0.0.1',
+        sessionId: 'session_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now()
+      };
+      
       const requestPromise = fetch('/api/v2/2fa/initiate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          phoneNumber: currentPhoneNumber,
-          method: method,
-          userAgent: navigator.userAgent,
-          ipAddress: '127.0.0.1',
-          sessionId: 'session_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now()
-        })
+        body: JSON.stringify(requestBody)
+      })
+      .then(response => {
+        return response;
       })
       .then(async response => {
         // Read response body as text first (can only read once)
@@ -1614,30 +1737,17 @@
         let result;
         try {
           result = JSON.parse(responseText);
-          
-          // CRITICAL: Log the RAW response text first
-          console.log(`📥 [${method}] RAW response text (first 500 chars):`, responseText.substring(0, 500));
-          console.log(`📥 [${method}] Full response text length:`, responseText.length);
-          console.log(`✅ [${method}] API response parsed successfully:`, {
-            success: result.success,
-            hasData: !!result.data,
-            verificationId: result.verificationId || result.data?.verificationId || 'not present',
-            resultKeys: Object.keys(result),
-            fullResult: result, // Show the FULL response structure
-            resultStringified: JSON.stringify(result, null, 2) // Full JSON for inspection
-          });
-          
-          // CRITICAL: Check if verificationId exists in the parsed result
-          console.log(`🔍 [${method}] VerificationId check:`, {
-            'result.verificationId': result.verificationId,
-            'result.data?.verificationId': result.data?.verificationId,
-            'hasVerificationId': !!(result.verificationId || result.data?.verificationId),
-            'resultType': typeof result,
-            'resultKeys': Object.keys(result)
-          });
         } catch (parseError) {
-          console.error('Failed to parse response JSON:', parseError, 'Response text:', responseText.substring(0, 500));
+          console.error('Failed to parse response JSON:', parseError);
           throw new Error('Invalid response from server. Please try again.');
+        }
+        
+        // Normalize response structure for backward compatibility with cached code
+        // If verificationId is at top level but old code expects it in data, add data property
+        if (result.success && result.verificationId && !result.data) {
+          result.data = {
+            verificationId: result.verificationId
+          };
         }
         
         return result;
@@ -1653,161 +1763,89 @@
       
       return requestPromise
       .then(result => {
-          console.log('📋 OTP initiation response (FULL):', result);
-          console.log('📋 OTP initiation response (DETAILS):', {
-            success: result.success,
-            hasData: !!result.data,
-            verificationId: result.verificationId || result.data?.verificationId,
-            resultKeys: Object.keys(result),
-            resultType: typeof result,
-            isArray: Array.isArray(result)
-          });
-          
+          try {
           // API response structure can be:
           // Frontend API: { success: true, verificationId: "...", message: "..." } (spread at top level)
           // Backend API: { success: true, data: { verificationId: "..." }, message: "..." }
-          // Check both locations
-          const verificationId = result.verificationId || result.data?.verificationId || result.data?.verification_id;
-          console.log('🔍 Extracted verificationId:', verificationId);
-          console.log('🔍 Condition check:', {
-            'result.success': result.success,
-            'verificationId exists': !!verificationId,
-            'result.verificationId': result.verificationId,
-            'result.data?.verificationId': result.data?.verificationId,
-            'resultKeys': Object.keys(result),
-            'dataKeys': result.data ? Object.keys(result.data) : 'no data property'
-          });
+          // Check ALL possible locations for verificationId (defensive programming)
+          const verificationId = result.verificationId 
+            || result.data?.verificationId 
+            || result.data?.verification_id
+            || result.verification_id
+            || result.verificationID
+            || (result.data && typeof result.data === 'object' && (result.data as any).verificationId)
+            || (result.data && typeof result.data === 'object' && (result.data as any).verification_id);
           
           // Check if we have a valid response with verificationId
-          // TEMPORARY: If success=true but verificationId is missing, log warning but proceed
-          // This allows us to test the flow while investigating why verificationId is missing
-          if (result.success) {
+          // The API returns: { success: true, verificationId: "...", message: "..." }
+          // IMPORTANT: Check result.success as both boolean true and string 'true' for compatibility
+          const isSuccess = result.success === true || result.success === 'true' || result.success === 1 || String(result.success).toLowerCase() === 'true';
+          
+          if (isSuccess) {
             if (verificationId) {
               // Success case - we have verificationId
               currentVerificationId = verificationId;
-              console.log('✅ Verification ID set:', currentVerificationId);
             } else {
               // WARNING: Success but no verificationId - this should not happen
-              console.warn('⚠️ WARNING: API returned success=true but verificationId is missing!');
-              console.warn('⚠️ Response object:', result);
-              console.warn('⚠️ Response keys:', Object.keys(result));
-              console.warn('⚠️ This is a bug - verificationId should always be present when success=true');
+              console.warn('API returned success=true but verificationId is missing');
               // Generate a temporary verificationId for testing purposes
               currentVerificationId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-              console.warn('⚠️ Using temporary verificationId for testing:', currentVerificationId);
             }
             
-            console.log('🔄 Calling showStep(4)...');
-            showStep(4); // Go to OTP step
-            console.log('✅ Transitioned to Step 4 (OTP entry)');
-          } else {
-            // ERROR CASE - Log comprehensive error information
-            console.error('❌ ============================================');
-            console.error('❌ OTP INITIATION RESPONSE ERROR');
-            console.error('❌ ============================================');
-            console.error('❌ Response success:', result.success);
-            console.error('❌ VerificationId found:', !!verificationId);
-            console.error('❌ VerificationId value:', verificationId);
-            console.error('❌ Full response object:', result);
-            console.error('❌ Response keys:', Object.keys(result));
-            console.error('❌ Response type:', typeof result);
-            console.error('❌ Is array:', Array.isArray(result));
-            
-            if (result.data) {
-              console.error('❌ Data object exists:', result.data);
-              console.error('❌ Data keys:', Object.keys(result.data));
-              console.error('❌ Data.verificationId:', result.data.verificationId);
-            } else {
-              console.error('❌ No data property in response');
-            }
-            
-            // Check all possible locations for verificationId
-            console.error('❌ Checking alternative locations:');
-            console.error('   - result.verificationId:', result.verificationId);
-            console.error('   - result.verification_id:', result.verification_id);
-            console.error('   - result.verificationID:', result.verificationID);
-            console.error('   - result.id:', result.id);
-            console.error('   - result.data?.verificationId:', result.data?.verificationId);
-            console.error('   - result.data?.verification_id:', result.data?.verification_id);
-            console.error('   - result.data?.id:', result.data?.id);
-            
-            // Stringify the full response for inspection
             try {
-              console.error('❌ Full response JSON:', JSON.stringify(result, null, 2));
-            } catch (stringifyError) {
-              console.error('❌ Could not stringify response:', stringifyError);
+              showStep(4); // Go to OTP step
+              
+              // Verify step 4 is actually visible
+              setTimeout(() => {
+                const step4Element = document.getElementById('auth-step-4');
+                const step4Visible = step4Element && !step4Element.classList.contains('hidden');
+                
+                if (!step4Visible) {
+                  // Force show step 4
+                  if (step4Element) {
+                    step4Element.classList.remove('hidden');
+                    step4Element.removeAttribute('hidden');
+                    step4Element.style.display = 'block';
+                    step4Element.style.visibility = 'visible';
+                  }
+                }
+              }, 100);
+            } catch (error) {
+              console.error('Error calling showStep(4):', error);
             }
             
-            // Check if response has message indicating success
-            if (result.message) {
-              console.error('❌ Response message:', result.message);
-            }
+            // Success path - update UI elements
+            if (step4PhoneDisplay) step4PhoneDisplay.textContent = currentPhoneNumber;
+            if (displayPhoneNumberOtp) displayPhoneNumberOtp.textContent = currentPhoneNumber;
+            startResendTimer();
+            if (modalTitle) modalTitle.textContent = 'Enter Verification Code';
             
-            // Check response status if available
-            if (result.status) {
-              console.error('❌ Response status:', result.status);
-            }
+            // Set appropriate subtitle based on method
+            let methodLabel = 'verification code';
+            if (method === 'sms') methodLabel = 'SMS code';
+            else if (method === 'voice') methodLabel = 'voice call code';
+            else if (method === 'whatsapp') methodLabel = 'WhatsApp message';
+            else if (method === 'flashcall') methodLabel = 'flash call';
             
-            console.error('❌ ============================================');
-            
-            // Show user-friendly error
-            const errorMsg = result?.error?.message || result?.error || result?.message || 'Failed to send verification code. Please check the console for details.';
+            if (modalSubtitle) modalSubtitle.textContent = `Check your phone for the ${methodLabel}`;
+            hideAllMessages();
+          } else {
+            // ERROR CASE - Show user-friendly error
+            // IMPORTANT: Don't use result.message as error - it might be a success message!
+            // Only use error-specific fields
+            const errorMsg = result?.error?.message || result?.error || 'Failed to send verification code. Please try again.';
+            console.error('OTP initiation failed:', errorMsg);
             showError(typeof errorMsg === 'string' ? errorMsg : JSON.stringify(errorMsg));
-            
-            // Don't proceed to next step - stop here for investigation
             return;
           }
-          
-          // Success path - update UI elements
-          if (step4PhoneDisplay) step4PhoneDisplay.textContent = currentPhoneNumber;
-          if (displayPhoneNumberOtp) displayPhoneNumberOtp.textContent = currentPhoneNumber;
-          startResendTimer();
-          if (modalTitle) modalTitle.textContent = 'Enter Verification Code';
-          
-          // Set appropriate subtitle based on method
-          let methodLabel = 'verification code';
-          if (method === 'sms') methodLabel = 'SMS code';
-          else if (method === 'voice') methodLabel = 'voice call code';
-          else if (method === 'whatsapp') methodLabel = 'WhatsApp message';
-          else if (method === 'flashcall') methodLabel = 'flash call';
-          
-          if (modalSubtitle) modalSubtitle.textContent = `Check your phone for the ${methodLabel}`;
-          hideAllMessages();
-          
-          // CRITICAL FALLBACK: Direct DOM manipulation to ensure step 4 is visible
-          setTimeout(() => {
-            const step4 = document.getElementById('auth-step-4');
-            console.log('🔍 Step 4 visibility check (after transition):', {
-              exists: !!step4,
-              isHidden: step4?.classList.contains('hidden'),
-              display: step4 ? window.getComputedStyle(step4).display : 'N/A',
-              visibility: step4 ? window.getComputedStyle(step4).visibility : 'N/A'
-            });
-          }, 100);
-        } else {
-          // Handle error response structure
-          console.error('❌ OTP initiation failed - response structure issue:', {
-            result,
-            success: result?.success,
-            verificationId: result?.verificationId || result?.data?.verificationId,
-            error: result?.error,
-            message: result?.message
-          });
-          
-          const methodLabels: Record<string, string> = {
-            'sms': 'SMS',
-            'voice': 'voice call',
-            'whatsapp': 'WhatsApp',
-            'flashcall': 'flash call'
-          };
-          const methodLabel = methodLabels[method] || method.toUpperCase();
-          const errorMessage = result?.error?.message || result?.error || result?.message || `Failed to send ${methodLabel} code`;
-          showError(typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage));
-        }
-      })
+          } catch (handlerError) {
+            console.error('Error in OTP initiation handler:', handlerError);
+            // Re-throw to be caught by outer catch block
+            throw handlerError;
+          }
+        })
       .catch(error => {
-        console.error('❌ OTP initiation catch block - error:', error);
-        console.error(`${method} API error:`, error);
+        console.error('OTP initiation error:', error);
         
         // Handle different types of errors
         let errorMessage: string;
@@ -2798,9 +2836,12 @@
             throw new Error(typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage));
           }
           
-          if (result.success && result.data) {
-            // Use result.data.verificationId (from success response structure)
-            currentVerificationId = result.data.verificationId;
+          // API response structure: { success: true, verificationId: "...", message: "..." }
+          // Check both top-level and nested data.verificationId
+          const verificationId = result.verificationId || result.data?.verificationId;
+          if (result.success && verificationId) {
+            currentVerificationId = verificationId;
+            console.log('✅ [VOICE] Verification ID set:', currentVerificationId);
             showStep(3);
             if (displayPhoneNumberOtp) displayPhoneNumberOtp.textContent = fullPhoneNumber;
             startResendTimer();
@@ -2959,7 +3000,21 @@
           registrationData: registrationData // ✅ Pass registration data for new users
         });
           
-        if (result.success && result.data?.verified) {
+        // DEBUG: Log the full result structure
+        console.log('🔍 [DEBUG] Full verification result:', JSON.stringify(result, null, 2));
+        console.log('🔍 [DEBUG] result.success:', result.success);
+        console.log('🔍 [DEBUG] result.data:', result.data);
+        console.log('🔍 [DEBUG] result.data?.verified:', result.data?.verified);
+        console.log('🔍 [DEBUG] result.data?.user:', result.data?.user);
+        
+        // The auth client wraps responses, so check both result.data and result directly
+        const verified = result.data?.verified || (result as any).verified;
+        const userData = result.data?.user || (result as any).user;
+        
+        console.log('🔍 [DEBUG] Extracted verified:', verified);
+        console.log('🔍 [DEBUG] Extracted userData:', userData);
+        
+        if (result.success && verified) {
           showSuccess('Verification successful!');
           
           // Get industry data (for new users from form/result, for existing from stored data)
@@ -2968,12 +3023,14 @@
           let role: string = '';
           let organization: string = '';
           
-          // Priority 1: Try result.data.user (from backend)
-          if (result.data?.user) {
-            industry = result.data.user.industry || '';
-            role = result.data.user.role || '';
-            organization = result.data.user.organization || '';
-            console.log('📋 Got industry data from backend user object:', { industry, role, organization });
+          // Priority 1: Try result.data.user or result.user (from backend)
+          if (userData) {
+            industry = userData.industry || '';
+            role = userData.role || '';
+            organization = userData.organization || '';
+            console.log('📋 [PRIORITY 1] Got industry data from backend user object:', { industry, role, organization, userData });
+          } else {
+            console.warn('⚠️ [PRIORITY 1] No userData found in result');
           }
           
           // Priority 2: For new users, use registration data we just sent
@@ -3043,10 +3100,28 @@
             phoneNumber: currentPhoneNumber,
             verificationId: currentVerificationId,
             timestamp: Date.now(),
-            userId: result.data?.user?.id || `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+            userId: userData?.id || result.data?.user?.id || (result as any).user?.id || `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
           };
+          
+          console.log('🔍 [DEBUG] industryData created:', industryData);
 
           localStorage.setItem('tetrixIndustryAuth', JSON.stringify(industryData));
+          
+          // Also store in format expected by dashboardRoutingService
+          // Generate a token for client-side routing (server uses session cookie)
+          const authToken = result.data?.token || result.token || `tetrix_auth_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+          const authData = {
+            industry,
+            role,
+            organization,
+            phoneNumber: currentPhoneNumber,
+            verificationId: currentVerificationId,
+            authToken: authToken,
+            authMethod: '2fa' as const,
+            timestamp: Date.now()
+          };
+          localStorage.setItem('tetrixAuth', JSON.stringify(authData));
+          console.log('✅ Stored auth data for dashboard routing:', authData);
           
           console.log('✅ Authentication successful - session cookie set automatically');
           console.log('✅ Final industry data for redirect:', industryData);
@@ -3072,36 +3147,124 @@
             // Build redirect URL
             let redirectUrl: string = '';
             
+            console.log('🔍 [DEBUG] Building redirect URL with:', { industry, role, organization, industryData });
+            console.log('🔍 [DEBUG] industryDashboards object:', industryDashboards);
+            
             // Redirect to industry-specific dashboard
             if (industry) {
-              const dashboardUrl = industryDashboards[industry as keyof typeof industryDashboards];
+              // CRITICAL: Ensure we're using the correct mapping (no -consolidated)
+              let dashboardUrl = industryDashboards[industry];
+              console.log('🔍 [DEBUG] Looking up dashboard for industry:', industry);
+              console.log('🔍 [DEBUG] Available mappings:', Object.keys(industryDashboards));
+              console.log('🔍 [DEBUG] Found dashboard URL:', dashboardUrl);
+              
+              // Safety check: If URL contains -consolidated, it's wrong - use fallback
+              if (dashboardUrl && dashboardUrl.includes('-consolidated')) {
+                console.error('❌ [ERROR] Dashboard URL contains -consolidated:', dashboardUrl);
+                console.error('❌ [ERROR] This indicates cached JavaScript. Using fallback.');
+                // Remove -consolidated from URL or use fallback
+                dashboardUrl = dashboardUrl.replace('-consolidated', '');
+                // If still invalid, use client dashboard
+                if (!dashboardUrl || dashboardUrl.includes('-consolidated')) {
+                  dashboardUrl = '/dashboards/client';
+                }
+                console.log('🔍 [FALLBACK] Corrected URL:', dashboardUrl);
+              }
+              
               if (dashboardUrl) {
-                const url = new URL(dashboardUrl, window.location.origin);
-                // No token needed - session cookie handles auth
-                url.searchParams.set('role', role || '');
-                url.searchParams.set('org', organization || '');
-                url.searchParams.set('phone', currentPhoneNumber || '');
-                url.searchParams.set('industry', industry);
-                url.searchParams.set('userId', industryData.userId);
-                redirectUrl = url.toString();
-                console.log('🎯 Redirecting to industry dashboard:', redirectUrl);
+                // Use relative path to avoid redirecting to droplet
+                // Build query string manually to ensure it stays on localhost
+                const params = new URLSearchParams();
+                params.set('role', role || '');
+                params.set('org', organization || '');
+                params.set('phone', currentPhoneNumber || '');
+                params.set('industry', industry);
+                params.set('userId', industryData.userId);
+                
+                // CRITICAL: Use relative path starting with / - never use absolute URLs
+                // dashboardUrl already starts with / (e.g., '/dashboards/healthcare')
+                redirectUrl = `${dashboardUrl}?${params.toString()}`;
+                
+                // Safety check: ensure it's a relative path
+                if (!redirectUrl.startsWith('/')) {
+                  console.error('❌ Dashboard URL is not relative:', dashboardUrl);
+                  redirectUrl = '/dashboards/client?' + params.toString();
+                }
+                
+                console.log('🎯 [SUCCESS] Redirecting to industry dashboard:', redirectUrl);
+                console.log('🎯 [DEBUG] Current origin:', window.location.origin);
+                console.log('🎯 [DEBUG] Dashboard URL (relative):', dashboardUrl);
+                console.log('🎯 [DEBUG] Full redirect URL will be:', window.location.origin + redirectUrl);
               } else {
                 // Industry not in mapping - use client dashboard with industry param
-                redirectUrl = `/dashboards/client?role=${role || ''}&org=${organization || ''}&phone=${currentPhoneNumber || ''}&industry=${industry}&userId=${industryData.userId}`;
-                console.log('🎯 Redirecting to client dashboard (industry not in mapping):', redirectUrl);
+                redirectUrl = `/dashboards/client?role=${encodeURIComponent(role || '')}&org=${encodeURIComponent(organization || '')}&phone=${encodeURIComponent(currentPhoneNumber || '')}&industry=${encodeURIComponent(industry)}&userId=${encodeURIComponent(industryData.userId)}`;
+                console.log('🎯 [FALLBACK] Redirecting to client dashboard (industry not in mapping):', redirectUrl);
               }
             } else {
               // No industry found - redirect to client dashboard as fallback
-              redirectUrl = `/dashboards/client?role=${role || ''}&org=${organization || ''}&phone=${currentPhoneNumber || ''}&userId=${industryData.userId}`;
-              console.warn('⚠️ No industry found - redirecting to client dashboard:', redirectUrl);
+              redirectUrl = `/dashboards/client?role=${encodeURIComponent(role || '')}&org=${encodeURIComponent(organization || '')}&phone=${encodeURIComponent(currentPhoneNumber || '')}&userId=${encodeURIComponent(industryData.userId)}`;
+              console.warn('⚠️ [FALLBACK] No industry found - redirecting to client dashboard:', redirectUrl);
             }
             
-            // Perform redirect
+            // Perform redirect - ensure it's a relative path to stay on localhost
             if (redirectUrl) {
-              console.log('🚀 Executing redirect to:', redirectUrl);
-              window.location.href = redirectUrl;
+              // CRITICAL: Ensure redirectUrl is relative (starts with /)
+              // Convert any absolute URLs to relative paths
+              let finalRedirectUrl = redirectUrl;
+              
+              if (redirectUrl.startsWith('http://') || redirectUrl.startsWith('https://')) {
+                // Extract pathname and search from absolute URL
+                try {
+                  const urlObj = new URL(redirectUrl);
+                  finalRedirectUrl = urlObj.pathname + urlObj.search;
+                  console.warn('⚠️ Converted absolute URL to relative:', finalRedirectUrl);
+                } catch (e) {
+                  console.error('❌ Failed to parse URL:', redirectUrl);
+                  // Fallback: extract path manually
+                  const match = redirectUrl.match(/https?:\/\/[^\/]+(\/.*)/);
+                  if (match) {
+                    finalRedirectUrl = match[1];
+                  }
+                }
+              } else if (!redirectUrl.startsWith('/')) {
+                // Ensure it starts with /
+                finalRedirectUrl = '/' + redirectUrl;
+              }
+              
+              // Final safety check: ensure it's a relative path
+              if (!finalRedirectUrl.startsWith('/')) {
+                console.error('❌ Invalid redirect URL format:', finalRedirectUrl);
+                finalRedirectUrl = '/dashboards/client';
+              }
+              
+              // Block redirects to external domains (safety check)
+              if (finalRedirectUrl.includes('tetrixcorp.com') || 
+                  finalRedirectUrl.includes('ondigitalocean') ||
+                  finalRedirectUrl.includes('://')) {
+                console.error('❌ Blocked redirect to external domain:', finalRedirectUrl);
+                finalRedirectUrl = '/dashboards/client';
+              }
+              
+              console.log('🚀 [EXECUTING] Final redirect URL:', finalRedirectUrl);
+              console.log('🚀 [EXECUTING] Current origin:', window.location.origin);
+              console.log('🚀 [EXECUTING] Will redirect to:', window.location.origin + finalRedirectUrl);
+              
+              // Use relative path redirect to ensure it stays on same origin
+              window.location.href = finalRedirectUrl;
+              
+              // Fallback: If redirect doesn't work after 500ms, try replace
+              setTimeout(() => {
+                const currentPath = window.location.pathname + window.location.search;
+                const expectedPath = finalRedirectUrl.split('?')[0];
+                if (currentPath !== expectedPath && !currentPath.startsWith('/dashboards/')) {
+                  console.warn('⚠️ Redirect may have failed, trying window.location.replace');
+                  console.warn('⚠️ Current path:', currentPath, 'Expected:', expectedPath);
+                  window.location.replace(finalRedirectUrl);
+                }
+              }, 500);
             } else {
-              console.error('❌ No redirect URL generated - this should not happen');
+              console.error('❌ [ERROR] No redirect URL generated - this should not happen');
+              console.error('❌ [ERROR] Industry:', industry, 'Role:', role, 'Organization:', organization);
               // Ultimate fallback: just go to home (user can retry)
               alert('Authentication successful but redirect failed. Please try logging in again.');
               window.location.href = '/';
@@ -3208,10 +3371,11 @@
           
           // API response structure: { success: true, verificationId: "...", message: "..." }
           // verificationId is at top level, not in result.data
-          if (result.success && (result.verificationId || result.data?.verificationId)) {
-            // Use verificationId from top level (API response structure)
-            currentVerificationId = result.verificationId || result.data?.verificationId;
-            console.log('✅ Resend successful, new verificationId:', currentVerificationId);
+          // Check both top-level and nested data.verificationId for compatibility
+          const resendVerificationId = result.verificationId || result.data?.verificationId;
+          if (result.success && resendVerificationId) {
+            currentVerificationId = resendVerificationId;
+            console.log('✅ [RESEND] Verification ID set:', currentVerificationId);
             
             // Update phone number display if needed
             if (phoneToResend !== currentPhoneNumber) {
@@ -3267,16 +3431,53 @@
       
       // Use event delegation on step3 container to handle clicks
       step3Div.addEventListener('click', (ev) => {
+        console.log('🔍 [STEP3] Click event detected:', {
+          target: ev.target,
+          currentTarget: ev.currentTarget,
+          targetId: (ev.target as HTMLElement)?.id,
+          targetClass: (ev.target as HTMLElement)?.className,
+          timestamp: Date.now()
+        });
+        
         const target = ev.target as HTMLElement;
         const button = target.closest('#send-sms-btn, #send-call-btn, #send-whatsapp-btn, #send-flashcall-btn') as HTMLButtonElement;
         
-        if (!button) return;
+        console.log('🔍 [STEP3] Button lookup result:', {
+          buttonFound: !!button,
+          buttonId: button?.id,
+          buttonDisabled: button?.disabled,
+          buttonClasses: button?.className,
+          currentStep: currentStep,
+          step3Visible: !step3Div.classList.contains('hidden')
+        });
+        
+        if (!button) {
+          console.log('🔍 [STEP3] No matching button found, ignoring click');
+          return;
+        }
+        
+        // Check if button is disabled
+        if (button.disabled) {
+          console.warn('⚠️ [STEP3] Button is disabled, preventing action:', {
+            buttonId: button.id,
+            disabled: button.disabled,
+            hasDisabledAttr: button.hasAttribute('disabled'),
+            opacity: window.getComputedStyle(button).opacity,
+            pointerEvents: window.getComputedStyle(button).pointerEvents
+          });
+          return;
+        }
         
         ev.preventDefault();
         ev.stopPropagation();
         
         const buttonId = button.id;
-        console.log('🔘 Step 3 button clicked:', buttonId);
+        console.log('🔘 [STEP3] Step 3 button clicked:', buttonId, {
+          timestamp: new Date().toISOString(),
+          currentPhoneNumber: currentPhoneNumber,
+          currentVerificationId: currentVerificationId,
+          currentStep: currentStep
+        });
         
         // Map button IDs to verification methods
         const methodMap: Record<string, string> = {
@@ -3287,12 +3488,52 @@
         };
         
         const method = methodMap[buttonId];
-        if (method) {
-          console.log(`🚀 Calling sendVerificationCode('${method}')`);
-          sendVerificationCode(method).catch(error => {
-            console.error('Error sending verification code:', error);
-            showError('Failed to send verification code. Please try again.');
+        if (!method) {
+          console.error('❌ [STEP3] Unknown button ID:', buttonId);
+          showError('Unknown verification method. Please try again.');
+          return;
+        }
+        
+        console.log(`🚀 [STEP3] Calling sendVerificationCode('${method}')`, {
+          method: method,
+          phoneNumber: currentPhoneNumber,
+          hasVerificationId: !!currentVerificationId,
+          timestamp: Date.now()
+        });
+        
+        try {
+          const verificationPromise = sendVerificationCode(method);
+          console.log('✅ [STEP3] sendVerificationCode promise created:', {
+            promiseExists: !!verificationPromise,
+            isPromise: verificationPromise instanceof Promise
           });
+          
+          verificationPromise
+            .then((result) => {
+              console.log('✅ [STEP3] sendVerificationCode completed successfully:', {
+                success: result?.success,
+                hasVerificationId: !!currentVerificationId,
+                verificationId: currentVerificationId,
+                timestamp: Date.now()
+              });
+            })
+            .catch(error => {
+              console.error('❌ [STEP3] Error in sendVerificationCode promise chain:', {
+                error: error,
+                errorMessage: error?.message,
+                errorStack: error?.stack,
+                timestamp: Date.now()
+              });
+              showError('Failed to send verification code. Please try again.');
+            });
+        } catch (error) {
+          console.error('❌ [STEP3] Exception calling sendVerificationCode:', {
+            error: error,
+            errorMessage: error?.message,
+            errorStack: error?.stack,
+            timestamp: Date.now()
+          });
+          showError('Failed to send verification code. Please try again.');
         }
       }, { capture: true });
       
@@ -3657,6 +3898,67 @@
 </script>
 
 <style is:global>
+  /* Modern Animations */
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slide-in {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slide-down {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+  }
+
+  .animate-slide-in {
+    animation: slide-in 0.4s ease-out;
+  }
+
+  .animate-slide-down {
+    animation: slide-down 0.3s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.3s ease-out;
+  }
+
   /* CRITICAL: Ensure phone input is visible */
   #unified-auth-phone-number {
     color: #111827 !important;
@@ -3676,6 +3978,8 @@
     color: #111827 !important;
     background-color: #ffffff !important;
     -webkit-text-fill-color: #111827 !important;
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
   }
   
   #unified-auth-modal {
@@ -3689,14 +3993,20 @@
   
   #unified-auth-modal:not(.hidden) {
     display: block !important;
+    animation: fade-in 0.3s ease-out;
+  }
+
+  #unified-auth-modal:not(.hidden) > div > div {
+    animation: scale-in 0.3s ease-out;
   }
   
   /* Form validation styles */
-  input:invalid {
+  input:invalid:not(:placeholder-shown) {
     border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
   }
   
-  input:valid {
+  input:valid:not(:placeholder-shown) {
     border-color: #10b981;
   }
   
@@ -3710,24 +4020,66 @@
     to { transform: rotate(360deg); }
   }
   
-  /* Button hover effects */
-  button:hover {
-    transform: translateY(-1px);
+  /* Enhanced Button Effects */
+  button:not(:disabled):hover {
+    transform: translateY(-2px);
+    transition: all 0.2s ease;
   }
   
-  button:active {
+  button:not(:disabled):active {
     transform: translateY(0);
+    transition: all 0.1s ease;
+  }
+
+  button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
   }
   
-  /* Focus styles */
+  /* Enhanced Focus styles */
   input:focus, select:focus, button:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  }
+
+  input:focus-visible, select:focus-visible, button:focus-visible {
+    outline: 2px solid #ef4444;
+    outline-offset: 2px;
   }
   
   /* OTP input styling */
-  #verification-code {
+  #unified-verification-code {
     letter-spacing: 0.5em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Progress Indicator Active State */
+  #progress-indicators > div.bg-white {
+    background-color: white !important;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+    transform: scale(1.2);
+  }
+
+  /* Smooth transitions for all interactive elements */
+  input, select, button {
+    transition: all 0.2s ease;
+  }
+
+  /* Mobile optimizations */
+  @media (max-width: 640px) {
+    #unified-auth-modal > div > div {
+      margin: 1rem;
+      max-height: calc(100vh - 2rem);
+    }
+  }
+
+  /* Accessibility improvements */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 
   /* Improved legibility for Industry and Role selects */

@@ -14,6 +14,10 @@
     "test:services": "vitest run src/services/__tests__",
     "test:api": "vitest run src/pages/api/v2/2fa/__tests__",
     "test:integration": "vitest run src/components/auth/__tests__/auth-integration.test.ts",
+    "test:playwright": "playwright test",
+    "test:playwright:dashboards": "playwright test tests/playwright/dashboards*.spec.ts",
+    "test:playwright:ui": "playwright test --ui",
+    "test:playwright:report": "playwright show-report",
     "dev": "astro dev",
     "build": "rm -rf dist && rm -rf .astro && astro build && node scripts/cache-bust.js",
     "build:optimized": "node scripts/optimize-build.js",
@@ -26,7 +30,8 @@
     "type-check": "tsc --noEmit",
     "cache-bust": "node scripts/cache-bust.js",
     "build:fresh": "rm -rf dist .astro node_modules/.cache && pnpm run build",
-    "build:force": "rm -rf dist .astro node_modules/.cache .pnpm-store && pnpm install --frozen-lockfile=false && pnpm run build"
+    "build:force": "rm -rf dist .astro node_modules/.cache .pnpm-store && pnpm install --frozen-lockfile=false && pnpm run build",
+    "debug:otp": "node scripts/debug-otp-modal.js"
   },
   "dependencies": {
     "@astrojs/check": "^0.3.4",
@@ -38,6 +43,7 @@
     "@types/node": "^20.10.0",
     "astro": "^5.0.0",
     "axios": "^1.6.0",
+    "dotenv": "^17.2.3",
     "express": "^4.18.2",
     "firebase": "^11.0.0",
     "jsonwebtoken": "^9.0.0",

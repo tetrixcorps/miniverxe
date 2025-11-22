@@ -223,7 +223,36 @@ export class DashboardRoutingService {
    */
   private loadAuthData(): void {
     try {
-      const stored = localStorage.getItem('tetrixAuth');
+      // First try the standard tetrixAuth key
+      let stored = localStorage.getItem('tetrixAuth');
+      
+      // If not found, try tetrixIndustryAuth and convert it
+      if (!stored) {
+        const industryAuth = localStorage.getItem('tetrixIndustryAuth');
+        if (industryAuth) {
+          try {
+            const industryData = JSON.parse(industryAuth);
+            // Convert to expected format
+            this.authData = {
+              industry: industryData.industry,
+              role: industryData.role,
+              organization: industryData.organization,
+              phoneNumber: industryData.phoneNumber,
+              verificationId: industryData.verificationId,
+              authToken: industryData.authToken || `tetrix_auth_${industryData.timestamp || Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+              authMethod: '2fa',
+              timestamp: industryData.timestamp || Date.now()
+            };
+            // Store in standard format for future use
+            localStorage.setItem('tetrixAuth', JSON.stringify(this.authData));
+            console.log('✅ Converted and stored auth data from tetrixIndustryAuth');
+            return;
+          } catch (parseError) {
+            console.error('Failed to parse tetrixIndustryAuth:', parseError);
+          }
+        }
+      }
+      
       if (stored) {
         this.authData = JSON.parse(stored);
       }

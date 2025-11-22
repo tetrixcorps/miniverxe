@@ -1,6 +1,38 @@
 import type { APIRoute } from 'astro';
 import { enterprise2FAService } from '../../../../services/enterprise2FAService';
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
+
+// Explicitly load .env file from project root
+// Astro should do this automatically, but we're ensuring it's loaded
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+// Go up from src/pages/api/v2/2fa/initiate.ts to project root
+const projectRoot = resolve(__dirname, '../../../../../');
+const envPath = resolve(projectRoot, '.env');
+
+// Load .env file explicitly
+const envResult = dotenv.config({ path: envPath });
+if (envResult.error) {
+  console.warn(`⚠️ [INITIATE] Failed to load .env file from ${envPath}:`, envResult.error.message);
+} else {
+  console.log(`✅ [INITIATE] Loaded .env file from ${envPath}`);
+}
+
+// Log TELNYX_API_KEY status for debugging (without exposing the key)
+if (typeof process !== 'undefined' && process.env) {
+  const hasApiKey = !!process.env.TELNYX_API_KEY;
+  console.log(`🔑 [INITIATE] TELNYX_API_KEY status: ${hasApiKey ? 'SET' : 'NOT SET'}`);
+  if (!hasApiKey) {
+    console.warn(`⚠️ [INITIATE] TELNYX_API_KEY not found in process.env after loading .env file.`);
+    console.warn(`⚠️ [INITIATE] Checked path: ${envPath}`);
+    console.warn(`⚠️ [INITIATE] Make sure .env file exists in project root with TELNYX_API_KEY=...`);
+  } else {
+    console.log(`✅ [INITIATE] TELNYX_API_KEY is loaded (length: ${process.env.TELNYX_API_KEY.length} chars)`);
+  }
+}
 
 // Enhanced 2FA initiation endpoint using Telnyx Verify API
 // In local development, this proxies to the backend server for consistency with droplet deployment

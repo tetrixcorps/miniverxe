@@ -15,6 +15,7 @@ export const GET: APIRoute = async ({ request, params }) => {
   // But we should still let Astro handle it by returning a 404 that indicates the route should be handled elsewhere
   const specificRoutes = [
     'v2/auth/countries',  // Handled by src/pages/api/v2/auth/countries.ts
+    'v2/auth/lookup',  // Handled by src/pages/api/v2/auth/lookup.ts
     'v1/joromi',  // JoRoMi API routes
     'v1/joromi/sessions',  // JoRoMi sessions
   ];
