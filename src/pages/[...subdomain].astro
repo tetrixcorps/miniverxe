@@ -7,6 +7,46 @@ import CodeAcademyLanding from '../components/landing/CodeAcademyLanding.astro';
 
 // Get the host from the request
 const host = Astro.request.headers.get('host') || '';
+const url = Astro.request.url;
+const pathname = new URL(url).pathname;
+
+// CRITICAL: This catch-all route should ONLY handle subdomain requests
+// Check if this is a subdomain request (e.g., joromi.localhost, code-academy.localhost)
+const hostParts = host.split('.');
+const isSubdomainRequest = hostParts.length > 2 || (hostParts.length === 2 && !host.includes('localhost') && !host.includes('127.0.0.1'));
+
+// If this is NOT a subdomain request, we should not handle it
+// However, Astro requires us to return a Response, not undefined
+// Since more specific routes (like /dashboards/logistics.astro) should take precedence,
+// we'll return a 404 here. Astro's routing will try more specific routes first anyway.
+if (!isSubdomainRequest) {
+    // Check if this looks like a path that should be handled by a specific route
+    // Known paths that have specific route files should return 404 here
+    // This allows Astro to try other route files
+    const knownSpecificRoutes = [
+        '/dashboards/',
+        '/api/',
+        '/marketing-campaigns',
+        '/contact',
+        '/solutions',
+        '/ivr-system',
+        '/unified-messaging',
+        '/support'
+    ];
+    
+    const isKnownRoute = knownSpecificRoutes.some(route => pathname.startsWith(route));
+    
+    if (isKnownRoute) {
+        // This path should be handled by a specific route file, return 404
+        // Astro will try other route files before showing 404
+        return new Response(null, { status: 404 });
+    }
+    
+    // For unknown paths on non-subdomain hosts, also return 404
+    // This ensures we don't interfere with normal routing
+    return new Response(null, { status: 404 });
+}
+
 const subdomainConfig = getSubdomainConfig(host);
 
 // Check if we should redirect to external domain
@@ -17,9 +57,15 @@ if (subdomainConfig && shouldRedirectToExternal(subdomainConfig.subdomain)) {
     }
 }
 
-// If no subdomain config found, redirect to main site
-if (!subdomainConfig) {
+// If no subdomain config found and this is a subdomain request, redirect to main site
+if (!subdomainConfig && isSubdomainRequest) {
     return Astro.redirect('https://tetrixcorp.com', 302);
+}
+
+// If we reach here and there's no subdomain config, return 404
+// This should only happen for actual subdomain requests that don't match
+if (!subdomainConfig) {
+    return new Response('Subdomain not found', { status: 404 });
 }
 ---
 

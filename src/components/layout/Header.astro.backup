@@ -1,0 +1,431 @@
+---
+import Logo from './Logo.astro';
+import DynamicTetrix from '../shared/DynamicTetrix.astro';
+import ProductsModal from '../ProductsModal.astro';
+import TwoFAModal from '../auth/2FAModal.astro';
+import RegistrationModal from '../auth/RegistrationModal.astro';
+import UnifiedAuthModal from '../auth/UnifiedAuthModal.astro';
+import JoRoMiIntegration from '../integration/JoRoMiIntegration.astro';
+---
+<header class="w-full bg-gradient-to-r from-brand-red via-brand-orange to-brand-yellow text-white shadow relative">
+  <div class="max-w-screen-xl mx-auto flex items-center justify-between px-4 py-3">
+    <a href="/" class="flex items-center space-x-3 group">
+      <Logo />
+      <DynamicTetrix size="2xl" variant="default" />
+    </a>
+    <nav aria-label="Main navigation">
+      <ul class="hidden md:flex space-x-8 text-lg font-medium items-center">
+        <li><a href="/" class="hover:underline focus:outline-none focus:ring-2 focus:ring-brand-yellow">Home</a></li>
+        <li><button id="open-products-modal" class="hover:underline focus:outline-none focus:ring-2 focus:ring-brand-yellow flex items-center">
+          Products
+          <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button></li>
+        <li><a href="/blog" class="hover:underline focus:outline-none focus:ring-2 focus:ring-brand-yellow">Blog</a></li>
+        <li><a href="/pricing" class="hover:underline focus:outline-none focus:ring-2 focus:ring-brand-yellow">Pricing</a></li>
+        <li><a href="/contact" class="hover:underline focus:outline-none focus:ring-2 focus:ring-brand-yellow">Contact Us</a></li>
+        <li><a href="/about" class="hover:underline focus:outline-none focus:ring-2 focus:ring-brand-yellow">About Us</a></li>
+        <li>
+          <button type="button" id="open-code-academy-modal" class="auth-button bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-300 shadow-lg text-sm min-w-[120px]">
+            Code Academy
+          </button>
+        </li>
+            <li>
+              <button type="button" id="joromi-2fa-btn" class="auth-button bg-red-600 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-300 shadow-lg text-sm min-w-[100px]">
+                JoRoMi
+              </button>
+            </li>
+            <li>
+              <button type="button" id="client-login-2fa-btn" class="auth-button bg-black text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 shadow-lg text-sm min-w-[110px]" data-action="client-login">
+                Client Login
+              </button>
+            </li>
+      </ul>
+      <!-- Mobile menu button -->
+      <button id="mobile-menu-btn" class="md:hidden p-2 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <div id="mobile-menu" class="absolute top-16 left-0 w-full bg-gradient-to-r from-brand-red via-brand-orange to-brand-yellow shadow-lg z-50 md:hidden hidden animate-fade-in" tabindex="-1">
+        <ul class="flex flex-col items-center space-y-6 py-6 text-lg font-medium">
+          <li><a href="/" class="hover:underline">Home</a></li>
+          <li><button id="open-products-modal-mobile" class="hover:underline flex items-center">
+            Products
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button></li>
+          <li><a href="/blog" class="hover:underline">Blog</a></li>
+          <li><a href="/pricing" class="hover:underline">Pricing</a></li>
+          <li><a href="/contact" class="hover:underline">Contact Us</a></li>
+          <li><a href="/about" class="hover:underline">About Us</a></li>
+          <li>
+            <button type="button" id="open-code-academy-modal-mobile" class="auth-button bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg text-sm min-w-[120px] w-full">
+              Code Academy
+            </button>
+          </li>
+              <li>
+                <button type="button" id="joromi-2fa-btn-mobile" class="auth-button bg-red-600 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-red-700 transition-colors shadow-lg text-sm min-w-[100px] w-full">
+                  JoRoMi
+                </button>
+              </li>
+              <li>
+                <button type="button" id="client-login-2fa-btn-mobile" class="auth-button bg-black text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-gray-800 transition-colors shadow-lg text-sm min-w-[110px] w-full" data-action="client-login">
+                  Client Login
+                </button>
+              </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+  
+      <!-- Products Modal -->
+      <ProductsModal />
+      
+      
+      
+      <!-- 2FA Modal -->
+      <TwoFAModal />
+      
+          <!-- Registration Modal -->
+          <RegistrationModal />
+
+          <!-- Unified Authentication Modal -->
+          <UnifiedAuthModal />
+  
+  <!-- CRITICAL: Load hotfix BEFORE any other scripts (no defer!) -->
+  <script is:inline>
+    // Immediate execution - no wrapper
+    try {
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        console.log('[DEV-HOTFIX-HEADER] Hotfix loading in Header component');
+        
+        // 1. Provide window.showStep IMMEDIATELY
+        if (typeof window.showStep !== 'function') {
+          window.showStep = function(stepNum) {
+            var ids = ['auth-step-1', 'auth-step-2', 'auth-step-3', 'auth-step-4'];
+            ids.forEach(function(id, idx) {
+              var el = document.getElementById(id);
+              if (el) el.classList.toggle('hidden', idx !== (stepNum - 1));
+            });
+          };
+        }
+        
+        // 2. Provide JoRoMiIntegration as class constructor
+        if (typeof window.JoRoMiIntegration === 'undefined') {
+          window.JoRoMiIntegration = function JoRoMiIntegration() {
+            this.isLocal = true;
+            this.isDevelopment = true;
+            this.joromiUrl = '/joromi';
+            this.initializeEventListeners = function() {};
+            this.redirectToJoRoMi = function() {};
+            this.checkJoRoMiAvailability = function() { return Promise.resolve(true); };
+            this.getJoRoMiUrl = function() { return '/joromi'; };
+          };
+        }
+        
+        // 3. Provide changePhoneBtn as safe getter
+        try {
+          if (!('changePhoneBtn' in window)) {
+            Object.defineProperty(window, 'changePhoneBtn', {
+              get: function() { return document.getElementById('change-phone'); },
+              configurable: true,
+              enumerable: false
+            });
+          }
+        } catch(e) {
+          window.changePhoneBtn = null; // Fallback
+        }
+        
+        console.log('[DEV-HOTFIX-HEADER] Hotfix loaded - all functions available');
+      }
+    } catch(err) {
+      console.error('[DEV-HOTFIX-HEADER] Error:', err);
+    }
+  </script>
+  {/* Load auxiliary scripts only in production to avoid dev MIME/redirect issues */}
+  <!-- Removed legacy header-auth.js and auth-proxy.js in production to prevent overrides -->
+</header>
+
+<style>
+  .tetrix-brand {
+    position: relative;
+    cursor: pointer;
+  }
+
+  /* Professional button styling for authentication buttons */
+  .auth-button {
+    position: relative;
+    overflow: hidden;
+    transform: translateY(0);
+    transition: all 0.2s ease-in-out;
+  }
+
+  .auth-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .auth-button:active {
+    transform: translateY(0);
+  }
+
+  /* Button spacing and alignment */
+  nav ul li:has(.auth-button) {
+    margin-left: 0.5rem;
+  }
+
+  /* Mobile button improvements */
+  @media (max-width: 768px) {
+    .auth-button {
+      margin: 0.25rem 0;
+      text-align: center;
+    }
+  }
+
+  .tetrix-text {
+    background: linear-gradient(45deg, #ffffff, #FFB300, #FF9500, #FF3B30, #ffffff);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradient-shift 3s ease-in-out infinite;
+    position: relative;
+    display: inline-block;
+  }
+
+  .tetrix-text::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, #FF3B30, #FF9500, #FFB300, #FF3B30);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    opacity: 0;
+    animation: glow-pulse 2s ease-in-out infinite;
+    z-index: -1;
+  }
+
+  .tetrix-letter {
+    display: inline-block;
+    transition: all 0.3s ease;
+    position: relative;
+    animation: letter-float 4s ease-in-out infinite;
+  }
+
+  .tetrix-letter:nth-child(1) { animation-delay: 0s; }
+  .tetrix-letter:nth-child(2) { animation-delay: 0.1s; }
+  .tetrix-letter:nth-child(3) { animation-delay: 0.2s; }
+  .tetrix-letter:nth-child(4) { animation-delay: 0.3s; }
+  .tetrix-letter:nth-child(5) { animation-delay: 0.4s; }
+  .tetrix-letter:nth-child(6) { animation-delay: 0.5s; }
+
+  .tetrix-brand:hover .tetrix-letter {
+    transform: scale(1.2) rotate(5deg);
+    text-shadow: 0 0 20px rgba(255, 179, 0, 0.8);
+  }
+
+  .tetrix-brand:hover .tetrix-text {
+    animation: gradient-shift 1s ease-in-out infinite;
+  }
+
+  .tetrix-brand:hover .tetrix-text::before {
+    opacity: 0.3;
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% {
+      opacity: 0;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.3;
+      transform: scale(1.05);
+    }
+  }
+
+  @keyframes letter-float {
+    0%, 100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    25% {
+      transform: translateY(-2px) rotate(1deg);
+    }
+    50% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    75% {
+      transform: translateY(2px) rotate(-1deg);
+    }
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .tetrix-text {
+      font-size: 1.5rem;
+    }
+    
+    .tetrix-letter {
+      animation: letter-float 3s ease-in-out infinite;
+    }
+  }
+
+  /* Add a subtle sparkle effect */
+  .tetrix-brand::after {
+    content: '';
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle, rgba(255, 179, 0, 0.8) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: sparkle 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes sparkle {
+    0%, 100% {
+      opacity: 0;
+      transform: scale(0) rotate(0deg);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1) rotate(180deg);
+    }
+  }
+</style>
+
+<!-- Authentication Modals -->
+<!-- TwoFAModal already included above -->
+<!-- IndustryAuth removed - using UnifiedAuthModal instead -->
+
+<!-- Debug Script disabled: legacy IndustryAuth removed to avoid conflicts -->
+
+<!-- JoRoMi Integration Component -->
+<JoRoMiIntegration />
+
+<!-- Client Login Button Handler (Immediate Fallback) -->
+<script>
+  console.log('🔧 Client Login handler script loaded...');
+  
+  // Function to open Unified Auth Modal - works immediately
+  function openAuthModal() {
+    console.log('🔧 openAuthModal called');
+    const modal = document.getElementById('unified-auth-modal');
+    if (modal) {
+      console.log('✅ Found unified-auth-modal, opening...');
+      modal.classList.remove('hidden');
+      modal.style.display = 'block';
+      document.body.style.overflow = 'hidden';
+      
+      // Initialize modal if functions exist
+      if (typeof window.resetModal === 'function') {
+        window.resetModal();
+      }
+      if (typeof window.loadCountries === 'function') {
+        window.loadCountries();
+      }
+      
+      console.log('✅ Modal opened successfully');
+      return true;
+    }
+    return false;
+  }
+  
+  // Global function for manual execution
+  window.openClientLogin = function() {
+    console.log('🔧 openClientLogin called!');
+    
+    // Try global function first
+    if (typeof window.openUnifiedAuthModal === 'function') {
+      console.log('✅ openUnifiedAuthModal function found');
+      try {
+        window.openUnifiedAuthModal();
+        console.log('✅ Unified Auth modal opened via global function');
+        return;
+      } catch (error) {
+        console.error('❌ Error opening Unified Auth modal:', error);
+      }
+    }
+    
+    // Fallback: Open modal directly
+    if (openAuthModal()) {
+      return;
+    }
+    
+    console.error('❌ unified-auth-modal not found in DOM');
+    alert('Authentication service is temporarily unavailable. Please refresh the page and try again.');
+  };
+  
+  // Direct event handler attachment as immediate fallback
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('🔧 DOMContentLoaded - attaching direct Client Login handlers');
+    
+    const clientLoginBtn = document.getElementById('client-login-2fa-btn');
+    const clientLoginBtnMobile = document.getElementById('client-login-2fa-btn-mobile');
+    
+    if (clientLoginBtn) {
+      // Add click handler directly
+      clientLoginBtn.addEventListener('click', function(e) {
+        console.log('🔧 Client Login button clicked (inline handler)');
+        e.preventDefault();
+        e.stopPropagation();
+        window.openClientLogin();
+      });
+      console.log('✅ Direct event listener attached to desktop Client Login button');
+    }
+    
+    if (clientLoginBtnMobile) {
+      clientLoginBtnMobile.addEventListener('click', function(e) {
+        console.log('🔧 Mobile Client Login button clicked (inline handler)');
+        e.preventDefault();
+        e.stopPropagation();
+        window.openClientLogin();
+      });
+      console.log('✅ Direct event listener attached to mobile Client Login button');
+    }
+  });
+  
+  // Also try immediately if DOM is already loaded
+  if (document.readyState !== 'loading') {
+    const clientLoginBtn = document.getElementById('client-login-2fa-btn');
+    const clientLoginBtnMobile = document.getElementById('client-login-2fa-btn-mobile');
+    
+    if (clientLoginBtn) {
+      clientLoginBtn.addEventListener('click', function(e) {
+        console.log('🔧 Client Login button clicked (immediate handler)');
+        e.preventDefault();
+        e.stopPropagation();
+        window.openClientLogin();
+      });
+      console.log('✅ Immediate event listener attached to desktop Client Login button');
+    }
+    
+    if (clientLoginBtnMobile) {
+      clientLoginBtnMobile.addEventListener('click', function(e) {
+        console.log('🔧 Mobile Client Login button clicked (immediate handler)');
+        e.preventDefault();
+        e.stopPropagation();
+        window.openClientLogin();
+      });
+      console.log('✅ Immediate event listener attached to mobile Client Login button');
+    }
+  }
+  
+  console.log('🔧 openClientLogin function defined');
+</script> 

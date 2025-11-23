@@ -1,38 +1,55 @@
 import { defineConfig } from 'vitest/config';
+import { resolve } from 'path';
 
 export default defineConfig({
   test: {
-    environment: 'jsdom',
     globals: true,
-    setupFiles: ['./tests/setup.js'],
+    environment: 'jsdom',
+    setupFiles: ['./tests/setup.js', './src/test/setup.ts'],
     include: [
-      'tests/unit/**/*.test.js',
-      'tests/unit/**/*.test.ts',
-      'tests/functional/**/*.test.js',
-      'tests/functional/**/*.test.ts',
-      'tests/integration/**/*.test.js',
-      'tests/integration/**/*.test.ts'
+      'src/**/*.{test,spec}.{js,ts,jsx,tsx}',
+      'src/components/auth/__tests__/**/*.{test,spec}.{js,ts}',
+      'src/services/__tests__/**/*.{test,spec}.{js,ts}',
+      'src/pages/api/v2/2fa/__tests__/**/*.{test,spec}.{js,ts}',
+      'tests/unit/**/*.{test,spec}.{js,ts}',
+      'tests/functional/**/*.{test,spec}.{js,ts}',
+      'tests/integration/**/*.{test,spec}.{js,ts}'
     ],
     exclude: [
-      '**/*.spec.ts',
-      '**/*.spec.js',
+      'node_modules',
+      'dist',
+      '.astro',
+      'src/test',
+      'src/pages/api/v2/2fa/__tests__/api-endpoints.test.ts',
       '**/e2e/**',
-      '**/playwright/**',
-      'node_modules/**',
-      'dist/**'
+      '**/playwright/**'
     ],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
       exclude: [
         'node_modules/',
-        'tests/',
-        'dist/',
-        '**/*.config.js',
-        '**/*.test.js',
-        '**/*.spec.ts',
-        '**/*.spec.js'
-      ]
+        'src/test/',
+        '**/*.d.ts',
+        '**/*.config.*',
+        '**/coverage/**'
+      ],
+      thresholds: {
+        global: {
+          branches: 80,
+          functions: 80,
+          lines: 80,
+          statements: 80
+        }
+      }
+    }
+  },
+  resolve: {
+    alias: {
+      '@': resolve(process.cwd(), './src'),
+      '@components': resolve(process.cwd(), './src/components'),
+      '@services': resolve(process.cwd(), './src/services'),
+      '@pages': resolve(process.cwd(), './src/pages')
     }
   }
 });

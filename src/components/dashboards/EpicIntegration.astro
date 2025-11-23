@@ -175,12 +175,13 @@ const tokenInfo = epicOAuth.getTokenInfo();
   )}
 </div>
 
-<script>
+<script define:vars={{ isAuthenticated, tokenInfo }}>
   // Epic Integration JavaScript
   class EpicIntegration {
     constructor() {
-      this.isAuthenticated = {isAuthenticated};
-      this.tokenInfo = {tokenInfo};
+      // Authentication state is passed via define:vars from Astro frontmatter
+      this.isAuthenticated = isAuthenticated;
+      this.tokenInfo = tokenInfo;
       this.init();
     }
 

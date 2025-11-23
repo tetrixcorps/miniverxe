@@ -1,92 +1,164 @@
 import type { APIRoute } from 'astro';
-import { enterprise2FAService } from '../../../../services/enterprise2FAService';
-import { parsePhoneNumberFromString } from 'libphonenumber-js';
+import { enterprise2FAService } from '@/services/enterprise2FAService';
+import { authSecurity } from '@/lib/security/authSecurity';
 
 // Enhanced 2FA verification endpoint using Telnyx Verify API
+// Production-grade security: rate limiting, CSRF protection, input validation
 export const POST: APIRoute = async ({ request, locals }) => {
+  const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  
+  // ========== SECURITY CHECKS ==========
+  
+  // 1. Get client IP
+  const clientIP = authSecurity.getClientIP(request.headers);
+  
+  // 2. Check if IP is blocked
+  if (authSecurity.isBlocked(clientIP)) {
+    const unblockTime = authSecurity.getUnblockTime(clientIP)!;
+    const retryAfter = Math.ceil((unblockTime - Date.now()) / 1000);
+    return createErrorResponse('Too many failed attempts. Please try again later.', 429, {
+      retryAfter,
+      type: 'ip_blocked'
+    }, {
+      'X-Retry-After': retryAfter.toString(),
+      ...authSecurity.getSecurityHeaders()
+    });
+  }
+  
+  // 3. Check rate limit (strict for 2FA verification)
+  const rateLimitCheck = authSecurity.checkRateLimit(clientIP, true);
+  if (!rateLimitCheck.allowed) {
+    return createErrorResponse('Too many requests. Please try again later.', 429, {
+      retryAfter: rateLimitCheck.retryAfter,
+      type: 'rate_limit_exceeded'
+    }, {
+      'X-Retry-After': (rateLimitCheck.retryAfter || 0).toString(),
+      ...authSecurity.getSecurityHeaders()
+    });
+  }
+  
+  // 4. CSRF Protection: Validate Origin
+  const origin = request.headers.get('origin');
+  const referer = request.headers.get('referer');
+  if (!authSecurity.validateOrigin(origin, referer)) {
+    console.warn(`🚫 [${requestId}] CSRF check failed: origin=${origin}, referer=${referer}`);
+    authSecurity.recordFailedAttempt(clientIP);
+    return createErrorResponse('Invalid request origin', 403, {
+      type: 'csrf_validation_failed'
+    }, authSecurity.getSecurityHeaders());
+  }
+  
+  // 5. CSRF Protection: Validate Content-Type
+  const contentType = request.headers.get('content-type');
+  if (!authSecurity.validateContentType(contentType)) {
+    console.warn(`🚫 [${requestId}] Invalid Content-Type: ${contentType}`);
+    authSecurity.recordFailedAttempt(clientIP);
+    return createErrorResponse('Invalid Content-Type. Must be application/json', 400, {
+      type: 'invalid_content_type'
+    }, authSecurity.getSecurityHeaders());
+  }
+  
+  // Check if we should proxy to backend
+  const isDocker = process.env.NODE_ENV === 'production' && process.env.DOCKER_ENV === 'true';
+  const backendUrl = process.env.BACKEND_URL || 'http://localhost:3000';
+  
+  if (process.env.BACKEND_URL || isDocker) {
+    const targetUrl = isDocker 
+      ? `http://tetrix-backend:3001/api/v2/2fa/verify`
+      : `${backendUrl}/api/v2/2fa/verify`;
+    
+    console.log(`🔄 [${requestId}] Proxying verify to backend: ${targetUrl}`);
+    
+    try {
+      const body = await request.text();
+      const response = await fetch(targetUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': request.headers.get('content-type') || 'application/json',
+          'User-Agent': request.headers.get('user-agent') || 'TetrixAuthProxy/1.0',
+          'Accept': request.headers.get('accept') || 'application/json',
+        },
+        body: body
+      });
+      
+      const data = await response.text();
+      
+      return new Response(data, {
+        status: response.status,
+        headers: {
+          'Content-Type': response.headers.get('content-type') || 'application/json',
+          ...authSecurity.getSecurityHeaders()
+        }
+      });
+    } catch (error) {
+      console.error(`❌ [${requestId}] Backend proxy failed:`, error);
+      console.log(`⚠️ [${requestId}] Falling back to local 2FA service`);
+    }
+  }
+  
   try {
-    // Use parsed body from middleware if available
+    // Parse request body
     let body: any = {};
     
     if ((locals as any).bodyParsed && (locals as any).parsedBody) {
-      console.log('Using parsed body from middleware:', (locals as any).parsedBody);
       body = (locals as any).parsedBody;
     } else {
-      console.log('Middleware parsing failed, trying direct parsing methods');
-      
       try {
-        // Method 1: Try request.json() first
         body = await request.json();
-        console.log('Successfully parsed with request.json():', body);
       } catch (jsonError) {
-        console.log('request.json() failed, trying request.text():', jsonError);
-        
         try {
-          // Method 2: Try request.text() and parse manually
           const rawBody = await request.text();
-          console.log('Raw request body:', rawBody);
-          
           if (rawBody && rawBody.trim()) {
             body = JSON.parse(rawBody);
-            console.log('Successfully parsed with request.text() + JSON.parse():', body);
           } else {
-            console.log('Empty request body');
-            return createErrorResponse('Request body is required', 400);
+            return createErrorResponse('Request body is required', 400, {}, authSecurity.getSecurityHeaders());
           }
         } catch (textError) {
-          console.error('Both parsing methods failed:', { jsonError, textError });
-          return createErrorResponse('Failed to parse request body', 400);
+          return createErrorResponse('Failed to parse request body', 400, {}, authSecurity.getSecurityHeaders());
         }
       }
     }
 
-    const {
-      verificationId,
-      code,
-      phoneNumber
-    } = body;
+    const { verificationId, code, phoneNumber } = body;
 
+    // ========== INPUT VALIDATION ==========
+    
     // Validate required fields
     if (!verificationId || !code || !phoneNumber) {
-      return createErrorResponse('verificationId, code, and phoneNumber are required', 400);
+      authSecurity.recordFailedAttempt(clientIP);
+      return createErrorResponse('verificationId, code, and phoneNumber are required', 400, {}, authSecurity.getSecurityHeaders());
     }
 
-    // Validate code format (6 digits)
-    if (!/^\d{6}$/.test(code)) {
-      return createErrorResponse('Code must be 6 digits', 400);
+    // Sanitize and validate verification code
+    const codeValidation = authSecurity.validateVerificationCode(String(code));
+    if (!codeValidation.valid) {
+      authSecurity.recordFailedAttempt(clientIP);
+      return createErrorResponse(codeValidation.error || 'Invalid verification code', 400, {}, authSecurity.getSecurityHeaders());
     }
+    const cleanedCode = codeValidation.cleaned!;
 
-    // Normalize phone number to E.164 format for verification
-    let phoneStr = String(phoneNumber).trim();
-    
-    // Basic E.164 format validation and normalization
-    // Remove all non-digit characters except +
-    let cleanPhone = phoneStr.replace(/[^\d+]/g, '');
-    
-    // Remove double plus signs
-    if (cleanPhone.startsWith('++')) {
-      cleanPhone = cleanPhone.substring(1);
+    // Sanitize and validate phone number
+    const phoneValidation = authSecurity.validatePhoneNumber(String(phoneNumber));
+    if (!phoneValidation.valid) {
+      authSecurity.recordFailedAttempt(clientIP);
+      return createErrorResponse(phoneValidation.error || 'Invalid phone number', 400, {}, authSecurity.getSecurityHeaders());
     }
-    
-    // Ensure it starts with +
-    if (!cleanPhone.startsWith('+')) {
-      cleanPhone = '+' + cleanPhone;
-    }
-    
-    // Extract digits after the +
-    const digits = cleanPhone.slice(1).replace(/\D/g, '');
-    
-    // Validate E.164 format: + followed by 1-15 digits, first digit cannot be 0
-    if (digits.length < 7 || digits.length > 15 || digits.startsWith('0')) {
-      return createErrorResponse('Invalid phone number format. Please enter a valid international number with country code.', 400);
-    }
-    
-    const e164 = cleanPhone; // Use the cleaned E.164 format
+    const e164 = phoneValidation.normalized!;
 
-    // Verify code
-    const result = await enterprise2FAService.verifyCode(verificationId, code, e164);
+    // Sanitize verification ID
+    const sanitizedVerificationId = authSecurity.sanitizeInput(String(verificationId));
+
+    // ========== VERIFY CODE ==========
+    
+    const result = await enterprise2FAService.verifyCode(sanitizedVerificationId, cleanedCode, e164);
 
     if (result.verified) {
+      // Reset failed attempts on successful verification
+      authSecurity.resetFailedAttempts(clientIP);
+      
+      // Generate secure token
+      const secureToken = authSecurity.generateSecureToken(32);
+      
       return createSuccessResponse({
         success: true,
         verified: true,
@@ -95,32 +167,38 @@ export const POST: APIRoute = async ({ request, locals }) => {
         responseCode: result.responseCode,
         timestamp: result.timestamp,
         riskLevel: result.riskLevel,
-        token: `tetrix_auth_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        token: `tetrix_auth_${Date.now()}_${secureToken}`,
         message: 'Verification successful'
-      });
+      }, authSecurity.getSecurityHeaders());
     } else {
+      // Record failed attempt
+      authSecurity.recordFailedAttempt(clientIP);
+      
       return createErrorResponse('Verification failed', 400, {
         verified: false,
         responseCode: result.responseCode,
         message: getVerificationErrorMessage(result.responseCode)
-      });
+      }, authSecurity.getSecurityHeaders());
     }
 
   } catch (error) {
-    console.error('Enterprise 2FA verification failed:', error);
+    console.error(`❌ [${requestId}] Enterprise 2FA verification failed:`, error);
+    authSecurity.recordFailedAttempt(clientIP);
+    
     return createErrorResponse(
       'Failed to verify code',
       500,
       { 
         message: error instanceof Error ? error.message : 'Unknown error',
         type: 'verification_failed'
-      }
+      },
+      authSecurity.getSecurityHeaders()
     );
   }
 };
 
 // Helper functions
-function createErrorResponse(message: string, status: number, details?: any) {
+function createErrorResponse(message: string, status: number, details?: any, headers?: Record<string, string>) {
   return new Response(JSON.stringify({
     success: false,
     error: message,
@@ -130,12 +208,13 @@ function createErrorResponse(message: string, status: number, details?: any) {
   }), {
     status,
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      ...headers
     }
   });
 }
 
-function createSuccessResponse(data: any) {
+function createSuccessResponse(data: any, headers?: Record<string, string>) {
   return new Response(JSON.stringify({
     success: true,
     ...data,
@@ -143,7 +222,8 @@ function createSuccessResponse(data: any) {
   }), {
     status: 200,
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      ...headers
     }
   });
 }

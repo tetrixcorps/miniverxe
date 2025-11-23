@@ -769,8 +769,13 @@
     window.industry2FAModal = new Industry2FAModal();
   });
 
-  // Global function to open industry auth modal
+  // Global function to open industry auth modal - redirect to UnifiedAuthModal
   window.openIndustryAuth = () => {
-    window.industry2FAModal?.open();
+    if (typeof window.openUnifiedAuthModal === 'function') {
+      window.openUnifiedAuthModal();
+    } else {
+      console.warn('openUnifiedAuthModal not available, falling back to industry2FAModal');
+      window.industry2FAModal?.open();
+    }
   };
 </script>

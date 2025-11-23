@@ -10,11 +10,22 @@ export const GET: APIRoute = async ({ request, url }) => {
     const role = url.searchParams.get('role') as 'fleet_manager' | 'healthcare_provider' | 'attorney' || 'fleet_manager';
 
     // Validate industry parameter
-    const validIndustries = ['fleet', 'healthcare', 'legal'];
+    const validIndustries = [
+      'fleet', 
+      'healthcare', 
+      'legal', 
+      'construction', 
+      'education', 
+      'government', 
+      'retail', 
+      'hospitality', 
+      'wellness', 
+      'beauty'
+    ];
     if (!validIndustries.includes(industry)) {
       return new Response(JSON.stringify({
         success: false,
-        error: 'Invalid industry parameter. Must be one of: fleet, healthcare, legal'
+        error: `Invalid industry parameter. Must be one of: ${validIndustries.join(', ')}`
       }), {
         status: 400,
         headers: {
@@ -24,8 +35,22 @@ export const GET: APIRoute = async ({ request, url }) => {
     }
 
     // Validate role parameter
-    const validRoles = ['fleet_manager', 'healthcare_provider', 'attorney'];
-    if (!validRoles.includes(role)) {
+    // We relax role validation to allow generic access if role isn't perfect, 
+    // or we should expand this list too. For now, let's expand generic roles.
+    const validRoles = [
+      'fleet_manager', 
+      'healthcare_provider', 
+      'attorney',
+      'project_manager',
+      'admin',
+      'manager',
+      'user'
+    ];
+    if (!role && !validRoles.includes(role)) {
+       // If strictly validating roles, we need to add all of them. 
+       // For MVP, let's allow any string if it's not empty, or keep strict if preferred.
+       // Let's expand the list to be safe but maybe less strict in the future.
+    }
       return new Response(JSON.stringify({
         success: false,
         error: 'Invalid role parameter. Must be one of: fleet_manager, healthcare_provider, attorney'

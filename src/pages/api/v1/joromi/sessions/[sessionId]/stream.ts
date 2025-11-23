@@ -40,13 +40,21 @@ export const POST: APIRoute = async ({ params, request }) => {
     const { sessionId } = params;
     
     if (!sessionId) {
+      console.error('❌ [STREAM] No sessionId in params:', params);
       return new Response('Session ID is required', { status: 400 });
     }
 
+    console.log(`🔍 [STREAM] Looking for session: ${sessionId}`);
+    console.log(`📊 [STREAM] Storage size: ${joromiSessions.size}`);
+    console.log(`📋 [STREAM] Available sessions:`, Array.from(joromiSessions.keys()));
+
     const session = joromiSessions.get(sessionId);
     if (!session) {
+      console.error(`❌ [STREAM] Session not found: ${sessionId}`);
       return new Response('Session not found', { status: 404 });
     }
+    
+    console.log(`✅ [STREAM] Session found: ${sessionId}`);
 
     const body = await request.json();
     const { message, role = 'user', agentId = session.agentId } = body;
@@ -122,15 +130,41 @@ export const POST: APIRoute = async ({ params, request }) => {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
         'Connection': 'keep-alive',
-        'X-Accel-Buffering': 'no' // Disable nginx buffering
+        'X-Accel-Buffering': 'no', // Disable nginx buffering
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Expose-Headers': 'Content-Type'
       }
     });
 
   } catch (error) {
     console.error('Error streaming JoRoMi message:', error);
-    return new Response(`Error: ${error instanceof Error ? error.message : 'Failed to stream message'}`, { 
-      status: 500 
+    return new Response(JSON.stringify({ 
+      error: error instanceof Error ? error.message : 'Failed to stream message',
+      success: false
+    }), { 
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      }
     });
   }
+};
+
+// Handle OPTIONS for CORS preflight
+export const OPTIONS: APIRoute = async () => {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Max-Age': '86400'
+    }
+  });
 };
 

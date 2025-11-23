@@ -1,25 +1,42 @@
 ---
-// Government Dashboard
+// Government Dashboard - Enterprise Grade
 // Citizen services, emergency services, permit management
+// Refactored with modern UI/UX best practices and React Islands
+
+import DashboardLayout from '../../components/dashboards/DashboardLayout.astro';
+import { DashboardMetrics } from '../../components/dashboard/react/DashboardMetrics';
+import { SalesforceWidget } from '../../components/dashboard/react/SalesforceWidget';
+import { HubSpotWidget } from '../../components/dashboard/react/HubSpotWidget';
+
+// Server-Side Logic: Fetch User Session
+const cookie = Astro.request.headers.get('cookie');
+const hasSession = cookie?.includes('tetrix_access_token') || cookie?.includes('better-auth.session_token');
+
+if (!hasSession) {
+  return Astro.redirect('/login?redirect=/dashboards/government');
+}
 ---
 
-<div class="min-h-screen bg-gray-50">
-  <!-- Header -->
-  <div class="bg-white shadow-sm border-b border-gray-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center py-4">
-        <div class="flex items-center">
-          <h1 class="text-2xl font-bold text-gray-900">Government Dashboard</h1>
-          <span class="ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-            🏛️ Government
-          </span>
-        </div>
+<DashboardLayout title="Government Dashboard" industry="government">
+  <!-- Hero Section with Key Metrics -->
+  <div class="mb-8">
+    <!-- Status Bar -->
+    <div class="bg-gradient-to-r from-slate-600 to-gray-700 rounded-xl shadow-lg mb-6 p-6 text-white">
+      <div class="flex items-center justify-between">
         <div class="flex items-center space-x-4">
-          <div class="flex items-center text-sm text-gray-500">
-            <div class="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
-            System Online
+          <div class="flex items-center space-x-2">
+            <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+            <span class="text-sm font-medium">System Online</span>
           </div>
-          <button id="refresh-btn" class="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+          <div class="h-4 w-px bg-white/30"></div>
+          <span class="text-sm">Last updated: <span id="last-update-time" class="font-semibold">Just now</span></span>
+        </div>
+        <div class="flex items-center space-x-3">
+          <button 
+            onclick="window.location.reload()"
+            class="bg-white/20 backdrop-blur-sm text-white p-2 rounded-lg hover:bg-white/30 transition-all duration-200 border border-white/30"
+            aria-label="Refresh data"
+          >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
             </svg>
@@ -27,249 +44,205 @@
         </div>
       </div>
     </div>
+
+    <!-- Key Metrics Cards - React Island -->
+    <DashboardMetrics industry="government" client:load />
   </div>
 
-  <!-- Main Content -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Key Metrics -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-              <span class="text-blue-600 text-lg">👥</span>
-            </div>
+  <!-- Main Content Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- Citizen Services - Enhanced -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+      <div class="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900">Citizen Services</h3>
+            <p class="text-sm text-gray-500 mt-1">127 active requests</p>
           </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">Citizen Requests</p>
-            <p class="text-2xl font-semibold text-gray-900">127</p>
-          </div>
+          <button class="text-sm text-blue-600 hover:text-blue-700 font-medium">View All</button>
         </div>
-      </div>
-      
-      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-              <span class="text-green-600 text-lg">📋</span>
-            </div>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">Permits Processed</p>
-            <p class="text-2xl font-semibold text-gray-900">89</p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
-              <span class="text-red-600 text-lg">🚨</span>
-            </div>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">Emergency Calls</p>
-            <p class="text-2xl font-semibold text-gray-900">12</p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-              <span class="text-purple-600 text-lg">⭐</span>
-            </div>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">Service Rating</p>
-            <p class="text-2xl font-semibold text-gray-900">4.6/5</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Citizen Services & Emergency Services -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-      <!-- Citizen Services -->
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h3 class="text-lg font-medium text-gray-900">Citizen Services</h3>
-        </div>
-        <div class="p-6">
-          <div class="space-y-4">
-            <div class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
-              <div class="flex items-center">
-                <div class="w-3 h-3 bg-blue-400 rounded-full mr-3"></div>
-                <div>
-                  <p class="text-sm font-medium text-gray-900">Business License Application</p>
-                  <p class="text-sm text-gray-500">Request #BL-2024-001 - Under Review</p>
-                </div>
-              </div>
-              <span class="text-sm text-blue-600 font-medium">Processing</span>
-            </div>
-            
-            <div class="flex items-center justify-between p-4 bg-green-50 rounded-lg">
-              <div class="flex items-center">
-                <div class="w-3 h-3 bg-green-400 rounded-full mr-3"></div>
-                <div>
-                  <p class="text-sm font-medium text-gray-900">Property Tax Inquiry</p>
-                  <p class="text-sm text-gray-500">Request #PT-2024-045 - Resolved</p>
-                </div>
-              </div>
-              <span class="text-sm text-green-600 font-medium">Completed</span>
-            </div>
-            
-            <div class="flex items-center justify-between p-4 bg-yellow-50 rounded-lg">
-              <div class="flex items-center">
-                <div class="w-3 h-3 bg-yellow-400 rounded-full mr-3"></div>
-                <div>
-                  <p class="text-sm font-medium text-gray-900">Building Permit</p>
-                  <p class="text-sm text-gray-500">Request #BP-2024-023 - Pending Documents</p>
-                </div>
-              </div>
-              <span class="text-sm text-yellow-600 font-medium">Pending</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Emergency Services -->
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h3 class="text-lg font-medium text-gray-900">Emergency Services</h3>
-        </div>
-        <div class="p-6">
-          <div class="space-y-4">
-            <div class="flex items-start p-4 bg-red-50 rounded-lg border-l-4 border-red-400">
-              <div class="flex-shrink-0">
-                <span class="text-red-600 text-lg">🚨</span>
-              </div>
-              <div class="ml-3">
-                <p class="text-sm font-medium text-red-800">High Priority</p>
-                <p class="text-sm text-red-700">Fire emergency - Downtown area</p>
-                <p class="text-xs text-red-600 mt-1">15 minutes ago</p>
-              </div>
-            </div>
-            
-            <div class="flex items-start p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
-              <div class="flex-shrink-0">
-                <span class="text-yellow-600 text-lg">⚠️</span>
-              </div>
-              <div class="ml-3">
-                <p class="text-sm font-medium text-yellow-800">Medium Priority</p>
-                <p class="text-sm text-yellow-700">Traffic accident - Highway 101</p>
-                <p class="text-xs text-yellow-600 mt-1">45 minutes ago</p>
-              </div>
-            </div>
-            
-            <div class="flex items-start p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
-              <div class="flex-shrink-0">
-                <span class="text-blue-600 text-lg">ℹ️</span>
-              </div>
-              <div class="ml-3">
-                <p class="text-sm font-medium text-blue-800">Information</p>
-                <p class="text-sm text-blue-700">Weather advisory issued</p>
-                <p class="text-xs text-blue-600 mt-1">2 hours ago</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Permit Management -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
-      <div class="px-6 py-4 border-b border-gray-200">
-        <h3 class="text-lg font-medium text-gray-900">Permit Management</h3>
       </div>
       <div class="p-6">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="text-center">
-            <div class="text-3xl font-bold text-green-600 mb-2">89</div>
-            <p class="text-sm text-gray-600">Permits Processed This Month</p>
-            <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
-              <div class="bg-green-600 h-2 rounded-full" style="width: 89%"></div>
+        <div class="space-y-3" id="citizen-services-list">
+          <div class="group relative bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200 hover:shadow-md transition-all duration-200 cursor-pointer">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-4 flex-1">
+                <div class="relative">
+                  <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  </div>
+                  <div class="absolute -top-1 -right-1 w-4 h-4 bg-blue-400 rounded-full border-2 border-white animate-pulse"></div>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-semibold text-gray-900">Business License Application</p>
+                  <p class="text-sm text-gray-600 mt-0.5">Request #BL-2024-001</p>
+                  <p class="text-xs text-gray-500 mt-1">Under Review</p>
+                </div>
+              </div>
+              <div class="ml-4">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
+                  Processing
+                </span>
+              </div>
             </div>
           </div>
-          
-          <div class="text-center">
-            <div class="text-3xl font-bold text-blue-600 mb-2">94%</div>
-            <p class="text-sm text-gray-600">Processing Efficiency</p>
-            <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
-              <div class="bg-blue-600 h-2 rounded-full" style="width: 94%"></div>
+
+          <div class="group relative bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200 hover:shadow-md transition-all duration-200 cursor-pointer">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-4 flex-1">
+                <div class="relative">
+                  <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  </div>
+                  <div class="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white"></div>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-semibold text-gray-900">Property Tax Inquiry</p>
+                  <p class="text-sm text-gray-600 mt-0.5">Request #PT-2024-045</p>
+                  <p class="text-xs text-gray-500 mt-1">Resolved</p>
+                </div>
+              </div>
+              <div class="ml-4">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 border border-green-200">
+                  Completed
+                </span>
+              </div>
             </div>
           </div>
-          
-          <div class="text-center">
-            <div class="text-3xl font-bold text-orange-600 mb-2">5.2</div>
-            <p class="text-sm text-gray-600">Avg Processing Days</p>
-            <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
-              <div class="bg-orange-600 h-2 rounded-full" style="width: 65%"></div>
+
+          <div class="group relative bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg p-4 border border-amber-200 hover:shadow-md transition-all duration-200 cursor-pointer">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-4 flex-1">
+                <div class="relative">
+                  <div class="w-10 h-10 bg-amber-500 rounded-full flex items-center justify-center shadow-lg">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  </div>
+                  <div class="absolute -top-1 -right-1 w-4 h-4 bg-amber-400 rounded-full border-2 border-white"></div>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-semibold text-gray-900">Building Permit</p>
+                  <p class="text-sm text-gray-600 mt-0.5">Request #BP-2024-023</p>
+                  <p class="text-xs text-gray-500 mt-1">Pending Documents</p>
+                </div>
+              </div>
+              <div class="ml-4">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
+                  Pending
+                </span>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Recent Activity -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-      <div class="px-6 py-4 border-b border-gray-200">
-        <h3 class="text-lg font-medium text-gray-900">Recent Activity</h3>
+    <!-- Emergency Services - Enhanced -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+      <div class="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900">Emergency Services</h3>
+            <p class="text-sm text-gray-500 mt-1">12 active calls</p>
+          </div>
+          <button class="text-sm text-red-600 hover:text-red-700 font-medium">View All</button>
+        </div>
       </div>
       <div class="p-6">
-        <div class="space-y-4">
-          <div class="flex items-center space-x-4">
-            <div class="flex-shrink-0">
-              <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                <span class="text-green-600 text-sm">✅</span>
+        <div class="space-y-4" id="emergency-services-list">
+          <div class="relative pl-4 border-l-4 border-red-500">
+            <div class="absolute -left-2 top-0 w-4 h-4 bg-red-500 rounded-full border-2 border-white animate-pulse"></div>
+            <div class="bg-red-50 rounded-lg p-4">
+              <div class="flex items-start justify-between mb-2">
+                <div class="flex items-center space-x-2">
+                  <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                  </svg>
+                  <span class="text-xs font-semibold text-red-800">High Priority</span>
+                </div>
+                <span class="text-xs text-red-600">15m ago</span>
               </div>
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm text-gray-900">Business license approved: ABC Corporation</p>
-              <p class="text-xs text-gray-500">License #BL-2024-001 - 1 hour ago</p>
+              <p class="text-sm text-red-900 font-medium mb-1">Fire emergency</p>
+              <p class="text-sm text-red-700">Downtown area - Response dispatched</p>
             </div>
           </div>
-          
-          <div class="flex items-center space-x-4">
-            <div class="flex-shrink-0">
-              <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                <span class="text-blue-600 text-sm">📞</span>
+
+          <div class="relative pl-4 border-l-4 border-amber-500">
+            <div class="absolute -left-2 top-0 w-4 h-4 bg-amber-500 rounded-full border-2 border-white"></div>
+            <div class="bg-amber-50 rounded-lg p-4">
+              <div class="flex items-start justify-between mb-2">
+                <div class="flex items-center space-x-2">
+                  <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                  </svg>
+                  <span class="text-xs font-semibold text-amber-800">Medium Priority</span>
+                </div>
+                <span class="text-xs text-amber-600">45m ago</span>
               </div>
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm text-gray-900">Citizen inquiry resolved: Property tax question</p>
-              <p class="text-xs text-gray-500">Request #PT-2024-045 - 2 hours ago</p>
+              <p class="text-sm text-amber-900 font-medium mb-1">Traffic accident</p>
+              <p class="text-sm text-amber-700">Highway 101 - Units en route</p>
             </div>
           </div>
-          
-          <div class="flex items-center space-x-4">
-            <div class="flex-shrink-0">
-              <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
-                <span class="text-red-600 text-sm">🚨</span>
+
+          <div class="relative pl-4 border-l-4 border-blue-500">
+            <div class="absolute -left-2 top-0 w-4 h-4 bg-blue-500 rounded-full border-2 border-white"></div>
+            <div class="bg-blue-50 rounded-lg p-4">
+              <div class="flex items-start justify-between mb-2">
+                <div class="flex items-center space-x-2">
+                  <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  <span class="text-xs font-semibold text-blue-800">Information</span>
+                </div>
+                <span class="text-xs text-blue-600">2h ago</span>
               </div>
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm text-gray-900">Emergency response dispatched: Fire emergency</p>
-              <p class="text-xs text-gray-500">Downtown area - 3 hours ago</p>
+              <p class="text-sm text-blue-900 font-medium mb-1">Weather advisory</p>
+              <p class="text-sm text-blue-700">Public notification issued</p>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
+
+  <!-- Citizen CRM Integrations - React Islands -->
+  <div class="mb-8">
+    <h2 class="text-xl font-semibold text-gray-900 mb-6">Citizen Relationship Management</h2>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <SalesforceWidget client:visible />
+      <HubSpotWidget client:visible />
+    </div>
+  </div>
+</DashboardLayout>
 
 <script>
-  // Auto-refresh functionality
-  setInterval(() => {
-    // Simulate data refresh
-    console.log('Refreshing government dashboard data...');
-  }, 30000);
-
-  // Refresh button functionality
-  document.getElementById('refresh-btn')?.addEventListener('click', () => {
-    location.reload();
-  });
+  // Simple clock update
+  (function() {
+    function updateLastUpdateTime() {
+      const element = document.getElementById('last-update-time');
+      if (element) {
+        const now = new Date();
+        element.textContent = now.toLocaleTimeString('en-US', { 
+          hour: '2-digit', 
+          minute: '2-digit',
+          second: '2-digit'
+        });
+      }
+    }
+    updateLastUpdateTime();
+    setInterval(updateLastUpdateTime, 60000);
+  })();
 </script>
+
+<style>
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in { animation: fadeIn 0.3s ease-out; }
+</style>

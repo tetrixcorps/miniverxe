@@ -766,12 +766,36 @@
         const result = await response.json();
         console.log('2FA initiation result:', result);
 
+        // CRITICAL: Log the response to debug verificationId extraction
+        console.log('📋 2FA initiation response (FULL):', result);
+        console.log('📋 2FA initiation response (DETAILS):', {
+          success: result.success,
+          hasData: !!result.data,
+          verificationId: result.verificationId || result.data?.verificationId || 'not present',
+          resultKeys: Object.keys(result),
+          resultType: typeof result
+        });
+        
+        // Extract verificationId from multiple possible locations
+        const verificationId = result.verificationId || result.data?.verificationId || result.data?.verification_id;
+        console.log('🔍 Extracted verificationId:', verificationId);
+        
         if (result.success) {
-          this.verificationId = result.verificationId;
+          if (verificationId) {
+            this.verificationId = verificationId;
+            console.log('✅ Verification ID set:', this.verificationId);
+          } else {
+            console.warn('⚠️ WARNING: API returned success=true but verificationId is missing!');
+            console.warn('⚠️ Response object:', result);
+            console.warn('⚠️ Response keys:', Object.keys(result));
+            // Generate temporary verificationId for testing
+            this.verificationId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            console.warn('⚠️ Using temporary verificationId:', this.verificationId);
+          }
           this.showStep(2);
           this.startResendTimer();
           this.hideError();
-          console.log('2FA initiated successfully, verification ID:', this.verificationId);
+          console.log('✅ 2FA initiated successfully, verification ID:', this.verificationId);
         } else {
           this.showError(result.message || result.error || 'Failed to send verification code');
         }

@@ -4,6 +4,10 @@
 
 import { smart2FAService } from './smart2faService';
 
+// Load environment variables explicitly (Astro should load .env automatically, but this ensures it)
+// Note: In Astro API routes, process.env should already have .env variables loaded
+// This is just a safety check
+
 export interface Enterprise2FAConfig {
   verifyProfileId: string;
   apiKey: string;
@@ -301,14 +305,16 @@ class Enterprise2FAService {
    * Verify mock verification codes for development
    */
   private verifyMockCode(verificationId: string, code: string, phoneNumber: string): VerificationResult {
-    // For development, accept 123456 or any 6-digit code
-    const isValidCode = code === '123456' || /^\d{6}$/.test(code);
+    // For development, accept 12345 (5-digit) or 123456 (6-digit) or any 5-6 digit code
+    // Telnyx Verify API uses 5-digit codes, but we support both for compatibility
+    const cleanedCode = code.replace(/\D/g, ''); // Remove non-digits
+    const isValidCode = cleanedCode === '12345' || cleanedCode === '123456' || /^\d{5}$/.test(cleanedCode) || /^\d{6}$/.test(cleanedCode);
     
     // Ensure phone number has proper formatting (single +)
     const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber}`;
     
-    console.log(`[MOCK] Verifying code ${code} for ${formattedPhone}: ${isValidCode ? 'ACCEPTED' : 'REJECTED'}`);
-    console.log(`[MOCK] Expected: 123456 or any 6-digit code`);
+    console.log(`[MOCK] Verifying code ${code} (cleaned: ${cleanedCode}) for ${formattedPhone}: ${isValidCode ? 'ACCEPTED' : 'REJECTED'}`);
+    console.log(`[MOCK] Expected: 12345 (5-digit) or 123456 (6-digit) or any 5-6 digit code`);
     
     return {
       success: true,
@@ -328,20 +334,46 @@ class Enterprise2FAService {
   private async sendTelnyxVerification(request: VerificationRequest): Promise<any> {
     const telnyxId = `telnyx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
-    console.log(`📡 [${telnyxId}] Starting Telnyx verification request`);
+    // Try to load dotenv at runtime if API key is not set
+    if (!process.env.TELNYX_API_KEY) {
+      try {
+        const dotenv = await import('dotenv');
+        const { fileURLToPath } = await import('url');
+        const { dirname, resolve } = await import('path');
+        
+        // Try to find .env file in project root
+        // This is a fallback - the API route should have already loaded it
+        const currentFile = fileURLToPath(import.meta.url);
+        const currentDir = dirname(currentFile);
+        // From src/services/enterprise2FAService.ts, go up to project root
+        const projectRoot = resolve(currentDir, '../../');
+        const envPath = resolve(projectRoot, '.env');
+        
+        const envResult = dotenv.config({ path: envPath });
+        if (envResult.error) {
+          console.warn(`⚠️ [${telnyxId}] Could not load .env from ${envPath}:`, envResult.error.message);
+        } else {
+          console.log(`✅ [${telnyxId}] Loaded .env file from ${envPath}`);
+        }
+      } catch (e) {
+        // dotenv not available or already loaded - that's fine
+        console.warn(`⚠️ [${telnyxId}] Could not load dotenv:`, e);
+      }
+    }
+    
+    // Re-check API key from environment at runtime (in case it wasn't loaded at module init)
+    const apiKey = process.env.TELNYX_API_KEY || this.config.apiKey;
     
     // Check if API key is configured
-    if (!this.config.apiKey || this.config.apiKey.trim() === '') {
+    if (!apiKey || apiKey.trim() === '') {
       console.warn(`⚠️ [${telnyxId}] TELNYX_API_KEY not configured, using mock verification for development`);
+      console.warn(`⚠️ [${telnyxId}] Checked process.env.TELNYX_API_KEY: ${process.env.TELNYX_API_KEY ? 'SET' : 'NOT SET'}`);
+      console.warn(`⚠️ [${telnyxId}] Checked this.config.apiKey: ${this.config.apiKey ? 'SET' : 'NOT SET'}`);
       return this.generateMockVerification(request);
     }
 
-    console.log(`🔑 [${telnyxId}] Telnyx configuration:`, {
-      apiKey: this.config.apiKey ? `${this.config.apiKey.substring(0, 10)}...` : 'NOT_SET',
-      verifyProfileId: this.config.verifyProfileId,
-      method: request.method,
-      phoneNumber: request.phoneNumber ? `${request.phoneNumber.substring(0, 3)}***${request.phoneNumber.substring(request.phoneNumber.length - 3)}` : 'NOT_PROVIDED'
-    });
+    // Use the runtime API key
+    const runtimeApiKey = apiKey;
 
     let endpoint = 'https://api.telnyx.com/v2/verifications/sms';
     if (request.method === 'voice') {
@@ -379,7 +411,7 @@ class Enterprise2FAService {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': `Bearer ${this.config.apiKey}`
+        'Authorization': `Bearer ${runtimeApiKey}`
       },
       body: JSON.stringify(payload)
     });
@@ -415,7 +447,7 @@ class Enterprise2FAService {
     
     const formattedPhone = request.phoneNumber.startsWith('+') ? request.phoneNumber : `+${request.phoneNumber}`;
     console.log(`[MOCK] Generated verification for ${formattedPhone} via ${request.method}: ${verificationId}`);
-    console.log(`[MOCK] In development mode - OTP code is: 123456`);
+    console.log(`[MOCK] In development mode - OTP code is: 12345 (5-digit, Telnyx format)`);
     console.log(`[MOCK] This verification will expire in ${request.timeoutSecs || 300} seconds`);
     
     return {
@@ -593,7 +625,7 @@ class Enterprise2FAService {
 
 // Export configured instance
 export const enterprise2FAService = new Enterprise2FAService({
-  verifyProfileId: process.env.TELNYX_PROFILE_ID || '2775849996304516927',
+  verifyProfileId: process.env.TELNYX_VERIFY_PROFILE_ID || process.env.TELNYX_PROFILE_ID || '49000199-7882-f4ce-6514-a67c8190f107',
   apiKey: process.env.TELNYX_API_KEY || '',
   apiUrl: 'https://api.telnyx.com/v2',
   webhookUrl: (process.env.WEBHOOK_BASE_URL || 'http://localhost:3000') + '/webhooks/telnyx/verify',

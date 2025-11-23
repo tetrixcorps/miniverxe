@@ -3,7 +3,8 @@ import Logo from './Logo.astro';
 import DynamicTetrix from '../shared/DynamicTetrix.astro';
 import ProductsModal from '../ProductsModal.astro';
 import TwoFAModal from '../auth/2FAModal.astro';
-import IndustryAuth from '../auth/IndustryAuth.astro';
+// import RegistrationModal from '../auth/RegistrationModal.astro'; // Not available locally
+import UnifiedAuthModal from '../auth/UnifiedAuthModal.astro';
 import JoRoMiIntegration from '../integration/JoRoMiIntegration.astro';
 ---
 <header class="w-full bg-gradient-to-r from-brand-red via-brand-orange to-brand-yellow text-white shadow relative">
@@ -85,9 +86,65 @@ import JoRoMiIntegration from '../integration/JoRoMiIntegration.astro';
       
       <!-- 2FA Modal -->
       <TwoFAModal />
+      
+          <!-- Registration Modal -->
+          <!-- <RegistrationModal /> --> <!-- Not available locally -->
+
+          <!-- Unified Authentication Modal -->
+          <UnifiedAuthModal />
   
-  <script defer src="/assets/header-auth.js"></script>
-<script defer src="/assets/auth-proxy.js"></script>
+  <!-- CRITICAL: Load hotfix BEFORE any other scripts (no defer!) -->
+  <script is:inline>
+    // Immediate execution - no wrapper
+    try {
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        console.log('[DEV-HOTFIX-HEADER] Hotfix loading in Header component');
+        
+        // 1. Provide window.showStep IMMEDIATELY
+        if (typeof window.showStep !== 'function') {
+          window.showStep = function(stepNum) {
+            var ids = ['auth-step-1', 'auth-step-2', 'auth-step-3', 'auth-step-4'];
+            ids.forEach(function(id, idx) {
+              var el = document.getElementById(id);
+              if (el) el.classList.toggle('hidden', idx !== (stepNum - 1));
+            });
+          };
+        }
+        
+        // 2. Provide JoRoMiIntegration as class constructor
+        if (typeof window.JoRoMiIntegration === 'undefined') {
+          window.JoRoMiIntegration = function JoRoMiIntegration() {
+            this.isLocal = true;
+            this.isDevelopment = true;
+            this.joromiUrl = '/joromi';
+            this.initializeEventListeners = function() {};
+            this.redirectToJoRoMi = function() {};
+            this.checkJoRoMiAvailability = function() { return Promise.resolve(true); };
+            this.getJoRoMiUrl = function() { return '/joromi'; };
+          };
+        }
+        
+        // 3. Provide changePhoneBtn as safe getter
+        try {
+          if (!('changePhoneBtn' in window)) {
+            Object.defineProperty(window, 'changePhoneBtn', {
+              get: function() { return document.getElementById('change-phone'); },
+              configurable: true,
+              enumerable: false
+            });
+          }
+        } catch(e) {
+          window.changePhoneBtn = null; // Fallback
+        }
+        
+        console.log('[DEV-HOTFIX-HEADER] Hotfix loaded - all functions available');
+      }
+    } catch(err) {
+      console.error('[DEV-HOTFIX-HEADER] Error:', err);
+    }
+  </script>
+  {/* Load auxiliary scripts only in production to avoid dev MIME/redirect issues */}
+  <!-- Removed legacy header-auth.js and auth-proxy.js in production to prevent overrides -->
 </header>
 
 <style>
@@ -255,164 +312,120 @@ import JoRoMiIntegration from '../integration/JoRoMiIntegration.astro';
 
 <!-- Authentication Modals -->
 <!-- TwoFAModal already included above -->
-<IndustryAuth />
+<!-- IndustryAuth removed - using UnifiedAuthModal instead -->
 
-<!-- Ensure IndustryAuth script loads properly -->
-<script>
-  // Ensure IndustryAuth script is loaded and available
-  function ensureIndustryAuthLoaded() {
-    if (typeof window.openIndustryAuthModal === 'function') {
-      console.log('✅ IndustryAuth script loaded successfully');
-      return true;
-    } else {
-      console.log('⏳ IndustryAuth script not yet loaded, waiting...');
-      return false;
-    }
-  }
-  
-  // Check immediately and then periodically
-  if (!ensureIndustryAuthLoaded()) {
-    const checkInterval = setInterval(() => {
-      if (ensureIndustryAuthLoaded()) {
-        clearInterval(checkInterval);
-      }
-    }, 100);
-    
-    // Stop checking after 5 seconds
-    setTimeout(() => {
-      clearInterval(checkInterval);
-      if (typeof window.openIndustryAuthModal !== 'function') {
-        console.error('❌ IndustryAuth script failed to load after 5 seconds');
-      }
-    }, 5000);
-  }
-</script>
-
-<!-- Debug Script (only in development) -->
-{import.meta.env.DEV && (
-  <script type="module" src="/src/lib/industry-auth-debug.ts"></script>
-)}
+<!-- Debug Script disabled: legacy IndustryAuth removed to avoid conflicts -->
 
 <!-- JoRoMi Integration Component -->
 <JoRoMiIntegration />
 
-<!-- Client Login Button Handler (Custom Domain Fix) -->
+<!-- Client Login Button Handler (Immediate Fallback) -->
 <script>
   console.log('🔧 Client Login handler script loaded...');
   
-  // Global function for manual execution with comprehensive logging
-  window.openClientLogin = function() {
-    console.log('🔧 [VERBOSE] openClientLogin called!');
-    console.log('🔧 [VERBOSE] Header script execution context:', {
-      timestamp: new Date().toISOString(),
-      userAgent: navigator.userAgent,
-      url: window.location.href,
-      readyState: document.readyState,
-      windowKeys: Object.keys(window).length,
-      scriptsLoaded: document.querySelectorAll('script').length
-    });
-    
-    // Set context with error handling
-    try {
-      window.tetrixAuthContext = 'dashboard';
-      console.log('✅ [VERBOSE] Auth context set to dashboard');
-    } catch (error) {
-      console.error('❌ [VERBOSE] Error setting auth context:', error);
-    }
-    
-    // Open Industry Auth modal with comprehensive retry logic
-        function tryOpenIndustryAuth(attempts = 0, maxAttempts = 10) { // Reduced for faster response
-      console.log(`🔧 [VERBOSE] Header tryOpenIndustryAuth attempt ${attempts + 1}/${maxAttempts}`);
-      console.log(`🔧 [VERBOSE] Header attempt details:`, {
-        attempt: attempts + 1,
-        maxAttempts,
-        timestamp: new Date().toISOString(),
-        openIndustryAuthModal: typeof window.openIndustryAuthModal,
-        windowFunctions: Object.keys(window).filter(k => k.includes('Industry') || k.includes('Auth')),
-        documentReadyState: document.readyState,
-        modalElement: document.getElementById('industry-auth-modal'),
-        modalExists: !!document.getElementById('industry-auth-modal')
-      });
+  // Function to open Unified Auth Modal - works immediately
+  function openAuthModal() {
+    console.log('🔧 openAuthModal called');
+    const modal = document.getElementById('unified-auth-modal');
+    if (modal) {
+      console.log('✅ Found unified-auth-modal, opening...');
+      modal.classList.remove('hidden');
+      modal.style.display = 'block';
+      document.body.style.overflow = 'hidden';
       
-      if (typeof window.openIndustryAuthModal === 'function') {
-        console.log('✅ [VERBOSE] Header: Industry Auth modal function found, opening...');
-        try {
-          window.openIndustryAuthModal();
-          console.log('✅ [VERBOSE] Header: Industry Auth modal opened successfully');
-          console.log('✅ [VERBOSE] Header: Modal state after opening:', {
-            modalElement: document.getElementById('industry-auth-modal'),
-            modalVisible: !document.getElementById('industry-auth-modal')?.classList.contains('hidden'),
-            modalDisplay: document.getElementById('industry-auth-modal')?.style.display,
-            timestamp: new Date().toISOString()
-          });
-        } catch (error) {
-          console.error('❌ [VERBOSE] Header: Error opening Industry Auth modal:', {
-            error: error,
-            message: error.message,
-            stack: error.stack,
-            name: error.name,
-            timestamp: new Date().toISOString()
-          });
-          alert('Authentication service encountered an error. Please try again later.');
-        }
-      } else if (attempts < maxAttempts) {
-        console.log(`⏳ [VERBOSE] Header: Industry Auth modal not available, waiting... (attempt ${attempts + 1}/${maxAttempts})`);
-        console.log(`⏳ [VERBOSE] Header: Current state:`, {
-          openIndustryAuthModal: typeof window.openIndustryAuthModal,
-          availableFunctions: Object.keys(window).filter(k => k.includes('open') || k.includes('Industry') || k.includes('Auth')),
-          scripts: Array.from(document.querySelectorAll('script')).map(s => ({
-            src: s.src,
-            type: s.type,
-            async: s.async,
-            defer: s.defer,
-            loaded: s.readyState || 'unknown'
-          })),
-          timestamp: new Date().toISOString()
-        });
-        
-            setTimeout(() => {
-              tryOpenIndustryAuth(attempts + 1, maxAttempts);
-            }, 100); // Reduced delay for faster response
-          } else {
-            console.error('❌ [VERBOSE] Header: Industry Auth modal still not available after waiting');
-            console.error('❌ [VERBOSE] Header: Final failure state:', {
-              attempts: attempts,
-              maxAttempts,
-              openIndustryAuthModal: typeof window.openIndustryAuthModal,
-              availableFunctions: Object.keys(window).filter(k => k.includes('Industry') || k.includes('Auth')),
-              allWindowKeys: Object.keys(window).slice(0, 30),
-              scripts: Array.from(document.querySelectorAll('script')).map(s => ({
-                src: s.src,
-                type: s.type,
-                async: s.async,
-                defer: s.defer,
-                readyState: s.readyState
-              })),
-              timestamp: new Date().toISOString()
-            });
-            
-            // Try alternative approach - check if modal exists and open it directly
-            const modal = document.getElementById('industry-auth-modal');
-            if (modal) {
-              console.log('🔄 [FALLBACK] Header: Opening modal directly via DOM manipulation');
-              modal.classList.remove('hidden');
-              modal.style.display = 'block';
-              return;
-            }
-            
-            alert('Authentication service is temporarily unavailable. Please try again later.');
-          }
+      // Initialize modal if functions exist
+      if (typeof window.resetModal === 'function') {
+        window.resetModal();
+      }
+      if (typeof window.loadCountries === 'function') {
+        window.loadCountries();
+      }
+      
+      console.log('✅ Modal opened successfully');
+      return true;
+    }
+    return false;
+  }
+  
+  // Global function for manual execution
+  window.openClientLogin = function() {
+    console.log('🔧 openClientLogin called!');
+    
+    // Try global function first
+    if (typeof window.openUnifiedAuthModal === 'function') {
+      console.log('✅ openUnifiedAuthModal function found');
+      try {
+        window.openUnifiedAuthModal();
+        console.log('✅ Unified Auth modal opened via global function');
+        return;
+      } catch (error) {
+        console.error('❌ Error opening Unified Auth modal:', error);
+      }
     }
     
-        // Add minimal delay to allow module scripts to load
-        setTimeout(() => {
-          tryOpenIndustryAuth();
-        }, 100); // Reduced initial delay
+    // Fallback: Open modal directly
+    if (openAuthModal()) {
+      return;
+    }
+    
+    console.error('❌ unified-auth-modal not found in DOM');
+    alert('Authentication service is temporarily unavailable. Please refresh the page and try again.');
   };
   
-  // Add visual indicator to buttons
-  // Visual indicator code removed - authentication is now working properly
+  // Direct event handler attachment as immediate fallback
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('🔧 DOMContentLoaded - attaching direct Client Login handlers');
+    
+    const clientLoginBtn = document.getElementById('client-login-2fa-btn');
+    const clientLoginBtnMobile = document.getElementById('client-login-2fa-btn-mobile');
+    
+    if (clientLoginBtn) {
+      // Add click handler directly
+      clientLoginBtn.addEventListener('click', function(e) {
+        console.log('🔧 Client Login button clicked (inline handler)');
+        e.preventDefault();
+        e.stopPropagation();
+        window.openClientLogin();
+      });
+      console.log('✅ Direct event listener attached to desktop Client Login button');
+    }
+    
+    if (clientLoginBtnMobile) {
+      clientLoginBtnMobile.addEventListener('click', function(e) {
+        console.log('🔧 Mobile Client Login button clicked (inline handler)');
+        e.preventDefault();
+        e.stopPropagation();
+        window.openClientLogin();
+      });
+      console.log('✅ Direct event listener attached to mobile Client Login button');
+    }
+  });
+  
+  // Also try immediately if DOM is already loaded
+  if (document.readyState !== 'loading') {
+    const clientLoginBtn = document.getElementById('client-login-2fa-btn');
+    const clientLoginBtnMobile = document.getElementById('client-login-2fa-btn-mobile');
+    
+    if (clientLoginBtn) {
+      clientLoginBtn.addEventListener('click', function(e) {
+        console.log('🔧 Client Login button clicked (immediate handler)');
+        e.preventDefault();
+        e.stopPropagation();
+        window.openClientLogin();
+      });
+      console.log('✅ Immediate event listener attached to desktop Client Login button');
+    }
+    
+    if (clientLoginBtnMobile) {
+      clientLoginBtnMobile.addEventListener('click', function(e) {
+        console.log('🔧 Mobile Client Login button clicked (immediate handler)');
+        e.preventDefault();
+        e.stopPropagation();
+        window.openClientLogin();
+      });
+      console.log('✅ Immediate event listener attached to mobile Client Login button');
+    }
+  }
   
   console.log('🔧 openClientLogin function defined');
-  console.log('🔧 To open Client Login, type: openClientLogin()');
 </script> 

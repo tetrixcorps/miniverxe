@@ -1,9 +1,24 @@
 ---
 // Mobile-optimized Client Dashboard - Responsive design for mobile devices
 // Simplified layout with touch-friendly interface
+// Refactored with modern UI/UX best practices and React Islands
+
+import DashboardMetrics from '../../components/dashboard/react/DashboardMetrics';
+import SalesforceWidget from '../../components/dashboard/react/SalesforceWidget';
+import HubSpotWidget from '../../components/dashboard/react/HubSpotWidget';
+import EpicWidget from '../../components/dashboard/react/EpicWidget';
+import FleetContactManagement from '../../components/dashboard/FleetContactManagement.astro';
+
+// Server-Side Logic: Fetch User Session
+const cookie = Astro.request.headers.get('cookie');
+const hasSession = cookie?.includes('tetrix_access_token') || cookie?.includes('better-auth.session_token');
+
+if (!hasSession) {
+  return Astro.redirect('/login?redirect=/dashboards/client-mobile');
+}
 ---
 
-<div class="min-h-screen bg-gray-50">
+<div class="min-h-screen bg-gray-50 pb-20">
   <!-- Mobile Header -->
   <div class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
     <div class="px-4 py-3">
@@ -15,7 +30,10 @@
           </span>
         </div>
         <div class="flex items-center space-x-2">
-          <button id="mobile-refresh-btn" class="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+          <button 
+            onclick="window.location.reload()"
+            class="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+          >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
             </svg>
@@ -35,7 +53,7 @@
     <div class="px-4 py-3">
       <div class="flex space-x-1 bg-gray-100 rounded-lg p-1">
         <button 
-          class="mobile-tab-button flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors" 
+          class="mobile-tab-button flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors text-blue-600 bg-white shadow-sm" 
           data-industry="fleet"
           data-active="true"
         >
@@ -47,7 +65,7 @@
           </div>
         </button>
         <button 
-          class="mobile-tab-button flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors" 
+          class="mobile-tab-button flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors text-gray-500" 
           data-industry="healthcare"
         >
           <div class="flex items-center justify-center">
@@ -58,7 +76,7 @@
           </div>
         </button>
         <button 
-          class="mobile-tab-button flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors" 
+          class="mobile-tab-button flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors text-gray-500" 
           data-industry="legal"
         >
           <div class="flex items-center justify-center">
@@ -74,179 +92,53 @@
 
   <!-- Mobile Dashboard Content -->
   <div class="px-4 py-4 space-y-4">
-    <!-- Universal Metrics - Mobile Cards -->
-    <div id="mobile-universal-metrics" class="space-y-3">
-      <!-- Will be populated by JavaScript -->
-    </div>
-
     <!-- Industry-Specific Content -->
     <div id="mobile-industry-content">
+      
       <!-- Fleet Management Content -->
       <div id="mobile-fleet-content" class="mobile-industry-section" style="display: block;">
-        <!-- Vehicle Status Cards -->
-        <div class="space-y-3 mb-6">
-          <h3 class="text-lg font-semibold text-gray-900">Vehicle Status</h3>
-          <div class="grid grid-cols-2 gap-3">
-            <div class="bg-white rounded-lg shadow p-4">
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-sm text-gray-600">Active</p>
-                  <p id="mobile-fleet-active" class="text-2xl font-bold text-green-600">24</p>
-                </div>
-                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                  <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                  </svg>
-                </div>
-              </div>
-            </div>
-            <div class="bg-white rounded-lg shadow p-4">
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-sm text-gray-600">Maintenance</p>
-                  <p id="mobile-fleet-maintenance" class="text-2xl font-bold text-yellow-600">3</p>
-                </div>
-                <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
-                  <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                  </svg>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div class="space-y-4">
+          <DashboardMetrics client:load industry="logistics" />
+          
+          <!-- CRM Widgets -->
+          <div class="space-y-4">
+            <SalesforceWidget client:visible />
+            <HubSpotWidget client:visible />
         </div>
 
-        <!-- Driver Performance -->
-        <div class="bg-white rounded-lg shadow p-4 mb-4">
-          <h3 class="text-lg font-semibold text-gray-900 mb-3">Driver Performance</h3>
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-sm text-gray-600">Average Score</span>
-            <span id="mobile-fleet-driver-score" class="text-xl font-bold text-blue-600">8.7</span>
-          </div>
-          <div class="w-full bg-gray-200 rounded-full h-2">
-            <div class="bg-blue-600 h-2 rounded-full" style="width: 87%"></div>
-          </div>
-        </div>
-
-        <!-- Recent Alerts -->
-        <div class="bg-white rounded-lg shadow p-4">
-          <h3 class="text-lg font-semibold text-gray-900 mb-3">Recent Alerts</h3>
-          <div id="mobile-fleet-alerts" class="space-y-2">
-            <!-- Will be populated by JavaScript -->
+          <!-- Fleet Management Component (might scroll horizontally if needed) -->
+          <div class="overflow-x-auto">
+             <FleetContactManagement industry="logistics" customerId="customer_123" />
           </div>
         </div>
       </div>
 
       <!-- Healthcare Content -->
       <div id="mobile-healthcare-content" class="mobile-industry-section" style="display: none;">
-        <!-- Patient Overview Cards -->
-        <div class="space-y-3 mb-6">
-          <h3 class="text-lg font-semibold text-gray-900">Patient Overview</h3>
-          <div class="grid grid-cols-2 gap-3">
-            <div class="bg-white rounded-lg shadow p-4">
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-sm text-gray-600">Total</p>
-                  <p id="mobile-healthcare-patients" class="text-2xl font-bold text-blue-600">1,247</p>
-                </div>
-                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                  <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-                  </svg>
-                </div>
-              </div>
-            </div>
-            <div class="bg-white rounded-lg shadow p-4">
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-sm text-gray-600">Today</p>
-                  <p id="mobile-healthcare-appointments" class="text-2xl font-bold text-purple-600">23</p>
-                </div>
-                <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                  <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                  </svg>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Revenue -->
-        <div class="bg-white rounded-lg shadow p-4 mb-4">
-          <h3 class="text-lg font-semibold text-gray-900 mb-3">Revenue</h3>
-          <div class="flex items-center justify-between">
-            <span class="text-sm text-gray-600">Monthly</span>
-            <span id="mobile-healthcare-revenue" class="text-xl font-bold text-green-600">$45,230</span>
-          </div>
-        </div>
-
-        <!-- Clinical Alerts -->
-        <div class="bg-white rounded-lg shadow p-4">
-          <h3 class="text-lg font-semibold text-gray-900 mb-3">Clinical Alerts</h3>
-          <div id="mobile-healthcare-alerts" class="space-y-2">
-            <!-- Will be populated by JavaScript -->
-          </div>
+        <div class="space-y-4">
+          <DashboardMetrics client:load industry="healthcare" />
+          
+          <EpicWidget client:visible />
+          <SalesforceWidget client:visible />
+          <HubSpotWidget client:visible />
         </div>
       </div>
 
       <!-- Legal Content -->
       <div id="mobile-legal-content" class="mobile-industry-section" style="display: none;">
-        <!-- Case Overview Cards -->
-        <div class="space-y-3 mb-6">
-          <h3 class="text-lg font-semibold text-gray-900">Case Overview</h3>
-          <div class="grid grid-cols-2 gap-3">
-            <div class="bg-white rounded-lg shadow p-4">
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-sm text-gray-600">Active</p>
-                  <p id="mobile-legal-cases" class="text-2xl font-bold text-indigo-600">47</p>
-                </div>
-                <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
-                  <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                  </svg>
-                </div>
-              </div>
-            </div>
-            <div class="bg-white rounded-lg shadow p-4">
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-sm text-gray-600">Deadlines</p>
-                  <p id="mobile-legal-deadlines" class="text-2xl font-bold text-red-600">8</p>
-                </div>
-                <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
-                  <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                  </svg>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Billing -->
-        <div class="bg-white rounded-lg shadow p-4 mb-4">
-          <h3 class="text-lg font-semibold text-gray-900 mb-3">Billing</h3>
-          <div class="flex items-center justify-between">
-            <span class="text-sm text-gray-600">Monthly Revenue</span>
-            <span id="mobile-legal-revenue" class="text-xl font-bold text-green-600">$28,400</span>
-          </div>
-        </div>
-
-        <!-- Legal Alerts -->
-        <div class="bg-white rounded-lg shadow p-4">
-          <h3 class="text-lg font-semibold text-gray-900 mb-3">Legal Alerts</h3>
-          <div id="mobile-legal-alerts" class="space-y-2">
-            <!-- Will be populated by JavaScript -->
-          </div>
+        <div class="space-y-4">
+          <DashboardMetrics client:load industry="legal" />
+          
+          <SalesforceWidget client:visible />
+          <HubSpotWidget client:visible />
         </div>
       </div>
+
     </div>
   </div>
 
   <!-- Mobile Bottom Navigation -->
-  <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2">
+  <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2 z-50">
     <div class="flex justify-around">
       <button class="flex flex-col items-center py-2 text-blue-600">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -276,35 +168,12 @@
   </div>
 </div>
 
-<style>
-  .mobile-tab-button {
-    color: #6b7280;
-    background-color: transparent;
-  }
-  
-  .mobile-tab-button[data-active="true"] {
-    color: #3b82f6;
-    background-color: white;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-  }
-  
-  .mobile-industry-section {
-    display: none;
-  }
-  
-  .mobile-industry-section.active {
-    display: block;
-  }
-  
-  /* Ensure content doesn't get hidden behind bottom navigation */
-  .min-h-screen {
-    padding-bottom: 80px;
-  }
-</style>
-
 <script>
   // Mobile Dashboard functionality
   class MobileClientDashboard {
+    currentIndustry: string;
+    userRole: string;
+
     constructor() {
       this.currentIndustry = 'fleet';
       this.userRole = this.detectUserRole();
@@ -314,15 +183,13 @@
     init() {
       this.setupEventListeners();
       this.updateUserRoleBadge();
-      this.loadDashboardData();
-      this.setupRealTimeUpdates();
     }
 
-    detectUserRole() {
+    detectUserRole(): string {
       const urlParams = new URLSearchParams(window.location.search);
       const role = urlParams.get('role') || localStorage.getItem('userRole') || 'fleet_manager';
       
-      const roleMap = {
+      const roleMap: Record<string, string> = {
         'fleet_manager': 'Fleet Manager',
         'healthcare_provider': 'Healthcare Provider',
         'attorney': 'Attorney'
@@ -335,44 +202,47 @@
       // Tab switching
       document.querySelectorAll('.mobile-tab-button').forEach(button => {
         button.addEventListener('click', (e) => {
-          const industry = e.currentTarget.dataset.industry;
+          const target = e.currentTarget as HTMLElement;
+          const industry = target.dataset.industry;
+          if (industry) {
           this.switchIndustry(industry);
+          }
         });
-      });
-
-      // Refresh button
-      document.getElementById('mobile-refresh-btn')?.addEventListener('click', () => {
-        this.loadDashboardData();
       });
 
       // Menu button
       document.getElementById('mobile-menu-btn')?.addEventListener('click', () => {
-        // Toggle mobile menu or show options
         console.log('Mobile menu clicked');
       });
     }
 
-    switchIndustry(industry) {
+    switchIndustry(industry: string) {
       // Update tab states
       document.querySelectorAll('.mobile-tab-button').forEach(button => {
-        button.dataset.active = 'false';
-        button.classList.remove('text-blue-600', 'bg-white', 'shadow-sm');
-        button.classList.add('text-gray-500');
+        const btn = button as HTMLElement;
+        btn.dataset.active = 'false';
+        btn.classList.remove('text-blue-600', 'bg-white', 'shadow-sm');
+        btn.classList.add('text-gray-500');
       });
 
-      const activeButton = document.querySelector(`[data-industry="${industry}"]`);
+      const activeButton = document.querySelector(`[data-industry="${industry}"]`) as HTMLElement;
+      if (activeButton) {
       activeButton.dataset.active = 'true';
       activeButton.classList.add('text-blue-600', 'bg-white', 'shadow-sm');
       activeButton.classList.remove('text-gray-500');
+      }
 
       // Show/hide content sections
       document.querySelectorAll('.mobile-industry-section').forEach(section => {
-        section.style.display = 'none';
+        const sectionEl = section as HTMLElement;
+        sectionEl.style.display = 'none';
       });
 
-      document.getElementById(`mobile-${industry}-content`).style.display = 'block';
+      const contentSection = document.getElementById(`mobile-${industry}-content`) as HTMLElement;
+      if (contentSection) {
+        contentSection.style.display = 'block';
+      }
       this.currentIndustry = industry;
-      this.loadIndustryData(industry);
     }
 
     updateUserRoleBadge() {
@@ -381,149 +251,6 @@
         badge.textContent = this.userRole;
       }
     }
-
-    async loadDashboardData() {
-      try {
-        await this.loadUniversalMetrics();
-        await this.loadIndustryData(this.currentIndustry);
-      } catch (error) {
-        console.error('Failed to load mobile dashboard data:', error);
-      }
-    }
-
-    async loadUniversalMetrics() {
-      // Mock universal metrics for mobile
-      const metrics = {
-        activeUsers: 1247,
-        totalRevenue: 125430,
-        systemUptime: 99.9
-      };
-
-      this.updateMobileUniversalMetrics(metrics);
-    }
-
-    updateMobileUniversalMetrics(metrics) {
-      // Update mobile universal metrics display
-      const container = document.getElementById('mobile-universal-metrics');
-      if (container) {
-        container.innerHTML = `
-          <div class="grid grid-cols-3 gap-3">
-            <div class="bg-white rounded-lg shadow p-3 text-center">
-              <p class="text-xs text-gray-500">Users</p>
-              <p class="text-lg font-bold text-blue-600">${metrics.activeUsers.toLocaleString()}</p>
-            </div>
-            <div class="bg-white rounded-lg shadow p-3 text-center">
-              <p class="text-xs text-gray-500">Revenue</p>
-              <p class="text-lg font-bold text-green-600">$${(metrics.totalRevenue / 1000).toFixed(0)}K</p>
-            </div>
-            <div class="bg-white rounded-lg shadow p-3 text-center">
-              <p class="text-xs text-gray-500">Uptime</p>
-              <p class="text-lg font-bold text-purple-600">${metrics.systemUptime}%</p>
-            </div>
-          </div>
-        `;
-      }
-    }
-
-    async loadIndustryData(industry) {
-      const data = await this.fetchIndustryData(industry);
-      this.updateMobileIndustryDisplay(industry, data);
-    }
-
-    async fetchIndustryData(industry) {
-      // Mock data - same as desktop version
-      const mockData = {
-        fleet: {
-          active: 24,
-          maintenance: 3,
-          offline: 1,
-          driverScore: 8.7,
-          alerts: [
-            { type: 'maintenance', message: 'Vehicle #123 needs oil change', time: '2 hours ago', priority: 'medium' },
-            { type: 'violation', message: 'Driver exceeded speed limit', time: '4 hours ago', priority: 'high' }
-          ]
-        },
-        healthcare: {
-          patients: 1247,
-          appointments: 23,
-          revenue: 45230,
-          alerts: [
-            { type: 'appointment', message: 'Patient missed appointment', time: '1 hour ago', priority: 'medium' },
-            { type: 'lab_result', message: 'Critical lab results available', time: '3 hours ago', priority: 'high' }
-          ]
-        },
-        legal: {
-          cases: 47,
-          deadlines: 8,
-          revenue: 28400,
-          alerts: [
-            { type: 'deadline', message: 'Court filing deadline approaching', time: '2 hours ago', priority: 'high' },
-            { type: 'billing', message: 'Invoice overdue by 30 days', time: '4 hours ago', priority: 'medium' }
-          ]
-        }
-      };
-
-      return mockData[industry] || {};
-    }
-
-    updateMobileIndustryDisplay(industry, data) {
-      // Update fleet metrics
-      if (industry === 'fleet') {
-        document.getElementById('mobile-fleet-active').textContent = data.active || 0;
-        document.getElementById('mobile-fleet-maintenance').textContent = data.maintenance || 0;
-        document.getElementById('mobile-fleet-driver-score').textContent = data.driverScore || 0;
-        this.updateMobileAlerts('mobile-fleet-alerts', data.alerts || []);
-      }
-
-      // Update healthcare metrics
-      if (industry === 'healthcare') {
-        document.getElementById('mobile-healthcare-patients').textContent = data.patients || 0;
-        document.getElementById('mobile-healthcare-appointments').textContent = data.appointments || 0;
-        document.getElementById('mobile-healthcare-revenue').textContent = `$${data.revenue || 0}`;
-        this.updateMobileAlerts('mobile-healthcare-alerts', data.alerts || []);
-      }
-
-      // Update legal metrics
-      if (industry === 'legal') {
-        document.getElementById('mobile-legal-cases').textContent = data.cases || 0;
-        document.getElementById('mobile-legal-deadlines').textContent = data.deadlines || 0;
-        document.getElementById('mobile-legal-revenue').textContent = `$${data.revenue || 0}`;
-        this.updateMobileAlerts('mobile-legal-alerts', data.alerts || []);
-      }
-    }
-
-    updateMobileAlerts(containerId, alerts) {
-      const container = document.getElementById(containerId);
-      if (!container) return;
-
-      container.innerHTML = alerts.map(alert => `
-        <div class="flex items-start space-x-2 p-2 bg-${this.getAlertColor(alert.priority)}-50 rounded">
-          <div class="w-4 h-4 bg-${this.getAlertColor(alert.priority)}-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-            <div class="w-2 h-2 bg-${this.getAlertColor(alert.priority)}-600 rounded-full"></div>
-          </div>
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-gray-900">${alert.message}</p>
-            <p class="text-xs text-gray-500">${alert.time}</p>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    getAlertColor(priority) {
-      const colorMap = {
-        'high': 'red',
-        'medium': 'yellow',
-        'low': 'green'
-      };
-      return colorMap[priority] || 'gray';
-    }
-
-    setupRealTimeUpdates() {
-      // Update data every 30 seconds
-      setInterval(() => {
-        this.loadDashboardData();
-      }, 30000);
-    }
   }
 
   // Initialize mobile dashboard when DOM is loaded
@@ -531,3 +258,18 @@
     new MobileClientDashboard();
   });
 </script>
+
+<style>
+  .mobile-industry-section {
+    display: none;
+  }
+  
+  .mobile-industry-section[style*="display: block"] {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>

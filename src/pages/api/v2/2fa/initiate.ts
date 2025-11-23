@@ -1,8 +1,41 @@
 import type { APIRoute } from 'astro';
 import { enterprise2FAService } from '../../../../services/enterprise2FAService';
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
+
+// Explicitly load .env file from project root
+// Astro should do this automatically, but we're ensuring it's loaded
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+// Go up from src/pages/api/v2/2fa/initiate.ts to project root
+const projectRoot = resolve(__dirname, '../../../../../');
+const envPath = resolve(projectRoot, '.env');
+
+// Load .env file explicitly
+const envResult = dotenv.config({ path: envPath });
+if (envResult.error) {
+  console.warn(`⚠️ [INITIATE] Failed to load .env file from ${envPath}:`, envResult.error.message);
+} else {
+  console.log(`✅ [INITIATE] Loaded .env file from ${envPath}`);
+}
+
+// Log TELNYX_API_KEY status for debugging (without exposing the key)
+if (typeof process !== 'undefined' && process.env) {
+  const hasApiKey = !!process.env.TELNYX_API_KEY;
+  console.log(`🔑 [INITIATE] TELNYX_API_KEY status: ${hasApiKey ? 'SET' : 'NOT SET'}`);
+  if (!hasApiKey) {
+    console.warn(`⚠️ [INITIATE] TELNYX_API_KEY not found in process.env after loading .env file.`);
+    console.warn(`⚠️ [INITIATE] Checked path: ${envPath}`);
+    console.warn(`⚠️ [INITIATE] Make sure .env file exists in project root with TELNYX_API_KEY=...`);
+  } else {
+    console.log(`✅ [INITIATE] TELNYX_API_KEY is loaded (length: ${process.env.TELNYX_API_KEY.length} chars)`);
+  }
+}
 
 // Enhanced 2FA initiation endpoint using Telnyx Verify API
+// In local development, this proxies to the backend server for consistency with droplet deployment
 export const POST: APIRoute = async ({ request, locals }) => {
   const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   const startTime = Date.now();
@@ -11,6 +44,51 @@ export const POST: APIRoute = async ({ request, locals }) => {
   console.log(`🌐 [${requestId}] Request URL: ${request.url}`);
   console.log(`🔍 [${requestId}] Request headers:`, Object.fromEntries(request.headers.entries()));
   console.log(`📊 [${requestId}] Request method: ${request.method}`);
+  
+  // Check if we should proxy to backend
+  // In Docker, always proxy to backend. In local dev, proxy if BACKEND_URL is set.
+  const isDocker = process.env.NODE_ENV === 'production' && process.env.DOCKER_ENV === 'true';
+  const backendUrl = process.env.BACKEND_URL || 'http://localhost:3000';
+  
+  // Always proxy to backend when BACKEND_URL is set or when in Docker
+  // This ensures consistency with droplet deployment behavior
+  if (process.env.BACKEND_URL || isDocker) {
+    // Proxy to backend for consistency with droplet deployment behavior
+    const targetUrl = isDocker 
+      ? `http://tetrix-backend:3001/api/v2/2fa/initiate`
+      : `${backendUrl}/api/v2/2fa/initiate`;
+    
+    console.log(`🔄 [${requestId}] Proxying to backend: ${targetUrl}`);
+    
+    try {
+      const body = await request.text();
+      const response = await fetch(targetUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': request.headers.get('content-type') || 'application/json',
+          'User-Agent': request.headers.get('user-agent') || 'TetrixAuthProxy/1.0',
+          'Accept': request.headers.get('accept') || 'application/json',
+        },
+        body: body
+      });
+      
+      const data = await response.text();
+      
+      return new Response(data, {
+        status: response.status,
+        headers: {
+          'Content-Type': response.headers.get('content-type') || 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        }
+      });
+    } catch (error) {
+      console.error(`❌ [${requestId}] Backend proxy failed:`, error);
+      // Fall through to local service as fallback
+      console.log(`⚠️ [${requestId}] Falling back to local 2FA service`);
+    }
+  }
   
   try {
     // Use parsed body from middleware if available
@@ -151,6 +229,16 @@ export const POST: APIRoute = async ({ request, locals }) => {
       sessionId
     });
 
+    // CRITICAL: Log the verification object structure BEFORE using it
+    console.log(`🔍 [${requestId}] Verification object structure:`, {
+      verification,
+      verificationType: typeof verification,
+      verificationKeys: verification ? Object.keys(verification) : 'N/A',
+      verificationId: verification?.verificationId,
+      hasVerificationId: !!verification?.verificationId,
+      verificationIdType: typeof verification?.verificationId
+    });
+    
     console.log(`✅ [${requestId}] Verification initiated successfully:`, {
       verificationId: verification.verificationId,
       phoneNumber: verification.phoneNumber,
@@ -161,13 +249,59 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const responseTime = Date.now() - startTime;
     console.log(`⏱️ [${requestId}] Total request time: ${responseTime}ms`);
 
-    return createSuccessResponse({
+    // CRITICAL: Validate verification object before using it
+    if (!verification || !verification.verificationId) {
+      console.error(`❌ [${requestId}] CRITICAL ERROR: verification object is invalid:`, {
+        verification,
+        hasVerification: !!verification,
+        verificationId: verification?.verificationId,
+        verificationKeys: verification ? Object.keys(verification) : 'N/A',
+        verificationType: typeof verification
+      });
+      throw new Error('Verification object is missing or invalid. verificationId is required.');
+    }
+    
+    // Prepare response data
+    const responseData = {
       verificationId: verification.verificationId,
       message: `Verification ${method.toUpperCase()} sent successfully`,
       estimatedDelivery: method === 'sms' ? '30-60 seconds' : '10-30 seconds',
       requestId,
       responseTime
+    };
+    
+    // CRITICAL: Log what we're about to send
+    console.log(`📤 [${requestId}] Preparing response data:`, {
+      verificationId: responseData.verificationId,
+      hasVerificationId: !!responseData.verificationId,
+      verificationObject: verification,
+      verificationKeys: Object.keys(verification),
+      responseDataKeys: Object.keys(responseData),
+      responseDataStringified: JSON.stringify(responseData)
     });
+    
+    // CRITICAL: Validate responseData before sending
+    if (!responseData.verificationId) {
+      console.error(`❌ [${requestId}] CRITICAL ERROR: responseData.verificationId is missing!`, {
+        responseData,
+        verification,
+        verificationId: verification.verificationId
+      });
+      throw new Error('Cannot send response: verificationId is missing from responseData');
+    }
+    
+    const response = createSuccessResponse(responseData);
+    
+    // Log the actual response body being sent
+    const responseBody = JSON.stringify({
+      success: true,
+      ...responseData,
+      timestamp: new Date().toISOString()
+    });
+    console.log(`📤 [${requestId}] Response body being sent:`, responseBody);
+    console.log(`📤 [${requestId}] Response body parsed:`, JSON.parse(responseBody));
+    
+    return response;
 
   } catch (error) {
     const responseTime = Date.now() - startTime;
