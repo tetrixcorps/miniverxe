@@ -1,11 +1,13 @@
-// TETRIX Enhanced RPA Workflow Engine with Axiom.ai Integration
+// TETRIX Enhanced RPA Workflow Engine with Axiom.ai and Zoho RPA Integration
 // Combines traditional RPA with browser automation capabilities
 
 import { RPAWorkflow, WorkflowStep, BotConfiguration } from './rpaEngine';
 import { AxiomBot, AxiomBotConfiguration, BrowserAction, CSSSelector } from './axiomIntegrationService';
+import { ZohoRPABot, ZohoRPABotConfiguration, ZohoWorkflowStep } from './zohoRpaIntegrationService';
 
 export interface EnhancedWorkflowStep extends WorkflowStep {
   axiomIntegration?: AxiomIntegration;
+  zohoRpaIntegration?: ZohoRPAIntegration;
   browserAutomation?: BrowserAutomationStep;
   webScraping?: WebScrapingStep;
   formFilling?: FormFillingStep;
@@ -19,6 +21,17 @@ export interface AxiomIntegration {
   actions: BrowserAction[];
   compliance: AxiomComplianceSettings;
   monitoring: AxiomMonitoringSettings;
+}
+
+export interface ZohoRPAIntegration {
+  enabled: boolean;
+  botId: string;
+  workflowId: string;
+  workspaceId: string;
+  automationType: 'desktop' | 'web' | 'hybrid';
+  steps: ZohoWorkflowStep[];
+  compliance: ZohoRPAComplianceSettings;
+  monitoring: ZohoRPAMonitoringSettings;
 }
 
 export interface BrowserAutomationStep {
@@ -218,6 +231,26 @@ export interface AxiomMonitoringSettings {
   reporting: ReportingConfig;
 }
 
+export interface ZohoRPAComplianceSettings {
+  dataPrivacy: boolean;
+  encryption: boolean;
+  auditLogging: boolean;
+  accessControl: boolean;
+  dataRetention: number;
+  gdprCompliance: boolean;
+  hipaaCompliance: boolean;
+  soxCompliance: boolean;
+  iso27001Compliance: boolean;
+}
+
+export interface ZohoRPAMonitoringSettings {
+  enabled: boolean;
+  metrics: string[];
+  alerts: AlertConfig[];
+  reporting: ReportingConfig;
+  realTimeMonitoring: boolean;
+}
+
 export interface AlertConfig {
   id: string;
   name: string;
@@ -252,12 +285,14 @@ export interface RateLimitingConfig {
 export class TETRIXEnhancedWorkflowEngine {
   private rpaEngine: any;
   private axiomService: any;
+  private zohoRpaService: any;
   private enhancedWorkflows: Map<string, EnhancedWorkflowStep[]> = new Map();
   private industryConfigurations: Map<string, IndustryConfiguration> = new Map();
 
-  constructor(rpaEngine: any, axiomService: any) {
+  constructor(rpaEngine: any, axiomService?: any, zohoRpaService?: any) {
     this.rpaEngine = rpaEngine;
     this.axiomService = axiomService;
+    this.zohoRpaService = zohoRpaService;
     this.initializeEnhancedEngine();
   }
 
@@ -282,7 +317,7 @@ export class TETRIXEnhancedWorkflowEngine {
   }
 
   /**
-   * Create enhanced workflow with Axiom.ai integration
+   * Create enhanced workflow with Axiom.ai and/or Zoho RPA integration
    */
   async createEnhancedWorkflow(industry: string, workflowConfig: EnhancedWorkflowConfig): Promise<EnhancedWorkflow> {
     try {
@@ -294,6 +329,12 @@ export class TETRIXEnhancedWorkflowEngine {
         axiomBot = await this.createAxiomBotForWorkflow(industry, workflowConfig);
       }
       
+      // Create Zoho RPA bot if Zoho RPA automation is required
+      let zohoRpaBot: ZohoRPABot | null = null;
+      if (workflowConfig.zohoRpa && this.zohoRpaService) {
+        zohoRpaBot = await this.createZohoRPABotForWorkflow(industry, workflowConfig);
+      }
+      
       // Create enhanced workflow
       const enhancedWorkflow: EnhancedWorkflow = {
         id: workflowId,
@@ -302,7 +343,7 @@ export class TETRIXEnhancedWorkflowEngine {
         industry,
         type: 'enhanced',
         status: 'inactive',
-        steps: await this.createEnhancedSteps(workflowConfig, axiomBot),
+        steps: await this.createEnhancedSteps(workflowConfig, axiomBot, zohoRpaBot),
         axiomIntegration: axiomBot ? {
           enabled: true,
           botId: axiomBot.id,
@@ -311,6 +352,16 @@ export class TETRIXEnhancedWorkflowEngine {
           actions: workflowConfig.browserAutomation?.actions || [],
           compliance: this.getComplianceSettings(industry),
           monitoring: this.getMonitoringSettings(industry)
+        } : undefined,
+        zohoRpaIntegration: zohoRpaBot ? {
+          enabled: true,
+          botId: zohoRpaBot.id,
+          workflowId: workflowId,
+          workspaceId: workflowConfig.zohoRpa?.workspaceId || '',
+          automationType: workflowConfig.zohoRpa?.automationType || 'desktop',
+          steps: workflowConfig.zohoRpa?.workflowSteps || [],
+          compliance: this.getZohoRPAComplianceSettings(industry),
+          monitoring: this.getZohoRPAMonitoringSettings(industry)
         } : undefined,
         compliance: this.getComplianceSettings(industry),
         performance: {
@@ -573,7 +624,54 @@ export class TETRIXEnhancedWorkflowEngine {
   /**
    * Create enhanced steps
    */
-  private async createEnhancedSteps(workflowConfig: EnhancedWorkflowConfig, axiomBot: AxiomBot | null): Promise<EnhancedWorkflowStep[]> {
+  /**
+   * Create Zoho RPA bot for workflow
+   */
+  private async createZohoRPABotForWorkflow(industry: string, workflowConfig: EnhancedWorkflowConfig): Promise<ZohoRPABot> {
+    if (!this.zohoRpaService || !workflowConfig.zohoRpa) {
+      throw new Error('Zoho RPA service or configuration not available');
+    }
+
+    const zohoConfig: ZohoRPABotConfiguration = {
+      workspaceId: workflowConfig.zohoRpa.workspaceId,
+      botName: `${industry}_zoho_bot_${Date.now()}`,
+      automationType: workflowConfig.zohoRpa.automationType,
+      targetApplication: workflowConfig.zohoRpa.targetApplication,
+      targetUrl: workflowConfig.zohoRpa.targetUrl,
+      workflowSteps: workflowConfig.zohoRpa.workflowSteps,
+      errorHandling: {
+        retryAttempts: 3,
+        retryDelay: 5000,
+        fallbackAction: 'notify_admin',
+        notificationEnabled: true,
+        escalation: {
+          enabled: true,
+          threshold: 3,
+          notificationChannels: ['email'],
+          escalationLevels: []
+        },
+        errorLogging: true
+      },
+      monitoring: {
+        enabled: true,
+        metrics: ['execution_time', 'success_rate', 'error_rate'],
+        alerts: [],
+        reporting: {
+          enabled: true,
+          frequency: 'daily',
+          format: 'json',
+          recipients: [],
+          metrics: []
+        },
+        realTimeMonitoring: true
+      },
+      variables: []
+    };
+
+    return await this.zohoRpaService.createBot(zohoConfig, industry);
+  }
+
+  private async createEnhancedSteps(workflowConfig: EnhancedWorkflowConfig, axiomBot: AxiomBot | null, zohoRpaBot: ZohoRPABot | null): Promise<EnhancedWorkflowStep[]> {
     const steps: EnhancedWorkflowStep[] = [];
 
     for (const stepConfig of workflowConfig.steps) {
@@ -587,6 +685,16 @@ export class TETRIXEnhancedWorkflowEngine {
           actions: workflowConfig.browserAutomation?.actions || [],
           compliance: this.getComplianceSettings(workflowConfig.industry),
           monitoring: this.getMonitoringSettings(workflowConfig.industry)
+        } : undefined,
+        zohoRpaIntegration: zohoRpaBot ? {
+          enabled: true,
+          botId: zohoRpaBot.id,
+          workflowId: workflowConfig.zohoRpa?.workspaceId || '',
+          workspaceId: workflowConfig.zohoRpa?.workspaceId || '',
+          automationType: workflowConfig.zohoRpa?.automationType || 'desktop',
+          steps: workflowConfig.zohoRpa?.workflowSteps || [],
+          compliance: this.getZohoRPAComplianceSettings(workflowConfig.industry),
+          monitoring: this.getZohoRPAMonitoringSettings(workflowConfig.industry)
         } : undefined
       };
 
@@ -661,6 +769,55 @@ export class TETRIXEnhancedWorkflowEngine {
   }
 
   /**
+   * Get Zoho RPA compliance settings for industry
+   */
+  private getZohoRPAComplianceSettings(industry: string): ZohoRPAComplianceSettings {
+    const baseSettings: ZohoRPAComplianceSettings = {
+      dataPrivacy: true,
+      encryption: true,
+      auditLogging: true,
+      accessControl: true,
+      dataRetention: 90,
+      gdprCompliance: true,
+      hipaaCompliance: false,
+      soxCompliance: false,
+      iso27001Compliance: true
+    };
+
+    // Industry-specific compliance
+    if (industry === 'healthcare') {
+      baseSettings.hipaaCompliance = true;
+      baseSettings.dataRetention = 365; // 1 year for healthcare
+    }
+
+    if (industry === 'financial') {
+      baseSettings.soxCompliance = true;
+      baseSettings.dataRetention = 2555; // 7 years for financial
+    }
+
+    return baseSettings;
+  }
+
+  /**
+   * Get Zoho RPA monitoring settings for industry
+   */
+  private getZohoRPAMonitoringSettings(industry: string): ZohoRPAMonitoringSettings {
+    return {
+      enabled: true,
+      metrics: ['execution_time', 'success_rate', 'error_rate', 'compliance_score', 'uptime'],
+      alerts: [],
+      reporting: {
+        enabled: true,
+        frequency: 'daily',
+        format: 'json',
+        recipients: [],
+        metrics: []
+      },
+      realTimeMonitoring: industry === 'financial' || industry === 'healthcare'
+    };
+  }
+
+  /**
    * Load industry configurations
    */
   private async loadIndustryConfigurations(): Promise<void> {
@@ -712,12 +869,21 @@ export interface EnhancedWorkflowConfig {
   industry: string;
   steps: WorkflowStep[];
   browserAutomation?: BrowserAutomationConfig;
+  zohoRpa?: ZohoRPAAutomationConfig;
 }
 
 export interface BrowserAutomationConfig {
   targetUrl: string;
   selectors: CSSSelector[];
   actions: BrowserAction[];
+}
+
+export interface ZohoRPAAutomationConfig {
+  workspaceId: string;
+  automationType: 'desktop' | 'web' | 'hybrid';
+  targetApplication?: string;
+  targetUrl?: string;
+  workflowSteps: ZohoWorkflowStep[];
 }
 
 export interface EnhancedWorkflow {
@@ -729,6 +895,7 @@ export interface EnhancedWorkflow {
   status: 'active' | 'inactive' | 'error' | 'maintenance';
   steps: EnhancedWorkflowStep[];
   axiomIntegration?: AxiomIntegration;
+  zohoRpaIntegration?: ZohoRPAIntegration;
   compliance: AxiomComplianceSettings;
   performance: {
     totalExecutions: number;

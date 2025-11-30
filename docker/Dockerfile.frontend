@@ -1,0 +1,39 @@
+# Dockerfile for TETRIX Frontend (Astro)
+FROM node:20-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Install pnpm globally
+RUN npm install -g pnpm@10.18.3
+
+# Copy package files
+COPY package.json pnpm-lock.yaml ./
+
+# Install dependencies
+RUN pnpm install --frozen-lockfile
+
+# Copy source code
+COPY . .
+
+# Verify critical files are present
+RUN ls -la src/lib/security/authSecurity.ts || echo "WARNING: authSecurity.ts not found"
+RUN ls -la src/services/enterprise2FAService.ts || echo "WARNING: enterprise2FAService.ts not found"
+
+# Build the application
+RUN pnpm run build
+
+# Expose port
+EXPOSE 8080
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=8080
+ENV HOST=0.0.0.0
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:8080/ || curl -f http://localhost:8080/ || exit 1
+
+# Start the production server
+CMD ["pnpm", "start"]

@@ -1,0 +1,26 @@
+{
+  "generatedAt": "2025-11-23T18:41:08.818Z",
+  "totalLeads": 0,
+  "byIndustry": {
+    "healthcare": 0,
+    "logistics": 0,
+    "construction": 0
+  },
+  "results": [
+    {
+      "industry": "healthcare",
+      "count": 0,
+      "leads": []
+    },
+    {
+      "industry": "logistics",
+      "count": 0,
+      "leads": []
+    },
+    {
+      "industry": "construction",
+      "count": 0,
+      "leads": []
+    }
+  ]
+}

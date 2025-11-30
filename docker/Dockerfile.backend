@@ -1,0 +1,119 @@
+# TETRIX Backend Dockerfile - Multi-stage build for optimization
+FROM node:20-alpine AS base
+
+# Install curl, wget, and OpenSSL for Prisma
+RUN apk add --no-cache curl wget openssl python3 make g++
+
+# Note: Backend uses npm, not pnpm
+
+# Stage 1: Build stage (includes dev dependencies)
+FROM base AS builder
+
+WORKDIR /app
+
+# Copy backend package files (backend uses npm, not pnpm)
+COPY backend/package*.json ./backend/
+
+# Install ALL dependencies using npm (backend uses npm)
+# Configure npm for better network reliability
+WORKDIR /app/backend
+RUN npm config set fetch-timeout 300000 && \
+    npm config set fetch-retries 5 && \
+    npm ci
+
+# Copy source code
+COPY backend/src ./src
+
+# Create default tsconfig.json (required for build)
+RUN echo '{"compilerOptions":{"target":"ES2020","module":"commonjs","lib":["ES2020"],"outDir":"./dist","rootDir":"./src","strict":true,"esModuleInterop":true,"skipLibCheck":true,"forceConsistentCasingInFileNames":true},"include":["src/**/*"],"exclude":["node_modules","dist"]}' > ./tsconfig.json
+
+# Copy optional files using a script approach
+# Copy build context to temp location for conditional file handling
+COPY . /tmp/build-context/
+
+# Copy Prisma schema if it exists, otherwise skip
+RUN if [ -d /tmp/build-context/prisma ] && [ -f /tmp/build-context/prisma/schema.prisma ]; then \
+  cp -r /tmp/build-context/prisma ../prisma && \
+  echo "Prisma schema copied successfully"; \
+else \
+  echo "Prisma schema not found at root level, will use existing client from node_modules"; \
+  mkdir -p ../prisma || true; \
+fi
+
+# Copy backend tsconfig files if they exist, otherwise keep default
+RUN if [ -f /tmp/build-context/backend/tsconfig.json ]; then \
+  cp /tmp/build-context/backend/tsconfig.json ./tsconfig.json && \
+  echo "Using backend/tsconfig.json"; \
+else \
+  echo "Using default tsconfig.json"; \
+fi
+# Copy tsconfig.simple.json if it exists, otherwise create it from tsconfig.json
+RUN if [ -f /tmp/build-context/backend/tsconfig.simple.json ]; then \
+  cp /tmp/build-context/backend/tsconfig.simple.json ./tsconfig.simple.json && \
+  echo "Using backend/tsconfig.simple.json"; \
+elif [ -f ./tsconfig.json ]; then \
+  cp ./tsconfig.json ./tsconfig.simple.json && \
+  echo "Created tsconfig.simple.json from tsconfig.json"; \
+else \
+  echo "Warning: No tsconfig files found"; \
+fi
+
+# Generate Prisma client only if schema exists
+WORKDIR /app/backend
+RUN if [ -f ../prisma/schema.prisma ]; then \
+  ./node_modules/.bin/prisma generate --schema=../prisma/schema.prisma; \
+else \
+  echo "Prisma schema not found, skipping generation (using existing client from node_modules)"; \
+fi
+
+# Build the application
+WORKDIR /app/backend
+RUN npm run build
+
+# Stage 2: Production stage
+FROM base AS production
+
+WORKDIR /app
+
+# Copy backend package files
+COPY backend/package*.json ./backend/
+
+# Install production dependencies using npm (with increased timeout for network issues)
+WORKDIR /app/backend
+RUN npm config set fetch-timeout 600000 && \
+    npm config set fetch-retries 10 && \
+    npm config set maxsockets 1 && \
+    npm ci --only=production || \
+    (echo "First attempt failed, retrying..." && sleep 10 && npm ci --only=production) || \
+    (echo "Second attempt failed, retrying one more time..." && sleep 20 && npm ci --only=production)
+
+# Copy Prisma schema for runtime if it exists (to backend directory)
+# Prisma client is already copied from builder stage in node_modules
+RUN mkdir -p ../prisma || true
+
+# Copy built application from builder stage
+COPY --from=builder /app/backend/dist ./dist
+
+# Set working directory to backend for runtime
+WORKDIR /app/backend
+
+# Copy Prisma client from backend node_modules (since backend uses npm)
+RUN --mount=from=builder,source=/app/backend,target=/builder \
+    cp -r /builder/node_modules/.prisma ./node_modules/ && \
+    cp -r /builder/node_modules/@prisma ./node_modules/
+
+# Expose port
+EXPOSE 3001
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=3001
+ENV HOST=0.0.0.0
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD curl -f http://localhost:3001/health || exit 1
+
+# Start the application (already in /app/backend from above)
+CMD ["node", "dist/server-with-db.js"]
+

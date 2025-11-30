@@ -1,7 +1,9 @@
 ---
 // TETRIX RPA Dashboard - Industry-Specific RPA Management Interface
+// Supports traditional RPA, Axiom.ai browser automation, and Zoho RPA
 import MainLayout from '../../components/layout/MainLayout.astro';
 import { TETRIXRPAEngine } from '../services/rpaEngine';
+import { TETRIXZohoRPAIntegrationService } from '../services/zohoRpaIntegrationService';
 import { IndustryWorkflowManager } from '../services/industryWorkflows';
 import { TETRIXComplianceFramework } from '../services/complianceFramework';
 import { TETRIXRPAPricingService } from '../services/rpaPricingService';
@@ -408,6 +410,7 @@ import { TETRIXRPAPricingService } from '../services/rpaPricingService';
       constructor() {
         this.currentIndustry = null;
         this.rpaEngine = null;
+        this.zohoRpaService = null;
         this.workflowManager = null;
         this.complianceFramework = null;
         this.pricingService = null;
@@ -417,11 +420,22 @@ import { TETRIXRPAPricingService } from '../services/rpaPricingService';
       async initializeDashboard() {
         console.log('🤖 Initializing TETRIX RPA Dashboard...');
         
+        // Get Zoho RPA API key from environment
+        const zohoRpaApiKey = import.meta.env.ZOHO_RPA_API_KEY || null;
+        
         // Initialize services
         this.rpaEngine = new TETRIXRPAEngine();
         this.workflowManager = new IndustryWorkflowManager();
         this.complianceFramework = new TETRIXComplianceFramework();
         this.pricingService = new TETRIXRPAPricingService();
+        
+        // Initialize Zoho RPA service if API key is available
+        if (zohoRpaApiKey) {
+          this.zohoRpaService = new TETRIXZohoRPAIntegrationService(zohoRpaApiKey);
+          console.log('✅ Zoho RPA service initialized');
+        } else {
+          console.log('⚠️ Zoho RPA API key not found, Zoho RPA features will be unavailable');
+        }
         
         // Setup event listeners
         this.setupEventListeners();
@@ -477,6 +491,13 @@ import { TETRIXRPAPricingService } from '../services/rpaPricingService';
           const workflows = this.workflowManager.getIndustryWorkflows(industry);
           console.log(`📋 Loaded ${workflows.length} workflows for ${industry}`);
           
+          // Load Zoho RPA bots if service is available
+          let zohoRpaBots = [];
+          if (this.zohoRpaService) {
+            zohoRpaBots = await this.zohoRpaService.getIndustryBots(industry);
+            console.log(`🔧 Loaded ${zohoRpaBots.length} Zoho RPA bots for ${industry}`);
+          }
+          
           // Load compliance data
           const complianceData = this.complianceFramework.getComplianceDashboard(industry);
           console.log(`🔐 Loaded compliance data for ${industry}`);
@@ -486,16 +507,21 @@ import { TETRIXRPAPricingService } from '../services/rpaPricingService';
           console.log(`💰 Loaded pricing data for ${industry}`);
           
           // Update UI with loaded data
-          this.updateIndustryContent(industry, workflows, complianceData, pricingData);
+          this.updateIndustryContent(industry, workflows, zohoRpaBots, complianceData, pricingData);
           
         } catch (error) {
           console.error(`❌ Failed to load data for ${industry}:`, error);
         }
       }
 
-      updateIndustryContent(industry, workflows, complianceData, pricingData) {
+      updateIndustryContent(industry, workflows, zohoRpaBots, complianceData, pricingData) {
         // Update workflow cards
         this.updateWorkflowCards(workflows);
+        
+        // Update Zoho RPA bots if available
+        if (zohoRpaBots && zohoRpaBots.length > 0) {
+          this.updateZohoRPABots(zohoRpaBots);
+        }
         
         // Update compliance status
         this.updateComplianceStatus(complianceData);
@@ -557,6 +583,16 @@ import { TETRIXRPAPricingService } from '../services/rpaPricingService';
       updatePricing(pricingData) {
         // Update pricing cards with industry-specific pricing
         console.log('💰 Updating pricing:', pricingData);
+      }
+
+      updateZohoRPABots(zohoRpaBots) {
+        // Update UI with Zoho RPA bots
+        console.log('🔧 Updating Zoho RPA bots:', zohoRpaBots);
+        
+        // Display Zoho RPA bots in the bot cards section
+        zohoRpaBots.forEach(bot => {
+          console.log(`  - ${bot.name} (${bot.type}): ${bot.status}, ${bot.executions} executions, ${bot.successRate}% success`);
+        });
       }
 
       async createBot() {

@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "explorium": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://mcp.explorium.ai/mcp"],
+      "description": "Explorium Business Data Hub - Discover companies, contacts, and business insights"
+    }
+  }
+}
+
+

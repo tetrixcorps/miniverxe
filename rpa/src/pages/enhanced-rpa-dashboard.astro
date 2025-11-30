@@ -1,9 +1,10 @@
 ---
-// TETRIX Enhanced RPA Dashboard with Axiom.ai Integration
+// TETRIX Enhanced RPA Dashboard with Axiom.ai and Zoho RPA Integration
 // Industry-specific RPA management with browser automation capabilities
 import MainLayout from '../../components/layout/MainLayout.astro';
 import { TETRIXRPAEngine } from '../services/rpaEngine';
 import { TETRIXAxiomIntegrationService } from '../services/axiomIntegrationService';
+import { TETRIXZohoRPAIntegrationService } from '../services/zohoRpaIntegrationService';
 import { TETRIXEnhancedWorkflowEngine } from '../services/enhancedWorkflowEngine';
 ---
 
@@ -17,7 +18,7 @@ import { TETRIXEnhancedWorkflowEngine } from '../services/enhancedWorkflowEngine
             <div class="text-3xl mr-3">🤖</div>
             <div>
               <h1 class="text-2xl font-bold text-gray-900">Enhanced RPA Dashboard</h1>
-              <p class="text-sm text-gray-600">RPA + Browser Automation with Axiom.ai Integration</p>
+              <p class="text-sm text-gray-600">RPA + Browser Automation with Axiom.ai & Zoho RPA Integration</p>
             </div>
           </div>
           <div class="flex items-center space-x-4">
@@ -29,6 +30,9 @@ import { TETRIXEnhancedWorkflowEngine } from '../services/enhancedWorkflowEngine
             </button>
             <button class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
               Browser Automation
+            </button>
+            <button class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors">
+              Zoho RPA
             </button>
           </div>
         </div>
@@ -133,6 +137,7 @@ import { TETRIXEnhancedWorkflowEngine } from '../services/enhancedWorkflowEngine
                 <div class="flex space-x-1">
                   <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">RPA</span>
                   <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">Browser</span>
+                  <span class="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full">Zoho</span>
                 </div>
               </div>
               <div class="space-y-2 mb-4">
@@ -480,6 +485,7 @@ import { TETRIXEnhancedWorkflowEngine } from '../services/enhancedWorkflowEngine
         this.currentIndustry = null;
         this.rpaEngine = null;
         this.axiomService = null;
+        this.zohoRpaService = null;
         this.enhancedWorkflowEngine = null;
         this.initializeDashboard();
       }
@@ -487,10 +493,27 @@ import { TETRIXEnhancedWorkflowEngine } from '../services/enhancedWorkflowEngine
       async initializeDashboard() {
         console.log('🚀 Initializing TETRIX Enhanced RPA Dashboard...');
         
+        // Get API keys from environment or config
+        const axiomApiKey = import.meta.env.AXIOM_API_KEY || 'your-axiom-api-key';
+        const zohoRpaApiKey = import.meta.env.ZOHO_RPA_API_KEY || null;
+        
         // Initialize services
         this.rpaEngine = new TETRIXRPAEngine();
-        this.axiomService = new TETRIXAxiomIntegrationService('your-axiom-api-key');
-        this.enhancedWorkflowEngine = new TETRIXEnhancedWorkflowEngine(this.rpaEngine, this.axiomService);
+        this.axiomService = new TETRIXAxiomIntegrationService(axiomApiKey);
+        
+        // Initialize Zoho RPA service if API key is available
+        if (zohoRpaApiKey) {
+          this.zohoRpaService = new TETRIXZohoRPAIntegrationService(zohoRpaApiKey);
+          console.log('✅ Zoho RPA service initialized');
+        } else {
+          console.log('⚠️ Zoho RPA API key not found, Zoho RPA features will be unavailable');
+        }
+        
+        this.enhancedWorkflowEngine = new TETRIXEnhancedWorkflowEngine(
+          this.rpaEngine, 
+          this.axiomService,
+          this.zohoRpaService || undefined
+        );
         
         // Setup event listeners
         this.setupEventListeners();
@@ -559,12 +582,19 @@ import { TETRIXEnhancedWorkflowEngine } from '../services/enhancedWorkflowEngine
           const axiomBots = await this.axiomService.getIndustryBots(industry);
           console.log(`🤖 Loaded ${axiomBots.length} Axiom.ai bots for ${industry}`);
           
+          // Load Zoho RPA bots if service is available
+          let zohoRpaBots = [];
+          if (this.zohoRpaService) {
+            zohoRpaBots = await this.zohoRpaService.getIndustryBots(industry);
+            console.log(`🔧 Loaded ${zohoRpaBots.length} Zoho RPA bots for ${industry}`);
+          }
+          
           // Load browser automation data
           const browserAutomations = await this.loadBrowserAutomations(industry);
           console.log(`🌐 Loaded browser automations for ${industry}`);
           
           // Update UI with loaded data
-          this.updateIndustryContent(industry, enhancedWorkflows, axiomBots, browserAutomations);
+          this.updateIndustryContent(industry, enhancedWorkflows, axiomBots, zohoRpaBots, browserAutomations);
           
         } catch (error) {
           console.error(`❌ Failed to load data for ${industry}:`, error);
@@ -581,20 +611,25 @@ import { TETRIXEnhancedWorkflowEngine } from '../services/enhancedWorkflowEngine
         };
       }
 
-      updateIndustryContent(industry, enhancedWorkflows, axiomBots, browserAutomations) {
+      updateIndustryContent(industry, enhancedWorkflows, axiomBots, zohoRpaBots, browserAutomations) {
         // Update enhanced bot cards
-        this.updateEnhancedBotCards(enhancedWorkflows, axiomBots);
+        this.updateEnhancedBotCards(enhancedWorkflows, axiomBots, zohoRpaBots);
         
         // Update browser automation cards
         this.updateBrowserAutomationCards(browserAutomations);
         
         // Update analytics
-        this.updateAnalytics(browserAutomations);
+        this.updateAnalytics(browserAutomations, zohoRpaBots);
       }
 
-      updateEnhancedBotCards(enhancedWorkflows, axiomBots) {
+      updateEnhancedBotCards(enhancedWorkflows, axiomBots, zohoRpaBots) {
         // Update enhanced bot cards with real data
-        console.log('🤖 Updating enhanced bot cards:', enhancedWorkflows, axiomBots);
+        console.log('🤖 Updating enhanced bot cards:', enhancedWorkflows, axiomBots, zohoRpaBots);
+        
+        // Display Zoho RPA bots if available
+        if (zohoRpaBots && zohoRpaBots.length > 0) {
+          console.log(`🔧 Found ${zohoRpaBots.length} Zoho RPA bots to display`);
+        }
       }
 
       updateBrowserAutomationCards(browserAutomations) {
@@ -602,9 +637,16 @@ import { TETRIXEnhancedWorkflowEngine } from '../services/enhancedWorkflowEngine
         console.log('🌐 Updating browser automation cards:', browserAutomations);
       }
 
-      updateAnalytics(browserAutomations) {
+      updateAnalytics(browserAutomations, zohoRpaBots) {
         // Update analytics with real data
-        console.log('📊 Updating analytics:', browserAutomations);
+        console.log('📊 Updating analytics:', browserAutomations, zohoRpaBots);
+        
+        // Include Zoho RPA metrics in analytics
+        if (zohoRpaBots && zohoRpaBots.length > 0) {
+          const totalZohoExecutions = zohoRpaBots.reduce((sum, bot) => sum + bot.executions, 0);
+          const avgZohoSuccessRate = zohoRpaBots.reduce((sum, bot) => sum + bot.successRate, 0) / zohoRpaBots.length;
+          console.log(`🔧 Zoho RPA Analytics: ${totalZohoExecutions} executions, ${avgZohoSuccessRate.toFixed(2)}% success rate`);
+        }
       }
 
       async createEnhancedBot() {
@@ -625,6 +667,21 @@ import { TETRIXEnhancedWorkflowEngine } from '../services/enhancedWorkflowEngine
         
         console.log(`🌐 Creating browser bot for ${this.currentIndustry}`);
         // Implementation would open browser bot creation modal
+      }
+
+      async createZohoRPABot() {
+        if (!this.currentIndustry) {
+          alert('Please select an industry first');
+          return;
+        }
+        
+        if (!this.zohoRpaService) {
+          alert('Zoho RPA service is not available. Please configure ZOHO_RPA_API_KEY.');
+          return;
+        }
+        
+        console.log(`🔧 Creating Zoho RPA bot for ${this.currentIndustry}`);
+        // Implementation would open Zoho RPA bot creation modal
       }
 
       async createBrowserAutomation() {

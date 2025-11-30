@@ -1,8 +1,9 @@
 // TETRIX Enhanced RPA Dashboard Service
-// Manages enhanced RPA dashboard with Axiom.ai integration
+// Manages enhanced RPA dashboard with Axiom.ai and Zoho RPA integration
 
 import { TETRIXRPAEngine } from './rpaEngine';
 import { TETRIXAxiomIntegrationService } from './axiomIntegrationService';
+import { TETRIXZohoRPAIntegrationService } from './zohoRpaIntegrationService';
 import { TETRIXEnhancedWorkflowEngine } from './enhancedWorkflowEngine';
 import { IndustryBrowserWorkflowManager } from './industryBrowserWorkflows';
 
@@ -66,6 +67,15 @@ export interface EnhancedBotStatus {
     targetUrl: string;
     lastBrowserRun: Date;
     browserSuccessRate: number;
+  };
+  zohoRpaIntegration?: {
+    enabled: boolean;
+    botId: string;
+    workflowId: string;
+    workspaceId: string;
+    automationType: 'desktop' | 'web' | 'hybrid';
+    lastExecution: Date;
+    zohoSuccessRate: number;
   };
   performance: {
     averageExecutionTime: number;
@@ -135,6 +145,7 @@ export interface FormFillingTask {
 export class TETRIXEnhancedRPADashboardService {
   private rpaEngine: TETRIXRPAEngine;
   private axiomService: TETRIXAxiomIntegrationService;
+  private zohoRpaService: TETRIXZohoRPAIntegrationService | null = null;
   private enhancedWorkflowEngine: TETRIXEnhancedWorkflowEngine;
   private browserWorkflowManager: IndustryBrowserWorkflowManager;
   private dashboardMetrics: EnhancedDashboardMetrics;
@@ -143,10 +154,20 @@ export class TETRIXEnhancedRPADashboardService {
   private webScrapingJobs: Map<string, WebScrapingJob> = new Map();
   private formFillingTasks: Map<string, FormFillingTask> = new Map();
 
-  constructor() {
+  constructor(axiomApiKey?: string, zohoRpaApiKey?: string) {
     this.rpaEngine = new TETRIXRPAEngine();
-    this.axiomService = new TETRIXAxiomIntegrationService('your-axiom-api-key');
-    this.enhancedWorkflowEngine = new TETRIXEnhancedWorkflowEngine(this.rpaEngine, this.axiomService);
+    this.axiomService = new TETRIXAxiomIntegrationService(axiomApiKey || 'your-axiom-api-key');
+    
+    // Initialize Zoho RPA service if API key is provided
+    if (zohoRpaApiKey) {
+      this.zohoRpaService = new TETRIXZohoRPAIntegrationService(zohoRpaApiKey);
+    }
+    
+    this.enhancedWorkflowEngine = new TETRIXEnhancedWorkflowEngine(
+      this.rpaEngine, 
+      this.axiomService,
+      this.zohoRpaService || undefined
+    );
     this.browserWorkflowManager = new IndustryBrowserWorkflowManager();
     this.dashboardMetrics = this.initializeDashboardMetrics();
     this.initializeService();
@@ -233,11 +254,27 @@ export class TETRIXEnhancedRPADashboardService {
         axiomBot = await this.axiomService.createBot(botConfig.axiomConfig, industry);
       }
       
+      // Create Zoho RPA bot if Zoho RPA automation is required
+      let zohoRpaBot = null;
+      if (botConfig.zohoRpa && this.zohoRpaService) {
+        zohoRpaBot = await this.zohoRpaService.createBot(botConfig.zohoRpaConfig, industry);
+      }
+      
+      // Determine bot type
+      let botType: 'rpa' | 'browser' | 'hybrid' = 'rpa';
+      if (axiomBot && zohoRpaBot) {
+        botType = 'hybrid';
+      } else if (axiomBot) {
+        botType = 'browser';
+      } else if (zohoRpaBot) {
+        botType = 'hybrid'; // Zoho RPA can be desktop/web/hybrid
+      }
+      
       // Create enhanced bot status
       const enhancedBot: EnhancedBotStatus = {
         id: botId,
         name: botConfig.name,
-        type: axiomBot ? 'hybrid' : 'rpa',
+        type: botType,
         industry,
         status: 'inactive',
         lastExecution: new Date(),
@@ -251,6 +288,15 @@ export class TETRIXEnhancedRPADashboardService {
           targetUrl: botConfig.axiomConfig?.targetUrl || '',
           lastBrowserRun: new Date(),
           browserSuccessRate: 0
+        } : undefined,
+        zohoRpaIntegration: zohoRpaBot ? {
+          enabled: true,
+          botId: zohoRpaBot.id,
+          workflowId: botConfig.zohoRpaConfig?.workflowSteps?.[0]?.id || '',
+          workspaceId: botConfig.zohoRpaConfig?.workspaceId || '',
+          automationType: botConfig.zohoRpaConfig?.automationType || 'desktop',
+          lastExecution: new Date(),
+          zohoSuccessRate: 0
         } : undefined,
         performance: {
           averageExecutionTime: 0,

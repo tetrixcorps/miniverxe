@@ -11,7 +11,12 @@
     "campaign:test": "npm run build && node dist/executeCampaign.js --test",
     "campaign:healthcare": "npm run build && node dist/executeCampaign.js --industry=healthcare",
     "campaign:construction": "npm run build && node dist/executeCampaign.js --industry=construction",
-    "campaign:fleet": "npm run build && node dist/executeCampaign.js --industry=fleet"
+    "campaign:fleet": "npm run build && node dist/executeCampaign.js --industry=fleet",
+    "leads:generate": "ts-node generateTETRIXLeads.ts",
+    "leads:process": "ts-node processExploriumResults.ts",
+    "leads:healthcare": "ts-node -e \"import('./exploriumLeadGenerator').then(m => m.ExploriumLeadGenerator).then(g => new g().generateHealthcareLeads(50).then(l => console.log(JSON.stringify(l, null, 2))))\"",
+    "leads:fleet": "ts-node -e \"import('./exploriumLeadGenerator').then(m => m.ExploriumLeadGenerator).then(g => new g().generateFleetLeads(50).then(l => console.log(JSON.stringify(l, null, 2))))\"",
+    "leads:construction": "ts-node -e \"import('./exploriumLeadGenerator').then(m => m.ExploriumLeadGenerator).then(g => new g().generateConstructionLeads(50).then(l => console.log(JSON.stringify(l, null, 2))))\""
   },
   "keywords": [
     "email",
@@ -27,6 +32,7 @@
   "author": "TETRIX Team",
   "license": "MIT",
   "dependencies": {
+    "axios": "^1.13.2",
     "dotenv": "^17.2.3",
     "mailgun-js": "^0.22.0"
   },
