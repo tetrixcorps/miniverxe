@@ -1,6 +1,9 @@
 // WhatsApp Campaign Service
 // Handles WhatsApp campaigns for construction, fleet management, and healthcare industries
 
+import { WhatsAppWebhookStorageService } from './services/WhatsAppWebhookStorageService';
+import { WhatsAppNotificationService } from './services/WhatsAppNotificationService';
+
 interface WhatsAppCampaign {
   id: string;
   name: string;
@@ -66,6 +69,8 @@ interface WhatsAppConfig {
 export class WhatsAppCampaignService {
   private config: WhatsAppConfig;
   private baseUrl: string;
+  private storageService: WhatsAppWebhookStorageService;
+  private notificationService: WhatsAppNotificationService;
 
   constructor() {
     this.config = {
@@ -82,6 +87,10 @@ export class WhatsAppCampaignService {
     }
 
     this.baseUrl = `${this.config.apiBaseUrl}/${this.config.apiVersion}`;
+    
+    // Initialize services
+    this.storageService = new WhatsAppWebhookStorageService();
+    this.notificationService = new WhatsAppNotificationService();
   }
 
   // Industry-specific WhatsApp templates
@@ -274,6 +283,14 @@ export class WhatsAppCampaignService {
 
       for (const recipient of recipients) {
         if (recipient.status !== 'active') {
+          failedCount++;
+          continue;
+        }
+
+        // Check if recipient has opted out
+        const isOptedOut = await this.storageService.isOptedOut(recipient.phoneNumber);
+        if (isOptedOut) {
+          console.log(`Skipping opted-out recipient: ${recipient.phoneNumber}`);
           failedCount++;
           continue;
         }
@@ -473,12 +490,23 @@ export class WhatsAppCampaignService {
     const event = value.event;
     const templateName = value.message_template_name;
     const reason = value.reason;
+    const language = value.message_template_language || 'en_US';
     
     console.log(`Template Status Update: ${templateName} is now ${event}`);
     if (reason) console.log(`Reason: ${reason}`);
 
-    // TODO: Update template status in database
-    // TODO: Notify admin if template is rejected
+    // Update template status in database
+    await this.storageService.updateTemplateStatus(
+      templateName,
+      language,
+      event,
+      reason
+    );
+
+    // Notify admin if template is rejected
+    if (event === 'REJECTED') {
+      await this.notificationService.notifyTemplateRejection(templateName, reason);
+    }
   }
 
   // Process phone number quality update
@@ -486,12 +514,31 @@ export class WhatsAppCampaignService {
     const displayPhoneNumber = value.display_phone_number;
     const event = value.event; // 'GREEN', 'YELLOW', 'RED'
     const currentLimit = value.current_limit;
+    const phoneNumberId = value.phone_number_id;
 
     console.log(`Phone Number Quality Update for ${displayPhoneNumber}: ${event}`);
     console.log(`Current Messaging Limit: ${currentLimit}`);
 
-    // TODO: Alert if quality drops to RED
-    // TODO: Update phone number status in database
+    // Get previous status for comparison
+    const previousStatus = await this.storageService.getPhoneNumberStatus(phoneNumberId);
+    const previousRating = previousStatus?.qualityRating;
+
+    // Update phone number status in database
+    await this.storageService.updatePhoneNumberQuality(
+      phoneNumberId,
+      event,
+      currentLimit
+    );
+
+    // Alert if quality drops to YELLOW or RED
+    if (event === 'YELLOW' || event === 'RED') {
+      await this.notificationService.notifyPhoneQualityChange(
+        displayPhoneNumber,
+        event,
+        currentLimit,
+        previousRating
+      );
+    }
   }
 
   // Process account review update
@@ -500,7 +547,17 @@ export class WhatsAppCampaignService {
     
     console.log(`Account Review Update: ${decision}`);
     
-    // TODO: Notify admin of account review decision
+    // Store account event
+    await this.storageService.storeAccountEvent({
+      businessAccountId: this.config.businessAccountId,
+      eventType: 'review_update',
+      event: decision,
+      data: value,
+      timestamp: new Date()
+    });
+
+    // Notify admin of account review decision
+    await this.notificationService.notifyAccountReview(decision);
   }
 
   // Process account update
@@ -514,51 +571,190 @@ export class WhatsAppCampaignService {
        console.log('Ban Info:', JSON.stringify(value.ban_info));
     }
 
-    // TODO: Handle account bans or restrictions
+    // Store account event
+    await this.storageService.storeAccountEvent({
+      businessAccountId: this.config.businessAccountId,
+      eventType: 'account_update',
+      event,
+      data: value,
+      timestamp: new Date()
+    });
+
+    // Handle critical events
+    if (event === 'BANNED') {
+      await this.notificationService.notifyAccountBan(phoneNumber, value.ban_info);
+    } else if (event === 'RESTRICTED') {
+      await this.notificationService.notifyAccountRestriction(phoneNumber, event);
+    }
   }
 
   // Process security notification
   private async processSecurityNotification(value: any): Promise<void> {
     console.log('Security Notification received:', JSON.stringify(value));
     
-    // TODO: Log security event
-    // TODO: Alert security team
+    // Log security event
+    await this.storageService.storeAccountEvent({
+      businessAccountId: this.config.businessAccountId,
+      eventType: 'security',
+      event: 'SECURITY_EVENT',
+      data: value,
+      timestamp: new Date()
+    });
+
+    // Alert security team
+    await this.notificationService.notifySecurityEvent(value);
   }
 
   // Process incoming message
   private async processIncomingMessage(message: any, value: any): Promise<void> {
     console.log(`Incoming message from ${message.from}: ${message.text?.body || message.type}`);
     
-    // In a real implementation, you would:
-    // 1. Store the message in your database
-    // 2. Trigger any automated responses
-    // 3. Update customer engagement metrics
-    // 4. Handle opt-out requests
+    // Store the message in database
+    await this.storageService.storeMessage({
+      messageId: message.id,
+      phoneNumberId: value.metadata.phone_number_id,
+      from: message.from,
+      type: message.type,
+      content: message,
+      timestamp: new Date(parseInt(message.timestamp) * 1000),
+      direction: 'inbound'
+    });
+
+    // Handle opt-out requests (STOP, UNSUBSCRIBE, etc.)
+    const messageText = message.text?.body?.toUpperCase().trim();
+    if (messageText && ['STOP', 'UNSUBSCRIBE', 'CANCEL', 'END', 'QUIT'].includes(messageText)) {
+      await this.handleOptOutRequest(message.from);
+    }
+
+    // TODO: Trigger automated responses based on message content
+    // TODO: Update customer engagement metrics
   }
 
   // Process message status update
   private async processMessageStatus(status: any): Promise<void> {
     console.log(`Message ${status.id} status: ${status.status}`);
     
-    // In a real implementation, you would:
-    // 1. Update message delivery status in your database
-    // 2. Update campaign analytics
-    // 3. Handle failed deliveries
+    // Update message delivery status in database
+    await this.storageService.storeMessageStatus({
+      messageId: status.id,
+      recipientId: status.recipient_id,
+      status: status.status,
+      timestamp: new Date(parseInt(status.timestamp) * 1000),
+      conversationId: status.conversation?.id,
+      pricing: status.pricing,
+      error: status.errors?.[0]
+    });
+
+    // Update campaign analytics if message is linked to a campaign
+    // Note: Would need to track campaignId in message metadata
+    // await this.storageService.updateCampaignAnalytics(campaignId, {
+    //   messagesDelivered: status.status === 'delivered' ? 1 : 0,
+    //   messagesRead: status.status === 'read' ? 1 : 0,
+    //   messagesFailed: status.status === 'failed' ? 1 : 0
+    // });
+
+    // Handle failed deliveries
+    if (status.status === 'failed' && status.errors?.length > 0) {
+      console.error(`Message delivery failed:`, status.errors[0]);
+    }
   }
 
-  // Verify webhook signature
+  // Handle opt-out request from user
+  private async handleOptOutRequest(phoneNumber: string): Promise<void> {
+    console.log(`Processing opt-out request from: ${phoneNumber}`);
+
+    // Add to opt-out list
+    await this.storageService.addOptOut({
+      phoneNumber,
+      reason: 'User requested via message',
+      optOutDate: new Date(),
+      source: 'user_request'
+    });
+
+    // Send confirmation message
+    try {
+      await this.sendTextMessage(
+        phoneNumber,
+        'You have been successfully unsubscribed from our messages. Reply START to resubscribe.'
+      );
+    } catch (error) {
+      console.error('Failed to send opt-out confirmation:', error);
+    }
+
+    console.log(`✅ Opt-out processed for: ${phoneNumber}`);
+  }
+
+  // Send simple text message (for opt-out confirmations, etc.)
+  private async sendTextMessage(to: string, text: string): Promise<void> {
+    try {
+      await fetch(
+        `${this.baseUrl}/${this.config.phoneNumberId}/messages`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${this.config.accessToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            messaging_product: 'whatsapp',
+            to: to,
+            type: 'text',
+            text: { body: text }
+          })
+        }
+      );
+    } catch (error) {
+      console.error('Failed to send text message:', error);
+      throw error;
+    }
+  }
+
+  // Verify webhook signature using HMAC SHA-256
   verifyWebhookSignature(signature: string, body: string): boolean {
-    // In a real implementation, you would verify the webhook signature
-    // using your app secret to ensure the request came from Meta
     const appSecret = process.env['WHATSAPP_APP_SECRET'] || '';
     
     if (!appSecret) {
-      console.warn('WHATSAPP_APP_SECRET not configured');
+      console.warn('WHATSAPP_APP_SECRET not configured - skipping signature verification');
       return true; // Allow in development, but should be enforced in production
     }
 
-    // TODO: Implement proper HMAC signature verification
-    return true;
+    try {
+      // Meta sends signature as: sha256=<hash>
+      if (!signature || !signature.startsWith('sha256=')) {
+        console.error('Invalid signature format');
+        return false;
+      }
+
+      // Extract the hash from the signature
+      const receivedHash = signature.substring(7); // Remove 'sha256=' prefix
+
+      // Compute HMAC using crypto (Node.js built-in)
+      const crypto = require('crypto');
+      const expectedHash = crypto
+        .createHmac('sha256', appSecret)
+        .update(body)
+        .digest('hex');
+
+      // Use timingSafeEqual to prevent timing attacks
+      const receivedBuffer = Buffer.from(receivedHash, 'hex');
+      const expectedBuffer = Buffer.from(expectedHash, 'hex');
+
+      if (receivedBuffer.length !== expectedBuffer.length) {
+        console.error('Signature verification failed: length mismatch');
+        return false;
+      }
+
+      const isValid = crypto.timingSafeEqual(receivedBuffer, expectedBuffer);
+      
+      if (!isValid) {
+        console.error('Signature verification failed: hash mismatch');
+      }
+
+      return isValid;
+    } catch (error) {
+      console.error('Error verifying webhook signature:', error);
+      return false;
+    }
   }
 
   // Get business profile
