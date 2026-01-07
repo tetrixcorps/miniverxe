@@ -428,23 +428,37 @@ export class WhatsAppCampaignService {
     try {
       console.log('WhatsApp webhook received:', JSON.stringify(webhookData, null, 2));
 
-      // Handle different webhook event types
       const entry = webhookData.entry?.[0];
       const changes = entry?.changes?.[0];
       const value = changes?.value;
+      const field = changes?.field;
 
-      if (value?.messages) {
-        // Handle incoming messages
-        for (const message of value.messages) {
-          await this.processIncomingMessage(message, value);
-        }
-      }
+      if (!value) return true;
 
-      if (value?.statuses) {
-        // Handle message status updates
-        for (const status of value.statuses) {
-          await this.processMessageStatus(status);
+      // Handle based on field type or content
+      if (field === 'messages' || value.messages || value.statuses) {
+        if (value.messages) {
+          for (const message of value.messages) {
+            await this.processIncomingMessage(message, value);
+          }
         }
+        if (value.statuses) {
+          for (const status of value.statuses) {
+            await this.processMessageStatus(status);
+          }
+        }
+      } else if (field === 'message_template_status_update') {
+        await this.processTemplateStatusUpdate(value);
+      } else if (field === 'phone_number_quality_update') {
+        await this.processPhoneNumberQualityUpdate(value);
+      } else if (field === 'account_review_update') {
+        await this.processAccountReviewUpdate(value);
+      } else if (field === 'account_update') {
+        await this.processAccountUpdate(value);
+      } else if (field === 'security') {
+        await this.processSecurityNotification(value);
+      } else {
+        console.log(`Unhandled webhook field: ${field}`);
       }
 
       return true;
@@ -452,6 +466,63 @@ export class WhatsAppCampaignService {
       console.error('Failed to process webhook:', error);
       return false;
     }
+  }
+
+  // Process message template status update
+  private async processTemplateStatusUpdate(value: any): Promise<void> {
+    const event = value.event;
+    const templateName = value.message_template_name;
+    const reason = value.reason;
+    
+    console.log(`Template Status Update: ${templateName} is now ${event}`);
+    if (reason) console.log(`Reason: ${reason}`);
+
+    // TODO: Update template status in database
+    // TODO: Notify admin if template is rejected
+  }
+
+  // Process phone number quality update
+  private async processPhoneNumberQualityUpdate(value: any): Promise<void> {
+    const displayPhoneNumber = value.display_phone_number;
+    const event = value.event; // 'GREEN', 'YELLOW', 'RED'
+    const currentLimit = value.current_limit;
+
+    console.log(`Phone Number Quality Update for ${displayPhoneNumber}: ${event}`);
+    console.log(`Current Messaging Limit: ${currentLimit}`);
+
+    // TODO: Alert if quality drops to RED
+    // TODO: Update phone number status in database
+  }
+
+  // Process account review update
+  private async processAccountReviewUpdate(value: any): Promise<void> {
+    const decision = value.decision; // 'APPROVED', 'REJECTED'
+    
+    console.log(`Account Review Update: ${decision}`);
+    
+    // TODO: Notify admin of account review decision
+  }
+
+  // Process account update
+  private async processAccountUpdate(value: any): Promise<void> {
+    const phoneNumber = value.phone_number;
+    const event = value.event; // 'VERIFIED', 'BANNED', 'RESTRICTED', etc.
+    
+    console.log(`Account Update for ${phoneNumber}: ${event}`);
+    
+    if (value.ban_info) {
+       console.log('Ban Info:', JSON.stringify(value.ban_info));
+    }
+
+    // TODO: Handle account bans or restrictions
+  }
+
+  // Process security notification
+  private async processSecurityNotification(value: any): Promise<void> {
+    console.log('Security Notification received:', JSON.stringify(value));
+    
+    // TODO: Log security event
+    // TODO: Alert security team
   }
 
   // Process incoming message
