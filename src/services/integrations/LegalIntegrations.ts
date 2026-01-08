@@ -1276,13 +1276,16 @@ export class TETRIXPracticePantherIntegration extends BaseLegalIntegration {
 export class LegalIntegrationFactory {
   /**
    * Create Clio integration
+   * Uses environment variables for client ID and secret
    */
-  static createClioIntegration(settings: any): TETRIXClioIntegration {
+  static createClioIntegration(settings?: any): TETRIXClioIntegration {
+    const baseUrl = process.env.WEBHOOK_BASE_URL || 'http://localhost:3001';
+    
     const config: LegalConfig = {
       provider: 'clio',
-      clientId: settings.clientId,
-      clientSecret: settings.clientSecret,
-      redirectUri: settings.redirectUri,
+      clientId: settings?.clientId || process.env.CLIO_CLIENT_ID || '',
+      clientSecret: settings?.clientSecret || process.env.CLIO_CLIENT_SECRET || '',
+      redirectUri: settings?.redirectUri || `${baseUrl}/api/oauth/callback`,
       baseUrl: 'https://app.clio.com',
       scope: [
         'read',
@@ -1304,6 +1307,10 @@ export class LegalIntegrationFactory {
         'calendar_events:write'
       ]
     };
+
+    if (!config.clientId || !config.clientSecret) {
+      throw new Error('Clio OAuth credentials not configured. Set CLIO_CLIENT_ID and CLIO_CLIENT_SECRET environment variables.');
+    }
 
     return new TETRIXClioIntegration(config);
   }

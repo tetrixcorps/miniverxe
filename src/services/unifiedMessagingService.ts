@@ -1,4 +1,4 @@
-// Unified Messaging Service
+// Messaging Service
 // Integrates Email (Mailgun), SMS (Telnyx), and WhatsApp for cross-platform communication
 
 import { notificationService } from './notificationService';
@@ -44,7 +44,7 @@ export interface MessageTemplate {
   updatedAt: Date;
 }
 
-class UnifiedMessagingService {
+class MessagingService {
   private templates: Map<string, MessageTemplate> = new Map();
   private messageHistory: Map<string, UnifiedMessage> = new Map();
 
@@ -356,5 +356,5 @@ The TETRIX Team`,
 }
 
 // Export configured instance
-export const unifiedMessagingService = new UnifiedMessagingService();
-export default unifiedMessagingService;
+export const messagingService = new MessagingService();
+export default messagingService;

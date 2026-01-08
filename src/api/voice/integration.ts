@@ -1,5 +1,5 @@
 // Cross-Platform Voice Integration API Endpoints
-// Handles integration between Voice API, IVR, SinchChatLive, and Unified Messaging
+// Handles integration between Voice API, IVR, and SinchChatLive
 
 import type { APIRoute } from 'astro';
 import { crossPlatformVoiceIntegration } from '../../services/crossPlatformVoiceIntegration';

@@ -1,5 +1,5 @@
 // Cross-Platform Voice Integration Service
-// Integrates Voice API with IVR, SinchChatLive, and Unified Messaging Platform
+// Integrates Voice API with IVR and SinchChatLive
 
 import { telnyxVoiceService } from './telnyxVoiceService';
 import { getSHANGOAIService } from './sinchChatService';
@@ -8,7 +8,6 @@ import { crossPlatformSessionService } from './crossPlatformSessionService';
 export interface VoiceIntegrationConfig {
   enableIVRIntegration: boolean;
   enableSinchChatIntegration: boolean;
-  enableUnifiedMessagingIntegration: boolean;
   enableTranscription: boolean;
   enableTranslation: boolean;
   supportedLanguages: string[];
@@ -135,11 +134,6 @@ class CrossPlatformVoiceIntegration {
       // Integrate with SinchChatLive if enabled
       if (this.config.enableSinchChatIntegration && callConfig.conversationId) {
         await this.integrateWithSinchChat(session);
-      }
-
-      // Integrate with Unified Messaging if enabled
-      if (this.config.enableUnifiedMessagingIntegration) {
-        await this.integrateWithUnifiedMessaging(session);
       }
 
       console.log(`Voice call initiated with cross-platform integration: ${session.sessionId}`);
@@ -317,11 +311,6 @@ class CrossPlatformVoiceIntegration {
         await this.syncWithSinchChat(session, messages);
       }
 
-      // Sync with Unified Messaging if enabled
-      if (this.config.enableUnifiedMessagingIntegration) {
-        await this.syncWithUnifiedMessaging(session, messages);
-      }
-
       console.log(`Cross-channel sync completed for session ${session.sessionId}`);
 
     } catch (error) {
@@ -349,22 +338,6 @@ class CrossPlatformVoiceIntegration {
   }
 
   /**
-   * Integrate with Unified Messaging Platform
-   */
-  private async integrateWithUnifiedMessaging(session: VoiceSession): Promise<void> {
-    try {
-      // This would integrate with the existing Unified Messaging Platform
-      console.log(`Integrating voice session ${session.sessionId} with Unified Messaging Platform`);
-      
-      // Add voice as a first-class channel
-      await this.addVoiceChannel(session);
-
-    } catch (error) {
-      console.error('Failed to integrate with Unified Messaging Platform:', error);
-    }
-  }
-
-  /**
    * Sync with SinchChatLive
    */
   private async syncWithSinchChat(session: VoiceSession, messages: CrossChannelMessage[]): Promise<void> {
@@ -379,22 +352,6 @@ class CrossPlatformVoiceIntegration {
 
     } catch (error) {
       console.error('Failed to sync with SinchChatLive:', error);
-    }
-  }
-
-  /**
-   * Sync with Unified Messaging Platform
-   */
-  private async syncWithUnifiedMessaging(session: VoiceSession, messages: CrossChannelMessage[]): Promise<void> {
-    try {
-      // Send messages to Unified Messaging Platform
-      for (const message of messages) {
-        // This would send the message to the unified messaging platform
-        console.log(`Syncing message to Unified Messaging: ${message.content}`);
-      }
-
-    } catch (error) {
-      console.error('Failed to sync with Unified Messaging Platform:', error);
     }
   }
 
@@ -419,14 +376,6 @@ class CrossPlatformVoiceIntegration {
   private async linkSessions(voiceSessionId: string, chatSessionId: string): Promise<void> {
     // This would store the link in the database
     console.log(`Linking voice session ${voiceSessionId} to chat session ${chatSessionId}`);
-  }
-
-  /**
-   * Add voice channel to unified messaging
-   */
-  private async addVoiceChannel(session: VoiceSession): Promise<void> {
-    // This would add voice as a channel in the unified messaging platform
-    console.log(`Adding voice channel for session ${session.sessionId}`);
   }
 
   /**
@@ -484,7 +433,6 @@ class CrossPlatformVoiceIntegration {
 const defaultConfig: VoiceIntegrationConfig = {
   enableIVRIntegration: true,
   enableSinchChatIntegration: true,
-  enableUnifiedMessagingIntegration: true,
   enableTranscription: true,
   enableTranslation: false,
   supportedLanguages: ['en-US', 'es-ES', 'fr-FR', 'de-DE'],

@@ -4,9 +4,9 @@
 // Refactored with modern UI/UX best practices and React Islands
 
 import DashboardLayout from '../../components/dashboards/DashboardLayout.astro';
-import { DashboardMetrics } from '../../components/dashboard/react/DashboardMetrics';
-import { SalesforceWidget } from '../../components/dashboard/react/SalesforceWidget';
-import { HubSpotWidget } from '../../components/dashboard/react/HubSpotWidget';
+// import { DashboardMetrics } from '../../components/dashboard/react/DashboardMetrics'; // Missing
+// import { SalesforceWidget } from '../../components/dashboard/react/SalesforceWidget'; // Missing
+// import { HubSpotWidget } from '../../components/dashboard/react/HubSpotWidget'; // Missing
 
 // Server-Side Logic: Fetch User Session
 const cookie = Astro.request.headers.get('cookie');
@@ -45,8 +45,11 @@ if (!hasSession) {
       </div>
     </div>
 
-    <!-- Key Metrics Cards - React Island -->
-    <DashboardMetrics industry="beauty" client:load />
+    <!-- Key Metrics Cards - React Island (Placeholder) -->
+    <!-- <DashboardMetrics industry="beauty" client:load /> -->
+    <div class="p-6 bg-white rounded-xl shadow-md text-center">
+      <p class="text-gray-500">Dashboard Metrics loading...</p>
+    </div>
   </div>
 
   <!-- Main Content Grid -->
@@ -207,12 +210,18 @@ if (!hasSession) {
     </div>
   </div>
 
-  <!-- CRM Integrations - React Islands -->
+  <!-- CRM Integrations - React Islands (Placeholder) -->
   <div class="mb-8">
     <h2 class="text-xl font-semibold text-gray-900 mb-6">Client Relationship Management</h2>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <SalesforceWidget client:visible />
-      <HubSpotWidget client:visible />
+      <!-- <SalesforceWidget client:visible /> -->
+      <div class="p-6 bg-white rounded-xl shadow-md text-center">
+        <p class="text-gray-500">Salesforce Widget loading...</p>
+      </div>
+      <!-- <HubSpotWidget client:visible /> -->
+      <div class="p-6 bg-white rounded-xl shadow-md text-center">
+        <p class="text-gray-500">HubSpot Widget loading...</p>
+      </div>
     </div>
   </div>
 </DashboardLayout>

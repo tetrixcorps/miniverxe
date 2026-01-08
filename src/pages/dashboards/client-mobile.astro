@@ -3,10 +3,10 @@
 // Simplified layout with touch-friendly interface
 // Refactored with modern UI/UX best practices and React Islands
 
-import DashboardMetrics from '../../components/dashboard/react/DashboardMetrics';
-import SalesforceWidget from '../../components/dashboard/react/SalesforceWidget';
-import HubSpotWidget from '../../components/dashboard/react/HubSpotWidget';
-import EpicWidget from '../../components/dashboard/react/EpicWidget';
+// import DashboardMetrics from '../../components/dashboard/react/DashboardMetrics'; // Missing
+// import SalesforceWidget from '../../components/dashboard/react/SalesforceWidget'; // Missing
+// import HubSpotWidget from '../../components/dashboard/react/HubSpotWidget'; // Missing
+// import EpicWidget from '../../components/dashboard/react/EpicWidget'; // Missing
 import FleetContactManagement from '../../components/dashboard/FleetContactManagement.astro';
 
 // Server-Side Logic: Fetch User Session
@@ -98,12 +98,15 @@ if (!hasSession) {
       <!-- Fleet Management Content -->
       <div id="mobile-fleet-content" class="mobile-industry-section" style="display: block;">
         <div class="space-y-4">
-          <DashboardMetrics client:load industry="logistics" />
+          <!-- <DashboardMetrics client:load industry="logistics" /> -->
+          <div class="p-4 bg-white rounded-lg shadow-sm text-center text-sm text-gray-500">Dashboard Metrics loading...</div>
           
           <!-- CRM Widgets -->
           <div class="space-y-4">
-            <SalesforceWidget client:visible />
-            <HubSpotWidget client:visible />
+            <!-- <SalesforceWidget client:visible /> -->
+            <div class="p-4 bg-white rounded-lg shadow-sm text-center text-sm text-gray-500">Salesforce Widget loading...</div>
+            <!-- <HubSpotWidget client:visible /> -->
+            <div class="p-4 bg-white rounded-lg shadow-sm text-center text-sm text-gray-500">HubSpot Widget loading...</div>
         </div>
 
           <!-- Fleet Management Component (might scroll horizontally if needed) -->
@@ -116,21 +119,28 @@ if (!hasSession) {
       <!-- Healthcare Content -->
       <div id="mobile-healthcare-content" class="mobile-industry-section" style="display: none;">
         <div class="space-y-4">
-          <DashboardMetrics client:load industry="healthcare" />
+          <!-- <DashboardMetrics client:load industry="healthcare" /> -->
+          <div class="p-4 bg-white rounded-lg shadow-sm text-center text-sm text-gray-500">Dashboard Metrics loading...</div>
           
-          <EpicWidget client:visible />
-          <SalesforceWidget client:visible />
-          <HubSpotWidget client:visible />
+          <!-- <EpicWidget client:visible /> -->
+          <div class="p-4 bg-white rounded-lg shadow-sm text-center text-sm text-gray-500">Epic Widget loading...</div>
+          <!-- <SalesforceWidget client:visible /> -->
+          <div class="p-4 bg-white rounded-lg shadow-sm text-center text-sm text-gray-500">Salesforce Widget loading...</div>
+          <!-- <HubSpotWidget client:visible /> -->
+          <div class="p-4 bg-white rounded-lg shadow-sm text-center text-sm text-gray-500">HubSpot Widget loading...</div>
         </div>
       </div>
 
       <!-- Legal Content -->
       <div id="mobile-legal-content" class="mobile-industry-section" style="display: none;">
         <div class="space-y-4">
-          <DashboardMetrics client:load industry="legal" />
+          <!-- <DashboardMetrics client:load industry="legal" /> -->
+          <div class="p-4 bg-white rounded-lg shadow-sm text-center text-sm text-gray-500">Dashboard Metrics loading...</div>
           
-          <SalesforceWidget client:visible />
-          <HubSpotWidget client:visible />
+          <!-- <SalesforceWidget client:visible /> -->
+          <div class="p-4 bg-white rounded-lg shadow-sm text-center text-sm text-gray-500">Salesforce Widget loading...</div>
+          <!-- <HubSpotWidget client:visible /> -->
+          <div class="p-4 bg-white rounded-lg shadow-sm text-center text-sm text-gray-500">HubSpot Widget loading...</div>
         </div>
       </div>
 

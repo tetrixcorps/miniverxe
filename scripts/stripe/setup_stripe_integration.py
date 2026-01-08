@@ -274,7 +274,7 @@ class StripeIntegrationSetup:
             # Create billing portal configuration
             portal_config = stripe.billing_portal.Configuration.create(
                 business_profile={
-                    "headline": "TETRIX & JoRoMi Platform - Unified Messaging & AI Services"
+                    "headline": "TETRIX & JoRoMi Platform - AI Services"
                 },
                 features={
                     "payment_method_update": {"enabled": True},

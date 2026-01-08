@@ -13,7 +13,8 @@ export default defineConfig({
       'src/pages/api/v2/2fa/__tests__/**/*.{test,spec}.{js,ts}',
       'tests/unit/**/*.{test,spec}.{js,ts}',
       'tests/functional/**/*.{test,spec}.{js,ts}',
-      'tests/integration/**/*.{test,spec}.{js,ts}'
+      'tests/integration/**/*.{test,spec}.{js,ts}',
+      'campaign/**/*.{test,spec}.{js,ts}'
     ],
     exclude: [
       'node_modules',

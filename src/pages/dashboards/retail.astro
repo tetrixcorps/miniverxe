@@ -4,8 +4,8 @@
 // Refactored with modern UI/UX best practices and React Islands
 
 import DashboardLayout from '../../components/dashboards/DashboardLayout.astro';
-import { DashboardMetrics } from '../../components/dashboard/react/DashboardMetrics';
-import { HubSpotWidget } from '../../components/dashboard/react/HubSpotWidget';
+// import { DashboardMetrics } from '../../components/dashboard/react/DashboardMetrics'; // Missing component
+// import { HubSpotWidget } from '../../components/dashboard/react/HubSpotWidget'; // Missing component
 
 // Server-Side Logic: Fetch User Session & Data
 const cookie = Astro.request.headers.get('cookie');
@@ -45,14 +45,20 @@ if (!hasSession) {
       </div>
     </div>
 
-    <!-- Key Metrics Cards - React Island -->
-    <DashboardMetrics industry="retail" client:load />
+    <!-- Key Metrics Cards - React Island (Placeholder) -->
+    <!-- <DashboardMetrics industry="retail" client:load /> -->
+    <div class="p-6 bg-white rounded-xl shadow-md text-center">
+      <p class="text-gray-500">Dashboard Metrics loading...</p>
+    </div>
   </div>
 
-  <!-- CRM Integration - React Island -->
+  <!-- CRM Integration - React Island (Placeholder) -->
   <div class="mb-8">
     <h2 class="text-xl font-semibold text-gray-900 mb-6">CRM & Marketing</h2>
-    <HubSpotWidget client:visible />
+    <!-- <HubSpotWidget client:visible /> -->
+    <div class="p-6 bg-white rounded-xl shadow-md text-center">
+      <p class="text-gray-500">CRM Integration loading...</p>
+    </div>
   </div>
 
   <!-- Main Content Grid -->

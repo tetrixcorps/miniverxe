@@ -4,10 +4,10 @@
 // Refactored with modern UI/UX best practices and React Islands
 
 import DashboardLayout from '../../components/dashboards/DashboardLayout.astro';
-import { DashboardMetrics } from '../../components/dashboard/react/DashboardMetrics';
-import { SalesforceWidget } from '../../components/dashboard/react/SalesforceWidget';
-import { HubSpotWidget } from '../../components/dashboard/react/HubSpotWidget';
-import { EpicWidget } from '../../components/dashboard/react/EpicWidget';
+// import { DashboardMetrics } from '../../components/dashboard/react/DashboardMetrics'; // Missing
+// import { SalesforceWidget } from '../../components/dashboard/react/SalesforceWidget'; // Missing
+// import { HubSpotWidget } from '../../components/dashboard/react/HubSpotWidget'; // Missing
+// import { EpicWidget } from '../../components/dashboard/react/EpicWidget'; // Missing
 
 // Server-Side Logic: Fetch User Session
 const cookie = Astro.request.headers.get('cookie');
@@ -46,8 +46,9 @@ if (!hasSession) {
       </div>
     </div>
 
-    <!-- Key Metrics Cards - React Island -->
-    <DashboardMetrics industry="wellness" client:load />
+    <!-- Key Metrics Cards - React Island (Placeholder) -->
+    <!-- <DashboardMetrics industry="wellness" client:load /> -->
+    <div class="p-6 bg-white rounded-xl shadow-md text-center text-gray-500">Dashboard Metrics loading...</div>
   </div>
 
   <!-- Main Content Grid -->
@@ -208,13 +209,16 @@ if (!hasSession) {
     </div>
   </div>
 
-  <!-- Wellness Integrations - React Islands -->
+  <!-- Wellness Integrations - React Islands (Placeholder) -->
   <div class="mb-8">
     <h2 class="text-xl font-semibold text-gray-900 mb-6">Wellness Integrations</h2>
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <EpicWidget client:visible />
-      <SalesforceWidget client:visible />
-      <HubSpotWidget client:visible />
+      <!-- <EpicWidget client:visible /> -->
+      <div class="p-6 bg-white rounded-xl shadow-md text-center text-gray-500">Epic Widget loading...</div>
+      <!-- <SalesforceWidget client:visible /> -->
+      <div class="p-6 bg-white rounded-xl shadow-md text-center text-gray-500">Salesforce Widget loading...</div>
+      <!-- <HubSpotWidget client:visible /> -->
+      <div class="p-6 bg-white rounded-xl shadow-md text-center text-gray-500">HubSpot Widget loading...</div>
     </div>
   </div>
 </DashboardLayout>

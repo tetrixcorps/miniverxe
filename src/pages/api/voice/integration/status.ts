@@ -18,7 +18,7 @@ export const GET: APIRoute = async () => {
         status: 'enabled',
         features: ['voice_calling', 'cross_channel_sync', 'ai_agents']
       },
-      unifiedMessagingIntegration: {
+      messagingIntegration: {
         status: 'enabled',
         features: ['voice_channel', 'transcription', 'cross_platform_sync']
       },

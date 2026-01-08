@@ -130,7 +130,7 @@ export class IndustryWorkflowIntegrations {
         'it_service_request'
       ],
       crmIntegrations: ['Salesforce Education Cloud', 'HubSpot', 'Student Information Systems'],
-      backendServices: ['Telnyx Voice', 'SHANGO AI', 'RPA Engine', 'Unified Messaging']
+      backendServices: ['Telnyx Voice', 'SHANGO AI', 'RPA Engine']
     });
 
     // Retail
@@ -158,7 +158,7 @@ export class IndustryWorkflowIntegrations {
         'document_approval'
       ],
       crmIntegrations: ['Salesforce', 'HubSpot', 'Property Management Systems'],
-      backendServices: ['Telnyx Voice', 'SHANGO AI', 'RPA Engine', 'Unified Messaging']
+      backendServices: ['Telnyx Voice', 'SHANGO AI', 'RPA Engine']
     });
 
     // Wellness
@@ -172,7 +172,7 @@ export class IndustryWorkflowIntegrations {
         'lead_qualification_nurturing'
       ],
       crmIntegrations: ['Salesforce Health Cloud', 'HubSpot', 'Wellness Platforms'],
-      backendServices: ['Telnyx Voice', 'SHANGO AI', 'RPA Engine', 'Unified Messaging']
+      backendServices: ['Telnyx Voice', 'SHANGO AI', 'RPA Engine']
     });
 
     // Beauty

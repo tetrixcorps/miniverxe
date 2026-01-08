@@ -46,96 +46,16 @@ import MainLayout from '../components/layout/MainLayout.astro';
     <!-- Contact Form Section -->
     <section class="py-20 px-4 bg-white">
       <div class="max-w-7xl mx-auto">
-        <!-- Success Message -->
-        <div id="success-message" class="max-w-xl mx-auto bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6 hidden">
-          <p class="font-semibold">Thank you for your message!</p>
-          <p>We'll get back to you within 24 hours.</p>
-        </div>
-
-        <!-- Error Message -->
-        <div id="error-message" class="max-w-xl mx-auto bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6 hidden">
-          <p class="font-semibold">Oops! Something went wrong.</p>
-          <p id="error-text">Please try again or contact us directly.</p>
-        </div>
-
+        
         <div class="grid md:grid-cols-2 gap-12">
           <!-- Contact Form -->
           <div class="bg-gradient-to-br from-brand-red/5 to-brand-orange/5 rounded-xl p-8 shadow-lg border border-brand-red/20">
             <h2 class="text-3xl font-bold mb-6 text-gray-900">Send us a Message</h2>
-            <form id="contact-form" class="space-y-6" aria-label="Contact form">
-              <div>
-                <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
-                  Full Name
-                </label>
-                <input 
-                  type="text" 
-                  name="name" 
-                  id="name" 
-                  required 
-                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors"
-                  placeholder="Enter your full name"
-                />
-              </div>
-              <div>
-                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-                  Email Address
-                </label>
-                <input 
-                  type="email" 
-                  name="email" 
-                  id="email" 
-                  required 
-                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors"
-                  placeholder="Enter your email address"
-                />
-              </div>
-              <div>
-                <label for="company" class="block text-sm font-medium text-gray-700 mb-2">
-                  Company (Optional)
-                </label>
-                <input 
-                  type="text" 
-                  name="company" 
-                  id="company" 
-                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors"
-                  placeholder="Enter your company name"
-                />
-              </div>
-              <div>
-                <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">
-                  Subject
-                </label>
-                <input 
-                  type="text" 
-                  name="subject" 
-                  id="subject" 
-                  required 
-                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors"
-                  placeholder="What is this regarding?"
-                />
-              </div>
-              <div>
-                <label for="message" class="block text-sm font-medium text-gray-700 mb-2">
-                  Message
-                </label>
-                <textarea 
-                  name="message" 
-                  id="message" 
-                  required 
-                  rows="4" 
-                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-colors"
-                  placeholder="Tell us about your enterprise needs..."
-                ></textarea>
-              </div>
-              <button 
-                type="submit" 
-                id="submit-btn" 
-                class="w-full bg-brand-red text-white px-6 py-4 rounded-lg font-semibold hover:bg-brand-red/90 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-red shadow-lg"
-              >
-                <span id="submit-text">Send Message</span>
-                <span id="loading-text" class="hidden">Sending...</span>
-              </button>
-            </form>
+            
+            <!-- HubSpot Embedded Form -->
+            <script src="https://js-na2.hsforms.net/forms/embed/244023093.js" defer></script>
+            <div class="hs-form-frame" data-region="na2" data-form-id="f618bd89-676d-481a-b23d-65d93937ecb0" data-portal-id="244023093"></div>
+            
           </div>
           
           <!-- JoRoMi Live Chat Section -->
@@ -720,7 +640,6 @@ import MainLayout from '../components/layout/MainLayout.astro';
 
 TETRIX Backend Services:
 - IVR System: Interactive Voice Response with TeXML integration, voice recognition, intelligent call routing
-- Unified Messaging: Multi-channel communication (SMS, email, voice, chat) across all channels
 - Marketing Campaigns: AI-powered marketing automation with 3x higher engagement and 450% average ROI
 - IoT Telematics: Real-time tracking, driver communication, delivery management for fleet operations
 - Voice API: Enterprise voice calling with global coverage, TeXML integration, real-time transcription
@@ -785,7 +704,7 @@ Please provide a helpful, professional response that addresses their inquiry wit
       const fallbackMessage = {
         id: `fallback-${Date.now()}`,
         role: 'assistant',
-        content: "Thank you for your message! I'm JoRoMi, your AI Super Agent for TETRIX enterprise communication platform. I can help you with information about our IVR systems, unified messaging, marketing campaigns, IoT telematics, voice APIs, 2FA services, and more. Our enterprise solutions start at $2,999/month with 24/7 support. What specific service would you like to know more about?",
+        content: "Thank you for your message! I'm JoRoMi, your AI Super Agent for TETRIX enterprise communication platform. I can help you with information about our IVR systems, marketing campaigns, IoT telematics, voice APIs, 2FA services, and more. Our enterprise solutions start at $2,999/month with 24/7 support. What specific service would you like to know more about?",
         timestamp: new Date().toISOString(),
         type: 'text',
         agentId: 'joromi-general'
@@ -805,51 +724,13 @@ Please provide a helpful, professional response that addresses their inquiry wit
     }
   }
 
-  // Contact form handling
+  // Contact form handling (Legacy/Fallback if needed, currently replaced by HubSpot Embed)
   document.addEventListener('DOMContentLoaded', function() {
+    /*
     const form = document.getElementById('contact-form');
-    const submitBtn = document.getElementById('submit-btn');
-    const submitText = document.getElementById('submit-text');
-    const loadingText = document.getElementById('loading-text');
-    const successMessage = document.getElementById('success-message');
-    const errorMessage = document.getElementById('error-message');
-    const errorText = document.getElementById('error-text');
-
-    if (form) {
-      form.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        // Show loading state
-        submitBtn.disabled = true;
-        submitText.classList.add('hidden');
-        loadingText.classList.remove('hidden');
-        successMessage.classList.add('hidden');
-        errorMessage.classList.add('hidden');
-
-        try {
-          const formData = new FormData(form);
-          const data = Object.fromEntries(formData);
-          
-          // Simulate form submission (replace with actual API call)
-          await new Promise(resolve => setTimeout(resolve, 2000));
-          
-          // Show success message
-          successMessage.classList.remove('hidden');
-          form.reset();
-          
-        } catch (error) {
-          console.error('Error submitting form:', error);
-          errorText.textContent = 'There was an error sending your message. Please try again.';
-          errorMessage.classList.remove('hidden');
-        } finally {
-          // Reset button state
-          submitBtn.disabled = false;
-          submitText.classList.remove('hidden');
-          loadingText.classList.add('hidden');
-        }
-      });
-    }
-
+    // ... (rest of the form handling code) ...
+    */
+    
     // Initialize JoRoMi Chat Widget
     initializeJoRoMiChatWidget();
   });

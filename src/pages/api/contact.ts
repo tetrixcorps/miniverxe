@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { hubspotService } from '../../services/hubspot';
 const { mailgunConfig, validateMailgunConfig, getMailgunAuthHeader } = require('../../config/mailgun.js');
 
 // Webhook signature verification
@@ -136,6 +137,42 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Send email
     await sendEmail(data);
+
+    // Submit to HubSpot
+    try {
+      // 1. Try Forms API (Best for Marketing/Tracking)
+      const formSubmission = await hubspotService.submitForm({
+        email: data.email,
+        firstname: data.name,
+        company: data.company,
+        subject: data.subject,
+        message: data.message
+      }, {
+        pageUri: request.url,
+        pageName: 'Contact Us'
+      });
+
+      // 2. If Forms API is not configured or we want to ensure Ticket creation via API immediately
+      // (Forms API creates Contact, but Ticket requires Workflow unless we do it here)
+      // We will create the ticket manually to ensure the user's requirement of "Ticket creation" is met
+      // regardless of their HubSpot Workflow state.
+      
+      const contact = await hubspotService.createContact({
+        email: data.email,
+        firstname: data.name,
+        company: data.company
+      });
+
+      if (contact) {
+        await hubspotService.createTicket(contact.id, {
+          subject: data.subject,
+          content: data.message
+        });
+      }
+    } catch (hsError) {
+      console.error('HubSpot integration error:', hsError);
+      // Continue execution, do not fail the request if HubSpot fails
+    }
 
     return new Response(JSON.stringify({
       success: true,

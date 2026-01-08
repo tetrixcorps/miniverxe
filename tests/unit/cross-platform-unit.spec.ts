@@ -117,61 +117,6 @@ test.describe('Cross-Platform Integration Unit Tests', () => {
     });
   });
 
-  test.describe('Unified Messaging Integration', () => {
-    test('should handle unified message routing', async ({ request }) => {
-      const message = {
-        from: 'user_123',
-        to: 'support',
-        platform: 'tetrix',
-        messageType: 'voice',
-        content: 'I need help with my account',
-        metadata: {
-          source: 'tetrix-voice',
-          target: 'joromi-support'
-        }
-      };
-
-      const response = await request.post('/api/voice/messaging/unified', {
-        data: message
-      });
-
-      expect([200, 201]).toContain(response.status());
-      const data = await response.json();
-      expect(data.messageId).toBeDefined();
-      expect(data.routing).toBeDefined();
-    });
-
-    test('should handle cross-platform message translation', async ({ request }) => {
-      const translationRequest = {
-        message: 'Hello, I need help',
-        fromPlatform: 'tetrix',
-        toPlatform: 'joromi',
-        language: 'en-US'
-      };
-
-      const response = await request.post('/api/voice/messaging/translate', {
-        data: translationRequest
-      });
-
-      expect([200, 400]).toContain(response.status());
-    });
-
-    test('should handle message status tracking', async ({ request }) => {
-      const messageId = DataGenerators.generateSessionId('msg');
-      const statusUpdate = {
-        messageId,
-        status: 'delivered',
-        timestamp: new Date().toISOString(),
-        platform: 'joromi'
-      };
-
-      const response = await request.put(`/api/voice/messaging/${messageId}/status`, {
-        data: statusUpdate
-      });
-
-      expect([200, 404]).toContain(response.status());
-    });
-  });
 
   test.describe('Cross-Platform Data Synchronization', () => {
     test('should handle user data synchronization', async ({ request }) => {

@@ -1,7 +1,6 @@
 ---
 import MainLayout from '../components/layout/MainLayout.astro';
 import UnifiedOnboardingFlow from '../components/UnifiedOnboardingFlow.tsx';
-import UnifiedMessagingDashboard from '../components/UnifiedMessagingDashboard.tsx';
 ---
 
 <MainLayout>
@@ -30,7 +29,7 @@ import UnifiedMessagingDashboard from '../components/UnifiedMessagingDashboard.t
               <div class="space-y-6">
                 <div class="text-center">
                   <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span class="text-2xl">&#128640;#128640;</span>
+                    <span class="text-2xl">&#128640;</span>
                   </div>
                   <h2 class="text-xl font-semibold text-gray-900 mb-2">Start Your Free Trial</h2>
                   <p class="text-gray-600">Complete setup in just a few steps</p>
@@ -93,6 +92,31 @@ import UnifiedMessagingDashboard from '../components/UnifiedMessagingDashboard.t
                 >
                   Start Free Trial
                 </button>
+
+                <div class="mt-4 pt-4 border-t border-gray-100 space-y-3">
+                  <!-- Facebook Login Button -->
+                  <div class="flex justify-center">
+                    <div 
+                      class="fb-login-button" 
+                      data-width="" 
+                      data-size="large" 
+                      data-button-type="continue_with" 
+                      data-layout="" 
+                      data-auto-logout-link="false" 
+                      data-use-continue-as="true" 
+                      data-scope="whatsapp_business_management,whatsapp_business_messaging"
+                      data-onlogin="checkLoginState();">
+                    </div>
+                  </div>
+
+                  <button 
+                    onclick="launchWhatsAppSignup()"
+                    class="w-full bg-[#25D366] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#128C7E] transition-colors flex items-center justify-center"
+                  >
+                    <span class="mr-2">💬</span> Connect with WhatsApp
+                  </button>
+                  <p class="text-xs text-center text-gray-500 mt-2">Use this if you already have an account</p>
+                </div>
               </div>
             </div>
             
@@ -104,6 +128,120 @@ import UnifiedMessagingDashboard from '../components/UnifiedMessagingDashboard.t
       `;
     }
   });
+
+  // ==========================================
+  // Facebook SDK & WhatsApp Embedded Signup
+  // ==========================================
+
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : import.meta.env.PUBLIC_FACEBOOK_APP_ID,
+      cookie     : true,
+      xfbml      : true,
+      version    : 'v18.0'
+    });
+      
+    FB.AppEvents.logPageView();   
+
+    // Check login status on load
+    FB.getLoginStatus(function(response) {
+      statusChangeCallback(response);
+    });
+  };
+
+  window.checkLoginState = function() {
+    FB.getLoginStatus(function(response) {
+      statusChangeCallback(response);
+    });
+  }
+
+  function statusChangeCallback(response) {
+    console.log('statusChangeCallback');
+    console.log(response);
+    if (response.status === 'connected') {
+      // Logged into your app and Facebook.
+      console.log('User is connected.');
+      updateUIForConnectedUser();
+    } else {
+      // The person is not logged into your app or we are unable to tell.
+      console.log('User is not connected.');
+    }
+  }
+
+  function updateUIForConnectedUser() {
+    const connectBtn = document.querySelector('button[onclick="launchWhatsAppSignup()"]');
+    if (connectBtn) {
+       connectBtn.innerHTML = '<span class="mr-2">✅</span> WhatsApp Connected';
+       connectBtn.classList.remove('bg-[#25D366]', 'hover:bg-[#128C7E]');
+       connectBtn.classList.add('bg-green-600', 'cursor-default');
+       connectBtn.onclick = (e) => e.preventDefault();
+    }
+  }
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "https://connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+
+  window.launchWhatsAppSignup = function() {
+    console.log('Launching WhatsApp Embedded Signup...');
+    
+    if (typeof FB === 'undefined') {
+      alert('Facebook SDK is still loading. Please try again in a moment.');
+      return;
+    }
+
+    FB.login(function(response) {
+      if (response.authResponse) {
+        const accessToken = response.authResponse.accessToken;
+        console.log('WhatsApp Signup Successful!', response);
+        
+        // Exchange token with backend
+        fetch('/api/whatsapp/exchange-token', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ accessToken: accessToken })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            console.log('Token exchanged successfully!', data);
+            alert('WhatsApp connected successfully! Long-lived token secured.');
+            
+            // Update UI
+             const connectBtn = document.querySelector('button[onclick="launchWhatsAppSignup()"]');
+             if (connectBtn) {
+                connectBtn.innerHTML = '<span class="mr-2">✅</span> WhatsApp Connected';
+                connectBtn.classList.remove('bg-[#25D366]', 'hover:bg-[#128C7E]');
+                connectBtn.classList.add('bg-green-600', 'cursor-default');
+                connectBtn.onclick = (e) => e.preventDefault();
+             }
+          } else {
+            console.error('Token exchange failed:', data.error);
+            alert('Connected to WhatsApp, but backend setup failed: ' + data.error);
+          }
+        })
+        .catch(error => {
+          console.error('Error calling backend:', error);
+          alert('Error connecting to backend.');
+        });
+        
+      } else {
+        console.log('User cancelled login or did not fully authorize.');
+      }
+    }, {
+      scope: 'whatsapp_business_management, whatsapp_business_messaging',
+      extras: {
+        feature: 'whatsapp_embedded_signup',
+        version: 2
+      }
+    });
+  };
   
   function startOnboarding() {
     // This would trigger the React onboarding flow
@@ -149,7 +287,7 @@ import UnifiedMessagingDashboard from '../components/UnifiedMessagingDashboard.t
     }
   }
   
-  function handlePhoneSubmit(event) {
+  window.handlePhoneSubmit = function(event) {
     event.preventDefault();
     const phoneNumber = document.getElementById('phoneNumber').value;
     
@@ -205,7 +343,7 @@ import UnifiedMessagingDashboard from '../components/UnifiedMessagingDashboard.t
     }
   }
   
-  function handleOTPSubmit(event) {
+  window.handleOTPSubmit = function(event) {
     event.preventDefault();
     const otpCode = document.getElementById('otpCode').value;
     
@@ -219,7 +357,7 @@ import UnifiedMessagingDashboard from '../components/UnifiedMessagingDashboard.t
         <div class="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
           <div class="max-w-md w-full space-y-8">
             <div class="text-center">
-              <div class="text-green-600 text-6xl mb-4">&#127881;#127881;</div>
+              <div class="text-green-600 text-6xl mb-4">&#127881;</div>
               <h1 class="text-2xl font-bold text-gray-900 mb-4">Welcome to TETRIX!</h1>
               <p class="text-gray-600 mb-8">Your account has been created successfully</p>
             </div>
@@ -230,14 +368,14 @@ import UnifiedMessagingDashboard from '../components/UnifiedMessagingDashboard.t
                   <div class="flex items-center">
                     <div class="text-green-600 mr-3">&#9989;</div>
                     <div class="text-sm text-green-800">
-                      <strong>Phone Verified:</strong> ${document.getElementById('phoneNumber').value}
+                      <strong>Phone Verified:</strong> ${document.getElementById('phoneNumber') ? document.getElementById('phoneNumber').value : 'Verified'}
                     </div>
                   </div>
                 </div>
                 
                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
                   <div class="flex items-center">
-                    <div class="text-blue-600 mr-3">&#127881;#127881;</div>
+                    <div class="text-blue-600 mr-3">&#127881;</div>
                     <div class="text-sm text-blue-800">
                       <strong>Free Trial:</strong> 7 days remaining
                     </div>
@@ -267,7 +405,7 @@ import UnifiedMessagingDashboard from '../components/UnifiedMessagingDashboard.t
     }
   }
   
-  function goToDashboard() {
+  window.goToDashboard = function() {
     // Redirect to dashboard
     window.location.href = '/dashboard';
   }

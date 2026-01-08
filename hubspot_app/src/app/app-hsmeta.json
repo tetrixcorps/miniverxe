@@ -1,0 +1,38 @@
+{
+  "uid": "joromi_integration_app",
+  "type": "app",
+  "config": {
+    "name": "Joromi VoIP Integration",
+    "description": "Integration for Joromi VoIP Management System to sync contacts and conversations.",
+    "distribution": "marketplace",
+    "auth": {
+      "type": "oauth",
+      "redirectUrls": [
+        "https://joromi.ai/api/v1/integrations/callback/hubspot",
+        "http://localhost:8000/api/v1/integrations/callback/hubspot"
+      ],
+      "requiredScopes": [
+        "crm.objects.contacts.read",
+        "crm.objects.contacts.write",
+        "crm.schemas.contacts.read"
+      ],
+      "optionalScopes": [],
+      "conditionallyRequiredScopes": []
+    },
+    "permittedUrls": {
+      "fetch": [
+        "https://api.hubapi.com",
+        "https://joromi.ai"
+      ],
+      "iframe": [],
+      "img": []
+    },
+    "support": {
+      "supportEmail": "support@joromi.ai",
+      "documentationUrl": "https://joromi.ai/docs",
+      "supportUrl": "https://joromi.ai/support",
+      "supportPhone": "+15555555555"
+    }
+  }
+}
+

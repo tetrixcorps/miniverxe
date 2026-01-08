@@ -16,10 +16,6 @@ interface IntegrationStatus {
     status: string;
     features: string[];
   };
-  unifiedMessagingIntegration: {
-    status: string;
-    features: string[];
-  };
   transcription: {
     status: string;
     features: string[];
@@ -201,24 +197,6 @@ export const CrossPlatformIntegrationUI: React.FC = () => {
           </div>
           <ul className="space-y-1 text-sm text-gray-600">
             {integrationStatus.sinchChatIntegration.features.map((feature, index) => (
-              <li key={index} className="flex items-center">
-                <span className="text-green-500 mr-2">&#8226;</span>
-                {feature}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Unified Messaging Integration */}
-        <div className="border rounded-lg p-4">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-lg font-semibold text-gray-700">Unified Messaging</h3>
-            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(integrationStatus.unifiedMessagingIntegration.status)}`}>
-              {getStatusIcon(integrationStatus.unifiedMessagingIntegration.status)} {integrationStatus.unifiedMessagingIntegration.status}
-            </span>
-          </div>
-          <ul className="space-y-1 text-sm text-gray-600">
-            {integrationStatus.unifiedMessagingIntegration.features.map((feature, index) => (
               <li key={index} className="flex items-center">
                 <span className="text-green-500 mr-2">&#8226;</span>
                 {feature}

@@ -50,7 +50,7 @@ export const GET: APIRoute = async ({ request, url }) => {
        // If strictly validating roles, we need to add all of them. 
        // For MVP, let's allow any string if it's not empty, or keep strict if preferred.
        // Let's expand the list to be safe but maybe less strict in the future.
-    }
+    
       return new Response(JSON.stringify({
         success: false,
         error: 'Invalid role parameter. Must be one of: fleet_manager, healthcare_provider, attorney'

@@ -1,7 +1,7 @@
 {
   "name": "TETRIX - Enterprise Communications & AI Solutions",
   "short_name": "TETRIX",
-  "description": "Transform your enterprise with our comprehensive suite of professional services: IVR Systems, Unified Messaging Platform, Marketing Campaigns, and IoT Telematics.",
+  "description": "Transform your enterprise with our comprehensive suite of professional services: IVR Systems, Marketing Campaigns, and IoT Telematics.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

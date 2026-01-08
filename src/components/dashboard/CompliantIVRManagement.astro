@@ -1,0 +1,393 @@
+---
+// Compliant IVR Management Dashboard Component
+// Enhanced version with full compliance integration
+
+import { ivrService } from '../../services/ivr/ivrService';
+import { callForwardingService } from '../../services/ivr/callForwardingService';
+import { ivrAnalyticsService } from '../../services/ivr/analyticsService';
+import { auditEvidenceService } from '../../services/compliance';
+import { dashboardAuditService } from '../../services/compliance/dashboardAuditService';
+import { policyEngineService } from '../../services/compliance';
+
+// Get industry from URL params or auth data
+const url = Astro.url;
+const industry = url.searchParams.get('industry') || 'healthcare';
+const tenantId = url.searchParams.get('tenantId') || 'default';
+
+// Get analytics data
+const analytics = ivrAnalyticsService.getAnalytics('24h', industry);
+const recentCalls = ivrAnalyticsService.getRecentCalls(10, industry);
+const agents = callForwardingService.getAgentsByIndustry(industry);
+
+// Get compliance metrics
+const last24Hours = new Date(Date.now() - 24 * 60 * 60 * 1000);
+const auditEvents = auditEvidenceService.searchEvents({
+  tenantId,
+  startDate: last24Hours
+});
+
+const totalCalls = auditEvents.filter(e => e.eventType === 'call.initiated').length;
+const consentEvents = auditEvents.filter(e => 
+  e.eventType === 'consent.granted' || e.eventType === 'consent.denied'
+);
+const consentRate = consentEvents.length > 0
+  ? Math.round((consentEvents.filter(e => e.eventType === 'consent.granted').length / consentEvents.length) * 100)
+  : 100;
+
+const violationEvents = auditEvents.filter(e => e.eventType === 'compliance.violation');
+const complianceStatus = violationEvents.length === 0 ? 'compliant' : 'warning';
+
+// Get policies for this tenant
+const policies = policyEngineService.getPoliciesForTenant(tenantId);
+---
+
+<div class="compliant-ivr-management-dashboard">
+  <!-- Header with Compliance Status -->
+  <div class="mb-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-2xl font-bold text-gray-900">IVR Management</h2>
+        <p class="text-gray-600 mt-1">Manage call flows, agents, and monitor performance with compliance</p>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class={`px-4 py-2 rounded-lg ${
+          complianceStatus === 'compliant' ? 'bg-green-100 text-green-800' :
+          complianceStatus === 'warning' ? 'bg-yellow-100 text-yellow-800' :
+          'bg-red-100 text-red-800'
+        }`}>
+          <span class="text-sm font-semibold capitalize">{complianceStatus}</span>
+        </div>
+        <a 
+          href={`/compliance/dashboard?tenantId=${tenantId}&industry=${industry}`}
+          class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+        >
+          Compliance Dashboard
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compliance Metrics Bar -->
+  <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100 mb-8">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">Compliance Metrics (24h)</h3>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="p-4 bg-blue-50 rounded-lg">
+        <div class="text-sm text-gray-600 mb-1">Audit Trail</div>
+        <div class="text-2xl font-bold text-blue-900">
+          {auditEvents.length} events
+        </div>
+        <div class="text-xs text-gray-500 mt-1">All calls logged</div>
+      </div>
+      <div class="p-4 bg-green-50 rounded-lg">
+        <div class="text-sm text-gray-600 mb-1">Consent Rate</div>
+        <div class="text-2xl font-bold text-green-900">{consentRate}%</div>
+        <div class="text-xs text-gray-500 mt-1">Consent granted</div>
+      </div>
+      <div class="p-4 bg-purple-50 rounded-lg">
+        <div class="text-sm text-gray-600 mb-1">Active Policies</div>
+        <div class="text-2xl font-bold text-purple-900">{policies.length}</div>
+        <div class="text-xs text-gray-500 mt-1">Compliance rules</div>
+      </div>
+      <div class="p-4 bg-orange-50 rounded-lg">
+        <div class="text-sm text-gray-600 mb-1">Violations</div>
+        <div class="text-2xl font-bold text-orange-900">{violationEvents.length}</div>
+        <div class="text-xs text-gray-500 mt-1">Last 24 hours</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Analytics Overview -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <!-- Total Calls -->
+    <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-600">Total Calls (24h)</p>
+          <p class="text-3xl font-bold text-gray-900 mt-2">{analytics.totalCalls}</p>
+          <p class="text-xs text-green-600 mt-1">+12% vs yesterday</p>
+        </div>
+        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+          <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Containment Rate -->
+    <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-600">Containment Rate</p>
+          <p class="text-3xl font-bold text-gray-900 mt-2">{analytics.containmentRate}%</p>
+          <p class="text-xs text-blue-600 mt-1">Self-service completion</p>
+        </div>
+        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+          <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Average Duration -->
+    <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-600">Avg Call Duration</p>
+          <p class="text-3xl font-bold text-gray-900 mt-2">{Math.round(analytics.averageCallDuration / 60)}m</p>
+          <p class="text-xs text-gray-500 mt-1">{analytics.averageCallDuration}s average</p>
+        </div>
+        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+          <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transfer Rate -->
+    <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-600">Transfer Rate</p>
+          <p class="text-3xl font-bold text-gray-900 mt-2">{analytics.transferRate}%</p>
+          <p class="text-xs text-orange-600 mt-1">Calls to agents</p>
+        </div>
+        <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+          <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- Recent Calls with Compliance Status -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+      <div class="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-gray-900">Recent Calls</h3>
+          <a href={`/compliance/audit?tenantId=${tenantId}`} class="text-sm text-blue-600 hover:text-blue-700 font-medium">View Audit Trail</a>
+        </div>
+      </div>
+      <div class="p-6">
+        <div class="space-y-4">
+          {recentCalls.slice(0, 5).map((call) => {
+            const callAuditEvents = auditEvents.filter(e => e.callId === call.sessionId);
+            const hasConsent = callAuditEvents.some(e => e.eventType === 'consent.granted');
+            const hasViolations = callAuditEvents.some(e => e.eventType === 'compliance.violation');
+            
+            return (
+              <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                <div class="flex items-center space-x-3">
+                  <div class={`w-3 h-3 rounded-full ${
+                    call.status === 'completed' ? 'bg-green-400' :
+                    call.status === 'transferred' ? 'bg-blue-400' :
+                    'bg-gray-400'
+                  }`}></div>
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">{call.industry}</p>
+                    <p class="text-xs text-gray-500">{new Date(call.startTime).toLocaleString()}</p>
+                    <div class="flex items-center gap-2 mt-1">
+                      {hasConsent && (
+                        <span class="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded">Consent</span>
+                      )}
+                      {hasViolations && (
+                        <span class="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded">Violation</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <p class="text-sm font-medium text-gray-900">{Math.round(call.duration / 60)}m</p>
+                  <p class="text-xs text-gray-500">{call.stepsCompleted.length} steps</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Agents -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+      <div class="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-gray-900">Active Agents</h3>
+          <button 
+            id="manage-agents-btn"
+            class="text-sm text-blue-600 hover:text-blue-700 font-medium"
+          >
+            Manage
+          </button>
+        </div>
+      </div>
+      <div class="p-6">
+        <div class="space-y-4">
+          {agents.map((agent) => (
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div class="flex items-center space-x-3">
+                <div class={`w-3 h-3 rounded-full ${
+                  agent.status === 'available' ? 'bg-green-400' :
+                  agent.status === 'busy' ? 'bg-yellow-400' :
+                  'bg-gray-400'
+                }`}></div>
+                <div>
+                  <p class="text-sm font-medium text-gray-900">{agent.name}</p>
+                  <p class="text-xs text-gray-500">{agent.department}</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <p class="text-xs text-gray-500 capitalize">{agent.status}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Call Flow Management with Compliance -->
+  <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden mb-8">
+    <div class="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-semibold text-gray-900">IVR Call Flows</h3>
+        <div class="flex gap-2">
+          <a 
+            href={`/compliance/policies?tenantId=${tenantId}`}
+            class="text-sm text-blue-600 hover:text-blue-700 font-medium"
+          >
+            Manage Policies
+          </a>
+          <button 
+            id="create-flow-btn"
+            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+          >
+            Create Flow
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="p-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Healthcare Flow -->
+        <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer">
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="font-semibold text-gray-900">Healthcare Main</h4>
+            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Active</span>
+          </div>
+          <p class="text-sm text-gray-600 mb-3">Appointment scheduling, prescriptions, lab results</p>
+          <div class="flex items-center justify-between text-xs text-gray-500 mb-2">
+            <span>5 steps</span>
+            <span>4 options</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">HIPAA</span>
+            <span class="text-xs bg-purple-100 text-purple-800 px-2 py-0.5 rounded">Consent</span>
+          </div>
+        </div>
+
+        <!-- Insurance Flow -->
+        <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer">
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="font-semibold text-gray-900">Insurance Main</h4>
+            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Active</span>
+          </div>
+          <p class="text-sm text-gray-600 mb-3">FNOL, claim status, policy info, payments</p>
+          <div class="flex items-center justify-between text-xs text-gray-500 mb-2">
+            <span>4 flows</span>
+            <span>5 options</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs bg-orange-100 text-orange-800 px-2 py-0.5 rounded">PCI-DSS</span>
+            <span class="text-xs bg-purple-100 text-purple-800 px-2 py-0.5 rounded">Consent</span>
+          </div>
+        </div>
+
+        <!-- Retail Flow -->
+        <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer">
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="font-semibold text-gray-900">Retail Main</h4>
+            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Active</span>
+          </div>
+          <p class="text-sm text-gray-600 mb-3">Order status, returns, product info, store locator</p>
+          <div class="flex items-center justify-between text-xs text-gray-500 mb-2">
+            <span>4 flows</span>
+            <span>5 options</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs bg-gray-100 text-gray-800 px-2 py-0.5 rounded">PII</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Compliant IVR Management JavaScript
+  document.addEventListener('DOMContentLoaded', () => {
+    const tenantId = new URLSearchParams(window.location.search).get('tenantId') || 'default';
+    const industry = new URLSearchParams(window.location.search).get('industry') || 'healthcare';
+
+    // Log dashboard access
+    fetch('/api/compliance/dashboard/audit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'dashboard.accessed',
+        resource: 'ivr_management',
+        tenantId,
+        industry,
+        details: { page: 'ivr-management' }
+      })
+    }).catch(err => console.error('Failed to log dashboard access:', err));
+
+    // Create flow button handler with audit logging
+    document.getElementById('create-flow-btn')?.addEventListener('click', () => {
+      fetch('/api/compliance/dashboard/audit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'ivr.flow.create.initiated',
+          resource: 'ivr_flow',
+          tenantId,
+          industry
+        })
+      }).catch(err => console.error('Failed to log action:', err));
+      
+      // Open flow builder modal
+      console.log('Open flow builder');
+    });
+
+    // Manage agents button handler with audit logging
+    document.getElementById('manage-agents-btn')?.addEventListener('click', () => {
+      fetch('/api/compliance/dashboard/audit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'ivr.agent.management.accessed',
+          resource: 'ivr_agent',
+          tenantId,
+          industry
+        })
+      }).catch(err => console.error('Failed to log action:', err));
+    });
+
+    // Auto-refresh compliance metrics every 30 seconds
+    setInterval(() => {
+      // Refresh page to get latest compliance metrics
+      // In production, use WebSocket or polling for real-time updates
+    }, 30000);
+  });
+</script>
+
+<style>
+  .compliant-ivr-management-dashboard {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+</style>

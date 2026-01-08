@@ -64,6 +64,8 @@ interface WhatsAppConfig {
   apiVersion: string;
   apiBaseUrl: string;
   certificate?: string;
+  appId?: string;
+  appSecret?: string;
 }
 
 export class WhatsAppCampaignService {
@@ -79,11 +81,15 @@ export class WhatsAppCampaignService {
       businessAccountId: process.env['WHATSAPP_BUSINESS_ACCOUNT_ID'] || '',
       apiVersion: process.env['WHATSAPP_API_VERSION'] || 'v21.0',
       apiBaseUrl: process.env['WHATSAPP_API_BASE_URL'] || 'https://graph.facebook.com',
-      certificate: process.env['WHATSAPP_CERTIFICATE']
+      certificate: process.env['WHATSAPP_CERTIFICATE'],
+      appId: process.env['PUBLIC_FACEBOOK_APP_ID'] || process.env['FACEBOOK_APP_ID'],
+      appSecret: process.env['FACEBOOK_APP_SECRET']
     };
 
     if (!this.config.accessToken || !this.config.phoneNumberId) {
-      throw new Error('WhatsApp Access Token and Phone Number ID are required');
+      // Allow service instantiation without credentials for setup/auth flows
+      // but warn about missing credentials
+      console.warn('WhatsApp Service initialized without full credentials (Access Token or Phone Number ID missing)');
     }
 
     this.baseUrl = `${this.config.apiBaseUrl}/${this.config.apiVersion}`;
@@ -754,6 +760,39 @@ export class WhatsAppCampaignService {
     } catch (error) {
       console.error('Error verifying webhook signature:', error);
       return false;
+    }
+  }
+
+  // Exchange short-lived token for long-lived token
+  async exchangeForLongLivedToken(shortLivedToken: string): Promise<{ success: boolean; accessToken?: string; expiresIn?: number; error?: string }> {
+    if (!this.config.appId || !this.config.appSecret) {
+      return { success: false, error: 'App ID and App Secret are required for token exchange' };
+    }
+
+    try {
+      const url = `${this.config.apiBaseUrl}/${this.config.apiVersion}/oauth/access_token?` +
+        `grant_type=fb_exchange_token&` +
+        `client_id=${this.config.appId}&` +
+        `client_secret=${this.config.appSecret}&` +
+        `fb_exchange_token=${shortLivedToken}`;
+
+      const response = await fetch(url, { method: 'GET' });
+      const data = await response.json() as any;
+
+      if (data.error) {
+        return { success: false, error: data.error.message };
+      }
+
+      return {
+        success: true,
+        accessToken: data.access_token,
+        expiresIn: data.expires_in
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
     }
   }
 
